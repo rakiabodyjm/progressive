@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import '../styles/globals.css'
 import Head from 'next/head'
 import theme from '@src/theme'
-import Menu from '@src/components/Menu'
+import Nav from '@src/components/Nav'
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -24,9 +24,8 @@ function MyApp({ Component, pageProps }) {
 
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Menu>
-          <Component {...pageProps} />
-        </Menu>
+        <Nav />
+        <Component {...pageProps} />
       </ThemeProvider>
     </>
   )
