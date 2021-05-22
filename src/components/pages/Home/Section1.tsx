@@ -1,131 +1,179 @@
-import { Box, Button, Theme, Typography } from '@material-ui/core'
+import { Button, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import Image from 'next/image'
-import DitoSVG from '@public/assets/dito.svg'
-import { useEffect, useState } from 'react'
-import { CardTravelOutlined, OutlinedFlag } from '@material-ui/icons'
+import { useIsMobile } from '@src/utils/useWidth'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     '& *': {
-      //   transition: 'all ease-in-out 0.2s',
-      transition: `all ${theme.transitions.easing.easeInOut} ${theme.transitions.duration.shortest}`,
+      transition: `all ${theme.transitions.easing.easeInOut} ${theme.transitions.duration.shortest}ms`,
+      // filter: 'saturate(1.04)',
     },
+    '&::after': {
+      content: "''",
+      position: 'absolute',
+    },
+    position: 'relative',
+    marginTop: 60,
+    padding: 16,
+    display: 'flex',
+    flexDirection: 'column',
     maxWidth: 1200,
     margin: 'auto',
-    // height: 'calc(100vh - 80px)',
-    // minHeight: 720,
-    height: 720,
+    height: 'calc(100vh - 90px)',
+    maxHeight: 1080,
     '& .text': {
       fontSize: 40,
       margin: 0,
     },
     '& .subtitle': {
-      fontSize: '24px !important',
-      lineHeight: 1,
+      fontSize: '20px !important',
+      lineHeight: 0.95,
       margin: 0,
+      marginTop: 8,
+      // color: theme.palette.secondary.light,
+      opacity: 0.8,
+      letterSpacing: -1,
     },
+    '& .subtitle-button': {
+      fontWeight: 700,
+      color: '#000',
+      marginTop: 0,
+    },
+
     '& .nowrap': {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
     },
-    [theme.breakpoints.down(1200)]: {
-      padding: '0 16px',
+  },
+  flexContainer: {
+    display: 'flex',
+    height: '100%',
+
+    /**
+     * Controls for textContainer and imageContainer
+     */
+    [theme.breakpoints.down('md')]: {
+      '& $textContainer': {
+        width: '42%',
+      },
     },
-    // [theme.breakpoints.down('xs')]: {
-    //   padding: '0 16px',
-    // },
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column-reverse',
+
+      '& $textContainer': {
+        top: 0,
+        margin: 'auto',
+        width: '100%',
+        maxWidth: 480,
+        transform: 'none',
+      },
+      '& $imageContainer': {},
+    },
   },
   textContainer: {
-    zIndex: 1,
-    maxWidth: '33.33%',
-    minWidth: 400,
+    height: 'max-content',
     position: 'relative',
     top: '50%',
     transform: 'translateY(-50%)',
-    // transformOrigin: 'left center',
-    [theme.breakpoints.down('sm')]: {
-      top: '90%',
-      margin: 'auto',
-      maxWidth: 480,
-    },
+    width: '35%',
+    zIndex: 1,
+  },
+  imageContainer: {
+    position: 'relative',
+    flexGrow: 1,
+    flexShrink: 0,
+    transform: 'scale(1.15)',
+    transformOrigin: '50% 0%',
   },
 
   title: {
     display: 'inline-flex',
     lineHeight: 1,
-    letterSpacing: -1.4,
-  },
-  subtitle: {
-    marginTop: 8,
-    maxWidth: 640,
-  },
+    // letterSpacing: -1.4,
+    '& span': {
+      height: '100%',
+      '& :after': {
+        paddingLeft: '100%',
+      },
+    },
+    '& .text': {
+      textTransform: 'uppercase',
+    },
+    [theme.breakpoints.down('xs')]: {
+      '& .text': {
+        fontSize: 32,
+      },
+      '& span': {
+        // width: ` !important`,
+        height: '100%',
 
-  imageContainer: {
-    position: 'absolute',
-    height: '100%',
-    width: '60%',
-    maxWidth: 720,
-    right: 0,
-    top: '50%',
-    transform: 'translateY(-40%)',
+        '& img': { verticalAlign: 'center' },
+      },
+    },
+  },
+  inquireButton: {
+    borderRadius: 4,
+    padding: '8px 16px',
+    // marginLeft: -8,
+    width: '100%',
+    marginTop: 16,
+    background: theme.palette.primary.main,
     [theme.breakpoints.down('sm')]: {
       width: '100%',
-      height: '70%',
-      top: '40%',
     },
   },
 }))
 
 const Section1 = () => {
+  const isMobile = useIsMobile()
   const classes = useStyles()
-
   return (
     <div className={classes.root}>
-      <div className={classes.textContainer}>
-        <Box color="secondary" width="max-content" display="flex">
+      <div className={classes.flexContainer}>
+        <div className={classes.textContainer}>
           <div className={classes.title}>
-            <h1 className="text nowrap">GET YOUR</h1>
+            <h1 className="text nowrap">Wholesale</h1>
 
             <span
               style={{
                 position: 'relative',
-                height: '100%',
-                width: 100,
+                // width: 100,
                 marginLeft: 8,
+                // height: 40,
               }}
             >
-              <Image src="/assets/dito.svg" alt="DITO" layout="fill" />
+              <Image
+                src="/assets/dito.svg"
+                alt="DITO"
+                width={isMobile ? '80' : '100'}
+                height={isMobile ? '30px' : '40px'}
+              />
             </span>
           </div>
-        </Box>
-        <div className={classes.title}>
-          <h1 className="text nowrap">SIM PACKAGES</h1>
-        </div>
-        <div className={classes.subtitle}>
-          <p className="text subtitle">
-            Territorial Sub Distributor and Authorized Distributor Sales Personnel
-          </p>
-        </div>
-        <Button
-          style={{
-            borderRadius: 24,
-            padding: '8px 16px',
-            // marginLeft: -8,
-            margin: '16px auto 0px',
-            width: '90%',
-          }}
-          variant="contained"
-          color="primary"
-          disableElevation
-        >
-          <p className="subtitle">ORDER NOW</p>
-        </Button>
-      </div>
 
-      <div className={classes.imageContainer}>
-        <Image src="/assets/dito-splash.svg" layout="fill" objectFit="contain" />
+          <div className={classes.title}>
+            <h1 className="text">Sim Packages</h1>
+          </div>
+          <div>
+            <p className="text subtitle">
+              Territorial Sub Distributor and Authorized Distributor Sales Personnel
+            </p>
+          </div>
+          <Button
+            className={classes.inquireButton}
+            variant="contained"
+            color="primary"
+            disableElevation
+          >
+            <p className="subtitle subtitle-button">Inquire</p>
+          </Button>
+        </div>
+
+        <div className={classes.imageContainer}>
+          <Image src="/assets/dito-splash.svg" layout="fill" objectFit="contain" />
+        </div>
       </div>
     </div>
   )

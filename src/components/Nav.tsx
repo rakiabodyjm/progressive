@@ -14,6 +14,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     //   clipPath: 'polygon(0% 0%, 100% 0%, 100% 35.00%, 21.59% 50.79%, 0% 29.7%)',
     // },
     // position: 'relative',
+    zIndex: theme.zIndex.appBar,
+    position: 'fixed',
+    top: 0,
+    width: '100%',
     background: theme.palette.secondary.main,
   },
   flexContainer: {
@@ -63,26 +67,26 @@ const Nav = () => {
   const theme: Theme = useTheme()
   return (
     <>
-      {process.env.NODE_ENV === 'development' && (
-        <div
-          style={{
-            // background: 'lightblue',
-            background: theme.palette.primary.main,
-          }}
-        >
-          <Typography
-            style={{
-              width: 'max-content',
-              margin: 'auto',
-              fontWeight: 600,
-            }}
-            variant="body1"
-          >
-            {width}
-          </Typography>
-        </div>
-      )}
       <div className={classes.root}>
+        {process.env.NODE_ENV === 'development' && (
+          <div
+            style={{
+              // background: 'lightblue',
+              background: theme.palette.primary.main,
+            }}
+          >
+            <Typography
+              style={{
+                width: 'max-content',
+                margin: 'auto',
+                fontWeight: 600,
+              }}
+              variant="body1"
+            >
+              {width}
+            </Typography>
+          </div>
+        )}
         <div className={classes.flexContainer}>
           <div>
             <div className={classes.logoContainer}>
