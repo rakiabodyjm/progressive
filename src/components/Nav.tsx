@@ -68,7 +68,7 @@ const Nav = () => {
   return (
     <>
       <div className={classes.root}>
-        {process.env.NODE_ENV === 'development' && (
+        {/* {process.env.NODE_ENV === 'development' && (
           <div
             style={{
               // background: 'lightblue',
@@ -86,7 +86,7 @@ const Nav = () => {
               {width}
             </Typography>
           </div>
-        )}
+        )} */}
         <div className={classes.flexContainer}>
           <div>
             <div className={classes.logoContainer}>

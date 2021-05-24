@@ -1,8 +1,8 @@
-import { ButtonBase, Theme, Typography } from '@material-ui/core'
+import { ButtonBase, Collapse, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
-import { useCallback, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 const useStyles = makeStyles((theme: Theme) => ({
   section: {
     maxWidth: 1200,
@@ -31,21 +31,46 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   faqBar: {
     background: theme.palette.secondary.main,
-    padding: 8,
+    padding: 16,
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    height: '100%',
+    position: 'relative',
     width: '100%',
-    color: theme.palette.primary.light,
+    alignItems: 'inherit',
+    color: theme.palette.primary.main,
     '& .question': {
       textTransform: 'uppercase',
       color: theme.palette.primary.dark,
       fontWeight: 600,
+      lineHeight: 1,
+      textAlign: 'left',
     },
+
     '& .icon': {
-      color: theme.palette.primary.dark,
-      fontSize: 26,
-      marginRight: 16,
+      color: theme.palette.background.paper,
+      fontSize: 24,
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      right: 8,
+      zIndex: 1,
+    },
+
+    '& .icon-container': {
+      width: '10%',
+      minWidth: 100,
+      position: 'relative',
+      '&::after': {
+        content: "''",
+        position: 'absolute',
+        top: -16,
+        right: -16,
+        bottom: -16,
+        left: 0,
+        background: theme.palette.primary.dark,
+        clipPath: 'polygon(100% 0%, 80% 0,  0% 100%, 100% 100%)',
+      },
     },
   },
   faqContent: {
@@ -59,11 +84,23 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Section3 = () => {
   const classes = useStyles()
-  const [expanded, setExpanded] = useState<string[]>([])
+  const [expanded, setExpanded] = useState<number[]>([])
 
-  const isExpanded: (args: string) => boolean = useCallback((item) => expanded.includes(item), [
+  // eslint-disable-next-line no-unused-vars
+  const isExpanded: (args: number) => boolean = useCallback((item) => expanded.includes(item), [
     expanded,
   ])
+  // eslint-disable-next-line no-unused-vars
+  const toggleExpanded: (args: number) => void = useCallback(
+    (item) =>
+      setExpanded((prevState) => {
+        if (prevState.includes(item)) {
+          return [...prevState].filter((fi) => fi !== item)
+        }
+        return [...prevState, item]
+      }),
+    [setExpanded]
+  )
   return (
     <div className={classes.section}>
       <Typography className="sectionTitle" noWrap variant="h3" component="p">
@@ -71,29 +108,54 @@ const Section3 = () => {
       </Typography>
       <div className="divider" />
       <div className={classes.content}>
-        {FAQs.map((faq) => (
+        {FAQs.map((faq, index) => (
           <>
-            <div className={classes.faq}>
-              <ButtonBase className={classes.faqBar}>
-                <Typography className="question" variant="h5">
-                  {faq.question}
-                </Typography>
-
-                <AddCircleIcon className="icon" />
-              </ButtonBase>
-
-              <div className={classes.faqContent}>
-                <Typography className="answer" variant="h6">
-                  {faq.answer}
-                </Typography>
-              </div>
-            </div>
+            <FAQItem
+              key={faq.answer}
+              index={index}
+              faq={faq}
+              isExpanded={isExpanded}
+              toggleExpanded={toggleExpanded}
+            />
           </>
         ))}
       </div>
     </div>
   )
 }
+const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq }) => {
+  const classes = useStyles()
+
+  return (
+    <div className={classes.faq}>
+      <ButtonBase
+        onClick={() => {
+          toggleExpanded(index)
+        }}
+        className={classes.faqBar}
+      >
+        <Typography className="question" variant="h5">
+          {faq.question}
+        </Typography>
+        <div className="icon-container"></div>
+        {isExpanded(index) ? (
+          <RemoveCircleIcon className="icon" />
+        ) : (
+          <AddCircleIcon className="icon" />
+        )}
+      </ButtonBase>
+
+      <Collapse in={isExpanded(index)}>
+        <div className={classes.faqContent}>
+          <Typography className="answer" variant="h6">
+            {faq.answer}
+          </Typography>
+        </div>
+      </Collapse>
+    </div>
+  )
+}
+const FAQItem = memo(FAQItemOriginal)
 
 const FAQs = [
   {
