@@ -35,13 +35,13 @@ const useStyles = makeStyles((theme: Theme) => ({
       margin: 0,
     },
     '& .subtitle': {
-      color: theme.palette.secondary.main,
+      // color: theme.palette.secondary.main,
       fontSize: '20px !important',
       lineHeight: 0.95,
       margin: 0,
       marginTop: 8,
       // color: theme.palette.secondary.light,
-      letterSpacing: -1,
+      // letterSpacing: -1,
     },
 
     '& .raleway': {
@@ -117,7 +117,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   title: {
     display: 'inline-flex',
     lineHeight: 1,
-    // letterSpacing: -1.4,
+    letterSpacing: '-0.06em',
     '& span': {
       height: '100%',
       '& :after': {
@@ -125,19 +125,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
     '& .text': {
-      color: theme.palette.primary.light,
+      color: theme.palette.primary.dark,
       textTransform: 'uppercase',
       lineHeight: 1,
     },
     '& .animate': {
       animation: `$animate-background 5s ${theme.transitions.easing.easeInOut} infinite`,
-      backgroundImage: 'var(--primary-cross-gradient)',
+      backgroundImage: 'linear-gradient(148deg, var(--primary-main) 0%, var(--primary-dark) 100%)',
       backgroundSize: '300% 300%',
       textFillColor: 'transparent',
       WebkitTextFillColor: 'transparent',
       WebkitBackgroundClip: 'text',
       MozBackgroundClip: 'text',
       filter: 'saturate(2)',
+      boxShadow: '2px 2px 2px 4px solid black',
     },
     [theme.breakpoints.down('xs')]: {
       '& .text': {

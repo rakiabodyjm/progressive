@@ -1,8 +1,13 @@
 import { Theme, Typography } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import useWidth from '@src/utils/useWidth'
-import clsx from 'clsx'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
+const url =
+  process.env.NODE_ENV === 'development'
+    ? process.env.NEXT_PUBLIC_DEVELOPMENT_URL
+    : process.env.NEXT_PUBLIC_PRODUCTION_URL
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     // margin: 'auto',
@@ -18,7 +23,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'fixed',
     top: 0,
     width: '100%',
+    // height: 'max-content',
+    maxHeight: 60,
     background: theme.palette.secondary.main,
+    '& *': {
+      transition: `all ${theme.transitions.easing.easeInOut} ${theme.transitions.duration.shortest}ms`,
+    },
   },
   flexContainer: {
     position: 'relative',
@@ -26,8 +36,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: 'auto',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    background: theme.palette.secondary.main,
+    // background: theme.palette.secondary.main,
     height: 50,
 
     [theme.breakpoints.up('sm')]: {
@@ -41,6 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: 80,
     width: 80,
     position: 'absolute',
+    cursor: 'pointer',
     top: 0,
     // [theme.breakpoints.up('md')]: {
     //   left: '18%',
@@ -51,6 +61,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexGrow: 1,
     justifyContent: 'space-around',
     maxWidth: '50%',
+    alignItems: 'center',
     [theme.breakpoints.down('xs')]: {
       maxWidth: '70%',
     },
@@ -58,10 +69,29 @@ const useStyles = makeStyles((theme: Theme) => ({
   menuItem: {
     color: '#FFF',
     textTransform: 'uppercase',
+    cursor: 'pointer',
+    '&:hover': {
+      color: theme.palette.primary.dark,
+      position: 'relative',
+    },
   },
   line: {
-    background: 'red',
+    background: 'transparent',
     height: 20,
+    position: 'relative',
+    backdropFilter: 'blur(8px)',
+    zIndex: -1,
+    // clipPath: 'polygon(0% 0%, 100% 0%, 100% 40%, 21.02% 67.22%, 0% 39.7%)',
+    overflow: 'hidden',
+    '&:after': {
+      content: "''",
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      // background: 'red',
+      background: 'gray',
+      opacity: 0.4,
+    },
   },
 }))
 
@@ -69,9 +99,11 @@ const Nav = () => {
   const classes = useStyles()
   const width = useWidth()
   const theme: Theme = useTheme()
+  // const router = useRouter()
+  const router = useRouter()
   return (
     <>
-      <div className={classes.root}>
+      <nav className={classes.root}>
         {/* {process.env.NODE_ENV === 'development' && (
           <div
             style={{
@@ -93,7 +125,17 @@ const Nav = () => {
         )} */}
         <div className={classes.flexContainer}>
           <div>
-            <div className={classes.logoContainer}>
+            <a
+              href={url}
+              onClick={(e) => {
+                e.preventDefault()
+                // router.push(url)
+                router.push({
+                  href: url,
+                })
+              }}
+              className={classes.logoContainer}
+            >
               <div
                 style={{
                   position: 'relative',
@@ -107,7 +149,7 @@ const Nav = () => {
                   objectFit="contain"
                 />
               </div>
-            </div>
+            </a>
           </div>
 
           <div className={classes.menuContainer}>
@@ -128,7 +170,7 @@ const Nav = () => {
           </div>
         </div>
         <div className={classes.line}></div>
-      </div>
+      </nav>
     </>
   )
 }

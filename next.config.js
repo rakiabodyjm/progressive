@@ -12,5 +12,7 @@ module.exports = {
       'mongodb+srv://rakia:rakiabodyjm4690@cluster0.l89qj.mongodb.net/dvr?retryWrites=true&w=majority',
     PRODUCTION_MONGO_URI:
       'mongodb+srv://rakia:rakiabodyjm4690@cluster0.mlcnz.mongodb.net/dvr?retryWrites=true&w=majority',
+    NEXT_PUBLIC_PRODUCTION_URL: 'https://dito.realm1000.com',
+    NEXT_PUBLIC_DEVELOPMENT_URL: 'http://192.168.1.13:4000',
   },
 }
