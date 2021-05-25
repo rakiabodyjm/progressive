@@ -48,3 +48,50 @@ a {
 .font-weight-800{
     font-weight: 800;
 }
+:root{
+  --primary-gradient: linear-gradient(148deg, #ED8332 0%, #EC5B2B 100%);
+  --secondary-gradient: linear-gradient(148deg, #000024 0%, #0F254C 100%);
+  --primary-cross-gradient: linear-gradient(148deg, #ED8332 0%, #0F254C 100%);
+  --primary-main: #ed8332;
+  --primary-dark: #ec5b2b;
+  --primary-light: #f3b169;
+  --primary-contrastText: #ffffff; 
+  --secondary-main: #0F254C;
+  --secondary-dark: #000024;
+  --secondary-light: #3e4d78;
+  --secondary-contrastText: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-button {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #e1e1e1;
+  border: 0px none #ffffff;
+  border-radius: 15px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff9200;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #22549a;
+}
+::-webkit-scrollbar-track {
+  /* background: #666666; */
+  border: 0px none #ffffff;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track:hover {
+  /* background: #666666; */
+}
+::-webkit-scrollbar-track:active {
+  /* background: #333333; */
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

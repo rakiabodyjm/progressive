@@ -59,6 +59,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: '#FFF',
     textTransform: 'uppercase',
   },
+  line: {
+    background: 'red',
+    height: 20,
+  },
 }))
 
 const Nav = () => {
@@ -123,6 +127,7 @@ const Nav = () => {
             ))}
           </div>
         </div>
+        <div className={classes.line}></div>
       </div>
     </>
   )

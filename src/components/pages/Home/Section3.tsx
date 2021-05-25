@@ -125,11 +125,11 @@ const Section3 = () => {
     </div>
   )
 }
-const FAQItemOriginal = ({ key, isExpanded, toggleExpanded, index, faq }) => {
+const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq }) => {
   const classes = useStyles()
 
   return (
-    <div key={key} className={classes.faq}>
+    <div className={classes.faq}>
       <ButtonBase
         onClick={() => {
           toggleExpanded(index)

@@ -35,12 +35,12 @@ const useStyles = makeStyles((theme: Theme) => ({
       margin: 0,
     },
     '& .subtitle': {
+      color: theme.palette.secondary.main,
       fontSize: '20px !important',
       lineHeight: 0.95,
       margin: 0,
       marginTop: 8,
       // color: theme.palette.secondary.light,
-      opacity: 0.8,
       letterSpacing: -1,
     },
 
@@ -125,7 +125,19 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
     '& .text': {
+      color: theme.palette.primary.light,
       textTransform: 'uppercase',
+      lineHeight: 1,
+    },
+    '& .animate': {
+      animation: `$animate-background 5s ${theme.transitions.easing.easeInOut} infinite`,
+      backgroundImage: 'var(--primary-cross-gradient)',
+      backgroundSize: '300% 300%',
+      textFillColor: 'transparent',
+      WebkitTextFillColor: 'transparent',
+      WebkitBackgroundClip: 'text',
+      MozBackgroundClip: 'text',
+      filter: 'saturate(2)',
     },
     [theme.breakpoints.down('xs')]: {
       '& .text': {
@@ -159,6 +171,17 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
   },
+  '@keyframes animate-background': {
+    '0%': {
+      backgroundPosition: '0% 50%',
+    },
+    '50%': {
+      backgroundPosition: '100% 50%',
+    },
+    '100%': {
+      backgroundPosition: '0% 50%',
+    },
+  },
 }))
 
 const Section1 = () => {
@@ -169,7 +192,7 @@ const Section1 = () => {
       <div className={classes.flexContainer}>
         <div className={classes.textContainer}>
           <div className={classes.title}>
-            <h1 className="text nowrap">Wholesale</h1>
+            <h1 className="text animate nowrap">Wholesale</h1>
 
             <span
               style={{
@@ -187,12 +210,12 @@ const Section1 = () => {
           </div>
 
           <div className={classes.title}>
-            <h1 className="text">Sim Packages</h1>
+            <h1 className="text animate">Sim Packages</h1>
           </div>
           <div>
-            <p className="text subtitle raleway">
-              REALM1000 Enterprise Inc., Philippines is the Territorial Subdistributor of Valenzuela
-              City, Under NTC
+            <p className="text subtitle">
+              REALM 1000 Enterprise Inc., Philippines is the Territorial Subdistributor of
+              Valenzuela City, Under NTC
               {/* Territorial Sub Distributor and Authorized Distributor Sales Personnel */}
             </p>
           </div>

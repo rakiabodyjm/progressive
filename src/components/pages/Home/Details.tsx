@@ -2,9 +2,14 @@ import { Box, Theme, Typography } from '@material-ui/core'
 import { CSSProperties, makeStyles } from '@material-ui/styles'
 import RoomIcon from '@material-ui/icons/Room'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
+import { useIsMobile } from '@src/utils/useWidth'
 
+interface ThemeProps {
+  isMobile: boolean
+}
 const useStyles = makeStyles((theme: Theme) => ({
   detailsWrapper: {
+    marginTop: 64,
     position: 'relative',
     '&:after': {
       content: "''",
@@ -15,21 +20,50 @@ const useStyles = makeStyles((theme: Theme) => ({
       left: 0,
       zIndex: -1,
       background: theme.palette.secondary.main,
-      clipPath: 'polygon(0% 0%, 0% 100%, 100% calc(100% - 64px), 100% 64px)',
+      // clipPath: ({ isMobile }: ThemeProps) =>
+      //   `polygon(0% 0%, 0% 100%, 100% calc(100% - ${isMobile ? `0px` : `64px`}), 100% ${
+      //     isMobile ? `0px` : `64px`
+      //   } )`,
     },
   },
   details: {
     // padding: 64,
-    padding: '64px 0px',
+    padding: ({ isMobile }: ThemeProps) => `${isMobile ? `32px` : `48px`} 8px`,
     maxWidth: 1200,
     margin: 'auto',
     color: theme.palette.background.paper,
   },
 
   content: {
+    '& .divider': {
+      height: 2,
+      width: '110%',
+      // background: theme.palette.secondary.dark,
+      background: theme.palette.background.paper,
+      margin: 'auto',
+      marginTop: 8,
+      marginBottom: 16,
+      // marginBottom: 32,
+    },
     '& .header': {
+      width: 'max-content',
       '& .title': {
         fontWeight: 600,
+        position: 'relative',
+        width: 'max-content',
+        color: theme.palette.primary.dark,
+
+        // textDecoration: 'underline',
+        // '&:after': {
+        //   content: "''",
+        //   margin: '8px 0',
+        //   position: 'absolute',
+        //   left: 16,
+        //   right: 16,
+        //   bottom: 0,
+        //   height: 2,
+        //   background: 'red',
+        // },
       },
     },
     '& > *': {
@@ -66,7 +100,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 const Details = () => {
-  const classes = useStyles()
+  const isMobile = useIsMobile({ tabletIncluded: true })
+  const classes = useStyles({ isMobile })
   return (
     <div className={classes.detailsWrapper}>
       <div className={classes.details}>
@@ -75,6 +110,7 @@ const Details = () => {
             <Typography className="title" variant="h3">
               DETAILS
             </Typography>
+            <div className="divider" />
           </div>
           <div className="content">
             {contents.map((ea) => (
