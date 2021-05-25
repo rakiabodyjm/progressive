@@ -124,6 +124,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
         '& .MuiTypography-root': {
           lineHeight: 1,
+          fontFamily: 'Raleway, sans-serif',
         },
         '& .key': {
           marginRight: 8,
@@ -145,7 +146,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         top: -16,
         bottom: 0,
         background: theme.palette.secondary.main,
-        zIndex: 1,
+        zIndex: 2,
         clipPath: 'polygon(0% 0%, 0% 100%, 100% 0%)',
       },
       '&::after': {
@@ -157,7 +158,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         bottom: 0,
         background: theme.palette.primary.dark,
         zIndex: 1,
-        clipPath: 'polygon(100% 0, 0% 100%, 100% 100%)',
       },
       '& .text': {
         zIndex: 2,
@@ -190,7 +190,7 @@ const Section2 = () => {
   const classes = useStyles()
   return (
     <div className={classes.section}>
-      <Typography className="sectionTitle" noWrap variant="h3" component="p">
+      <Typography className="sectionTitle" variant="h3" component="p">
         Promo Packages
       </Typography>
       {/* <Divider variant="middle" /> */}
@@ -215,9 +215,9 @@ const Section2 = () => {
                   <Typography className="title" color="secondary" variant="h4" component="p">
                     {sim.title}
                   </Typography>
-                  <Typography className="sub-title" variant="h5">
+                  {/* <Typography className="sub-title" variant="h5">
                     {sim.price}
-                  </Typography>
+                  </Typography> */}
                 </div>
                 <div className="content-details">
                   {sim.contents.map((content) => (

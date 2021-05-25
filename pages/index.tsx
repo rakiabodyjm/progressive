@@ -1,4 +1,6 @@
 import { Theme, Typography } from '@material-ui/core'
+// import { Details } from '@material-ui/icons'
+import Details from '@src/components/pages/Home/Details'
 import { makeStyles } from '@material-ui/styles'
 import Section1 from '@src/components/pages/Home/Section1'
 import Section2 from '@src/components/pages/Home/Section2'
@@ -12,6 +14,7 @@ export default function Home() {
   return (
     <div className={classes.root}>
       <Section1 />
+      <Details />
       <Section2 />
       <Section3 />
     </div>

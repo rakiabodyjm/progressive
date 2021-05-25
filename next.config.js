@@ -7,4 +7,10 @@ module.exports = {
     })
     return config
   },
+  env: {
+    DEVELOPMENT_MONGO_URI:
+      'mongodb+srv://rakia:rakiabodyjm4690@cluster0.l89qj.mongodb.net/dvr?retryWrites=true&w=majority',
+    PRODUCTION_MONGO_URI:
+      'mongodb+srv://rakia:rakiabodyjm4690@cluster0.mlcnz.mongodb.net/dvr?retryWrites=true&w=majority',
+  },
 }

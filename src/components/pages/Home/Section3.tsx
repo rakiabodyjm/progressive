@@ -10,16 +10,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& .sectionTitle': {
       marginTop: 64,
       textTransform: 'uppercase',
-      width: 'max-content',
+      //   width: 'max-content',
+      textAlign: 'center',
       margin: 'auto',
 
       fontWeight: 700,
     },
+
     '& .divider': {
       height: 2,
-      //   background: 'red',
       background: theme.palette.secondary.dark,
-      width: 240,
+      width: 180,
       margin: 'auto',
       marginTop: 16,
       marginBottom: 32,
@@ -33,6 +34,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: theme.palette.secondary.main,
     padding: 16,
     display: 'flex',
+    borderRadius: 4,
+    overflow: 'hidden',
     justifyContent: 'space-between',
     height: '100%',
     position: 'relative',
@@ -78,6 +81,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& .answer': {
       fontFamily: 'Raleway, sans-serif',
       lineHeight: 1.4,
+      textIndent: 40,
     },
   },
 }))
@@ -109,25 +113,23 @@ const Section3 = () => {
       <div className="divider" />
       <div className={classes.content}>
         {FAQs.map((faq, index) => (
-          <>
-            <FAQItem
-              key={faq.answer}
-              index={index}
-              faq={faq}
-              isExpanded={isExpanded}
-              toggleExpanded={toggleExpanded}
-            />
-          </>
+          <FAQItem
+            key={faq.answer}
+            index={index}
+            faq={faq}
+            isExpanded={isExpanded}
+            toggleExpanded={toggleExpanded}
+          />
         ))}
       </div>
     </div>
   )
 }
-const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq }) => {
+const FAQItemOriginal = ({ key, isExpanded, toggleExpanded, index, faq }) => {
   const classes = useStyles()
 
   return (
-    <div className={classes.faq}>
+    <div key={key} className={classes.faq}>
       <ButtonBase
         onClick={() => {
           toggleExpanded(index)

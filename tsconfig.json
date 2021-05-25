@@ -19,6 +19,13 @@
       "@public/*": ["./public/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_document.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/_document.js",
+    "tests/counts.test.js",
+    "jest.config.js"
+  ],
   "exclude": ["node_modules"]
 }

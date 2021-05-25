@@ -9,19 +9,19 @@ const useStyles = makeStyles((theme: Theme) => ({
       transition: `all ${theme.transitions.easing.easeInOut} ${theme.transitions.duration.shortest}ms`,
       // filter: 'saturate(1.04)',
     },
-    '&:after': {
-      content: "''",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      position: 'absolute',
-      // clipPath: 'polygon(0% 0,  0% 100%, 60% 100%)',
-      clipPath: 'polygon(0% 215px, 0% 95%, 100% 67%, 100% 51%)',
-      // zIndex: 1000000000,
-      zIndex: -1,
-      background: theme.palette.primary.dark,
-    },
+    // '&:after': {
+    //   content: "''",
+    //   top: 0,
+    //   left: 0,
+    //   right: 0,
+    //   bottom: 0,
+    //   position: 'absolute',
+    //   // clipPath: 'polygon(0% 0,  0% 100%, 60% 100%)',
+    //   clipPath: 'polygon(0% 20%, 0% 90%, 100% 67%, 100% 51%)',
+    //   // zIndex: 1000000000,
+    //   zIndex: -1,
+    //   background: theme.palette.primary.dark,
+    // },
     marginTop: 60,
     padding: 16,
     display: 'flex',
@@ -43,9 +43,15 @@ const useStyles = makeStyles((theme: Theme) => ({
       opacity: 0.8,
       letterSpacing: -1,
     },
+
+    '& .raleway': {
+      fontFamily: 'Raleway, sans-serif',
+      letterSpacing: 0.8,
+    },
     '& .subtitle-button': {
       fontWeight: 700,
-      color: '#000',
+      // color: '#000',
+      color: theme.palette.background.paper,
       marginTop: 0,
     },
 
@@ -87,6 +93,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     transform: 'translateY(-50%)',
     width: '35%',
     zIndex: 1,
+
+    // '&:after': {
+    //   content: "''",
+    //   position: 'absolute',
+    //   top: -64,
+    //   left: -64,
+    //   right: -64,
+    //   bottom: -64,
+    //   background: theme.palette.secondary.main,
+    //   zIndex: -1000,
+    //   clipPath: 'polygon(30% 0%, 0% 100%, 70% 100%, 100% 0%)',
+    // },
   },
   imageContainer: {
     position: 'relative',
@@ -123,13 +141,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   inquireButton: {
     borderRadius: 4,
-    padding: '8px 16px',
+    padding: '12px 16px',
     // marginLeft: -8,
     width: '100%',
     marginTop: 16,
-    background: theme.palette.primary.main,
+    background: theme.palette.secondary.main,
     [theme.breakpoints.down('sm')]: {
       width: '100%',
+    },
+
+    '&:hover': {
+      background: theme.palette.primary.main,
+
+      '& .subtitle-button': {
+        color: theme.palette.secondary.dark,
+        transform: 'scale(1.3)',
+      },
     },
   },
 }))
@@ -147,9 +174,7 @@ const Section1 = () => {
             <span
               style={{
                 position: 'relative',
-                // width: 100,
                 marginLeft: 8,
-                // height: 40,
               }}
             >
               <Image
@@ -165,14 +190,16 @@ const Section1 = () => {
             <h1 className="text">Sim Packages</h1>
           </div>
           <div>
-            <p className="text subtitle">
-              Territorial Sub Distributor and Authorized Distributor Sales Personnel
+            <p className="text subtitle raleway">
+              REALM1000 Enterprise Inc., Philippines is the Territorial Subdistributor of Valenzuela
+              City, Under NTC
+              {/* Territorial Sub Distributor and Authorized Distributor Sales Personnel */}
             </p>
           </div>
           <Button
             className={classes.inquireButton}
             variant="contained"
-            color="primary"
+            color="secondary"
             disableElevation
           >
             <p className="subtitle subtitle-button">Inquire</p>
