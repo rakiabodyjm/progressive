@@ -101,8 +101,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Nav = () => {
   const classes = useStyles()
-  const width = useWidth()
-  const theme: Theme = useTheme()
   // const router = useRouter()
   const router = useRouter()
   return (
@@ -167,7 +165,7 @@ const Nav = () => {
                 key={menuItem.name}
                 variant="body1"
                 component="a"
-                href="/"
+                href={`/${menuItem.href}`}
               >
                 {menuItem.name}
               </Typography>
