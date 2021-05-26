@@ -8,7 +8,7 @@ import FAQs from '@src/components/pages/Home/FAQs'
 import Contact from '@src/components/pages/Home/Contact'
 import Head from 'next/head'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   index: { overflow: 'hidden' },
 }))
 export default function Home() {
