@@ -48,7 +48,7 @@ const createMessage = async (req: NextApiRequest, res: NextApiResponse) => {
     const message = new Messages({ ...req.body })
     await message.save()
     res.status(200).send({
-      ...message,
+      success: 'Message sent',
     })
   } catch (err) {
     console.error(err)

@@ -104,6 +104,21 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
   },
+  notification: {
+    borderRadius: 4,
+    padding: 4,
+    // color: theme.palette.background.paper,
+  },
+  notificationSuccess: {
+    // color: theme.palette.success.main,
+    border: `2px solid ${theme.palette.success.main}`,
+    background: theme.palette.success.light,
+  },
+  notificationError: {
+    // color: theme.palette.error.main,
+    border: `2px solid ${theme.palette.error.main}`,
+    background: theme.palette.error.light,
+  },
 }))
 
 const Contact = () => {
@@ -141,13 +156,20 @@ const Contact = () => {
               [ea]: '* Must not be more than 500 characters',
             }
           }
-          if (ea === 'contact_number' && /^(\+)\d{6,12} |\d{6,12}/.test(values[ea]))
+          if (ea === 'contact_number' && !/(^\+\d{6,12}$|^\d{6,12}$)/.test(values[ea]))
             return {
               ...acc,
-              [ea]: '* Must be a phone Number',
+              [ea]: '* Must be a valid phone Number',
             }
+          if (ea === 'email' && !/^[\w\-.+]+@[a-zA-Z0-9.-]+\.[a-zA-z0-9]{2,5}$/.test(values[ea])) {
+            return {
+              ...acc,
+              [ea]: '* Must be an email',
+            }
+          }
 
           return {
+            ...acc,
             [ea]: null,
           }
         },
@@ -158,7 +180,6 @@ const Contact = () => {
     [values]
   )
 
-  console.log('errors', errors)
   const hasErrors = useMemo(() => {
     let error = false
     Object.keys(errors).forEach((key) => {
@@ -186,17 +207,32 @@ const Contact = () => {
         })
         .then((res) => {
           setNotification({ type: 'success', message: res.data.success })
-          setNotification(res.data.message)
+          // setNotification(res.data.success)
         })
         .catch((err) => {
           console.error(err)
-          setNotification({
-            type: 'error',
-            message: err.message,
-          })
+          if (err.response) {
+            setNotification({
+              type: 'error',
+              message: err.response.data.error,
+            })
+          } else {
+            setNotification({
+              type: 'error',
+              message: 'Failed to Send Message',
+            })
+          }
         })
     }
   }
+
+  useEffect(() => {
+    if (notification?.message) {
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+  }, [notification])
 
   return (
     <div className={classes.contactSection}>
@@ -208,6 +244,15 @@ const Contact = () => {
           <Typography className="subtitle" variant="h6">
             Contact Us for Inquiries and Orders
           </Typography>
+          <Fade in={!!notification?.message}>
+            <div
+              className={`${classes.notification} ${
+                notification?.type === 'success' && classes.notificationSuccess
+              } ${notification?.type === 'error' && classes.notificationError}`}
+            >
+              <Typography variant="body1">{notification?.message}</Typography>
+            </div>
+          </Fade>
         </div>
         <div className={classes.content}>
           {textFields.map((ea) => (
@@ -267,6 +312,7 @@ const Contact = () => {
           <Button
             onClick={() => {
               setIsSubmitted(true)
+              handleSubmit()
             }}
             disabled={isSubmitted && hasErrors}
             disableElevation
