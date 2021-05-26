@@ -1,8 +1,10 @@
-import { Divider, Theme, Typography } from '@material-ui/core'
+import { Theme, Typography } from '@material-ui/core'
 import { CheckCircle } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import Image from 'next/image'
-
+import { useDispatch } from 'react-redux'
+import { setOrderMessage } from '@src/redux/data/orderMessage'
+import { useRouter } from 'next/router'
 const useStyles = makeStyles((theme: Theme) => ({
   section: {
     maxWidth: 1200,
@@ -186,8 +188,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-const Section2 = () => {
+const PromoPackages = () => {
   const classes = useStyles()
+  const dispatch = useDispatch()
+  const router = useRouter()
   return (
     <>
       <div className="anchor" id="selection" />
@@ -245,7 +249,20 @@ const Section2 = () => {
                   </div>
                 </div>
                 <div className="content-button">
-                  <Typography className="text" variant="h6">
+                  <Typography
+                    onClick={() => {
+                      dispatch(
+                        setOrderMessage(
+                          `ORDER MESSAGE : I would like to inquire | order ${
+                            sim.title
+                          } with ${sim.contents.toString()}`
+                        )
+                      )
+                      router.push('/#contact')
+                    }}
+                    className="text"
+                    variant="h6"
+                  >
                     ORDER
                   </Typography>
                 </div>
@@ -302,4 +319,4 @@ const promoPackages = [
   },
 ]
 
-export default Section2
+export default PromoPackages

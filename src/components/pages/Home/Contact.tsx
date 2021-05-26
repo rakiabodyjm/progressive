@@ -1,7 +1,9 @@
 import { Box, Button, Fade, TextField, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
+import { RootState } from '@src/redux/store'
 import axios from 'axios'
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 const outlineString = '& .MuiOutlinedInput-notchedOutline'
 const useStyles = makeStyles((theme: Theme) => ({
@@ -122,6 +124,16 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 const Contact = () => {
+  /**
+   *
+   * set inputProps for textFields
+   */
+  useEffect(() => {
+    setInputProps({
+      autoCapitalize: 'off',
+      autoCorrect: 'off',
+    })
+  }, [])
   const classes = useStyles()
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [values, setValues] = useState({
@@ -133,6 +145,18 @@ const Contact = () => {
       { message: '' }
     ),
   })
+
+  const promoMessage = useSelector((state: RootState) => state.orderMessage)
+
+  useEffect(() => {
+    if (promoMessage) {
+      setValues((prevState) => ({
+        ...prevState,
+        message: promoMessage,
+      }))
+      setIsSubmitted(true)
+    }
+  }, [promoMessage])
 
   const errors = useMemo(
     () =>
@@ -234,6 +258,8 @@ const Contact = () => {
     }
   }, [notification])
 
+  const [inputProps, setInputProps] = useState({})
+
   return (
     <div id="contact" className={classes.contactSection}>
       <div className={classes.contact}>
@@ -274,10 +300,8 @@ const Contact = () => {
                 fullWidth
                 variant="outlined"
                 size="small"
-                inputProps={{
-                  autoCapitalize: 'off',
-                  autoCorrect: 'off',
-                }}
+                inputProps={inputProps}
+                value={values?.[ea.name] || ''}
               />
             </div>
           ))}
@@ -301,10 +325,8 @@ const Contact = () => {
               size="small"
               multiline
               rows={4}
-              inputProps={{
-                autoCapitalize: 'off',
-                autoCorrect: 'off',
-              }}
+              value={values?.message || ''}
+              inputProps={inputProps}
             />
           </div>
         </div>

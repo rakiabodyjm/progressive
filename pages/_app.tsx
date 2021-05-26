@@ -5,6 +5,8 @@ import '../styles/globals.css'
 import Head from 'next/head'
 import theme from '@src/theme'
 import Nav from '@src/components/Nav'
+import { Provider } from 'react-redux'
+import store from '@src/redux/store'
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -21,12 +23,13 @@ function MyApp({ Component, pageProps }) {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
       </Head>
-
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Nav />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Nav />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </Provider>
     </>
   )
 }

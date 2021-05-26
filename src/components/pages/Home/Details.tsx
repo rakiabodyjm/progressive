@@ -105,7 +105,7 @@ const Details = () => {
   const classes = useStyles({ isMobile })
   return (
     <>
-      <div className="anchor" id="details" />
+      <div id="details" className="anchor" />
       <div className={classes.detailsWrapper}>
         <div className={classes.details}>
           <div className={classes.content}>

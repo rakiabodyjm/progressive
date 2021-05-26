@@ -3,8 +3,8 @@ import { Theme, Typography } from '@material-ui/core'
 import Details from '@src/components/pages/Home/Details'
 import { makeStyles } from '@material-ui/styles'
 import Section1 from '@src/components/pages/Home/Section1'
-import Section2 from '@src/components/pages/Home/Section2'
-import Section3 from '@src/components/pages/Home/Section3'
+import PromoPackages from '@src/components/pages/Home/PromoPackages'
+import FAQs from '@src/components/pages/Home/FAQs'
 import Contact from '@src/components/pages/Home/Contact'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -16,8 +16,8 @@ export default function Home() {
     <div className={classes.index}>
       <Section1 />
       <Details />
-      <Section2 />
-      <Section3 />
+      <PromoPackages />
+      <FAQs />
       <Contact />
     </div>
   )
