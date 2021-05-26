@@ -2,6 +2,7 @@ import { Button, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import Image from 'next/image'
 import { useIsMobile } from '@src/utils/useWidth'
+import { useRouter } from 'next/router'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -193,6 +194,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Section1 = () => {
   const isMobile = useIsMobile()
   const classes = useStyles()
+  const router = useRouter()
   return (
     <div className={classes.root}>
       <div className={classes.flexContainer}>
@@ -230,6 +232,9 @@ const Section1 = () => {
             variant="contained"
             color="secondary"
             disableElevation
+            onClick={() => {
+              router.push(`/#contact`)
+            }}
           >
             <p className="subtitle subtitle-button">Inquire</p>
           </Button>

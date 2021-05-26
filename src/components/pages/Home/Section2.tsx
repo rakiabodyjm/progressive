@@ -189,69 +189,72 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Section2 = () => {
   const classes = useStyles()
   return (
-    <div className={classes.section}>
-      <Typography className="sectionTitle" variant="h3" component="p">
-        Promo Packages
-      </Typography>
-      {/* <Divider variant="middle" /> */}
-      <div className="divider" />
+    <>
+      <div className="anchor" id="selection" />
+      <div className={classes.section}>
+        <Typography className="sectionTitle" variant="h3" component="p">
+          Promo Packages
+        </Typography>
+        {/* <Divider variant="middle" /> */}
+        <div className="divider" />
 
-      <div className={classes.sectionContent}>
-        <div className={classes.flexContainer}>
-          {promoPackages.map((sim) => (
-            <div className={classes.card} key={sim.title}>
-              <div className="image-container">
-                <Image
-                  src={sim.image}
-                  objectFit="cover"
-                  layout="fill"
-                  // width={300}
-                  //  height={300}
-                />
-              </div>
-              <div className="photo-triangle" />
-              <div className="content-container">
-                <div className="content-header">
-                  <Typography className="title" color="secondary" variant="h4" component="p">
-                    {sim.title}
-                  </Typography>
-                  {/* <Typography className="sub-title" variant="h5">
+        <div className={classes.sectionContent}>
+          <div className={classes.flexContainer}>
+            {promoPackages.map((sim) => (
+              <div className={classes.card} key={sim.title}>
+                <div className="image-container">
+                  <Image
+                    src={sim.image}
+                    objectFit="cover"
+                    layout="fill"
+                    // width={300}
+                    //  height={300}
+                  />
+                </div>
+                <div className="photo-triangle" />
+                <div className="content-container">
+                  <div className="content-header">
+                    <Typography className="title" color="secondary" variant="h4" component="p">
+                      {sim.title}
+                    </Typography>
+                    {/* <Typography className="sub-title" variant="h5">
                     {sim.price}
                   </Typography> */}
+                  </div>
+                  <div className="content-details">
+                    {sim.contents.map((content) => (
+                      <span key={content}>
+                        <CheckCircle className="icon" />
+                        <Typography className="text" variant="h6">
+                          {content}
+                        </Typography>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="content-promo">
+                    {sim.others.map((promo) => (
+                      <span key={promo.name}>
+                        <Typography className="key" variant="body1">
+                          {promo.name}:
+                        </Typography>
+                        <Typography className="value" variant="body1">
+                          {promo.value}
+                        </Typography>
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="content-details">
-                  {sim.contents.map((content) => (
-                    <span key={content}>
-                      <CheckCircle className="icon" />
-                      <Typography className="text" variant="h6">
-                        {content}
-                      </Typography>
-                    </span>
-                  ))}
-                </div>
-                <div className="content-promo">
-                  {sim.others.map((promo) => (
-                    <span key={promo.name}>
-                      <Typography className="key" variant="body1">
-                        {promo.name}:
-                      </Typography>
-                      <Typography className="value" variant="body1">
-                        {promo.value}
-                      </Typography>
-                    </span>
-                  ))}
+                <div className="content-button">
+                  <Typography className="text" variant="h6">
+                    ORDER
+                  </Typography>
                 </div>
               </div>
-              <div className="content-button">
-                <Typography className="text" variant="h6">
-                  ORDER
-                </Typography>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

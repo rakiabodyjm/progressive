@@ -162,6 +162,7 @@ const Nav = () => {
                 className={classes.menuItem}
                 onClick={(e) => {
                   e.preventDefault()
+                  router.push(`/${menuItem.href}`)
                 }}
                 key={menuItem.name}
                 variant="body1"
@@ -179,5 +180,10 @@ const Nav = () => {
   )
 }
 
-const menuItems = [{ name: 'Buy Now' }, { name: 'Contact' }, { name: 'About' }, { name: 'FAQ' }]
+const menuItems = [
+  { name: 'Buy Now', href: '#selection' },
+  { name: 'Contact', href: '#contact' },
+  { name: 'About', href: '#details' },
+  { name: 'FAQ', href: '#faq' },
+]
 export default Nav

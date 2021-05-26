@@ -235,7 +235,7 @@ const Contact = () => {
   }, [notification])
 
   return (
-    <div className={classes.contactSection}>
+    <div id="contact" className={classes.contactSection}>
       <div className={classes.contact}>
         <div className={classes.header}>
           <Typography className="title" variant="h4">

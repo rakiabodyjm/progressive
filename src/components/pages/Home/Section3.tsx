@@ -106,30 +106,33 @@ const Section3 = () => {
     [setExpanded]
   )
   return (
-    <div className={classes.section}>
-      <Typography className="sectionTitle" noWrap variant="h3" component="p">
-        FAQs
-      </Typography>
-      <div className="divider" />
-      <div className={classes.content}>
-        {FAQs.map((faq, index) => (
-          <FAQItem
-            key={faq.answer}
-            index={index}
-            faq={faq}
-            isExpanded={isExpanded}
-            toggleExpanded={toggleExpanded}
-          />
-        ))}
+    <>
+      <div id="faq" className="anchor" />
+      <div className={classes.section}>
+        <Typography className="sectionTitle" noWrap variant="h3" component="p">
+          FAQs
+        </Typography>
+        <div className="divider" />
+        <div className={classes.content}>
+          {FAQs.map((faq, index) => (
+            <FAQItem
+              key={faq.answer}
+              index={index}
+              faq={faq}
+              isExpanded={isExpanded}
+              toggleExpanded={toggleExpanded}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq }) => {
   const classes = useStyles()
 
   return (
-    <div className={classes.faq}>
+    <div id="faq" className={classes.faq}>
       <ButtonBase
         onClick={() => {
           toggleExpanded(index)

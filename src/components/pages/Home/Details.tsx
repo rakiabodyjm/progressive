@@ -104,40 +104,43 @@ const Details = () => {
   const isMobile = useIsMobile({ tabletIncluded: true })
   const classes = useStyles({ isMobile })
   return (
-    <div className={classes.detailsWrapper}>
-      <div className={classes.details}>
-        <div className={classes.content}>
-          <div className="header">
-            <Typography className="title" variant="h3">
-              DETAILS
-            </Typography>
-            <div className="divider" />
-          </div>
-          <div className="content">
-            {contents.map((ea) => (
-              <Box display="flex" key={ea.key}>
-                <Typography variant="h6" className="key">
-                  {ea.key}: <span className="value">{ea.value}</span>
-                </Typography>
-                {/* <Typography variant="h6" className="value">
+    <>
+      <div className="anchor" id="details" />
+      <div className={classes.detailsWrapper}>
+        <div className={classes.details}>
+          <div className={classes.content}>
+            <div className="header">
+              <Typography className="title" variant="h3">
+                DETAILS
+              </Typography>
+              <div className="divider" />
+            </div>
+            <div className="content">
+              {contents.map((ea) => (
+                <Box display="flex" key={ea.key}>
+                  <Typography variant="h6" className="key">
+                    {ea.key}: <span className="value">{ea.value}</span>
+                  </Typography>
+                  {/* <Typography variant="h6" className="value">
                 {ea.value}
               </Typography> */}
-              </Box>
-            ))}
-          </div>
-          <div className="details">
-            {details.map(({ icon: Icon, ...ea }) => (
-              <Box display="flex" key={ea.key}>
-                <Icon className="icon" />
-                <Typography className="key">
-                  {ea.key}: <span className="value">{ea.value}</span>
-                </Typography>
-              </Box>
-            ))}
+                </Box>
+              ))}
+            </div>
+            <div className="details">
+              {details.map(({ icon: Icon, ...ea }) => (
+                <Box display="flex" key={ea.key}>
+                  <Icon className="icon" />
+                  <Typography className="key">
+                    {ea.key}: <span className="value">{ea.value}</span>
+                  </Typography>
+                </Box>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
