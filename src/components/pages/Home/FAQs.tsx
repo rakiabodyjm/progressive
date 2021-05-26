@@ -107,7 +107,7 @@ const Section3 = () => {
   )
   return (
     <>
-      <div id="faq" className="anchor" />
+      <a href="/#faq" id="faq" className="anchor" />
       <div className={classes.section}>
         <Typography className="sectionTitle" noWrap variant="h3" component="p">
           FAQs
@@ -132,7 +132,7 @@ const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq }) => {
   const classes = useStyles()
 
   return (
-    <div id="faq" className={classes.faq}>
+    <div className={classes.faq}>
       <ButtonBase
         onClick={() => {
           toggleExpanded(index)

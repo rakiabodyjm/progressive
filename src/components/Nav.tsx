@@ -181,7 +181,7 @@ const Nav = () => {
 }
 
 const menuItems = [
-  { name: 'Buy Now', href: '#selection' },
+  { name: 'Buy Now', href: '#sim-packages' },
   { name: 'Contact', href: '#contact' },
   { name: 'About', href: '#details' },
   { name: 'FAQ', href: '#faq' },

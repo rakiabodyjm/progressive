@@ -194,7 +194,7 @@ const PromoPackages = () => {
   const router = useRouter()
   return (
     <>
-      <div className="anchor" id="selection" />
+      <a href="/#sim-packages" id="sim-packages" className="anchor" />
       <div className={classes.section}>
         <Typography className="sectionTitle" variant="h3" component="p">
           Promo Packages
@@ -253,7 +253,7 @@ const PromoPackages = () => {
                     onClick={() => {
                       dispatch(
                         setOrderMessage(
-                          `ORDER MESSAGE : I would like to inquire | order ${
+                          `ORDER MESSAGE : I would like to inquire/order ${
                             sim.title
                           } with ${sim.contents.toString()}`
                         )

@@ -261,93 +261,96 @@ const Contact = () => {
   const [inputProps, setInputProps] = useState({})
 
   return (
-    <div id="contact" className={classes.contactSection}>
-      <div className={classes.contact}>
-        <div className={classes.header}>
-          <Typography className="title" variant="h4">
-            Contact
-          </Typography>
-          <Typography className="subtitle" variant="h6">
-            Contact Us for Inquiries and Orders
-          </Typography>
-          <Fade in={!!notification?.message}>
-            <div
-              className={`${classes.notification} ${
-                notification?.type === 'success' && classes.notificationSuccess
-              } ${notification?.type === 'error' && classes.notificationError}`}
-            >
-              <Typography variant="body1">{notification?.message}</Typography>
-            </div>
-          </Fade>
-        </div>
-        <div className={classes.content}>
-          {textFields.map((ea) => (
-            <div key={ea.name} className="input-container">
+    <>
+      <a href="/#contact" id="contact" className="anchor" />
+      <div className={classes.contactSection}>
+        <div className={classes.contact}>
+          <div className={classes.header}>
+            <Typography className="title" variant="h4">
+              Contact
+            </Typography>
+            <Typography className="subtitle" variant="h6">
+              Contact Us for Inquiries and Orders
+            </Typography>
+            <Fade in={!!notification?.message}>
+              <div
+                className={`${classes.notification} ${
+                  notification?.type === 'success' && classes.notificationSuccess
+                } ${notification?.type === 'error' && classes.notificationError}`}
+              >
+                <Typography variant="body1">{notification?.message}</Typography>
+              </div>
+            </Fade>
+          </div>
+          <div className={classes.content}>
+            {textFields.map((ea) => (
+              <div key={ea.name} className="input-container">
+                <Box display="flex" justifyContent="space-between">
+                  <Typography className="text" variant="body1">
+                    {ea.label}:
+                  </Typography>
+                  <Fade in={isSubmitted && !!errors[ea.name]}>
+                    <Typography className="text error raleway" variant="body1">
+                      {errors[ea.name]}
+                    </Typography>
+                  </Fade>
+                </Box>
+
+                <TextField
+                  onChange={handleChange}
+                  name={ea.name}
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  inputProps={inputProps}
+                  value={values?.[ea.name] || ''}
+                />
+              </div>
+            ))}
+
+            <div className="input-container">
               <Box display="flex" justifyContent="space-between">
                 <Typography className="text" variant="body1">
-                  {ea.label}:
+                  Message:
                 </Typography>
-                <Fade in={isSubmitted && !!errors[ea.name]}>
+                <Fade in={isSubmitted && !!errors.message}>
                   <Typography className="text error raleway" variant="body1">
-                    {errors[ea.name]}
+                    {errors.message}
                   </Typography>
                 </Fade>
               </Box>
-
               <TextField
                 onChange={handleChange}
-                name={ea.name}
+                name="message"
                 fullWidth
                 variant="outlined"
                 size="small"
+                multiline
+                rows={4}
+                value={values?.message || ''}
                 inputProps={inputProps}
-                value={values?.[ea.name] || ''}
               />
             </div>
-          ))}
-
-          <div className="input-container">
-            <Box display="flex" justifyContent="space-between">
-              <Typography className="text" variant="body1">
-                Message:
+          </div>
+          <div className={classes.footer}>
+            <Button
+              onClick={() => {
+                setIsSubmitted(true)
+                handleSubmit()
+              }}
+              disabled={isSubmitted && hasErrors}
+              disableElevation
+              className="button"
+              variant="contained"
+            >
+              <Typography className="text" variant="h6">
+                Submit
               </Typography>
-              <Fade in={isSubmitted && !!errors.message}>
-                <Typography className="text error raleway" variant="body1">
-                  {errors.message}
-                </Typography>
-              </Fade>
-            </Box>
-            <TextField
-              onChange={handleChange}
-              name="message"
-              fullWidth
-              variant="outlined"
-              size="small"
-              multiline
-              rows={4}
-              value={values?.message || ''}
-              inputProps={inputProps}
-            />
+            </Button>
           </div>
         </div>
-        <div className={classes.footer}>
-          <Button
-            onClick={() => {
-              setIsSubmitted(true)
-              handleSubmit()
-            }}
-            disabled={isSubmitted && hasErrors}
-            disableElevation
-            className="button"
-            variant="contained"
-          >
-            <Typography className="text" variant="h6">
-              Submit
-            </Typography>
-          </Button>
-        </div>
       </div>
-    </div>
+    </>
   )
 }
 
