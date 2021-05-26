@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: 'auto',
     height: 'calc(100vh - 90px)',
     maxHeight: 1080,
+    minHeight: 800,
     '& .text': {
       fontSize: 40,
       margin: 0,
@@ -40,6 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       lineHeight: 0.95,
       margin: 0,
       marginTop: 8,
+      fontWeight: 600,
       // color: theme.palette.secondary.light,
       // letterSpacing: -1,
     },
@@ -83,7 +85,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         maxWidth: 480,
         transform: 'none',
       },
-      '& $imageContainer': {},
+      '& $imageContainer': {
+        maxHeight: 480,
+      },
     },
   },
   textContainer: {
@@ -110,8 +114,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'relative',
     flexGrow: 1,
     flexShrink: 0,
-    transform: 'scale(1.15)',
     transformOrigin: '50% 0%',
+    transform: 'scale(1.2)',
   },
 
   title: {
@@ -128,6 +132,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       color: theme.palette.primary.dark,
       textTransform: 'uppercase',
       lineHeight: 1,
+      fontWeight: 800,
     },
     '& .animate': {
       animation: `$animate-background 5s ${theme.transitions.easing.easeInOut} infinite`,

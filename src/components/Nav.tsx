@@ -25,9 +25,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     // height: 'max-content',
     maxHeight: 60,
+
     background: theme.palette.secondary.main,
     '& *': {
       transition: `all ${theme.transitions.easing.easeInOut} ${theme.transitions.duration.shortest}ms`,
+    },
+    [theme.breakpoints.down('xs')]: {
+      maxHeight: 50,
     },
   },
   flexContainer: {

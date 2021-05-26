@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   details: {
     // padding: 64,
-    padding: ({ isMobile }: ThemeProps) => `${isMobile ? `32px` : `48px`} 8px`,
+    padding: ({ isMobile }: ThemeProps) => `${isMobile ? `24px` : `48px`} 8px`,
     maxWidth: 1200,
     margin: 'auto',
     color: theme.palette.background.paper,
@@ -38,14 +38,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& .divider': {
       height: 2,
       width: '110%',
-      // background: theme.palette.secondary.dark,
-      background: theme.palette.background.paper,
-      margin: 'auto',
+      background: theme.palette.primary.dark,
+      // background: theme.palette.background.paper,
+      // margin: 'auto',
       marginTop: 8,
       marginBottom: 16,
       // marginBottom: 32,
     },
     '& .header': {
+      margin: 0,
       width: 'max-content',
       '& .title': {
         fontWeight: 600,

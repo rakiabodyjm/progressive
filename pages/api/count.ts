@@ -23,14 +23,11 @@ const postCount = async (req: NextApiRequest, res: NextApiResponse) => {
         error: 'Missing one of the required parameters',
       })
     }
-
     await connectDB()
     const counts = await Counts.findOneAndUpdate(
       {},
       {
-        visits,
-        inquiries,
-        orders,
+        ...body,
       },
       { upsert: true }
     )
@@ -43,7 +40,7 @@ const postCount = async (req: NextApiRequest, res: NextApiResponse) => {
     })
   } catch (err) {
     console.error(err)
-    res.status(500).send({
+    return res.status(500).send({
       error: err,
     })
   }

@@ -6,3 +6,17 @@ Content-Type: application/json
     "visits": 1
 }
 ###
+
+
+POST http://192.168.1.13:3000/api/message/
+Content-Type: application/json
+
+{
+    "name": "Janeo miguel Tiongson",
+    "message": "Hello World", 
+    "email": "rakiabodyjm@gmail.com",
+    "contact_number": "09560490475"
+}
+
+
+###
