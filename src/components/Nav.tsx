@@ -3,6 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/styles'
 import useWidth from '@src/utils/useWidth'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { useMemo } from 'react'
 const url =
   process.env.NODE_ENV === 'development'
     ? process.env.NEXT_PUBLIC_DEVELOPMENT_URL
@@ -19,6 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     //   clipPath: 'polygon(0% 0%, 100% 0%, 100% 35.00%, 21.59% 50.79%, 0% 29.7%)',
     // },
     // position: 'relative',
+    display: (props: { hidden: boolean }) => (props.hidden ? 'none' : 'inherit'),
     zIndex: theme.zIndex.appBar,
     position: 'fixed',
     top: 0,
@@ -100,9 +102,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 const Nav = () => {
-  const classes = useStyles()
-  // const router = useRouter()
   const router = useRouter()
+
+  const hidden = useMemo(() => router.pathname === '/email', [router.pathname])
+  const classes = useStyles({ hidden })
+  // const router = useRouter()
+
   return (
     <>
       <nav className={classes.root}>

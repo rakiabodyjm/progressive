@@ -1,7 +1,9 @@
 import connectDB from '@src/api/dbConnect'
 import Messages from '@src/api/models/Message'
 import { NextApiRequest, NextApiResponse } from 'next'
+// import sendMail from '@src/api/controllers/MailController'
 
+import sendMail from '@src/api/controllers/MailController'
 const messageHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await connectDB()
@@ -27,7 +29,6 @@ const createMessage = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const regex = /^(message|name|phone|email)$/
 
-    console.log(req.body)
     /**
      * check if keys are correct
      */
@@ -37,7 +38,6 @@ const createMessage = async (req: NextApiRequest, res: NextApiResponse) => {
      * check if values are more than 5 characters
      */
     const valuesError = Object.keys(req.body).every((ea) => ea.length < 5)
-    console.log(valuesError, keysError)
 
     if (!!keysError && !!valuesError) {
       res.status(400).send({
@@ -47,6 +47,9 @@ const createMessage = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     const message = new Messages({ ...req.body })
     await message.save()
+    await sendMail({
+      ...req.body,
+    })
     res.status(200).send({
       success: 'Message sent',
     })

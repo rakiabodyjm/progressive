@@ -3,22 +3,22 @@ import Document, { Main, NextScript, Html, Head } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/styles'
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
-    const materialSheets = new ServerStyleSheets()
-    const originalRenderPage = ctx.renderPage
+    const sheets = new ServerStyleSheets()
+    const { renderPage } = ctx
 
     ctx.renderPage = () =>
-      originalRenderPage({
-        enhanceApp: (App) => (props) => materialSheets.collect(<App {...props} />),
+      renderPage({
+        enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
       })
 
     const initialProps = await Document.getInitialProps(ctx)
     return {
       ...initialProps,
-      styles: [...React.Children.toArray(initialProps.styles), materialSheets.getStyleElement()],
+      styles: [...React.Children.toArray(initialProps.styles), sheets.getStyleElement()],
       // styles: [
       //   <React.Fragment key="styles">
       //     {initialProps.styles}
-      //     {materialSheets.getStyleElement()}
+      //     {sheets.getStyleElement()}
       //   </React.Fragment>,
       // ],
     }
