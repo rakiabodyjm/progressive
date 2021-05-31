@@ -91,9 +91,10 @@ const Section3 = () => {
   const [expanded, setExpanded] = useState<number[]>([])
 
   // eslint-disable-next-line no-unused-vars
-  const isExpanded: (args: number) => boolean = useCallback((item) => expanded.includes(item), [
-    expanded,
-  ])
+  const isExpanded: (args: number) => boolean = useCallback(
+    (item) => expanded.includes(item),
+    [expanded]
+  )
   // eslint-disable-next-line no-unused-vars
   const toggleExpanded: (args: number) => void = useCallback(
     (item) =>
@@ -181,7 +182,7 @@ const FAQs = [
   {
     question: 'DITO Sim Expiration',
     answer:
-      'The promo must be availed and activated within 30 days from the date the DITO Sim was succesfully delivered. The SIM Card shall expire of not activated within 1 year of purchase',
+      'The promo must be availed and activated within 30 days from the date the DITO Sim was succesfully delivered. The SIM Card shall expire if not activated within 1 year of purchase',
   },
 ]
 
