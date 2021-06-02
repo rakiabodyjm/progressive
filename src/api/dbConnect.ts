@@ -34,23 +34,12 @@ const disconnectDB = async () => {
 
 export default connectDB
 
-const connectionWrapper = (
-  // eslint-disable-next-line no-unused-vars
-  handler: (req: NextApiRequest, res: NextApiResponse) => void
-) => async (req: NextApiRequest, res: NextApiResponse) => {
-  try {
-    if (mongoose.connection.readyState) {
-      return handler(req, res)
-    }
+const connectionWrapper =
+  (req: NextApiRequest, res: NextApiResponse) =>
+  async (apiFunction: (req: NextApiRequest, res: NextApiResponse) => void) => {
     await connectDB()
-
-    return handler(req, res)
-  } catch (err) {
-    res.status(500).send({
-      error: err,
-    })
+    return apiFunction(req, res)
   }
-}
 
 mongoose.connection.on('connect', () => {
   console.log('connection detected, terminating in 10000ms')
