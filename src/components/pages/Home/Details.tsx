@@ -28,10 +28,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   details: {
     // padding: 64,
-    padding: ({ isMobile }: ThemeProps) => `${isMobile ? `24px` : `48px`} 8px`,
+    // padding: ({ isMobile }: ThemeProps) => `${isMobile ? `24px` : `48px`} 8px`,
+
     maxWidth: 1200,
     margin: 'auto',
     color: theme.palette.background.paper,
+    padding: '48px 8px',
+    [theme.breakpoints.down('sm')]: {
+      padding: '24px 8px',
+    },
   },
 
   content: {
@@ -102,7 +107,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Details = () => {
   const isMobile = useIsMobile({ tabletIncluded: true })
-  const classes = useStyles({ isMobile })
+  const classes = useStyles()
   return (
     <>
       <a href="/#details" id="details" className="anchor" />

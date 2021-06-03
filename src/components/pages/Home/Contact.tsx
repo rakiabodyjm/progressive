@@ -12,9 +12,40 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: 64,
     maxWidth: 1200,
     margin: 'auto',
+    position: 'relative',
+    padding: 16,
+    paddingTop: 0,
+    border: '0.5px solid transparent',
+
+    // '&:after': {
+    //   content: "''",
+    //   position: 'absolute',
+    //   top: 0,
+    //   right: 0,
+    //   bottom: 0,
+    //   left: 0,
+    //   border: `2px solid ${theme.palette.secondary.dark}`,
+    //   opacity: 0.4,
+    //   borderRadius: 8,
+    // },
 
     [outlineString]: {
       borderColor: theme.palette.primary.dark,
+    },
+    '& .sectionTitle': {
+      textTransform: 'uppercase',
+      textAlign: 'center',
+      margin: 'auto',
+
+      fontWeight: 700,
+    },
+    '& .divider': {
+      height: 2,
+      background: theme.palette.secondary.dark,
+      width: 320,
+      margin: 'auto',
+      marginTop: 16,
+      marginBottom: 32,
     },
     '& input': {
       fontSize: 16,
@@ -220,9 +251,8 @@ const Contact = () => {
     }))
   }
 
-  const [notification, setNotification] = useState<{ type: 'error' | 'success'; message: string }>(
-    null
-  )
+  const [notification, setNotification] =
+    useState<{ type: 'error' | 'success'; message: string }>(null)
   const handleSubmit = () => {
     if (!hasErrors) {
       axios
@@ -264,6 +294,10 @@ const Contact = () => {
     <>
       <a href="/#contact" id="contact" className="anchor" />
       <div className={classes.contactSection}>
+        <Typography className="sectionTitle" noWrap variant="h3" component="p">
+          Contact Us
+        </Typography>
+        <div className="divider" />
         <div className={classes.contact}>
           <div className={classes.header}>
             <Typography className="title" variant="h4">
