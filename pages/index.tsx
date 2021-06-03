@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>REALM1000 - DITO SIM Packages</title>
+        <title>REALM1000 | DITO SIM Packages</title>
         <meta
           name="description"
           content="DITO Sim Packages from REALM1000 are available for bulk ordering and inquiries. Inquire Now to get your special quotation sent directly to your email or phone number"

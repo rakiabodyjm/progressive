@@ -1,6 +1,6 @@
-import { Theme, Typography } from '@material-ui/core'
+import { Box, Button, Theme, Typography } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import useWidth from '@src/utils/useWidth'
+import useWidth, { useIsMobile } from '@src/utils/useWidth'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     //   clipPath: 'polygon(0% 0%, 100% 0%, 100% 35.00%, 21.59% 50.79%, 0% 29.7%)',
     // },
     // position: 'relative',
-    display: (props: { hidden: boolean }) => (props.hidden ? 'none' : 'inherit'),
+    // display: (props: { hidden: boolean }) => (props.hidden ? 'none' : 'inherit'),
     zIndex: theme.zIndex.appBar,
     position: 'fixed',
     top: 0,
@@ -29,11 +29,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxHeight: 60,
 
     background: theme.palette.secondary.main,
+    [theme.breakpoints.down('sm')]: {
+      '& .hide-on-sm': {
+        display: 'none',
+      },
+    },
+
     '& *': {
       transition: `all ${theme.transitions.easing.easeInOut} ${theme.transitions.duration.shortest}ms`,
-    },
-    [theme.breakpoints.down('xs')]: {
-      maxHeight: 50,
     },
   },
   flexContainer: {
@@ -43,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     // background: theme.palette.secondary.main,
-    height: 50,
+    height: 60,
 
     [theme.breakpoints.up('sm')]: {
       height: 60,
@@ -68,8 +71,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'space-around',
     maxWidth: '50%',
     alignItems: 'center',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       maxWidth: '70%',
+    },
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: 80,
+      maxWidth: '100%',
     },
   },
   menuItem: {
@@ -79,6 +86,59 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&:hover': {
       color: theme.palette.primary.dark,
       position: 'relative',
+    },
+  },
+  reloadButton: {
+    padding: '6px 24px',
+    backgroundSize: '400%',
+    // background: theme.palette.primary.dark,
+    background: 'transparent',
+    color: theme.palette.background.paper,
+    '&::before': {
+      content: "''",
+      position: 'absolute',
+      top: -2,
+      left: -2,
+      right: -2,
+      bottom: -2,
+      filter: 'blur(4px)',
+      zIndex: -1,
+      transition: `opacity 0.5s ${theme.transitions.easing.easeInOut}`,
+      background: `linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000)`,
+      backgroundSize: '400%',
+      animation: `$animate 20s ${theme.transitions.easing.sharp} infinite`,
+      borderRadius: 24,
+    },
+    '&::after': {
+      borderRadius: 24,
+      content: "''",
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      background: theme.palette.primary.dark,
+      zIndex: -1,
+      opacity: 1,
+      transition: `opacity 0.5s ${theme.transitions.easing.easeInOut}`,
+    },
+
+    '&:hover': {
+      // transform: 'scale(1.2)',
+      background: 'transparent',
+      '&::before': {
+        // zIndex: 2,
+      },
+      '&::after': {
+        opacity: 0,
+      },
+      '& a': {
+        transform: 'scale(1.2)',
+      },
+    },
+    '& a': {
+      fontWeight: 700,
+      color: 'inherit',
     },
   },
   line: {
@@ -97,6 +157,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       // background: 'red',
       background: 'gray',
       opacity: 0.4,
+    },
+  },
+  '@keyframes animate': {
+    '0%': {
+      backgroundPosition: '50% 50%',
+      // color: theme.palette.secondary.main,
+    },
+    '50%': {
+      backgroundPosition: '400% 0%',
+      // color: theme.palette.primary.dark,
+    },
+    '100%': {
+      backgroundPosition: '50% 50%',
+      // color: theme.palette.secondary.main,
     },
   },
 }))
@@ -137,9 +211,7 @@ const Nav = () => {
               onClick={(e) => {
                 e.preventDefault()
                 // router.push(url)
-                router.push({
-                  href: url,
-                })
+                router.push(url)
               }}
               className={classes.logoContainer}
             >
@@ -175,6 +247,20 @@ const Nav = () => {
                 {menuItem.name}
               </Typography>
             ))}
+            <div>
+              <Button
+                onClick={(e) => {
+                  e.preventDefault()
+                  router.push('/reload')
+                }}
+                href="/reload"
+                disableElevation
+                className={`${classes.reloadButton}`}
+                variant="contained"
+              >
+                <Typography variant="body1">RELOAD</Typography>
+              </Button>
+            </div>
           </div>
         </div>
         <div className={classes.line}></div>
@@ -184,9 +270,10 @@ const Nav = () => {
 }
 
 const menuItems = [
-  { name: 'Buy Now', href: '#sim-packages' },
+  { name: 'Order', href: '#sim-packages' },
   { name: 'Contact', href: '#contact' },
   { name: 'About', href: '#details' },
   { name: 'FAQ', href: '#faq' },
+  // { name: 'RELOAD', href: '/reload' },
 ]
 export default Nav
