@@ -95,19 +95,29 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: 'transparent',
     color: theme.palette.background.paper,
     '&::before': {
-      content: "''",
+      // content: "''",
+      // position: 'absolute',
+      // top: -2,
+      // left: -2,
+      // right: -2,
+      // bottom: -2,
+      // borderRadius: 24,
+      // zIndex: -1,
+      // transition: `opacity 0.5s ${theme.transitions.easing.easeInOut}`,
+      // background: `linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000)`,
+      // backgroundSize: '400%',
+      // animation: `$animate 20s ${theme.transitions.easing.sharp} infinite`,
+
       position: 'absolute',
+      content: "''",
       top: -2,
       left: -2,
       right: -2,
       bottom: -2,
-      filter: 'blur(4px)',
+      background: 'transparent',
       zIndex: -1,
-      transition: `opacity 0.5s ${theme.transitions.easing.easeInOut}`,
-      background: `linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000)`,
-      backgroundSize: '400%',
-      animation: `$animate 20s ${theme.transitions.easing.sharp} infinite`,
       borderRadius: 24,
+      backdropFilter: 'blur(24px)',
     },
     '&::after': {
       borderRadius: 24,
@@ -172,6 +182,21 @@ const useStyles = makeStyles((theme: Theme) => ({
       backgroundPosition: '50% 50%',
       // color: theme.palette.secondary.main,
     },
+  },
+  animatedRainbow: {
+    content: "''",
+    position: 'absolute',
+    top: -2,
+    left: -2,
+    right: -2,
+    bottom: -2,
+    borderRadius: 24,
+    zIndex: -2,
+    transition: `opacity 0.5s ${theme.transitions.easing.easeInOut}`,
+    background: `linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000)`,
+    backgroundSize: '400%',
+    animation: `$animate 20s ${theme.transitions.easing.sharp} infinite`,
+    // filter: 'blur(5px)',
   },
 }))
 
@@ -247,7 +272,11 @@ const Nav = () => {
                 {menuItem.name}
               </Typography>
             ))}
-            <div>
+            <div
+              style={{
+                position: 'relative',
+              }}
+            >
               <Button
                 onClick={(e) => {
                   e.preventDefault()
@@ -260,6 +289,7 @@ const Nav = () => {
               >
                 <Typography variant="body1">RELOAD</Typography>
               </Button>
+              <div className={classes.animatedRainbow}></div>
             </div>
           </div>
         </div>

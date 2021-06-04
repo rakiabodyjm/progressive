@@ -43,7 +43,7 @@ const ReloadPage = () => {
               backgroundPosition: 'center center',
             }}
           ></span>{' '}
-          SIM with these available payment methods
+          SIM with these available payment methods.
         </Typography>
       </div>
       {/* <MicOutlined /> */}
