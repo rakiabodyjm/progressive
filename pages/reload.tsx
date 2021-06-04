@@ -1,5 +1,4 @@
 import { Box, makeStyles, Typography } from '@material-ui/core'
-import DitoSVG from '@public/assets/dito.svg'
 import { useRef, useState } from 'react'
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
 import ComingSoon from '@components/common/ComingSoon'
@@ -32,7 +31,7 @@ const ReloadPage = () => {
           Reload
         </Typography>
         <Typography className="sub-title" variant="h6">
-          Reloading allows you to reload your{' '}
+          Reloading allows you to reload or top up your{' '}
           <span
             style={{
               display: 'inline-block',
@@ -44,7 +43,7 @@ const ReloadPage = () => {
               backgroundPosition: 'center center',
             }}
           ></span>{' '}
-          SIM with these payment methods
+          SIM with these available payment methods
         </Typography>
       </div>
       {/* <MicOutlined /> */}
