@@ -108,7 +108,9 @@ const Section3 = () => {
   )
   return (
     <>
-      <a href="/#faq" id="faq" className="anchor" />
+      <a href="/#faq" id="faq" className="anchor">
+        FAQs
+      </a>
       <div className={classes.section}>
         <Typography className="sectionTitle" noWrap variant="h3" component="p">
           FAQs

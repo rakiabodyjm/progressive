@@ -199,7 +199,9 @@ const PromoPackages = () => {
   const router = useRouter()
   return (
     <>
-      <a href="/#sim-packages" id="sim-packages" className="anchor" />
+      <a href="/#sim-packages" id="sim-packages" className="anchor">
+        SIM Package
+      </a>
       <div className={classes.section}>
         <Typography className="sectionTitle" variant="h3" component="p">
           Promo Packages
