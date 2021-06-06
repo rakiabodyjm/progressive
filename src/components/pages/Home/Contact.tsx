@@ -2,7 +2,8 @@ import { Box, Button, Fade, TextField, Theme, Typography } from '@material-ui/co
 import { makeStyles } from '@material-ui/styles'
 import { RootState } from '@src/redux/store'
 import axios from 'axios'
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 const outlineString = '& .MuiOutlinedInput-notchedOutline'
@@ -83,15 +84,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
 
-  contact: {
-    maxWidth: 720,
-    minWidth: 240,
-    background: theme.palette.secondary.main,
-    padding: 16,
-    display: 'grid',
-    gap: 32,
-    borderRadius: 8,
-  },
   header: {
     marginBottom: -8,
     '& .title': {
@@ -151,6 +143,51 @@ const useStyles = makeStyles((theme: Theme) => ({
     // color: theme.palette.error.main,
     border: `2px solid ${theme.palette.error.main}`,
     background: theme.palette.error.light,
+  },
+  flexContainer: {
+    display: 'flex',
+    background: theme.palette.secondary.main,
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      margin: 'auto',
+      maxWidth: 520,
+    },
+  },
+  contact: {
+    // maxWidth: ,
+    // minWidth: 240,
+    minWidth: 480,
+    margin: 'auto',
+    background: theme.palette.secondary.main,
+    padding: 16,
+    display: 'grid',
+    gap: 32,
+    borderRadius: 8,
+    flexShrink: 0,
+  },
+  imageContainer: {
+    // clipPath: 'polygon(10.85% 14.15%, 87.71% 2.45%, 86.71% 88%, 10% 100%)',
+    position: 'relative',
+    flexGrow: 1,
+    [theme.breakpoints.down('sm')]: {
+      height: 480,
+      // '& img': {
+      //   objectFit: 'contain !important',
+      //   objectPosition: 'left center !important',
+      // },
+    },
+
+    '&:after': {
+      content: "''",
+      position: 'absolute',
+      height: 64,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      // background: 'red',
+      background: theme.palette.primary.dark,
+      clipPath: 'polygon(0% 100%, 100% 100%, 100% 0%)',
+    },
   },
 }))
 
@@ -292,95 +329,110 @@ const Contact = () => {
 
   return (
     <>
-      <a href="/#contact" id="contact" className="anchor" />
+      <a href="/#contact" id="contact" className="anchor">
+        Contact
+      </a>
       <div className={classes.contactSection}>
         <Typography className="sectionTitle" noWrap variant="h3" component="p">
           Contact Us
         </Typography>
         <div className="divider" />
-        <div className={classes.contact}>
-          <div className={classes.header}>
-            <Typography className="title" variant="h4">
-              Contact
-            </Typography>
-            <Typography className="subtitle" variant="h6">
-              Contact Us for Inquiries and Orders
-            </Typography>
-            <Fade in={!!notification?.message}>
-              <div
-                className={`${classes.notification} ${
-                  notification?.type === 'success' && classes.notificationSuccess
-                } ${notification?.type === 'error' && classes.notificationError}`}
-              >
-                <Typography variant="body1">{notification?.message}</Typography>
-              </div>
-            </Fade>
-          </div>
-          <div className={classes.content}>
-            {textFields.map((ea) => (
-              <div key={ea.name} className="input-container">
+        <div className={classes.flexContainer}>
+          <div className={classes.contact}>
+            <div className={classes.header}>
+              <Typography className="title" variant="h4">
+                Contact
+              </Typography>
+              <Typography className="subtitle" variant="h6">
+                Contact Us for Inquiries and Orders
+              </Typography>
+              <Fade in={!!notification?.message}>
+                <div
+                  className={`${classes.notification} ${
+                    notification?.type === 'success' && classes.notificationSuccess
+                  } ${notification?.type === 'error' && classes.notificationError}`}
+                >
+                  <Typography variant="body1">{notification?.message}</Typography>
+                </div>
+              </Fade>
+            </div>
+            <div className={classes.content}>
+              {textFields.map((ea) => (
+                <div key={ea.name} className="input-container">
+                  <Box display="flex" justifyContent="space-between">
+                    <Typography className="text" variant="body1">
+                      {ea.label}:
+                    </Typography>
+                    <Fade in={isSubmitted && !!errors[ea.name]}>
+                      <Typography className="text error raleway" variant="body1">
+                        {errors[ea.name]}
+                      </Typography>
+                    </Fade>
+                  </Box>
+
+                  <TextField
+                    onChange={handleChange}
+                    name={ea.name}
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    inputProps={inputProps}
+                    value={values?.[ea.name] || ''}
+                  />
+                </div>
+              ))}
+
+              <div className="input-container">
                 <Box display="flex" justifyContent="space-between">
                   <Typography className="text" variant="body1">
-                    {ea.label}:
+                    Message:
                   </Typography>
-                  <Fade in={isSubmitted && !!errors[ea.name]}>
+                  <Fade in={isSubmitted && !!errors.message}>
                     <Typography className="text error raleway" variant="body1">
-                      {errors[ea.name]}
+                      {errors.message}
                     </Typography>
                   </Fade>
                 </Box>
-
                 <TextField
                   onChange={handleChange}
-                  name={ea.name}
+                  name="message"
                   fullWidth
                   variant="outlined"
                   size="small"
+                  multiline
+                  rows={4}
+                  value={values?.message || ''}
                   inputProps={inputProps}
-                  value={values?.[ea.name] || ''}
                 />
               </div>
-            ))}
-
-            <div className="input-container">
-              <Box display="flex" justifyContent="space-between">
-                <Typography className="text" variant="body1">
-                  Message:
+            </div>
+            <div className={classes.footer}>
+              <Button
+                onClick={() => {
+                  setIsSubmitted(true)
+                  handleSubmit()
+                }}
+                disabled={isSubmitted && hasErrors}
+                disableElevation
+                className="button"
+                variant="contained"
+              >
+                <Typography className="text" variant="h6">
+                  Submit
                 </Typography>
-                <Fade in={isSubmitted && !!errors.message}>
-                  <Typography className="text error raleway" variant="body1">
-                    {errors.message}
-                  </Typography>
-                </Fade>
-              </Box>
-              <TextField
-                onChange={handleChange}
-                name="message"
-                fullWidth
-                variant="outlined"
-                size="small"
-                multiline
-                rows={4}
-                value={values?.message || ''}
-                inputProps={inputProps}
-              />
+              </Button>
             </div>
           </div>
-          <div className={classes.footer}>
-            <Button
-              onClick={() => {
-                setIsSubmitted(true)
-                handleSubmit()
-              }}
-              disabled={isSubmitted && hasErrors}
-              disableElevation
-              className="button"
-              variant="contained"
-            >
-              <Typography className="text" variant="h6">
-                Submit
-              </Typography>
-            </Button>
+
+          <div style={{}} className={classes.imageContainer}>
+            <Image
+              priority
+              src="/assets/dito-contact2.png"
+              layout="fill"
+              objectFit="cover"
+              objectPosition="left center"
+              quality={100}
+            />
           </div>
         </div>
       </div>

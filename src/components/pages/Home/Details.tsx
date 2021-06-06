@@ -1,16 +1,14 @@
 import { Box, Theme, Typography } from '@material-ui/core'
-import { CSSProperties, makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/styles'
 import RoomIcon from '@material-ui/icons/Room'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
-import { useIsMobile } from '@src/utils/useWidth'
 
-interface ThemeProps {
-  isMobile: boolean
-}
 const useStyles = makeStyles((theme: Theme) => ({
   detailsWrapper: {
     marginTop: 64,
     position: 'relative',
+    maxWidth: 1200,
+    margin: 'auto',
     '&:after': {
       content: "''",
       position: 'absolute',
@@ -20,6 +18,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       left: 0,
       zIndex: -1,
       background: theme.palette.secondary.main,
+      [theme.breakpoints.up('sm')]: {
+        clipPath: 'polygon(0% 0%, 100% 2em, 100% 80%, 0% 100%)',
+      },
       // clipPath: ({ isMobile }: ThemeProps) =>
       //   `polygon(0% 0%, 0% 100%, 100% calc(100% - ${isMobile ? `0px` : `64px`}), 100% ${
       //     isMobile ? `0px` : `64px`
@@ -30,12 +31,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     // padding: 64,
     // padding: ({ isMobile }: ThemeProps) => `${isMobile ? `24px` : `48px`} 8px`,
 
-    maxWidth: 1200,
-    margin: 'auto',
     color: theme.palette.background.paper,
-    padding: '48px 8px',
+    // padding: '48px 8px',
+    padding: '64px 16px',
     [theme.breakpoints.down('sm')]: {
-      padding: '24px 8px',
+      padding: '48px 8px',
     },
   },
 
@@ -106,11 +106,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 const Details = () => {
-  const isMobile = useIsMobile({ tabletIncluded: true })
   const classes = useStyles()
   return (
     <>
-      <a href="/#details" id="details" className="anchor" />
+      <a href="/#details" id="details" className="anchor">
+        Details
+      </a>
       <div className={classes.detailsWrapper}>
         <div className={classes.details}>
           <div className={classes.content}>
