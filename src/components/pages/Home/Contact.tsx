@@ -29,7 +29,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     //   opacity: 0.4,
     //   borderRadius: 8,
     // },
-
+    [theme.breakpoints.down('sm')]: {
+      padding: 8,
+    },
     [outlineString]: {
       borderColor: theme.palette.primary.dark,
     },
@@ -145,6 +147,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: theme.palette.error.light,
   },
   flexContainer: {
+    position: 'relative',
     display: 'flex',
     background: theme.palette.secondary.main,
     [theme.breakpoints.down('sm')]: {
@@ -156,7 +159,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   contact: {
     // maxWidth: ,
     // minWidth: 240,
-    minWidth: 480,
+    // minWidth: 480,
+    width: '100%',
     margin: 'auto',
     background: theme.palette.secondary.main,
     padding: 16,
@@ -164,6 +168,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     gap: 32,
     borderRadius: 8,
     flexShrink: 0,
+    [theme.breakpoints.up('md')]: {
+      width: 'max-content',
+      minWidth: 480,
+    },
   },
   imageContainer: {
     // clipPath: 'polygon(10.85% 14.15%, 87.71% 2.45%, 86.71% 88%, 10% 100%)',
@@ -171,10 +179,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexGrow: 1,
     [theme.breakpoints.down('sm')]: {
       height: 480,
-      // '& img': {
-      //   objectFit: 'contain !important',
-      //   objectPosition: 'left center !important',
-      // },
     },
 
     '&:after': {
