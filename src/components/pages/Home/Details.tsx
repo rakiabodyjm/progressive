@@ -2,6 +2,7 @@ import { Box, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import RoomIcon from '@material-ui/icons/Room'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
+import PhoneIcon from '@material-ui/icons/Phone'
 
 const useStyles = makeStyles((theme: Theme) => ({
   detailsWrapper: {
@@ -134,14 +135,24 @@ const Details = () => {
               ))}
             </div>
             <div className="details">
-              {details.map(({ icon: Icon, ...ea }) => (
-                <Box display="flex" key={ea.key}>
-                  <Icon className="icon" />
-                  <Typography className="key">
-                    {ea.key}: <span className="value">{ea.value}</span>
-                  </Typography>
-                </Box>
-              ))}
+              {/* {details.map(({ icon: Icon, ...ea }) => ( */}
+              <Box display="flex">
+                <RoomIcon className="icon" />
+                <Typography className="key">
+                  Office Address:{' '}
+                  <span className="value">
+                    4550 Sampaloc Street., Santolan Road, Gen. T. De Leon, Valenzuela City
+                  </span>
+                </Typography>
+              </Box>
+              <Box display="flex">
+                <ContactPhoneIcon className="icon" />
+                <Typography className="key">
+                  Contact Numbers: <span className="value">09913708684 / 09913920547</span>
+                </Typography>
+              </Box>
+
+              {/* ))} */}
             </div>
           </div>
         </div>
@@ -165,7 +176,8 @@ const details = [
   },
   {
     key: 'Contact Number',
-    value: '0929-839-8225 / 0915-150-9818',
+    // value: '0929-839-8225 / 0915-150-9818',
+    value: '09913708684 / 09913920547',
     icon: (props) => <ContactPhoneIcon {...props} />,
   },
 ]
