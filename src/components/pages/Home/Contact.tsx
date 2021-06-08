@@ -1,4 +1,12 @@
-import { Box, Button, Fade, TextField, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Fade,
+  TextField,
+  Theme,
+  Typography,
+} from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { RootState } from '@src/redux/store'
 import axios from 'axios'
@@ -114,7 +122,8 @@ const useStyles = makeStyles((theme: Theme) => ({
       padding: '4px 8px',
       background: theme.palette.primary.dark,
       minWidth: 120,
-
+      position: 'relative',
+      overflow: 'hidden',
       '& .text': {
         fontWeight: 700,
       },
@@ -122,6 +131,23 @@ const useStyles = makeStyles((theme: Theme) => ({
       '&:hover': {
         background: theme.palette.secondary.main,
         color: theme.palette.primary.dark,
+      },
+      '& .loading-logo': {
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        right: 0,
+        top: 0,
+        '&:after': {
+          content: "''",
+          position: 'absolute',
+          background: theme.palette.primary.light,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 0.4,
+        },
       },
     },
     '& .cancel': {
@@ -169,8 +195,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: 8,
     flexShrink: 0,
     [theme.breakpoints.up('md')]: {
-      width: 'max-content',
+      // width: 'max-content',
       minWidth: 480,
+      width: '100%',
+      maxWidth: 500,
     },
   },
   imageContainer: {
@@ -294,8 +322,10 @@ const Contact = () => {
 
   const [notification, setNotification] =
     useState<{ type: 'error' | 'success'; message: string }>(null)
+  const [buttonLoading, setButtonLoading] = useState(false)
   const handleSubmit = () => {
     if (!hasErrors) {
+      setButtonLoading(true)
       axios
         .post('/api/message', {
           ...values,
@@ -317,6 +347,9 @@ const Contact = () => {
               message: 'Failed to Send Message',
             })
           }
+        })
+        .finally(() => {
+          setButtonLoading(false)
         })
     }
   }
@@ -356,7 +389,13 @@ const Contact = () => {
                     notification?.type === 'success' && classes.notificationSuccess
                   } ${notification?.type === 'error' && classes.notificationError}`}
                 >
-                  <Typography variant="body1">{notification?.message}</Typography>
+                  <Typography variant="body1">
+                    {notification?.message}
+                    {/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo itaque
+                    ratione debitis beatae reprehenderit assumenda rem doloremque velit sint, quam
+                    magni repellat, iure reiciendis expedita corporis voluptatibus dolores,
+                    praesentium provident. */}
+                  </Typography>
                 </div>
               </Fade>
             </div>
@@ -416,7 +455,7 @@ const Contact = () => {
                   setIsSubmitted(true)
                   handleSubmit()
                 }}
-                disabled={isSubmitted && hasErrors}
+                disabled={(isSubmitted && hasErrors) || buttonLoading}
                 disableElevation
                 className="button"
                 variant="contained"
@@ -424,6 +463,14 @@ const Contact = () => {
                 <Typography className="text" variant="h6">
                   Submit
                 </Typography>
+                <Box
+                  alignItems="center"
+                  justifyContent="center"
+                  className="loading-logo"
+                  display={buttonLoading ? 'flex' : 'none'}
+                >
+                  <CircularProgress thickness={5} color="secondary" size={24} />
+                </Box>
               </Button>
             </div>
           </div>
@@ -431,6 +478,7 @@ const Contact = () => {
           <div style={{}} className={classes.imageContainer}>
             <Image
               priority
+              placeholder="blur"
               src="/assets/dito-contact2.png"
               layout="fill"
               objectFit="cover"

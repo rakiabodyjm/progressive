@@ -2,7 +2,6 @@ import { Box, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import RoomIcon from '@material-ui/icons/Room'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
-import PhoneIcon from '@material-ui/icons/Phone'
 
 const useStyles = makeStyles((theme: Theme) => ({
   detailsWrapper: {
@@ -166,18 +165,4 @@ export default Details
 const contents = [
   { key: 'Territorial Sub Distributor', value: 'Realm 1000 Enterprise Inc., Philippines' },
   { key: 'Authorized Distributor Sales Personnel', value: 'Realm 1000 Ent Inc' },
-]
-
-const details = [
-  {
-    key: 'Office Address',
-    value: '4550 Sampaloc Street., Santolan Road, Gen. T. De Leon, Valenzuela City',
-    icon: (props) => <RoomIcon {...props} />,
-  },
-  {
-    key: 'Contact Number',
-    // value: '0929-839-8225 / 0915-150-9818',
-    value: '09913708684 / 09913920547',
-    icon: (props) => <ContactPhoneIcon {...props} />,
-  },
 ]
