@@ -15,7 +15,7 @@ const theme = createMuiTheme({
     },
   },
   typography: {
-    fontFamily: 'Montserrat, Raleway, Roboto, Helvetica, Arial, sans-serif',
+    fontFamily: '"Exo 2", Montserrat, Raleway, Roboto, Helvetica, Arial, sans-serif',
     // fontSize: 14,
 
     body1: {
@@ -28,7 +28,7 @@ const theme = createMuiTheme({
         html: {
           textDecoration: 'none',
           WebkitFontSmoothing: 'auto',
-          fontFamily: 'Montserrat, Raleway, Roboto, Helvetica, Arial, sans-serif',
+          // fontFamily: 'Montserrat, Raleway, Roboto, Helvetica, Arial, sans-serif',
           fontSize: 14,
           fontWeight: '600',
         },
@@ -62,7 +62,7 @@ const theme = createMuiTheme({
 
     MuiTypography: {
       root: {
-        letterSpacing: '-0.06em',
+        // letterSpacing: '-0.06em',
       },
       h1: {
         lineHeight: 1,
