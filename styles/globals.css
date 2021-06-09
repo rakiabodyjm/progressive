@@ -2,8 +2,9 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  /* font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif; */
+  /* font-family: 'Exo 2', Montserrat, Roboto, sans-serif; */
   -moz-osx-font-smoothing: auto;
   -webkit-font-smoothing: auto;
   scroll-behavior: smooth;
@@ -12,6 +13,7 @@ body {
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
 
 a {
   color: inherit;
@@ -20,46 +22,46 @@ a {
 
 * {
   box-sizing: border-box;
-  
 }
 
-.font-weight-100{
+.font-weight-100 {
   font-weight: 100;
 }
 
-.font-weight-200{
-    font-weight: 200;
+.font-weight-200 {
+  font-weight: 200;
 }
-.font-weight-300{
-    font-weight: 300;
+.font-weight-300 {
+  font-weight: 300;
 }
-.font-weight-400{
-    font-weight: 400;
+.font-weight-400 {
+  font-weight: 400;
 }
-.font-weight-500{
-    font-weight: 500;
+.font-weight-500 {
+  font-weight: 500;
 }
-.font-weight-600{
-    font-weight: 600;
+.font-weight-600 {
+  font-weight: 600;
 }
-.font-weight-700{
-    font-weight: 700;
+.font-weight-700 {
+  font-weight: 700;
 }
-.font-weight-800{
-    font-weight: 800;
+.font-weight-800 {
+  font-weight: 800;
 }
-:root{
-  --primary-gradient: linear-gradient(148deg, #ED8332 0%, #EC5B2B 100%);
-  --secondary-gradient: linear-gradient(148deg, #000024 0%, #0F254C 100%);
-  --primary-cross-gradient: linear-gradient(148deg, #ED8332 0%, #0F254C 100%);
+:root {
+  --primary-gradient: linear-gradient(148deg, #ed8332 0%, #ec5b2b 100%);
+  --secondary-gradient: linear-gradient(148deg, #000024 0%, #0f254c 100%);
+  --primary-cross-gradient: linear-gradient(148deg, #ed8332 0%, #0f254c 100%);
   --primary-main: #ed8332;
   --primary-dark: #ec5b2b;
   --primary-light: #f3b169;
-  --primary-contrastText: #ffffff; 
-  --secondary-main: #0F254C;
+  --primary-contrastText: #ffffff;
+  --secondary-main: #0f254c;
   --secondary-dark: #000024;
   --secondary-light: #3e4d78;
   --secondary-contrastText: #ffffff;
+  --gray: '#d3d3d3';
 }
 
 ::-webkit-scrollbar {
@@ -71,34 +73,34 @@ a {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e1e1e1;
+  background: var(--primary-dark);
   border: 0px none #ffffff;
-  border-radius: 15px;
+  /* border-radius: 15px; */
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #ff9200;
+  /* background: var(--primary-dark); */
 }
 ::-webkit-scrollbar-thumb:active {
-  background: #22549a;
+  /* background: #22549a; */
+  background: var(--primary-dark);
 }
 ::-webkit-scrollbar-track {
-  /* background: #666666; */
-  border: 0px none #ffffff;
+  background: var(--secondary-dark);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-track:hover {
   /* background: #666666; */
 }
 ::-webkit-scrollbar-track:active {
-  /* background: #333333; */
+  background: #333333;
 }
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
 
-.anchor{
+.anchor {
   display: block;
-  position:relative;
-  top:-20px;
-  visibility:hidden;
+  position: relative;
+  top: -20px;
+  visibility: hidden;
 }
