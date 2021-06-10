@@ -137,14 +137,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     '& .animate': {
       animation: `$animate-background 5s ${theme.transitions.easing.easeInOut} infinite`,
-      backgroundImage: 'linear-gradient(148deg, var(--primary-main) 0%, var(--primary-dark) 100%)',
-      backgroundSize: '300% 300%',
+      // backgroundImage: 'linear-gradient(148deg, var(--primary-main) 0%, var(--primary-dark) 100%)',
+      backgroundImage: `linear-gradient(148deg, ${theme.palette.primary.dark}, ${theme.palette.error.main})`,
+      // backgroundSize: '300% 300%',
+      backgroundSize: '200% 200%',
       textFillColor: 'transparent',
       WebkitTextFillColor: 'transparent',
       WebkitBackgroundClip: 'text',
       MozBackgroundClip: 'text',
       filter: 'saturate(2)',
-      boxShadow: '2px 2px 2px 4px solid black',
+      // boxShadow: '2px 2px 2px 4px solid black',
     },
     [theme.breakpoints.down('xs')]: {
       '& .text': {
@@ -159,7 +161,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   inquireButton: {
-    borderRadius: 4,
+    borderRadius: 24,
     padding: '12px 16px',
     // marginLeft: -8,
     width: '100%',
@@ -170,8 +172,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 
     '&:hover': {
-      background: theme.palette.primary.main,
-
+      background: theme.palette.primary.dark,
+      boxShadow: `inset 0 0 4px ${theme.palette.primary.dark}`,
       '& .subtitle-button': {
         color: theme.palette.secondary.dark,
         transform: 'scale(1.3)',

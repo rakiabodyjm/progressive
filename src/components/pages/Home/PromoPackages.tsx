@@ -39,18 +39,27 @@ const useStyles = makeStyles((theme: Theme) => ({
     overflowX: 'auto',
   },
   flexContainer: {
+    display: 'flex',
+    justifyContent: 'center',
     height: '100%',
-    display: 'grid',
+    // width: 'max-content',
+    // display: 'grid',
     margin: 'auto',
-    gridTemplateColumns: 'repeat(3, minmax(24em, 1fr))',
+    // gridTemplateColumns: 'repeat(3, minmax(24em, 1fr))',
     // gridTemplateColumns: 'repeat(3, minmax(200px, 300px))',
-    gap: 16,
     paddingBottom: 8,
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      '& > *': {
+        marginTop: `16px !important`,
+        maxWidth: '24em !important',
+      },
+    },
   },
   card: {
-    borderRadius: 8,
-    maxWidth: '28em',
-    margin: 'auto',
+    maxWidth: '26em',
+    // margin: 'auto',
     width: '100%',
     overflow: 'hidden',
     // width: '100%',
@@ -68,23 +77,29 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
     '& .photo-triangle': {
+      '&.upper': {
+        transform: 'rotate(180deg)',
+        height: 40,
+        zIndex: 1,
+      },
       position: 'absolute',
       height: 32,
       width: '100%',
       background: theme.palette.secondary.main,
-      clipPath: 'polygon(0% 0%, 0% 100%, 100% 100%)',
-      '&:after': {
-        position: 'relative',
-        content: "''",
-        marginBottom: 16,
-      },
+      clipPath: 'polygon(100% 0%, 0% 102%, 102% 102%)',
+      // '&:after': {
+      //   position: 'relative',
+      //   content: "''",
+      //   marginBottom: 16,
+      // },
     },
 
     '& .content-container': {
       background: theme.palette.secondary.main,
       color: theme.palette.background.paper,
       padding: 16,
-      paddingBottom: 32,
+      // paddingBottom: 32,
+      paddingTop: 32,
       '& > *': {
         marginTop: 16,
       },
@@ -97,8 +112,7 @@ const useStyles = makeStyles((theme: Theme) => ({
           color: theme.palette.background.paper,
           //   textTransform: 'uppercase',
         },
-        '& .sub-title': {
-          marginTop: 16,
+        '& .subtitle': {
           color: theme.palette.primary.dark,
           fontWeight: 600,
           //   fontFamily: 'Roboto, sans-serif',
@@ -163,7 +177,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         top: 0,
         bottom: 0,
         background: theme.palette.primary.dark,
-        clipPath: 'polygon(0% 100%, 100% 0%, 100% 100%)',
+        clipPath: 'polygon(0% 101%, 101% 0%, 101% 101%)',
       },
       '& .text': {
         zIndex: 2,
@@ -197,6 +211,15 @@ const PromoPackages = () => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const router = useRouter()
+  const generateMarginTopOffset = (index: number) => {
+    if (index === 0) {
+      return 72
+    }
+    if (index === 1) {
+      return 0
+    }
+    return 48
+  }
   return (
     <>
       <a href="/#sim-packages" id="sim-packages" className="anchor">
@@ -211,13 +234,21 @@ const PromoPackages = () => {
 
         <div className={classes.sectionContent}>
           <div className={classes.flexContainer}>
-            {promoPackages.map((sim) => (
-              <div className={classes.card} key={sim.title}>
+            {promoPackages.map((sim, index) => (
+              <div
+                style={{
+                  marginTop: generateMarginTopOffset(index),
+                }}
+                className={classes.card}
+                key={sim.title}
+              >
+                <div className="photo-triangle upper" />
                 <div className="image-container">
                   <Image
                     src={sim.image}
                     objectFit="cover"
                     layout="fill"
+                    alt="Dito Sim Package"
                     // width={300}
                     //  height={300}
                   />
@@ -228,6 +259,7 @@ const PromoPackages = () => {
                     <Typography className="title" color="secondary" variant="h4" component="p">
                       {sim.title}
                     </Typography>
+                    <Typography className="subtitle">{sim.subtitle}</Typography>
                     {/* <Typography className="sub-title" variant="h5">
                     {sim.price}
                   </Typography> */}
@@ -259,16 +291,16 @@ const PromoPackages = () => {
                   <Typography
                     onClick={() => {
                       dispatch(
-                        setOrderMessage(
-                          `ORDER MESSAGE : I would like to inquire/order ${
-                            sim.title
-                          } with ${sim.contents.toString()}`
-                        )
+                        setOrderMessage(`Inquiry: ${sim.title} with ${sim.contents.toString()}
+                          -- Insert message below --
+
+                        `)
                       )
                       router.push('/#contact')
                     }}
                     className="text"
                     variant="h6"
+                    color="secondary"
                   >
                     ORDER
                   </Typography>
@@ -286,43 +318,45 @@ const promoPackages = [
   {
     // title: 'Loader / Retailer Starting Kit A',
     title: 'Starter Kit',
-    price: '₱ 1380.00',
-
-    contents: ['5PCS SIM with ₱ 199.00 Load', '1PC Loader SIM with ₱ 199.00 Load'],
+    subtitle: 'Loader and Retailer',
+    price: '₱500.00',
+    contents: ['1 Retailer SIM', 'With Promo Load worth ₱400.00'],
     others: [
-      { name: 'SRP', value: '₱ 39.00 / SIM' },
-      { name: 'Loader Sim Price', value: 'FREE' },
-      { name: 'Welcome Promo Load', value: '₱ 199.00' },
+      // { name: 'SRP', value: '₱39.00 / SIM' },
+      // { name: 'Loader Sim Price', value: 'FREE' },
+      // { name: 'Welcome Promo Load Worth', value: '₱400.00' },
     ],
-    image: '/assets/products/dito-sim-2.png',
+    image: '/assets/products/dito-sim.png',
   },
   {
     // title: 'Loader / Retailer Starting Kit B',
     title: 'Middle Kit',
+    subtitle: 'Loader and Retailer',
+    price: '₱780.00',
 
-    price: '₱ 2530.00',
-
-    contents: ['10PCS SIM with ₱ 199.00 Load', '1PC Loader SIM with ₱ 199.00 Load'],
+    // contents: ['10PCS SIM with ₱199.00 Load', '1PC Loader SIM with ₱199.00 Load'],
+    contents: ['1 Retailer SIM', '3PCS DITO SIM', 'With Promo Load worth ₱600.00'],
     others: [
-      { name: 'SRP', value: '₱ 39.00 / SIM' },
-      { name: 'Loader Sim Price', value: 'FREE' },
-      { name: 'Welcome Promo Load', value: '₱ 199.00' },
+      // { name: 'SRP', value: '₱39.00 / SIM' },
+      // { name: 'Loader Sim Price', value: 'FREE' },
+      // { name: 'Welcome Promo Load', value: '₱199.00' },
     ],
 
-    image: '/assets/products/dito-sim-2.png',
+    image: '/assets/products/dito-sim.png',
   },
 
   {
     // title: 'Loader / Retailer Starting Kit C',
     title: 'Intermediate Kit',
-    price: '₱ 4925.00',
-    contents: ['20PCS SIM with ₱ 199.00 Load', '1PC Loader SIM with ₱ 199.00 Load'],
+    subtitle: 'Loader and Retailer',
+    price: '₱1500.00',
+    contents: ['1 Retailer SIM', '5PCS DITO SIM', 'With Promo Load worth ₱1000.00'],
     others: [
-      { name: 'SRP', value: '₱ 39.00 / SIM' },
-      { name: 'Loader Sim Price', value: 'FREE' },
-      { name: 'Welcome Promo Load', value: '₱ 199.00' },
+      // { name: 'SRP', value: '₱39.00 / SIM' },
+      // { name: 'Loader Sim Price', value: 'FREE' },
+      // { name: 'Welcome Promo Load', value: '₱1000.00' },
     ],
-    image: '/assets/products/dito-sim-2.png',
+    image: '/assets/products/dito-sim.png',
   },
 ]
 
