@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import '../styles/globals.css'
 import Head from 'next/head'
 import theme from '@src/theme'
-import Nav from '@src/components/Nav'
+import Nav from '@src/components/layout/Nav/Nav'
 import { Provider } from 'react-redux'
 import store from '@src/redux/store'
 
