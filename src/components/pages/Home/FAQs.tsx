@@ -1,8 +1,10 @@
 import { ButtonBase, Collapse, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
-import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
+// import AddCircleIcon from '@material-ui/icons/AddCircle'
+// import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
+import { AddCircle, RemoveCircle } from '@material-ui/icons'
 import { memo, useCallback, useState } from 'react'
+import CompatibleHandsets from './CompatibleHandsets'
 const useStyles = makeStyles((theme: Theme) => ({
   section: {
     maxWidth: 1200,
@@ -34,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: theme.palette.secondary.main,
     padding: 16,
     display: 'flex',
-    borderRadius: 4,
+    // borderRadius: 4,
     overflow: 'hidden',
     justifyContent: 'space-between',
     height: '100%',
@@ -77,10 +79,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   faqContent: {
+    position: 'relative',
+    top: -4,
+    background: 'var(--gray)',
     padding: 8,
+    border: '1px solid rgba(0,0,0,0.12)',
+    borderRadius: 8,
     '& .answer': {
-      fontFamily: 'Raleway, sans-serif',
+      // fontFamily: 'Raleway, sans-serif',
+      fontWeight: 400,
       lineHeight: 1.4,
+      letterSpacing: 1,
       textIndent: 40,
     },
   },
@@ -88,7 +97,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Section3 = () => {
   const classes = useStyles()
-  const [expanded, setExpanded] = useState<number[]>([])
+  const [expanded, setExpanded] = useState<number[]>([0])
 
   // eslint-disable-next-line no-unused-vars
   const isExpanded: (args: number) => boolean = useCallback(
@@ -119,7 +128,7 @@ const Section3 = () => {
         <div className={classes.content}>
           {FAQs.map((faq, index) => (
             <FAQItem
-              key={faq.answer}
+              key={faq.question}
               index={index}
               faq={faq}
               isExpanded={isExpanded}
@@ -146,18 +155,17 @@ const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq }) => {
           {faq.question}
         </Typography>
         <div className="icon-container"></div>
-        {isExpanded(index) ? (
-          <RemoveCircleIcon className="icon" />
-        ) : (
-          <AddCircleIcon className="icon" />
-        )}
+        {isExpanded(index) ? <RemoveCircle className="icon" /> : <AddCircle className="icon" />}
       </ButtonBase>
 
       <Collapse in={isExpanded(index)}>
         <div className={classes.faqContent}>
-          <Typography className="answer" variant="h6">
-            {faq.answer}
-          </Typography>
+          {typeof faq.answer === 'string' && (
+            <Typography className="answer" variant="h6">
+              {faq.answer}
+            </Typography>
+          )}
+          {typeof faq.answer === 'function' && <faq.answer />}
         </div>
       </Collapse>
     </div>
@@ -166,6 +174,11 @@ const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq }) => {
 const FAQItem = memo(FAQItemOriginal)
 
 const FAQs = [
+  {
+    question: 'Is my phone DITO Compatible?',
+    // answer: () => <Typography>hello world</Typography>,
+    answer: () => <CompatibleHandsets />,
+  },
   {
     question: 'How do I activate my internet settings?',
     answer:
