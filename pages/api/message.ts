@@ -51,12 +51,16 @@ const createMessage = async (req: NextApiRequest, res: NextApiResponse) => {
       ...req.body,
     })
     res.status(200).send({
-      success: 'Message sent',
+      success: 'Message sent, we will get back to you. Thank you!',
     })
   } catch (err) {
     console.error(err)
     res.status(400).send({
-      error: err.message,
+      ...(process.env.NODE_ENV === 'development'
+        ? {
+            error: err.message,
+          }
+        : { error: 'Failed Establishing Connection with Server, please try again later' }),
     })
   }
 }

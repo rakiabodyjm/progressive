@@ -1,13 +1,13 @@
 // const nodemailer = require('nodemailer')
 import nodemailer from 'nodemailer'
-import ReactDOM from 'react-dom/server'
-import { html } from '@src/api/views/SampleEmail'
 // import { html }from "@src/api/views/SampleMaterialUiEmail"
-import fs from 'fs'
-import prettier from 'prettier'
 import { generateHTML } from '@src/api/views/SampleMaterialUiEmail'
+import realm1000 from '@src/api/assets/realm1000-service-account.json'
 
-const MailHandler = ({
+const developmentDetails = {}
+const productionDetails = {}
+
+const MailHandler = async ({
   host,
   port,
   secure,
@@ -15,25 +15,27 @@ const MailHandler = ({
 }: {
   host: string
   port: number
-  auth: {
-    user: string
-    pass: string
-  }
+  auth:
+    | {
+        user: string
+        pass: string
+      }
+    | {
+        type: 'OAuth2'
+        user: string
+        serviceClient: string
+        privateKey: string
+      }
   secure?: boolean
 }) => {
   const transporter = nodemailer.createTransport({
-    // host: 'smtp.gmail.com',
-    // port: 465,
-    // secure: true,
-    // auth: {
-    //   user: 'rakiabodyjm@gmail.com',
-    //   pass: 'jotrlfelacwmyxao',
-    // },
     host,
     port,
     secure,
     auth,
   })
+
+  await transporter.verify()
 
   const sendMail = async ({
     from,
@@ -76,13 +78,16 @@ const ReactToHTML = (params) =>
 
 const sendMail = async (recipient: {
   name: string
-  email: string
+  email: string | string[]
   // eslint-disable-next-line camelcase
   contact_number: string
   message: string
 }) => {
   try {
-    const mail = MailHandler({
+    /**
+     * Test with mailtrap
+     */
+    const mail = await MailHandler({
       host: 'smtp.mailtrap.io',
       port: 2525,
       auth: {
@@ -90,12 +95,31 @@ const sendMail = async (recipient: {
         pass: '71daf23bccf360',
       },
     })
+
+    /**
+     *
+     * Production
+     */
+
+    // const mail = await MailHandler({
+    //   host: 'smtp.gmail.com',
+    //   port: 465,
+    //   secure: true,
+    //   auth: {
+    //     type: 'OAuth2',
+    //     serviceClient: realm1000.client_id,
+    //     // user: realm1000.client_email,
+    //     user: 'support@realm1000.com',
+    //     privateKey: realm1000.private_key,
+    //   },
+    // })
+
     await mail.sendMail({
-      from: 'REALM1000-DITO AUTOMATED CONTACT <rakiabodyjm@gmail.com>',
-      to: 'testreceiver@gmail.com',
+      from: 'REALM1000-DITO AUTOMATED CONTACT <support@realm1000.com>',
+      to: 'rakiabodyjm@gmail.com',
       subject: `Inquiry from ${recipient.name}`,
 
-      text: `HELLO MAILTRAP \n ${JSON.stringify(recipient)}`,
+      text: `${recipient.name}  \n Details: ${JSON.stringify(recipient)}`,
       html: `
       ${ReactToHTML({
         ...recipient,
@@ -104,6 +128,8 @@ const sendMail = async (recipient: {
     })
   } catch (err) {
     console.log(err)
+    throw err
+    // throw new Error(err)
   }
 }
 
