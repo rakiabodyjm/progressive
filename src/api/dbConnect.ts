@@ -6,26 +6,24 @@ const MONGO_URI =
     ? process.env.DEVELOPMENT_MONGO_URI
     : process.env.PRODUCTION_MONGO_URI
 
-let timeout = null
+const timeout = null
 const connectDB = async () => {
-  try {
-    await mongoose
-      .connect(MONGO_URI, {
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
-      })
-      .then(() => {
-        clearInterval(timeout)
-      })
-  } catch (err) {
-    console.log(err)
-
-    timeout = setInterval(async () => {
-      connectDB()
-    }, 5000)
-  }
+  console.log('connecting to db ', MONGO_URI)
+  return mongoose
+    .connect(MONGO_URI, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    })
+    .then(() => {
+      clearInterval(timeout)
+    })
+    .catch((err) => {
+      console.log('CONNECTION STRINGS', process.env.DEVELOPMENT_MONGO_URI, MONGO_URI)
+      console.log(err)
+      throw new Error('Failed to Connect to Server')
+    })
 }
 
 const disconnectDB = async () => {
