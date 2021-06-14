@@ -396,6 +396,7 @@ const Nav = () => {
           open={drawerOpen}
           setOpen={setDrawerOpen}
           className={classes.drawer}
+          disableDiscovery
         />
       </nav>
     </>
