@@ -52,7 +52,7 @@ const Drawer: FC<
                 button
                 key={ea.href}
                 onClick={() => {
-                  router.push(`/${ea.href}`)
+                  router.push(ea.href)
                 }}
               >
                 <Typography variant="h6" href={ea.href} component="a">
