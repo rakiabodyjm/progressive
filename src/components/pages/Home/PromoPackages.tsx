@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     // gridTemplateColumns: 'repeat(3, minmax(24em, 1fr))',
     // gridTemplateColumns: 'repeat(3, minmax(200px, 300px))',
     paddingBottom: 8,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       flexDirection: 'column',
       alignItems: 'center',
       '& > *': {
