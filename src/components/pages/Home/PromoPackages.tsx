@@ -34,9 +34,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 
   sectionContent: {
-    // overflowY: 'auto',
     maxWidth: '100%',
     overflowX: 'auto',
+    padding: 16,
   },
   flexContainer: {
     display: 'flex',
