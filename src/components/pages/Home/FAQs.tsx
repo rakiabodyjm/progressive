@@ -1,9 +1,10 @@
-import { ButtonBase, Collapse, Theme, Typography } from '@material-ui/core'
+import { ButtonBase, Collapse, Theme, Typography, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 // import AddCircleIcon from '@material-ui/icons/AddCircle'
 // import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import { AddCircle, RemoveCircle } from '@material-ui/icons'
 import { memo, useCallback, useState } from 'react'
+import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
 import CompatibleHandsets from './CompatibleHandsets'
 const useStyles = makeStyles((theme: Theme) => ({
   section: {
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   content: {},
   faq: {
     marginBottom: 16,
+    padding: 16,
   },
   faqBar: {
     background: theme.palette.secondary.main,
@@ -82,14 +84,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'relative',
     top: -4,
     background: 'var(--gray)',
-    padding: 8,
+    padding: 16,
     border: '1px solid rgba(0,0,0,0.12)',
     borderRadius: 8,
     '& .answer': {
       // fontFamily: 'Raleway, sans-serif',
       fontWeight: 400,
       lineHeight: 1.4,
-      letterSpacing: 1,
+      // letterSpacing: 1,
       textIndent: 40,
     },
   },
@@ -190,9 +192,69 @@ const FAQs = [
       'Using the DITO Mobile App, you can check your load balance right away. Login to DITO App using your Mobile Number and the password you initially set. The app will also show you when will your load expire.',
   },
   {
-    question: 'How do I purchase DITO Load?',
-    answer:
-      'To load your DITO Sim, you need to open DITO App. From here, go to LOAD then select the amount that you want to top-up. At checkout, you need to pick the payment method as mentioned above and click PAY to proceed. After a couple of seconds, you already have successfully loaded your account.',
+    question: 'How do I purchase Load?',
+    // answer:
+    //   'To load your DITO Sim, you need to open DITO App. From here, go to LOAD then select the amount that you want to top-up. At checkout, you need to pick the payment method as mentioned above and click PAY to proceed. After a couple of seconds, you already have successfully loaded your account.',
+    answer: () => (
+      <>
+        <Typography className="answer" variant="h6">
+          To topup / load your DITO Retailer SIM, you can directly contact us through:
+        </Typography>
+
+        <Paper
+          variant="outlined"
+          style={{
+            padding: 16,
+            margin: 'auto',
+            marginTop: 16,
+          }}
+        >
+          <Typography
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            variant="h6"
+          >
+            <ContactPhoneIcon
+              style={{
+                marginRight: 8,
+                color: 'var(--primary-dark)',
+              }}
+            />
+            <Typography component="span">Contact Numbers:</Typography>
+            <Typography
+              component="a"
+              href="tel:09913708684"
+              style={{
+                marginLeft: 16,
+                color: 'var(--primary-dark)',
+              }}
+            >
+              09913708684
+            </Typography>
+            <Typography
+              style={{
+                margin: '0px 16px',
+              }}
+            >
+              |
+            </Typography>
+
+            <Typography
+              style={{
+                color: 'var(--primary-dark)',
+              }}
+              href="tel:09913920547"
+              component="a"
+            >
+              09913920547
+            </Typography>
+          </Typography>
+        </Paper>
+      </>
+    ),
+    // answer: 'To topup your DITO Retailer SIM, contact '
   },
   {
     question: 'DITO Sim Expiration',
