@@ -14,11 +14,27 @@ const url =
 const useStyles = makeStyles((theme: Theme) => ({
   rootWrapper: {
     width: '100%',
-    background: theme.palette.secondary.main,
+    // background: theme.palette.secondary.main,
     height: 80,
     position: 'fixed',
+    display: 'flex',
     top: 0,
     zIndex: theme.zIndex.appBar,
+
+    '&:before': {
+      content: "''",
+      flexGrow: 1,
+      background: theme.palette.secondary.main,
+      position: 'relative',
+    },
+    '&:after': {
+      content: "''",
+      flexGrow: 1,
+      position: 'relative',
+      background: theme.palette.secondary.main,
+      left: -4,
+      right: -4,
+    },
   },
   root: {
     // clipPath: 'polygon(0% 0%, 100% 0%, 100% 40%, 45% 60%, 24.63% 79%, 0.00% 81%)',
@@ -318,6 +334,7 @@ const Nav = () => {
                     alt="REALM1000 Logo"
                     layout="fill"
                     objectFit="contain"
+                    quality="100"
                   />
                 </div>
               </a>
@@ -384,21 +401,20 @@ const Nav = () => {
           </div>
           <div className={classes.line}></div>
         </div>
-
-        <Drawer
-          onClose={() => {
-            setDrawerOpen(false)
-          }}
-          onOpen={() => {
-            setDrawerOpen(true)
-          }}
-          menuItems={menuItems}
-          open={drawerOpen}
-          setOpen={setDrawerOpen}
-          className={classes.drawer}
-          disableDiscovery
-        />
       </nav>
+      <Drawer
+        onClose={() => {
+          setDrawerOpen(false)
+        }}
+        onOpen={() => {
+          setDrawerOpen(true)
+        }}
+        menuItems={menuItems}
+        open={drawerOpen}
+        setOpen={setDrawerOpen}
+        className={classes.drawer}
+        disableDiscovery
+      />
     </>
   )
 }
