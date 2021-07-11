@@ -3,9 +3,12 @@ import { makeStyles } from '@material-ui/styles'
 // import AddCircleIcon from '@material-ui/icons/AddCircle'
 // import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import { AddCircle, RemoveCircle } from '@material-ui/icons'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useEffect, useState, useMemo } from 'react'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
+import { useInView } from 'react-intersection-observer'
+import { GSAPAnimate } from '@src/components/pages/Home/PromoPackages'
 import CompatibleHandsets from './CompatibleHandsets'
+
 const useStyles = makeStyles((theme: Theme) => ({
   section: {
     maxWidth: 1200,
@@ -97,7 +100,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-const Section3 = () => {
+const FAQ = () => {
   const classes = useStyles()
   const [expanded, setExpanded] = useState<number[]>([0])
 
@@ -117,6 +120,7 @@ const Section3 = () => {
       }),
     [setExpanded]
   )
+
   return (
     <>
       <a href="/#faq" id="faq" className="anchor">
@@ -135,6 +139,7 @@ const Section3 = () => {
               faq={faq}
               isExpanded={isExpanded}
               toggleExpanded={toggleExpanded}
+              className="fadeIn"
             />
           ))}
         </div>
@@ -142,11 +147,26 @@ const Section3 = () => {
     </>
   )
 }
-const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq }) => {
+const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq, ...restProps }) => {
   const classes = useStyles()
 
+  const { ref, inView } = useInView()
+
+  const animate = useMemo(() => new GSAPAnimate(`.animate-${index}`), [])
+
+  useEffect(() => {
+    if (inView) {
+      animate.fadeIn({
+        opacity: 1,
+      })
+    } else {
+      animate.fadeOut({
+        opacity: 0,
+      })
+    }
+  }, [inView])
   return (
-    <div className={classes.faq}>
+    <div {...restProps} ref={ref} className={`${classes.faq} animate-${index}`}>
       <ButtonBase
         onClick={() => {
           toggleExpanded(index)
@@ -263,4 +283,4 @@ const FAQs = [
   },
 ]
 
-export default Section3
+export default FAQ
