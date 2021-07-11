@@ -2,7 +2,9 @@ import { Box, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import RoomIcon from '@material-ui/icons/Room'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
-
+import { useEffect, useRef } from 'react'
+import { useIntersection } from 'react-use'
+import { gsap } from 'gsap'
 const useStyles = makeStyles((theme: Theme) => ({
   detailsWrapper: {
     marginTop: 64,
@@ -107,12 +109,63 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Details = () => {
   const classes = useStyles()
+  // const { ref, inView, entry } = useInView({
+  //   trackVisibility: true,
+  //   delay: 100,
+  //   threshold: 0.2,
+  // })
+  // if (entry) {
+  //   console.log('inView', inView)
+  // }
+
+  const sectionRef = useRef(null)
+  const threshold = 0.3
+  const intersection = useIntersection(sectionRef, {
+    root: null,
+    // rootMargin: '40px',
+    threshold,
+  })
+
+  useEffect(() => {
+    const fadeIn = (element) => {
+      gsap.to(element, 1, {
+        opacity: 1,
+        y: -60,
+        // ease: 'power4.out',
+        /**
+         * stagger is going to run the frame animation and 0.3 seconds later the second element
+         */
+        stagger: 0.3,
+      })
+    }
+
+    const fadeOut = (element) => {
+      gsap.to(element, 1, {
+        opacity: 0,
+        y: 0,
+        ease: 'power4.out',
+        /**
+         * stagger is going to run the frame animation and 0.3 seconds later the second element
+         */
+
+        stagger: {
+          amount: 0.3,
+        },
+      })
+    }
+    // if (intersection && intersection.intersectionRatio < threshold) {
+    if (!intersection?.isIntersecting) {
+      fadeOut('.fadeIn')
+    } else {
+      fadeIn('.fadeIn')
+    }
+  }, [intersection])
   return (
-    <>
+    <div ref={sectionRef}>
       <a href="/#details" id="details" className="anchor">
         Details
       </a>
-      <div className={classes.detailsWrapper}>
+      <div className={`${classes.detailsWrapper} fadeIn`}>
         <div className={classes.details}>
           <div className={classes.content}>
             <div className="header">
@@ -156,7 +209,7 @@ const Details = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
