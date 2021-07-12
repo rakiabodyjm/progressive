@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   content: {},
   faq: {
     marginBottom: 16,
-    padding: 16,
+    padding: 8,
   },
   faqBar: {
     background: theme.palette.secondary.main,

@@ -291,6 +291,7 @@ const PromoPackages = () => {
           <div ref={intersectionRef} className={classes.flexContainer}>
             {promoPackages.map((sim, index) => (
               <CardItem
+                key={`${sim.title}`}
                 className={`${classes.card} animate-promopackage animate-promopackage-${index}`}
                 sim={sim}
                 generateMarginTopOffset={() => generateMarginTopOffset(index)}
