@@ -256,11 +256,7 @@ const PromoPackages = () => {
     return 48
   }
 
-  const {
-    ref: intersectionRef,
-    inView,
-    entry,
-  } = useInView({
+  const { ref: intersectionRef, inView } = useInView({
     threshold: 0.1,
   })
   const animator = useMemo(() => new GSAPAnimate('.animate-promopackage'), [])
@@ -277,7 +273,7 @@ const PromoPackages = () => {
         })
       }
     }
-  }, [inView, animator, isMobile, entry.intersectionRatio])
+  }, [inView, animator, isMobile])
 
   return (
     <>
