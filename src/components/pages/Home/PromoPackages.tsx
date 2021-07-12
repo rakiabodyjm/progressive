@@ -1,3 +1,4 @@
+/* eslint-disable react/no-this-in-sfc */
 import { Theme, Typography } from '@material-ui/core'
 import { CheckCircle } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
@@ -5,6 +6,10 @@ import Image from 'next/image'
 import { useDispatch } from 'react-redux'
 import { setOrderMessage } from '@src/redux/data/orderMessage'
 import { useRouter } from 'next/router'
+import { memo, useEffect, useMemo } from 'react'
+import { gsap } from 'gsap'
+import { useIsMobile } from '@src/utils/useWidth'
+import { useInView } from 'react-intersection-observer'
 const useStyles = makeStyles((theme: Theme) => ({
   section: {
     maxWidth: 1200,
@@ -40,6 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   flexContainer: {
     display: 'flex',
+    overflow: 'hidden',
     justifyContent: 'center',
     height: '100%',
     // width: 'max-content',
@@ -207,10 +213,39 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
+export class GSAPAnimate {
+  private element = null
+
+  private stagger = 0.3
+
+  constructor(element: string | HTMLElement) {
+    this.element = element
+  }
+
+  fadeOut(params?: { [x: string]: string | number }) {
+    gsap.to(this.element, {
+      // opacity: 0,
+      y: 240,
+      ease: 'power4.ease',
+      stagger: this.stagger,
+      ...params,
+    })
+  }
+
+  fadeIn(params?: { [x: string]: string | number }) {
+    gsap.to(this.element, {
+      // opacity: 1,
+      y: 0,
+      ease: 'power4.ease',
+      stagger: this.stagger,
+      ...params,
+    })
+  }
+}
+
 const PromoPackages = () => {
+  const isMobile = useIsMobile()
   const classes = useStyles()
-  const dispatch = useDispatch()
-  const router = useRouter()
   const generateMarginTopOffset = (index: number) => {
     if (index === 0) {
       return 72
@@ -220,12 +255,36 @@ const PromoPackages = () => {
     }
     return 48
   }
+
+  const {
+    ref: intersectionRef,
+    inView,
+    entry,
+  } = useInView({
+    threshold: 0.1,
+  })
+  const animator = useMemo(() => new GSAPAnimate('.animate-promopackage'), [])
+
+  useEffect(() => {
+    if (!isMobile) {
+      if (inView) {
+        animator.fadeIn({
+          opacity: 1,
+        })
+      } else if (!inView) {
+        animator.fadeOut({
+          opacity: 0,
+        })
+      }
+    }
+  }, [inView, animator, isMobile, entry.intersectionRatio])
+
   return (
     <>
       <a href="/#sim-packages" id="sim-packages" className="anchor">
-        SIM Package
+        SIM Packages
       </a>
-      <div className={classes.section}>
+      <div className={`${classes.section}`}>
         <Typography className="sectionTitle" variant="h3" component="p">
           Promo Packages
         </Typography>
@@ -233,79 +292,14 @@ const PromoPackages = () => {
         <div className="divider" />
 
         <div className={classes.sectionContent}>
-          <div className={classes.flexContainer}>
+          <div ref={intersectionRef} className={classes.flexContainer}>
             {promoPackages.map((sim, index) => (
-              <div
-                style={{
-                  marginTop: generateMarginTopOffset(index),
-                }}
-                className={classes.card}
-                key={sim.title}
-              >
-                <div className="photo-triangle upper" />
-                <div className="image-container">
-                  <Image
-                    src={sim.image}
-                    objectFit="cover"
-                    layout="fill"
-                    alt="Dito Sim Package"
-                    // width={300}
-                    //  height={300}
-                  />
-                </div>
-                <div className="photo-triangle" />
-                <div className="content-container">
-                  <div className="content-header">
-                    <Typography className="title" color="secondary" variant="h4" component="p">
-                      {sim.title}
-                    </Typography>
-                    <Typography className="subtitle">{sim.subtitle}</Typography>
-                    {/* <Typography className="sub-title" variant="h5">
-                    {sim.price}
-                  </Typography> */}
-                  </div>
-                  <div className="content-details">
-                    {sim.contents.map((content) => (
-                      <span key={content}>
-                        <CheckCircle className="icon" />
-                        <Typography className="text" variant="h6">
-                          {content}
-                        </Typography>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="content-promo">
-                    {sim.others.map((promo) => (
-                      <span key={promo.name}>
-                        <Typography className="key" variant="body1">
-                          {promo.name}:
-                        </Typography>
-                        <Typography className="value" variant="body1">
-                          {promo.value}
-                        </Typography>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="content-button">
-                  <Typography
-                    onClick={() => {
-                      dispatch(
-                        setOrderMessage(`Inquiry: ${sim.title} with ${sim.contents.toString()}
-                          -- Insert message below --
-
-                        `)
-                      )
-                      router.push('/#contact')
-                    }}
-                    className="text"
-                    variant="h6"
-                    color="secondary"
-                  >
-                    ORDER
-                  </Typography>
-                </div>
-              </div>
+              <CardItem
+                className={`${classes.card} animate-promopackage animate-promopackage-${index}`}
+                sim={sim}
+                generateMarginTopOffset={() => generateMarginTopOffset(index)}
+                index={index}
+              />
             ))}
           </div>
         </div>
@@ -313,6 +307,113 @@ const PromoPackages = () => {
     </>
   )
 }
+
+const Card = ({
+  generateMarginTopOffset,
+  sim,
+  ...restProps
+}: {
+  [x: string]: any
+  className: string
+}) => {
+  const dispatch = useDispatch()
+  const router = useRouter()
+  const target = `.${restProps.className.split(' ')[2]}`
+  const { ref, inView } = useInView({
+    threshold: 0.2,
+  })
+  const isMobile = useIsMobile()
+  const animate = new GSAPAnimate(target)
+  useEffect(() => {
+    if (isMobile) {
+      if (inView) {
+        animate.fadeIn({
+          opacity: 1,
+        })
+      } else {
+        animate.fadeOut({
+          y: 70,
+          opacity: 0,
+        })
+      }
+    }
+  }, [inView])
+  return (
+    <div
+      ref={ref}
+      style={{
+        marginTop: generateMarginTopOffset(),
+      }}
+      {...restProps}
+      key={sim.title}
+    >
+      <div className="photo-triangle upper" />
+      <div className="image-container">
+        <Image
+          src={sim.image}
+          objectFit="cover"
+          layout="fill"
+          alt="Dito Sim Package"
+          // width={300}
+          //  height={300}
+        />
+      </div>
+      <div className="photo-triangle" />
+      <div className="content-container">
+        <div className="content-header">
+          <Typography className="title" color="secondary" variant="h4" component="p">
+            {sim.title}
+          </Typography>
+          <Typography className="subtitle">{sim.subtitle}</Typography>
+          {/* <Typography className="sub-title" variant="h5">
+                    {sim.price}
+                  </Typography> */}
+        </div>
+        <div className="content-details">
+          {sim.contents.map((content) => (
+            <span key={content}>
+              <CheckCircle className="icon" />
+              <Typography className="text" variant="h6">
+                {content}
+              </Typography>
+            </span>
+          ))}
+        </div>
+        <div className="content-promo">
+          {sim.others.map((promo) => (
+            <span key={promo.name}>
+              <Typography className="key" variant="body1">
+                {promo.name}:
+              </Typography>
+              <Typography className="value" variant="body1">
+                {promo.value}
+              </Typography>
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="content-button">
+        <Typography
+          onClick={() => {
+            dispatch(
+              setOrderMessage(`Inquiry: ${sim.title} with ${sim.contents.toString()}
+                          -- Insert message below --
+
+                        `)
+            )
+            router.push('/#contact')
+          }}
+          className="text"
+          variant="h6"
+          color="secondary"
+        >
+          ORDER
+        </Typography>
+      </div>
+    </div>
+  )
+}
+const CardItem = memo(Card)
 
 const promoPackages = [
   {
