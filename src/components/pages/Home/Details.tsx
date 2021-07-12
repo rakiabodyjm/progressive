@@ -153,7 +153,6 @@ const Details = () => {
         },
       })
     }
-    // if (intersection && intersection.intersectionRatio < threshold) {
     if (!intersection?.isIntersecting) {
       fadeOut('.fadeIn')
     } else {
