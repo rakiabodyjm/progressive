@@ -6,6 +6,7 @@ module.exports = {
   },
   extends: [
     'plugin:react/recommended',
+    'next',
     'airbnb',
     'plugin:prettier/recommended',
     'plugin:react-hooks/recommended',
@@ -25,6 +26,7 @@ module.exports = {
     },
   },
   rules: {
+    'no-console': 0,
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'prettier/prettier': 'error',
     'react/forbid-prop-types': [
@@ -82,8 +84,7 @@ module.exports = {
     'max-len': 0,
     'newline-per-chained-call': 0,
     'no-confusing-arrow': 0,
-    'no-console': 1,
-    'no-unused-vars': 2,
+    'no-unused-vars': 0,
     'no-use-before-define': 0,
     'prefer-template': 2,
     // 'react/destructuring-assignment': 0,
@@ -116,8 +117,9 @@ module.exports = {
     'object-curly-newline': 'off',
     '@typescript-eslint/semi': [0],
     'operator-linebreak': 'off',
-    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': 0,
     // '@typescript-eslint/no-unused-vars-experimental': 1,
     // '@typescript-eslint/no-unused-vars': ['error'],
+    '@next/next/no-html-link-for-pages': 0,
   },
 }
