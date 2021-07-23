@@ -61,6 +61,7 @@ module.exports = {
         jsx: 'never',
         tsx: 'never',
         ts: 'never',
+        // json: 'never',
       },
     ],
     'jsx-a11y/aria-props': 2,
