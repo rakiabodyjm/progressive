@@ -7,6 +7,8 @@ import PromoPackages from '@src/components/pages/Home/PromoPackages'
 import FAQs from '@src/components/pages/Home/FAQs'
 import Contact from '@src/components/pages/Home/Contact'
 import Head from 'next/head'
+import DSPMap from '@src/components/pages/Home/DSPMap'
+import DSPSection from '@src/components/pages/Home/DSPSection'
 const useStyles = makeStyles(() => ({
   index: { overflow: 'hidden' },
 }))
@@ -37,7 +39,11 @@ export default function Home() {
       <div className={classes.index}>
         <Section1 />
         <Details />
-        <PromoPackages />
+        {/* <PromoPackages /> */}
+        <DSPMap />
+
+        <DSPSection />
+
         <FAQs />
         <Contact />
       </div>
