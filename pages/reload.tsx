@@ -1,8 +1,6 @@
-import { Box, makeStyles, Typography } from '@material-ui/core'
-import { useRef, useState } from 'react'
-import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
+import { makeStyles, Typography } from '@material-ui/core'
 import ComingSoon from '@components/common/ComingSoon'
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     // marginTop: '50%',
     position: 'relative',
