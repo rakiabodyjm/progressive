@@ -1,6 +1,5 @@
-import { Paper, Typography } from '@material-ui/core'
 // import SampleEmail from '@src/api/views/SampleEmail'
-import { GetServerSideProps, NextPageContext } from 'next'
+import { GetServerSideProps } from 'next'
 // import EmailTemplate from '@src/api/views/SampleMaterialUiEmail'
 import dynamic from 'next/dynamic'
 const EmailTemplate = dynamic(() => import('@src/api/views/SampleMaterialUiEmail'))
@@ -22,7 +21,7 @@ const Email = () => (
   </div>
 )
 
-export const getServerSideProps: GetServerSideProps = async (context) => ({
+export const getServerSideProps: GetServerSideProps = async () => ({
   notFound: process.env.NODE_ENV === 'production',
   props: {},
 })
