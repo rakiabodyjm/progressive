@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 // import ComingSoonSVG from '@public/components/ComingSoon/ComingSoon.svg'
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     position: 'relative',
     top: 80,
