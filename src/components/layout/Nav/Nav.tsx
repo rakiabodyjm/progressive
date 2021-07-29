@@ -1,4 +1,4 @@
-import { Button, ButtonBase, hexToRgb, Theme, Typography, useTheme } from '@material-ui/core'
+import { Button, ButtonBase, hexToRgb, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -131,12 +131,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.background.paper,
     textTransform: 'uppercase',
     cursor: 'pointer',
+    padding: '8px 16px',
+    borderRadius: 24,
     '&.active': {
       color: theme.palette.primary.dark,
     },
     '&:hover': {
       color: theme.palette.primary.dark,
       position: 'relative',
+      background: 'var(--secondary-dark)',
     },
   },
   reloadButton: {
@@ -280,7 +283,7 @@ const Nav = () => {
   const isActive = useCallback((link) => new RegExp(`${asPath}$`).test(`/${link}`), [asPath])
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
-  const theme = useTheme()
+  // const theme = useTheme()
   const width = useWidth()
   // const idLink = useMemo(() => {
   //   /#[A-Za-z]/.test(asPath)
@@ -294,9 +297,11 @@ const Nav = () => {
             <div
               style={{
                 // background: 'lightblue',
-                background: theme.palette.primary.main,
+                // background: theme.palette.primary.main,
+                background: 'var(--primary-dark)',
                 position: 'absolute',
-                zIndex: theme.zIndex.appBar + 1,
+                // zIndex: theme.zIndex.appBar + 1,
+                zIndex: +1,
                 width: '100%',
               }}
             >
@@ -420,10 +425,10 @@ const Nav = () => {
 }
 
 const menuItems = [
-  { name: 'Order', href: '#sim-packages' },
+  // { name: 'Order', href: '#sim-packages' },
   { name: 'Contact', href: '#contact' },
   { name: 'About', href: '#details' },
-  { name: 'FAQ', href: '#faq' },
+  { name: "FAQ's", href: '#faq' },
   // { name: 'RELOAD', href: '/reload' },
 ]
 export default Nav
