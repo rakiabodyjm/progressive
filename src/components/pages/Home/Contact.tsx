@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
       fontWeight: 700,
     },
-    '& .divider': {
+    '& .sectionTitleDivider': {
       height: 2,
       background: theme.palette.secondary.dark,
       width: 320,
@@ -373,7 +373,7 @@ const Contact = () => {
         <Typography className="sectionTitle" noWrap variant="h3" component="p">
           Contact Us
         </Typography>
-        <div className="divider" />
+        <div className="sectionTitleDivider" />
         <div className={classes.flexContainer}>
           <div className={classes.contact}>
             <div className={classes.header}>
@@ -478,7 +478,6 @@ const Contact = () => {
           <div style={{}} className={classes.imageContainer}>
             <Image
               priority
-              placeholder="blur"
               src="/assets/dito-contact2.png"
               layout="fill"
               objectFit="cover"
