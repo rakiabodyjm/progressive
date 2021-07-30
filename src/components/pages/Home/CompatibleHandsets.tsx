@@ -1,4 +1,4 @@
-import { ButtonBase, Typography, Paper, Box, Collapse, useTheme } from '@material-ui/core'
+import { ButtonBase, Typography, Paper, Box, Collapse } from '@material-ui/core'
 import { useState } from 'react'
 import { AddCircle, RemoveCircle } from '@material-ui/icons'
 
@@ -23,11 +23,11 @@ const CompatibleHandsets = () => {
               overflow: 'hidden',
               // border: '1px solid var(--secondary-main)',
             }}
-            variant="outlined"
+            // variant="outlined"
           >
             <ButtonBase
               style={{
-                width: '100%',
+                // width: '100%',
                 padding: 16,
                 textAlign: 'left',
                 justifyContent: 'flex-start',
