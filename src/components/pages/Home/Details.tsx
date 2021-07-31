@@ -1,7 +1,7 @@
 import { Box, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import RoomIcon from '@material-ui/icons/Room'
-import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
+// import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
 import { useEffect, useRef } from 'react'
 import { useIntersection } from 'react-use'
 import { gsap } from 'gsap'
