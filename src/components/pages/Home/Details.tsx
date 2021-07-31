@@ -7,7 +7,7 @@ import { useIntersection } from 'react-use'
 import { gsap } from 'gsap'
 const useStyles = makeStyles((theme: Theme) => ({
   detailsWrapper: {
-    marginTop: 64,
+    marginTop: 128,
     position: 'relative',
     maxWidth: 1200,
     margin: 'auto',
@@ -30,11 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   details: {
-    // padding: 64,
-    // padding: ({ isMobile }: ThemeProps) => `${isMobile ? `24px` : `48px`} 8px`,
-
     color: theme.palette.background.paper,
-    // padding: '48px 8px',
     padding: '64px 16px',
     [theme.breakpoints.down('sm')]: {
       padding: '48px 8px',
@@ -42,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 
   content: {
-    '& .divider': {
+    '& .sectionTitleDivider': {
       height: 2,
       width: '110%',
       background: theme.palette.primary.dark,
@@ -171,7 +167,7 @@ const Details = () => {
               <Typography className="title" variant="h3">
                 DETAILS
               </Typography>
-              <div className="divider" />
+              <div className="sectionTitleDivider" />
             </div>
             <div className="content">
               {contents.map((ea) => (
@@ -196,12 +192,12 @@ const Details = () => {
                   </span>
                 </Typography>
               </Box>
-              <Box display="flex">
+              {/* <Box display="flex">
                 <ContactPhoneIcon className="icon" />
                 <Typography className="key">
                   Contact Numbers: <span className="value">09913708684 / 09913920547</span>
                 </Typography>
-              </Box>
+              </Box> */}
 
               {/* ))} */}
             </div>
