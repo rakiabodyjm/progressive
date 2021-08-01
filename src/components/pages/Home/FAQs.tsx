@@ -6,7 +6,8 @@ import { AddCircle, RemoveCircle } from '@material-ui/icons'
 import { memo, useCallback, useEffect, useState, useMemo } from 'react'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
 import { useInView } from 'react-intersection-observer'
-import { GSAPAnimate } from '@src/components/pages/Home/PromoPackages'
+// import { GSAPAnimate } from '@src/components/pages/Home/PromoPackages'
+import GSAPAnimate from '@src/utils/GSAPAnimate'
 import CompatibleHandsets from './CompatibleHandsets'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontWeight: 700,
     },
 
-    '& .divider': {
+    '& .sectionTitleDivider': {
       height: 2,
       background: theme.palette.secondary.dark,
       width: 180,
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   content: {},
   faq: {
-    marginBottom: 16,
+    // marginBottom: 16,
     padding: 8,
   },
   faqBar: {
@@ -85,11 +86,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   faqContent: {
     position: 'relative',
-    top: -4,
-    background: 'var(--gray)',
+    // zIndex: -1,
+    // top: -4,
+    // background: 'var(--gray)',
     padding: 16,
     border: '1px solid rgba(0,0,0,0.12)',
-    borderRadius: 8,
+    // borderRadius: 8,
     '& .answer': {
       // fontFamily: 'Raleway, sans-serif',
       fontWeight: 400,
@@ -130,7 +132,7 @@ const FAQ = () => {
         <Typography className="sectionTitle" noWrap variant="h3" component="p">
           FAQs
         </Typography>
-        <div className="divider" />
+        <div className="sectionTitleDivider" />
         <div className={classes.content}>
           {FAQs.map((faq, index) => (
             <FAQItem
@@ -164,7 +166,7 @@ const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq, ...restProps 
         opacity: 0,
       })
     }
-  }, [inView])
+  }, [inView, animate])
   return (
     <div {...restProps} ref={ref} className={`${classes.faq} animate-${index}`}>
       <ButtonBase
