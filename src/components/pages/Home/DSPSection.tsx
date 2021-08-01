@@ -1,4 +1,4 @@
-import { makeStyles, Paper, Typography } from '@material-ui/core'
+import { makeStyles, Typography } from '@material-ui/core'
 import LocationOnIcon from '@material-ui/icons/LocationOn'
 import dspsJson from '@src/data/dsps.json'
 import GSAPAnimate from '@src/utils/GSAPAnimate'
