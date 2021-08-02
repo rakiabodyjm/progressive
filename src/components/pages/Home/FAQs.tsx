@@ -154,7 +154,7 @@ const FAQItemOriginal = ({ isExpanded, toggleExpanded, index, faq, ...restProps 
 
   const { ref, inView } = useInView()
 
-  const animate = useMemo(() => new GSAPAnimate(`.animate-${index}`), [])
+  const animate = useMemo(() => new GSAPAnimate(`.animate-${index}`), [index])
 
   useEffect(() => {
     if (inView) {
