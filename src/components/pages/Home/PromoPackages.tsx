@@ -7,9 +7,9 @@ import { useDispatch } from 'react-redux'
 import { setOrderMessage } from '@src/redux/data/orderMessage'
 import { useRouter } from 'next/router'
 import { memo, useEffect, useMemo } from 'react'
-import { gsap } from 'gsap'
 import { useIsMobile } from '@src/utils/useWidth'
 import { useInView } from 'react-intersection-observer'
+import { GSAPAnimate } from '@src/utils/GSAPAnimate'
 const useStyles = makeStyles((theme: Theme) => ({
   section: {
     maxWidth: 1200,
@@ -213,36 +213,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-export class GSAPAnimate {
-  private element = null
-
-  private stagger = 0.3
-
-  constructor(element: string | HTMLElement) {
-    this.element = element
-  }
-
-  fadeOut(params?: { [x: string]: string | number }) {
-    gsap.to(this.element, {
-      // opacity: 0,
-      y: 240,
-      ease: 'power4.ease',
-      stagger: this.stagger,
-      ...params,
-    })
-  }
-
-  fadeIn(params?: { [x: string]: string | number }) {
-    gsap.to(this.element, {
-      // opacity: 1,
-      y: 0,
-      ease: 'power4.ease',
-      stagger: this.stagger,
-      ...params,
-    })
-  }
-}
-
 const PromoPackages = () => {
   const isMobile = useIsMobile()
   const classes = useStyles()
@@ -285,7 +255,7 @@ const PromoPackages = () => {
           Promo Packages
         </Typography>
         {/* <Divider variant="middle" /> */}
-        <div className="divider" />
+        <div className="sectionTitleDivider" />
 
         <div className={classes.sectionContent}>
           <div ref={intersectionRef} className={classes.flexContainer}>
