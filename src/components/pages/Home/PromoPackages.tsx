@@ -290,7 +290,7 @@ const Card = ({
     threshold: 0.2,
   })
   const isMobile = useIsMobile()
-  const animate = new GSAPAnimate(target)
+  const animate = useMemo(() => new GSAPAnimate(target), [target])
   useEffect(() => {
     if (isMobile) {
       if (inView) {
@@ -304,7 +304,7 @@ const Card = ({
         })
       }
     }
-  }, [inView])
+  }, [inView, animate, isMobile])
   return (
     <div
       ref={ref}
