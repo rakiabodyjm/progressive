@@ -61,7 +61,7 @@ a {
   --secondary-dark: #000024;
   --secondary-light: #3e4d78;
   --secondary-contrastText: #ffffff;
-  --gray: '#d3d3d3';
+  --gray: #d3d3d3;
 }
 
 ::-webkit-scrollbar {
@@ -103,4 +103,47 @@ a {
   position: relative;
   top: -20px;
   visibility: hidden;
+}
+
+.sectionTitle {
+  text-transform: uppercase;
+  text-align: center;
+  margin: auto;
+  font-weight: 700;
+  color: var(--primary-dark) !important;
+  animation: sectionTiteAnimation infinite 5s;
+  /* background-image: var(--primary-cross-gradient); */
+  /* background-clip: text; */
+  /* -moz-background-clip: text; */
+  /* -webkit-background-clip: text; */
+  /* -webkit-text-fill-color: transparent; */
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  position: relative !important;
+  left: 0;
+}
+@keyframes sectionTitleAnimation {
+  0% {
+    /* background-position: 0% 0%; */
+    /* background-position: 0% 50%; */
+    left: 12px;
+  }
+  50% {
+    /* background-position: 100% 100%;
+     */
+    /* background-position: 100% 50%; */
+    left: 0px;
+  }
+  100% {
+    /* background-position: 0% 50%; */
+    left: 24px;
+  }
+}
+
+.sectionTitleDivider {
+  height: 2px;
+  background: var(--primary-dark) !important;
+  width: 100%;
+  margin-top: 16px;
+  margin-bottom: 32;
 }
