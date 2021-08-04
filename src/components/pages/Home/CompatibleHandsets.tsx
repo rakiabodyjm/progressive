@@ -27,7 +27,7 @@ const CompatibleHandsets = () => {
           >
             <ButtonBase
               style={{
-                // width: '100%',
+                width: '100%',
                 padding: 16,
                 textAlign: 'left',
                 justifyContent: 'flex-start',

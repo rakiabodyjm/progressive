@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
     [theme.breakpoints.down('sm')]: {
-      gridTemplateColumns: 'minmax(1fr, 240px)',
+      // gridTemplateColumns: 'minmax(1fr, 240px)',
+      gridTemplateColumns: 'minmax(240px, 1fr)',
     },
   },
   color: {
@@ -245,6 +246,7 @@ export default function DSPSection() {
                     >
                       {dsp.areas.map((ea) => (
                         <span
+                          key={ea}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
