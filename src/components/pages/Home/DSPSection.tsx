@@ -143,6 +143,7 @@ export default function DSPSection() {
           .sort((a, b) => b.areas.length - a.areas.length)
           .map((dsp) => (
             <div
+              key={dsp.dsp}
               className="animate-dsp"
               style={{
                 padding: 16,
