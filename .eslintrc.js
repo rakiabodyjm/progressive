@@ -122,4 +122,12 @@ module.exports = {
     // '@typescript-eslint/no-unused-vars': ['error'],
     '@next/next/no-html-link-for-pages': 0,
   },
+  overrides: [
+    {
+      files: ['**/*.ts', '**/*.tsx'],
+      rules: {
+        camelcase: ['off'],
+      },
+    },
+  ],
 }
