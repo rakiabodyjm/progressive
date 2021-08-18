@@ -74,6 +74,12 @@ const useStyles = makeStyles((theme) => ({
     // clipPath: 'polygon(0% 100%, 100% 100%, 100% 0%)',
     clipPath: 'polygon(0% 0%, 0% 100%, 100% 100%)',
   },
+  contactNumberContainer: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+  },
 }))
 export default function DSPSection() {
   const classes = useStyles()
@@ -175,6 +181,7 @@ export default function DSPSection() {
                   <div className={classes.dspTriangle}></div>
                 </div>
                 <div
+                  className={classes.contactNumberContainer}
                   style={{
                     marginTop: -32,
                   }}
@@ -196,6 +203,7 @@ export default function DSPSection() {
                     component="a"
                     href={`tel:${dsp.number}`}
                     style={{
+                      textDecoration: 'underline',
                       marginLeft: 8,
                       verticalAlign: 'center',
                       fontWeight: 600,
@@ -206,6 +214,7 @@ export default function DSPSection() {
                   </Typography>
                 </div>
                 <div
+                  className={classes.contactNumberContainer}
                   style={{
                     display: 'flex',
                   }}
