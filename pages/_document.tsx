@@ -1,8 +1,9 @@
 import React from 'react'
-import Document, { Main, NextScript, Html, Head } from 'next/document'
+import Document, { Main, NextScript, Html, Head, DocumentContext } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/styles'
+import { NextPageContext } from 'next'
 class MyDocument extends Document {
-  static async getInitialProps(ctx) {
+  static async getInitialProps(ctx: DocumentContext) {
     const sheets = new ServerStyleSheets()
     const { renderPage } = ctx
 

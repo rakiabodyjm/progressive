@@ -11,6 +11,7 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:react-hooks/recommended',
   ],
+  ignorePatterns: ['.next/*'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {

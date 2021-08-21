@@ -1,20 +1,26 @@
+import '../styles/globals.css'
 import { CssBaseline } from '@material-ui/core'
 import { ThemeProvider } from '@material-ui/styles'
 import { useEffect, useMemo } from 'react'
-import '../styles/globals.css'
 import Head from 'next/head'
 import theme from '@src/theme'
-import Nav from '@src/components/layout/Nav/Nav'
-import { Provider, useDispatch, useSelector } from 'react-redux'
-import store, { RootState } from '@src/redux/store'
+import { Provider } from 'react-redux'
+import store from '@src/redux/store'
 import { useRouter } from 'next/router'
-import axios from 'axios'
-import { SnackbarProvider, useSnackbar } from 'notistack'
-import Notification from '@src/components/layout/Notification/Notification'
-import jwtDecode from '@src/utils/jwtDecode'
+import { SnackbarProvider } from 'notistack'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
+import Notification from '@src/components/common/Notification'
+import { AppProps } from 'next/dist/next-server/lib/router/router'
+import dynamic from 'next/dynamic'
+import NavigationLayout from '@src/components/layout/NavigationLayout'
+import axiosDefaults from '@src/utils/lib/axiosDefaults'
+const Login = dynamic(() => import(`@src/components/pages/login`))
 
-function MyApp({ Component, pageProps }) {
+/**
+ * sets axios defaults
+ */
+axiosDefaults()
+function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const pathname = useMemo(() => router.pathname, [router])
 
@@ -25,33 +31,20 @@ function MyApp({ Component, pageProps }) {
     }
   }, [])
 
-  useEffect(() => {
-    axios.defaults.baseURL =
-      process.env.NODE_ENV === 'development'
-        ? process.env.NEXT_PUBLIC_DEVELOPMENT_BACKEND_URL
-        : process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
-  }, [])
-  const inAdminPage = useMemo(() => /admin/.test(pathname), [pathname])
-  useEffect(() => {
-    console.log('pathname', pathname)
-    if (inAdminPage) {
-      console.log('in admin page')
-      const token = window.localStorage.getItem('token')
-      if (token) {
-        const decode = jwtDecode(token)
-        console.log(decode)
-      } else {
-        router.push('/admin/login')
-        store.dispatch(
-          setNotification({
-            message: 'You must log in first',
-            type: NotificationTypes.ERROR,
-          })
-        )
-      }
-    }
-  }, [pathname])
+  const { user } = store.getState()
 
+  const isAuthenticated = useMemo(() => !!user?.data.user_id, [user])
+  useEffect(() => {
+    if (user?.metadata.exp < Math.floor(Date.now() / 1000)) {
+      console.log('user session expired')
+      store.dispatch(
+        setNotification({
+          message: `User session expired`,
+          type: NotificationTypes.WARNING,
+        })
+      )
+    }
+  }, [user])
   return (
     <>
       <Head>
@@ -65,8 +58,9 @@ function MyApp({ Component, pageProps }) {
           <CssBaseline />
           <SnackbarProvider>
             <Notification />
-            {/admin/.test(pathname) ? null : <Nav />}
-            <Component {...pageProps} />
+            <NavigationLayout>
+              {isAuthenticated ? <Component {...pageProps} /> : <Login />}
+            </NavigationLayout>
           </SnackbarProvider>
         </ThemeProvider>
       </Provider>

@@ -1,50 +1,47 @@
-// import { Details } from '@material-ui/icons'
-import Details from '@src/components/pages/Home/Details'
-import { makeStyles } from '@material-ui/styles'
-import Section1 from '@src/components/pages/Home/Section1'
-import FAQs from '@src/components/pages/Home/FAQs'
-import Contact from '@src/components/pages/Home/Contact'
-import Head from 'next/head'
-import DSPMap from '@src/components/pages/Home/DSPMap'
-import DSPSection from '@src/components/pages/Home/DSPSection'
-const useStyles = makeStyles(() => ({
-  index: { overflow: 'hidden' },
+import { makeStyles, Typography } from '@material-ui/core'
+import Drawer from '@src/components/layout/NavigationLayout/Drawer'
+import Nav from '@src/components/layout/NavigationLayout/Nav'
+import LoadingScreen from '@src/components/screens/LoadingScreen'
+import { User, UserState } from '@src/redux/data/userSlice'
+import { RootState } from '@src/redux/store'
+import useWidth from '@src/utils/hooks/useWidth'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+
+const useStyles = makeStyles((theme) => ({
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+  },
 }))
-export default function Home() {
+export default function AdminIndex({ children }) {
+  const width = useWidth()
   const classes = useStyles()
-  return (
-    <>
-      <Head>
-        <title>REALM1000 | DITO SIM Packages</title>
-        <meta
-          name="description"
-          content="DITO Sim Packages from REALM1000 are available for bulk ordering and inquiries. Inquire Now to get your special quotation sent directly to your email or phone number"
-        />
-        <meta property="og:title" content="REALM1000 | DITO SIM Packages" />
-        <meta property="og:type" content="website" />
-        {/* <meta property="og:image" content="/og:image.png" /> */}
-        <meta property="og:image" content="/og:image2.png" />
-        <meta
-          property="og:description"
-          content="Inquire and be an official retailer of DITO Telecom Sims, the fastest growing telecom in the country!"
-        />
-        <meta
-          property="og:url"
-          content="https://dito.realm1000.com"
-          // content="Inquire and be an official retailer of DITO Telecom Sims, the fastest growing telecom in the country!"
-        />
-      </Head>
-      <div className={classes.index}>
-        <Section1 />
-        <Details />
-        {/* <PromoPackages /> */}
-        <DSPMap />
-
-        <DSPSection />
-
-        <FAQs />
-        <Contact />
+  const [open, setOpen] = useState(false)
+  const handleDrawerOpen = () => {
+    setOpen(true)
+  }
+  const user: User = useSelector((state: RootState) => state.user?.data)
+  const handleDrawerClose = () => {
+    setOpen(false)
+  }
+  const router = useRouter()
+  if (!user) {
+    router.push('/')
+    return (
+      <div>
+        <LoadingScreen />
       </div>
-    </>
-  )
+    )
+  }
+  return <Typography variant="h3">hello World</Typography>
 }
