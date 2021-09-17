@@ -26,7 +26,7 @@ export default function Notification() {
           >
             <HighlightOffIcon
               style={{
-                color: 'var(--primary-contrastText)',
+                color: 'currentcolor',
               }}
             />
           </IconButton>
