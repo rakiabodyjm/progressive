@@ -6,9 +6,9 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Theme,
   Typography,
+  Box,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import Drawer from '@material-ui/core/Drawer'
@@ -21,13 +21,15 @@ import {
   ContactPhone,
   ExitToApp,
 } from '@material-ui/icons'
-import { useTheme } from '@material-ui/styles'
 import { logoutUser, User, UserTypes } from '@src/redux/data/userSlice'
 import { MouseEvent, MouseEventHandler } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { useRouter } from 'next/router'
+import { makeStyles, useTheme } from '@material-ui/styles'
+// import { makeStyles, useTheme } from '@mui/styles'
+// import { Theme } from '@mui/material'
 
 const mainMenuItems = [
   {
@@ -90,19 +92,24 @@ const useStyles = makeStyles((theme: Theme) => ({
   logOutButton: {
     '&:hover': {
       background: theme.palette.error.dark,
-      color: 'var(--primary-contrastText)',
+      color: theme.palette.primary.contrastText,
+
       // color: theme.palette.getContrastText(theme.palette.error.light),
     },
   },
   drawerItem: {
     '&:hover': {
       background: `${theme.palette.primary.dark}FF`,
+      color: theme.palette.primary.main,
       '& svg': {
-        color: 'var(--primary-contrastText)',
+        color: theme.palette.primary.main,
+        // color: 'var(--primary-contrastText)',
+        // color: theme.palette.primary.contrastText,
       },
     },
     '& svg': {
-      color: 'var(--primary-dark)',
+      color: theme.palette.primary.contrastText,
+      // color: 'var(--primary-dark)',
     },
   },
 }))
@@ -151,7 +158,7 @@ export default function DrawerComponent({
         />
         <IconButton
           style={{
-            color: '',
+            display: open ? 'inherit' : 'none',
           }}
           onClick={handleDrawerClose}
         >
@@ -176,8 +183,8 @@ export default function DrawerComponent({
           Welcome{' '}
           <span
             style={{
-              color: 'var(--primary-dark)',
-              fontWeight: 600,
+              fontWeight: 700,
+              color: theme.palette.primary.main,
             }}
           >
             {userName}
@@ -194,12 +201,11 @@ export default function DrawerComponent({
             <Typography
               key={role}
               style={{
-                border: '2px solid var(--primary-dark)',
+                border: `2px solid ${theme.palette.primary.main}`,
                 borderRadius: 4,
                 fontWeight: 700,
                 display: 'inline',
                 padding: '2px 8px',
-                color: 'var(--secondary-dark)',
                 marginRight: 8,
                 marginBottom: 8,
               }}
@@ -211,6 +217,7 @@ export default function DrawerComponent({
         </div>
       </div>
       <Divider />
+      <Box></Box>
       <List
         style={{
           whiteSpace: 'nowrap',
@@ -266,6 +273,7 @@ export default function DrawerComponent({
                   type: NotificationTypes.DEFAULT,
                 })
               )
+              router.push('/')
             })
           }}
         >
