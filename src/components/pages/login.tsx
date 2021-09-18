@@ -1,16 +1,27 @@
-import { Box, Button, Divider, Paper, TextField, Theme, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
+import {
+  Box,
+  Button,
+  Divider,
+  Paper,
+  Theme,
+  Typography,
+  useTheme,
+  TextField,
+  TextFieldProps,
+} from '@material-ui/core'
 import companyLogo from '@public/assets/realm1000-logo.png'
 import { loginUserThunk, User } from '@src/redux/data/userSlice'
 import type { LoginUserParams } from '@src/utils/api/userApi'
 import userApi from '@src/utils/api/userApi'
 import Image from 'next/image'
-import { ChangeEvent, useState, FormEvent, useEffect } from 'react'
+import { ChangeEvent, useState, FormEvent, useEffect, ChangeEventHandler } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { AppDispatch, RootState } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
+import { makeStyles } from '@material-ui/styles'
+
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     minHeight: 720,
@@ -111,12 +122,14 @@ export default function AdminLogin() {
   //     )
   //   }
   // }, [user, router])
+  const theme: Theme = useTheme()
   return (
     <form onSubmit={handleSubmit} className={classes.root}>
       <div
         style={{
           height: 64,
-          background: 'var(--secondary-main)',
+          background: theme.palette.secondary.main,
+          // background: 'var(--secondary-main)',
         }}
       >
         <div
@@ -147,22 +160,14 @@ export default function AdminLogin() {
       </div>
       <div className={classes.paperContainer}>
         <Paper className={classes.paper} variant="outlined">
-          <Typography
-            style={{
-              fontWeight: 700,
-            }}
-            variant="h3"
-          >
-            Login
-          </Typography>
+          <Typography variant="h3">Login</Typography>
           <Box py={2}>
             <Divider />
           </Box>
-
           <Box>
             <div className={classes.inputContainer}>
               <Typography variant="body1">Email: </Typography>
-              <TextField
+              <TextInput
                 autoCapitalize="off"
                 autoCorrect="none"
                 fullWidth
@@ -171,12 +176,12 @@ export default function AdminLogin() {
                 placeholder="Email or Username"
                 name="email"
                 onChange={handleChange}
-              ></TextField>
+              ></TextInput>
             </div>
             <Box py={0.5}></Box>
             <div className={classes.inputContainer}>
               <Typography variant="body1">Password: </Typography>
-              <TextField
+              <TextInput
                 autoCapitalize="off"
                 autoCorrect="none"
                 type="password"
@@ -186,7 +191,7 @@ export default function AdminLogin() {
                 placeholder="Password"
                 name="password"
                 onChange={handleChange}
-              ></TextField>
+              ></TextInput>
             </div>
           </Box>
           {/* <Box py={3}>
@@ -200,8 +205,8 @@ export default function AdminLogin() {
                 justifySelf: 'flex-end',
                 padding: `2px 24px`,
                 borderRadius: 4,
-                background: 'var(--primary-dark)',
-                color: 'var(--primary-contrastText)',
+                color: theme.palette.primary.contrastText,
+                background: theme.palette.primary.main,
               }}
               variant="contained"
               disableElevation
@@ -218,3 +223,5 @@ export default function AdminLogin() {
     </form>
   )
 }
+
+const TextInput = ({ ...restProps }: TextFieldProps) => <TextField {...restProps}></TextField>
