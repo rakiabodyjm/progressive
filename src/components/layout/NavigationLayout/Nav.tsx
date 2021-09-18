@@ -1,10 +1,21 @@
-import { AppBar, IconButton, Theme, Toolbar } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
+import {
+  AppBar,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Theme,
+  Toolbar,
+  Typography,
+} from '@material-ui/core'
+import { makeStyles, useTheme } from '@material-ui/styles'
 import clsx from 'clsx'
 import { useState } from 'react'
-import MenuIcon from '@material-ui/icons/Menu'
 import Image from 'next/image'
 import companyLogo from '@public/assets/realm1000-logo.png'
+import { Settings, Menu as MenuIcon } from '@material-ui/icons'
+import { useRouter } from 'next/router'
+import IOSSwitch from '@src/components/common/Switch/iOSSwitch'
 
 const drawerWidth = 240
 
@@ -15,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    background: 'var(--secondary-main)',
+    background: theme.palette.secondary.main,
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -31,9 +42,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   hide: {
     display: 'none',
   },
+  navContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    alignItems: 'center',
+  },
 }))
 export default function Nav({ open, handleDrawerOpen }) {
+  const theme: Theme = useTheme()
   const classes = useStyles()
+  const [anchorEl, setAnchorEl] = useState<(EventTarget & HTMLButtonElement) | null>(null)
   return (
     <AppBar
       position="fixed"
@@ -41,6 +60,13 @@ export default function Nav({ open, handleDrawerOpen }) {
         [classes.appBarShift]: open,
       })}
     >
+      <NavSettingsMenu
+        handleClose={() => {
+          console.log('handlign close')
+          setAnchorEl(null)
+        }}
+        anchorEl={anchorEl}
+      />
       <Toolbar>
         <IconButton
           color="inherit"
@@ -53,18 +79,53 @@ export default function Nav({ open, handleDrawerOpen }) {
         >
           <MenuIcon />
         </IconButton>
-        <div>
+        <div className={classes.navContainer}>
           <div
             style={{
               position: 'relative',
-              height: 56,
-              width: 56,
+              height: theme.spacing(7),
+              width: theme.spacing(7),
             }}
           >
             <Image src={companyLogo} alt="REALM1000 DITO" layout="fill" objectFit="contain" />
           </div>
+          <Box color="primary.main" display="flex">
+            <IconButton
+              onClick={(e) => {
+                setAnchorEl(e.currentTarget)
+              }}
+              color="inherit"
+            >
+              <Settings />
+            </IconButton>
+          </Box>
         </div>
       </Toolbar>
     </AppBar>
   )
 }
+
+const NavSettingsMenu = ({ anchorEl, handleClose }) => (
+  <Menu
+    PaperProps={{
+      style: {
+        minWidth: 240,
+      },
+    }}
+    id="nav-settings-menu"
+    anchorEl={anchorEl}
+    keepMounted
+    open={Boolean(anchorEl)}
+    onClose={handleClose}
+  >
+    <MenuItem
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Typography variant="body2">Dark Mode</Typography>
+      <IOSSwitch />
+    </MenuItem>
+  </Menu>
+)
