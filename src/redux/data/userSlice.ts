@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import userApi, { UserResponse } from '@src/utils/api/userApi'
+import userApi, { UserResponse, UserRoles } from '@src/utils/api/userApi'
 import type { LoginUserParams, LoginUserResponse } from '@src/utils/api/userApi'
 import jwtDecode from '@src/utils/lib/jwtDecode'
 import { AxiosError } from 'axios'
 import type { RootState } from '@src/redux/store'
-export type UserTypes = 'admin' | 'dsp' | 'retailer' | 'user'
+
+// export type UserTypes = 'admin' | 'dsp' | 'retailer' | 'subdistributor' | 'user'
+type UserTypes = `${UserRoles}`
 export type User = {
   user_id: string
   email: string
@@ -38,20 +40,38 @@ export const logoutUser = createAsyncThunk('user/logoutUser', (_, thunkApi) => {
   thunkApi.dispatch(removeUser())
 })
 
-export const getUser = createAsyncThunk('user/getUser', (arg: User['user_id'], thunkApi) => {
-  const state = thunkApi.getState() as RootState
-  // console.log('thunkAPi getState', thunkApi.getState())
-  return userApi
-    .getUser(arg || state.user.data.user_id)
-    .then((res) => {
-      console.log(res)
-      return res
-    })
-    .catch((err: AxiosError) => {
+export const getUser = createAsyncThunk(
+  'user/getUser',
+  async (arg, thunkApi): Promise<UserState> => {
+    const state = thunkApi.getState() as RootState
+    try {
+      console.log('getting user')
+      const res = await userApi.getUser(state.user.data.user_id)
+      console.log(userApi.reduceUser(res))
+      // thunkApi.dispatch(
+      //   setUser({
+      //     data: {
+      //       ...userApi.reduceUser(res),
+      //     },
+      //     metadata: {
+      //       ...state.user.metadata,
+      //     },
+      //   })
+      // )
+      return {
+        data: {
+          ...userApi.reduceUser(res),
+        },
+        metadata: {
+          ...state.user.metadata,
+        },
+      }
+    } catch (err) {
       console.log(err.response.data)
       throw new Error(err.response?.data?.message || err.message)
-    })
-})
+    }
+  }
+)
 
 // export const revalidateUser = createApi({
 //   reducerPath: 'user',
@@ -111,17 +131,10 @@ const userSlice = createSlice({
         },
       }
     })
-    builder.addCase(getUser.fulfilled, (state, action) => {
-      const { payload }: { payload: UserResponse } = action
-      const data = {
-        ...state.data,
-        roles: payload.roles,
-      }
-      return {
-        ...state,
-        data,
-      }
-    })
+    builder.addCase(
+      getUser.fulfilled,
+      (state, action: { payload: UserState }): UserState => action.payload
+    )
   },
 })
 
