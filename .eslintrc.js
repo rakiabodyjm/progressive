@@ -26,6 +26,10 @@ module.exports = {
       typescript: {},
     },
   },
+  globals: {
+    React: true,
+    JSX: true,
+  },
   rules: {
     'no-console': 0,
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
