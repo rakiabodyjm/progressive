@@ -21,13 +21,14 @@ import {
   ContactPhone,
   ExitToApp,
 } from '@material-ui/icons'
-import { logoutUser, User, UserTypes } from '@src/redux/data/userSlice'
+import { logoutUser, User } from '@src/redux/data/userSlice'
 import { MouseEvent, MouseEventHandler } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/styles'
+import { red } from '@material-ui/core/colors'
 // import { makeStyles, useTheme } from '@mui/styles'
 // import { Theme } from '@mui/material'
 
@@ -89,26 +90,33 @@ const useStyles = makeStyles((theme: Theme) => ({
     ...theme.mixins.toolbar,
   },
   accountCircle: {},
-  logOutButton: {
+  logoutButton: {
+    color: theme.palette.error.main,
     '&:hover': {
-      background: theme.palette.error.dark,
-      color: theme.palette.primary.contrastText,
-
-      // color: theme.palette.getContrastText(theme.palette.error.light),
+      '& svg': {
+        color: `${theme.palette.error.main} !important`,
+      },
+      // color: 'red !important',
+      color: `${theme.palette.error.main} !important`,
+    },
+    '& svg': {
+      color: `${theme.palette.error.main} !important`,
     },
   },
   drawerItem: {
     '&:hover': {
-      background: `${theme.palette.primary.dark}FF`,
-      color: theme.palette.primary.main,
+      // color: theme.palette.primary.main,
       '& svg': {
-        color: theme.palette.primary.main,
+        // color: theme.palette.primary.main,
         // color: 'var(--primary-contrastText)',
         // color: theme.palette.primary.contrastText,
       },
+
+      '& .logoutButton': {},
     },
     '& svg': {
-      color: theme.palette.primary.contrastText,
+      color: theme.palette.primary.main,
+      // color: theme.palette.primary.contrastText,
       // color: 'var(--primary-dark)',
     },
   },
@@ -203,13 +211,13 @@ export default function DrawerComponent({
               style={{
                 border: `2px solid ${theme.palette.primary.main}`,
                 borderRadius: 4,
-                fontWeight: 700,
+                fontWeight: 500,
                 display: 'inline',
                 padding: '2px 8px',
                 marginRight: 8,
                 marginBottom: 8,
               }}
-              variant="body1"
+              variant="body2"
             >
               {role.toUpperCase()}
             </Typography>
@@ -217,7 +225,6 @@ export default function DrawerComponent({
         </div>
       </div>
       <Divider />
-      <Box></Box>
       <List
         style={{
           whiteSpace: 'nowrap',
@@ -254,16 +261,17 @@ export default function DrawerComponent({
 
       <Divider></Divider>
 
-      <div
+      <List
         style={{
           display: 'flex',
           flexGrow: 1,
           flexDirection: 'column',
           justifyContent: 'flex-end',
+          whiteSpace: 'nowrap',
         }}
       >
         <ListItem
-          className={classes.logOutButton}
+          className={clsx(classes.drawerItem, classes.logoutButton)}
           button
           onClick={() => {
             dispatch(logoutUser()).then(() => {
@@ -296,7 +304,7 @@ export default function DrawerComponent({
             </Typography>
           </ListItemText>
         </ListItem>
-      </div>
+      </List>
     </Drawer>
   )
 }
