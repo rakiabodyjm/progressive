@@ -25,6 +25,7 @@ interface LoadingScreenTypes {
   variant?: Variant
   style?: CSSProperties
   textColor?: string
+  loadedBy?: string
 }
 
 export default function LoadingScreen({
@@ -39,6 +40,7 @@ export default function LoadingScreen({
   const theme = useTheme()
   return (
     <div
+      className="realm1000-loading-screen"
       {...restProps}
       style={{
         height:
@@ -55,9 +57,8 @@ export default function LoadingScreen({
         style={{
           width: 'max-content',
           fontWeight: 600,
-          color: textColor || (color.length > 0 ? color : theme.palette.secondary.dark),
+          color: textColor || 'currentColor',
         }}
-        // color="secondary"
         variant={variant}
       >
         Loading
@@ -69,7 +70,7 @@ export default function LoadingScreen({
       >
         <CircularProgress
           style={{
-            color: color.length > 0 ? color : theme.palette.secondary.main,
+            color: color.length > 0 ? color : theme.palette.primary.main,
           }}
           size={size}
           thickness={thickness}
