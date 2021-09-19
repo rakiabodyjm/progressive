@@ -1,15 +1,16 @@
 // import type { User, UserMetaData } from '@src/redux/data/userSlice'
-import type { User, UserMetaData } from '@src/redux/data/userSlice'
+import type { User, UserMetaData, UserState } from '@src/redux/data/userSlice'
 import { AdminResponseType } from '@src/utils/api/adminApi'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import jwtDecode from '@src/utils/lib/jwtDecode'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 
-enum UserRoles {
+export enum UserRoles {
   ADMIN = 'admin',
   DSP = 'dsp',
   RETAILER = 'retailer',
+  SUBDISTRIBUTOR = 'subdistributor',
 }
 export type LoginUserParams = {
   email: string
@@ -64,12 +65,23 @@ export default {
   logoutUser() {
     window?.localStorage?.removeItem('token')
   },
-  getUser(id: string) {
+  getUser(id: string, params?: { cached: boolean }) {
     return axios
-      .get(`/user/${id}`)
+      .get(`/user/${id}?cache=${!!params?.cached || false}`)
       .then(({ data }: { data: UserResponse }) => data)
       .catch((err: AxiosError) => {
         throw err
       })
+  },
+
+  reduceUser(response: UserResponse): UserState['data'] {
+    const { id, email, first_name, last_name, roles } = response
+    return {
+      user_id: id,
+      email,
+      first_name,
+      last_name,
+      roles,
+    }
   },
 }
