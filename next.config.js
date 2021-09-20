@@ -1,4 +1,7 @@
-module.exports = {
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
   webpack(config) {
     // config.resolve.modules.push(path.resolve('./'))
     config.module.rules.push({
@@ -8,4 +11,8 @@ module.exports = {
     return config
   },
   webpack5: true,
+  typescript: {
+    ignoreBuildErrors: false,
+  },
 }
+module.exports = nextConfig
