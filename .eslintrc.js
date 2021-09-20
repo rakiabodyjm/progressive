@@ -11,9 +11,10 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['.next/*'],
+  ignorePatterns: ['.next/*', '.eslintrc.js', 'next.config.js'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
+    project: './tsconfig.json',
     ecmaFeatures: {
       jsx: true,
     },
