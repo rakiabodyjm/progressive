@@ -1,7 +1,7 @@
 // import { createTheme, responsiveFontSizes } from '@material-ui/core'
 // import { responsiveFontSizes, createTheme } from '@mui/material/styles'
 
-import { createTheme, responsiveFontSizes, Theme } from '@material-ui/core'
+import { createTheme, responsiveFontSizes, Theme, ThemeOptions } from '@material-ui/core'
 import { red } from '@material-ui/core/colors'
 
 type CustomThemeProperties = {
@@ -10,7 +10,7 @@ type CustomThemeProperties = {
 
 const theme = (additionalProps: CustomThemeProperties): Theme => {
   const { prefersDarkMode } = additionalProps
-  return createTheme({
+  const customTheme: ThemeOptions = {
     palette: {
       type: prefersDarkMode ? 'dark' : 'light',
       primary: {
@@ -36,7 +36,15 @@ const theme = (additionalProps: CustomThemeProperties): Theme => {
           },
         },
       },
+      MuiButton: {
+        root: {
+          padding: `4px 16px`,
+        },
+      },
     },
+  }
+  return createTheme({
+    ...customTheme,
   })
 }
 
