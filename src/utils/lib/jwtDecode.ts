@@ -1,4 +1,4 @@
-function jwtDecode(token: string) {
+function jwtDecode(token: string | undefined | null) {
   if (!token) {
     throw Error('Missing token in JwtDecode function')
   }
