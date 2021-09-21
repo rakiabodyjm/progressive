@@ -1,7 +1,7 @@
 import { gsap } from 'gsap'
 
 export class GSAPAnimate {
-  private element = null
+  private element: HTMLElement | string = ''
 
   private stagger = 0.3
 
