@@ -5,21 +5,28 @@ export enum ColorSchemeTypes {
   DARK = 'DARK',
 }
 
-const initialState = ColorSchemeTypes.LIGHT
+// type ColorSchemeStateType = typeof ColorSchemeTypes[keyof typeof ColorSchemeTypes]
 const colorSchemeSlice = createSlice({
   name: 'colorScheme',
-  initialState,
+  initialState: ColorSchemeTypes.LIGHT,
   reducers: {
-    setColorScheme(params: ColorSchemeTypes) {
-      return params
-    },
-    setLightMode() {
+    toggleColor(state): ColorSchemeTypes {
+      if (state === 'LIGHT') {
+        return ColorSchemeTypes.DARK
+      }
       return ColorSchemeTypes.LIGHT
     },
-    setDarkMode() {
-      return ColorSchemeTypes.DARK
+    setColorScheme(
+      _,
+      {
+        payload,
+      }: {
+        payload: ColorSchemeTypes
+      }
+    ): ColorSchemeTypes {
+      return payload
     },
   },
 })
-export const { setColorScheme, setLightMode, setDarkMode } = colorSchemeSlice.actions
+export const { toggleColor, setColorScheme } = colorSchemeSlice.actions
 export default colorSchemeSlice.reducer
