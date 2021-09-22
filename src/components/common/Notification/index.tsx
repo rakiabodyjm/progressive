@@ -34,5 +34,5 @@ export default function Notification() {
       })
     }
   }, [notification, enqueueSnackbar, closeSnackbar])
-  return <div className="notification-portal" id="notification-portal"></div>
+  return null
 }
