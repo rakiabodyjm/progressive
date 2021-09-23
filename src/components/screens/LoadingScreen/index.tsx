@@ -70,7 +70,7 @@ export default function LoadingScreen({
       >
         <CircularProgress
           style={{
-            color: color.length > 0 ? color : theme.palette.primary.main,
+            color: color && color.length > 0 ? color : theme.palette.primary.main,
           }}
           size={size}
           thickness={thickness}
