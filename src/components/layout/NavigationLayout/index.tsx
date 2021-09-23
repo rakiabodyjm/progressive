@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function NavigationLayout({ children }) {
+export default function NavigationLayout({ children }: { children: JSX.Element }) {
   const width = useWidth()
   const classes = useStyles()
   const [open, setOpen] = useState(false)
