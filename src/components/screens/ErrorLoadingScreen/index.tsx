@@ -1,4 +1,4 @@
-import { Box, makeStyles, Typography, useTheme } from '@material-ui/core'
+import { Box, Divider, makeStyles, Typography, useTheme } from '@material-ui/core'
 import Head from 'next/head'
 import ErrorIcon from '@material-ui/icons/Error'
 const useStyles = makeStyles(() => ({
@@ -29,7 +29,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-const ErrorLoading = () => {
+const ErrorLoading = ({ message }: { message?: string }) => {
   const classes = useStyles()
   const theme = useTheme()
   return (
@@ -41,17 +41,21 @@ const ErrorLoading = () => {
         <Box className={classes.container}>
           <div className={classes.paper}>
             <Box className={classes.header}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                flexDirection="column"
+              >
                 <ErrorIcon
                   style={{
-                    color: theme.palette.secondary.main,
+                    color: theme.palette.primary.main,
+                    fontSize: 64,
                   }}
-                  fontSize="large"
                 />
                 <Typography
                   style={{
                     fontWeight: 700,
-                    color: theme.palette.secondary.main,
                     display: 'inline',
                     marginLeft: 8,
                   }}
@@ -60,7 +64,15 @@ const ErrorLoading = () => {
                   {/* Transaction {type.charAt(0).toUpperCase() + type.slice(1)} */}
                   An Error has Occured
                 </Typography>
-              </div>
+                <Divider
+                  variant="fullWidth"
+                  style={{
+                    margin: theme.spacing(2),
+                    width: '100%',
+                  }}
+                />
+                <Typography variant="body1">{message}</Typography>
+              </Box>
             </Box>
             {/* <Divider variant="middle" /> */}
             {/* <Box className={classes.content}></Box> */}
