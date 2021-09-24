@@ -74,12 +74,14 @@ export default function AdminLogin() {
     dispatch(loginUserThunk(formValues))
       .unwrap()
       .then((res) => {
-        dispatch(
-          setNotification({
-            message: `Welcome ${res.first_name}`,
-            type: NotificationTypes.SUCCESS,
-          })
-        )
+        if (res) {
+          dispatch(
+            setNotification({
+              message: `Welcome ${res.first_name}`,
+              type: NotificationTypes.SUCCESS,
+            })
+          )
+        }
       })
       .then(() => {
         router.push('/')
@@ -101,7 +103,7 @@ export default function AdminLogin() {
     }))
   }
 
-  const user: User = useSelector((state: RootState) => state?.user?.data || null)
+  // const user: User = useSelector((state: RootState) => state?.user?.data || null)
 
   // const { push } = router
   // useEffect(() => {
@@ -160,7 +162,9 @@ export default function AdminLogin() {
       </div>
       <div className={classes.paperContainer}>
         <Paper className={classes.paper} variant="outlined">
-          <Typography variant="h3">Login</Typography>
+          <Typography variant="h4" style={{ fontWeight: 700 }}>
+            Login
+          </Typography>
           <Box py={2}>
             <Divider />
           </Box>
@@ -213,9 +217,7 @@ export default function AdminLogin() {
               focusRipple
               onClick={() => {}}
             >
-              <Typography variant="h6" component="p">
-                Login
-              </Typography>
+              <Typography variant="h6">Login</Typography>
             </Button>
           </Box>
         </Paper>
