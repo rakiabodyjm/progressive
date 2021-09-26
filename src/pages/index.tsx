@@ -23,14 +23,14 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
   },
 }))
-export default function AdminIndex({ children }) {
+export default function Index({ children }: { children: JSX.Element }) {
   const width = useWidth()
   const classes = useStyles()
   const [open, setOpen] = useState(false)
   const handleDrawerOpen = () => {
     setOpen(true)
   }
-  const user: User = useSelector((state: RootState) => state.user?.data)
+  // const user: User = useSelector((state: RootState) => state.user?.data)
   const handleDrawerClose = () => {
     setOpen(false)
   }
