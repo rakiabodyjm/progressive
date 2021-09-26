@@ -4,18 +4,23 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  MenuProps,
   Theme,
   Toolbar,
   Typography,
 } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import clsx from 'clsx'
-import { useState } from 'react'
+import React, { Dispatch, MouseEventHandler, SetStateAction, useRef, useState } from 'react'
 import Image from 'next/image'
 import companyLogo from '@public/assets/realm1000-logo.png'
-import { Settings, Menu as MenuIcon } from '@material-ui/icons'
+import { Settings, Menu as MenuIcon, AccountBox, SvgIconComponent } from '@material-ui/icons'
 import { useRouter } from 'next/router'
+import { useDispatch, useSelector } from 'react-redux'
 import IOSSwitch from '@src/components/common/Switch/iOSSwitch'
+import { ColorSchemeTypes, toggleColor } from '@src/redux/data/colorSchemeSlice'
+import { RootState } from '@src/redux/store'
+import { userDataSelector } from '@src/redux/data/userSlice'
 
 const drawerWidth = 240
 
@@ -49,10 +54,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
   },
 }))
-export default function Nav({ open, handleDrawerOpen }) {
+export default function Nav({
+  open,
+  handleDrawerOpen,
+}: {
+  open: boolean
+  handleDrawerOpen: () => void
+}) {
   const theme: Theme = useTheme()
   const classes = useStyles()
-  const [anchorEl, setAnchorEl] = useState<(EventTarget & HTMLButtonElement) | null>(null)
+
+  const menuTarget = useRef<HTMLAnchorElement | null>(null)
+  const [toggleMenuOpen, setToggleMenuOpen] = useState<boolean>(false)
   return (
     <AppBar
       position="fixed"
@@ -60,13 +73,6 @@ export default function Nav({ open, handleDrawerOpen }) {
         [classes.appBarShift]: open,
       })}
     >
-      <NavSettingsMenu
-        handleClose={() => {
-          console.log('handlign close')
-          setAnchorEl(null)
-        }}
-        anchorEl={anchorEl}
-      />
       <Toolbar>
         <IconButton
           color="inherit"
@@ -91,41 +97,105 @@ export default function Nav({ open, handleDrawerOpen }) {
           </div>
           <Box color="primary.main" display="flex">
             <IconButton
-              onClick={(e) => {
-                setAnchorEl(e.currentTarget)
+              innerRef={menuTarget}
+              onClick={(e: React.MouseEvent<HTMLElement>) => {
+                setToggleMenuOpen((prevState) => !prevState)
               }}
               color="inherit"
             >
               <Settings />
             </IconButton>
+            {/* navigation settings menu */}
+            <NavSettingsMenu
+              anchorEl={menuTarget.current}
+              toggleMenuOpen={() => {
+                setToggleMenuOpen((prevState) => !prevState)
+              }}
+              open={toggleMenuOpen}
+            />
           </Box>
         </div>
       </Toolbar>
+      <style jsx>{`
+        .custom-menu-item {
+          padding: 16px;
+        }
+        svg {
+          color: red;
+        }
+      `}</style>
     </AppBar>
   )
 }
 
-const NavSettingsMenu = ({ anchorEl, handleClose }) => (
-  <Menu
-    PaperProps={{
-      style: {
-        minWidth: 240,
-      },
-    }}
-    id="nav-settings-menu"
-    anchorEl={anchorEl}
-    keepMounted
-    open={Boolean(anchorEl)}
-    onClose={handleClose}
-  >
-    <MenuItem
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
+const useNavStyles = makeStyles((theme: Theme) => ({
+  menuItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: 32,
+    padding: theme.spacing(2),
+    '& svg': {
+      fontSize: theme.spacing(4),
+    },
+  },
+}))
+
+const NavSettingsMenu = ({
+  anchorEl,
+  toggleMenuOpen,
+  open,
+}: {
+  anchorEl: MenuProps['anchorEl']
+  toggleMenuOpen: Dispatch<SetStateAction<boolean>>
+  open: boolean
+}) => {
+  const classes = useNavStyles()
+  const dispatch = useDispatch()
+  const isDarkMode = useSelector((state: RootState) => state.colorScheme === ColorSchemeTypes.DARK)
+  const user = useSelector(userDataSelector)
+  const router = useRouter()
+  return (
+    <Menu
+      PaperProps={{
+        style: {
+          minWidth: 240,
+        },
       }}
+      id="nav-settings-menu"
+      anchorEl={anchorEl}
+      keepMounted
+      open={open}
+      onClose={toggleMenuOpen}
     >
-      <Typography variant="body2">Dark Mode</Typography>
-      <IOSSwitch />
-    </MenuItem>
-  </Menu>
+      <MenuItem
+        onClick={() => {
+          dispatch(toggleColor())
+        }}
+        button
+        className={classes.menuItem}
+      >
+        <Typography variant="body2">Dark Mode</Typography>
+        <DarkModeSwitch isDarkMode={isDarkMode} />
+      </MenuItem>
+
+      <MenuItem
+        onClick={(e) => {
+          e.preventDefault()
+          router.push(`/profile/${user?.user_id}`)
+        }}
+        href={`/profile/${user?.user_id}`}
+        button
+        className={classes.menuItem}
+      >
+        <Typography variant="body2">Account Information</Typography>
+        <AccountBox />
+      </MenuItem>
+    </Menu>
+  )
+}
+
+const DarkModeSwitch = ({ isDarkMode }: { isDarkMode: boolean }) => (
+  <>
+    <IOSSwitch checked={isDarkMode} />
+  </>
 )
