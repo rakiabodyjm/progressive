@@ -20,8 +20,10 @@ import {
   PersonPinCircle,
   ContactPhone,
   ExitToApp,
+  AccountTree,
+  PeopleAlt,
 } from '@material-ui/icons'
-import { logoutUser, User } from '@src/redux/data/userSlice'
+import { logoutUser, User, UserTypes } from '@src/redux/data/userSlice'
 import { MouseEvent, MouseEventHandler } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@src/redux/store'
@@ -34,19 +36,33 @@ import { red } from '@material-ui/core/colors'
 
 const mainMenuItems = [
   {
-    title: 'dashboard',
+    title: 'Dashboard',
     icon: <Dashboard />,
     url: '/',
   },
   {
-    title: 'DSP',
+    title: 'Subdistributors',
+    // icon: <Typography>SUBd</Typography>,
+    icon: <AccountTree />,
+    url: '/subdistributors',
+  },
+  {
+    title: 'DSPs',
     icon: <PersonPinCircle />,
     url: '/dsp',
   },
   {
-    title: 'retailers',
+    title: 'Retailers',
     icon: <ContactPhone />,
     url: '/retailers',
+  },
+]
+
+const adminMenuItems = [
+  {
+    title: 'Users Management',
+    icon: <PeopleAlt />,
+    url: '/admin/users',
   },
 ]
 const drawerWidth = 240
@@ -129,7 +145,7 @@ export default function DrawerComponent({
 }: {
   open: boolean
   handleDrawerClose: () => void
-  roles: User['roles']
+  roles: UserTypes[]
   userName: User['first_name']
   // userName: Pick<User, 'first_name'>
 }) {
@@ -161,7 +177,7 @@ export default function DrawerComponent({
             left: 0,
             top: 8,
             marginLeft: 16,
-            display: !open && 'none',
+            display: !open ? 'none' : undefined,
           }}
         />
         <IconButton
@@ -176,8 +192,8 @@ export default function DrawerComponent({
 
       <div
         style={{
-          opacity: !open && 0,
-          display: !open && 'none',
+          opacity: !open ? 0 : undefined,
+          display: !open ? 'none' : undefined,
           padding: 16,
         }}
       >
@@ -186,7 +202,6 @@ export default function DrawerComponent({
             marginBottom: 8,
           }}
           variant="h6"
-          noWrap
         >
           Welcome{' '}
           <span
@@ -266,10 +281,38 @@ export default function DrawerComponent({
           display: 'flex',
           flexGrow: 1,
           flexDirection: 'column',
-          justifyContent: 'flex-end',
+          // justifyContent: 'flex-end',
+          justifyContent: 'space-between',
           whiteSpace: 'nowrap',
         }}
       >
+        {adminMenuItems.map((menuItem) => (
+          <ListItem
+            style={{
+              paddingTop: 16,
+              paddingBottom: 16,
+            }}
+            className={classes.drawerItem}
+            button
+            key={menuItem.title}
+            onClick={() => {
+              router.push(menuItem.url)
+            }}
+          >
+            <ListItemIcon>{menuItem.icon}</ListItemIcon>
+            <ListItemText>
+              <Typography
+                variant="body1"
+                style={{
+                  fontWeight: 600,
+                  textTransform: 'capitalize',
+                }}
+              >
+                {menuItem.title}
+              </Typography>
+            </ListItemText>
+          </ListItem>
+        ))}
         <ListItem
           className={clsx(classes.drawerItem, classes.logoutButton)}
           button
@@ -278,7 +321,7 @@ export default function DrawerComponent({
               dispatch(
                 setNotification({
                   message: `User logged out`,
-                  type: NotificationTypes.DEFAULT,
+                  type: NotificationTypes.INFO,
                 })
               )
               router.push('/')
