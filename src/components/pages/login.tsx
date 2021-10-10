@@ -83,9 +83,9 @@ export default function AdminLogin() {
           )
         }
       })
-      .then(() => {
-        router.push('/')
-      })
+      // .then(() => {
+      //   router.push('/')
+      // })
       .catch((err) => {
         dispatch(
           setNotification({
@@ -172,7 +172,10 @@ export default function AdminLogin() {
             <div className={classes.inputContainer}>
               <Typography variant="body1">Email: </Typography>
               <TextInput
-                autoCapitalize="off"
+                // autoCapitalize="off"
+                // inputProps={{
+                //   autoCapitalize: 'off',
+                // }}
                 autoCorrect="none"
                 fullWidth
                 size="small"
@@ -186,7 +189,9 @@ export default function AdminLogin() {
             <div className={classes.inputContainer}>
               <Typography variant="body1">Password: </Typography>
               <TextInput
-                autoCapitalize="off"
+                // inputProps={{
+                //   autoCapitalize: 'off',
+                // }}
                 autoCorrect="none"
                 type="password"
                 fullWidth
