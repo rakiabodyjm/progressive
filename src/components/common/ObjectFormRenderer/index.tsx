@@ -1,26 +1,6 @@
-import {
-  Box,
-  hexToRgb,
-  makeStyles,
-  Paper,
-  rgbToHex,
-  TextField,
-  TextFieldProps,
-  Theme,
-  Typography,
-  useTheme,
-} from '@material-ui/core'
-import userApi from '@src/utils/api/userApi'
-import { AnyNaptrRecord } from 'dns'
+import { TextField, Theme, Typography, useTheme } from '@material-ui/core'
 
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, { ChangeEvent, useMemo, useState } from 'react'
 
 // type SchemaValues = string | number | boolean | Date | ObjectMutate
 // type ObjectMutate<T = any> = { [x: string | number | symbol]: SchemaValues & T }
@@ -69,17 +49,17 @@ function objectValueMutator<T>(
   return cache
 }
 
-type FormSchemaGeneratorObject = Record<string | number | symbol, {}>
-export default function FormSchemaGenerator({
+type ObjectFormRendererType = Record<string | number | symbol, {}>
+export default function ObjectFormRenderer({
   schema,
   ignoreDotNotation,
   onChange,
   renderState = false,
   renderKey,
 }: {
-  schema: FormSchemaGeneratorObject
+  schema: ObjectFormRendererType
   ignoreDotNotation?: boolean
-  onChange: (arg: FormSchemaGeneratorObject) => any
+  onChange: (arg: ObjectFormRendererType) => any
   renderState?: boolean
   renderKey?: (arg: string) => string
 }) {
@@ -89,20 +69,21 @@ export default function FormSchemaGenerator({
     const key = e.target.name
     const keys = ignoreDotNotation ? [key] : key.split('.')
     const textInputValue = e.target.value
-    setFormValues((prevState) => ({
-      ...(objectValueMutator(
-        prevState as FormSchemaGeneratorObject,
-        keys,
-        textInputValue
-      ) as FormSchemaGeneratorObject),
-    }))
+    setFormValues((prevState) => {
+      const formValues = {
+        ...(objectValueMutator(
+          prevState as ObjectFormRendererType,
+          keys,
+          textInputValue
+        ) as ObjectFormRendererType),
+      }
+      onChange(formValues)
+      return formValues
+    })
   }
 
-  useEffect(() => {
-    onChange(formValues)
-  }, [formValues])
   const stringArraySchema = useMemo(
-    () => generateFields(schema as FormSchemaGeneratorObject),
+    () => generateFields(schema as ObjectFormRendererType),
     [schema]
   )
   return (
