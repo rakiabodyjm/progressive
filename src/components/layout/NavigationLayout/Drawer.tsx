@@ -9,6 +9,7 @@ import {
   Theme,
   Typography,
   Box,
+  ClickAwayListener,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import Drawer from '@material-ui/core/Drawer'
@@ -24,7 +25,7 @@ import {
   PeopleAlt,
 } from '@material-ui/icons'
 import { logoutUser, User, UserTypes } from '@src/redux/data/userSlice'
-import { MouseEvent, MouseEventHandler } from 'react'
+import { MouseEvent, MouseEventHandler, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
@@ -44,7 +45,7 @@ const mainMenuItems = [
     title: 'Subdistributors',
     // icon: <Typography>SUBd</Typography>,
     icon: <AccountTree />,
-    url: '/subdistributors',
+    url: '/subdistributor',
   },
   {
     title: 'DSPs',
@@ -54,7 +55,7 @@ const mainMenuItems = [
   {
     title: 'Retailers',
     icon: <ContactPhone />,
-    url: '/retailers',
+    url: '/retailer',
   },
 ]
 
@@ -62,7 +63,7 @@ const adminMenuItems = [
   {
     title: 'Users Management',
     icon: <PeopleAlt />,
-    url: '/admin/users',
+    url: '/admin/accounts',
   },
 ]
 const drawerWidth = 240
@@ -137,23 +138,22 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
 }))
+type DrawerComponentProps = {
+  open: boolean
+  handleDrawerClose: () => void
+  roles: UserTypes[]
+  userName: User['first_name']
+}
 export default function DrawerComponent({
   open,
   handleDrawerClose,
   userName,
   roles,
-}: {
-  open: boolean
-  handleDrawerClose: () => void
-  roles: UserTypes[]
-  userName: User['first_name']
-  // userName: Pick<User, 'first_name'>
-}) {
+}: DrawerComponentProps) {
   const classes = useStyles()
   const theme: Theme = useTheme()
   const dispatch = useDispatch<AppDispatch>()
   const router = useRouter()
-
   return (
     <Drawer
       variant="permanent"
