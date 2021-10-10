@@ -21,6 +21,7 @@ import IOSSwitch from '@src/components/common/Switch/iOSSwitch'
 import { ColorSchemeTypes, toggleColor } from '@src/redux/data/colorSchemeSlice'
 import { RootState } from '@src/redux/store'
 import { userDataSelector } from '@src/redux/data/userSlice'
+import useWidth from '@src/utils/hooks/useWidth'
 
 const drawerWidth = 240
 
@@ -63,68 +64,85 @@ export default function Nav({
 }) {
   const theme: Theme = useTheme()
   const classes = useStyles()
-
+  const width = useWidth()
   const menuTarget = useRef<HTMLAnchorElement | null>(null)
   const [toggleMenuOpen, setToggleMenuOpen] = useState<boolean>(false)
   return (
-    <AppBar
-      position="fixed"
-      className={clsx(classes.appBar, {
-        [classes.appBarShift]: open,
-      })}
-    >
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={handleDrawerOpen}
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: open,
-          })}
-        >
-          <MenuIcon />
-        </IconButton>
-        <div className={classes.navContainer}>
-          <div
-            style={{
-              position: 'relative',
-              height: theme.spacing(7),
-              width: theme.spacing(7),
-            }}
+    <>
+      <Box
+        position="absolute"
+        zIndex={theme.zIndex.drawer + 200}
+        className="dev-width-container"
+        height="24px"
+        width="100%"
+        style={{
+          background: 'red',
+          textAlign: 'center',
+          position: 'fixed',
+          top: 0,
+        }}
+      >
+        {width}
+      </Box>
+      <AppBar
+        position="fixed"
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: open,
+        })}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            className={clsx(classes.menuButton, {
+              [classes.hide]: open,
+            })}
           >
-            <Image src={companyLogo} alt="REALM1000 DITO" layout="fill" objectFit="contain" />
-          </div>
-          <Box color="primary.main" display="flex">
-            <IconButton
-              innerRef={menuTarget}
-              onClick={(e: React.MouseEvent<HTMLElement>) => {
-                setToggleMenuOpen((prevState) => !prevState)
+            <MenuIcon />
+          </IconButton>
+          <div className={classes.navContainer}>
+            <div
+              style={{
+                position: 'relative',
+                height: theme.spacing(7),
+                width: theme.spacing(7),
               }}
-              color="inherit"
             >
-              <Settings />
-            </IconButton>
-            {/* navigation settings menu */}
-            <NavSettingsMenu
-              anchorEl={menuTarget.current}
-              toggleMenuOpen={() => {
-                setToggleMenuOpen((prevState) => !prevState)
-              }}
-              open={toggleMenuOpen}
-            />
-          </Box>
-        </div>
-      </Toolbar>
-      <style jsx>{`
-        .custom-menu-item {
-          padding: 16px;
-        }
-        svg {
-          color: red;
-        }
-      `}</style>
-    </AppBar>
+              <Image src={companyLogo} alt="REALM1000 DITO" layout="fill" objectFit="contain" />
+            </div>
+            <Box color="primary.main" display="flex">
+              <IconButton
+                innerRef={menuTarget}
+                onClick={(e: React.MouseEvent<HTMLElement>) => {
+                  setToggleMenuOpen((prevState) => !prevState)
+                }}
+                color="inherit"
+              >
+                <Settings />
+              </IconButton>
+              {/* navigation settings menu */}
+              <NavSettingsMenu
+                anchorEl={menuTarget.current}
+                toggleMenuOpen={() => {
+                  setToggleMenuOpen((prevState) => !prevState)
+                }}
+                open={toggleMenuOpen}
+              />
+            </Box>
+          </div>
+        </Toolbar>
+        <style jsx>{`
+          .custom-menu-item {
+            padding: 16px;
+          }
+          svg {
+            color: red;
+          }
+        `}</style>
+      </AppBar>
+    </>
   )
 }
 
@@ -181,9 +199,9 @@ const NavSettingsMenu = ({
       <MenuItem
         onClick={(e) => {
           e.preventDefault()
-          router.push(`/profile/${user?.user_id}`)
+          router.push(`/profile`)
         }}
-        href={`/profile/${user?.user_id}`}
+        href="/profile"
         button
         className={classes.menuItem}
       >
