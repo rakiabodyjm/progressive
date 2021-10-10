@@ -17,7 +17,8 @@
     "paths": {
       "@src/*": ["./src/*"],
       "@public/*": ["./public/*"],
-      "@components/*": ["./src/components/*"]
+      "@components/*": ["./src/components/*"],
+      "@api/*": ["./src/utils/api/*"]
     },
     "types": ["google.maps"],
     "incremental": true
@@ -28,8 +29,7 @@
     "**/*.tsx",
     "src/pages/_document.js",
     "tests/counts.test.js",
-    "jest.config.js",
-    "index.d.ts"
+    "jest.config.js"
   ],
   "exclude": ["node_modules"]
 }
