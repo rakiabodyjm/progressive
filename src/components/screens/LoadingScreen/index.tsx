@@ -1,4 +1,4 @@
-import { Typography, CircularProgress, useTheme } from '@material-ui/core'
+import { Typography, CircularProgress, useTheme, Box, BoxProps } from '@material-ui/core'
 import { Variant } from '@material-ui/core/styles/createTypography'
 import { CSSProperties } from 'react'
 
@@ -36,15 +36,15 @@ export default function LoadingScreen({
   style,
   textColor,
   ...restProps
-}: LoadingScreenTypes) {
+}: LoadingScreenTypes & BoxProps) {
   const theme = useTheme()
   return (
-    <div
+    <Box
       className="realm1000-loading-screen"
       {...restProps}
       style={{
-        height:
-          process.env.NODE_ENV === 'production' ? 'calc(100vh - 86px)' : 'calc(100vh - 128px)',
+        // height:
+        //   process.env.NODE_ENV === 'production' ? 'calc(100vh - 86px)' : 'calc(100vh - 128px)',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
@@ -76,7 +76,7 @@ export default function LoadingScreen({
           thickness={thickness}
         />
       </div>
-    </div>
+    </Box>
   )
 }
 LoadingScreen.defaultProps = {
