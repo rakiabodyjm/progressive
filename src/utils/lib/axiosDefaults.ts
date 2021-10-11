@@ -1,4 +1,5 @@
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
+import { logoutUser } from '@src/redux/data/userSlice'
 import store from '@src/redux/store'
 import axios, { AxiosResponse } from 'axios'
 
@@ -18,6 +19,7 @@ export default function axiosDefaults() {
           type: NotificationTypes.ERROR,
         })
       )
+      store.dispatch(logoutUser())
     }
     return response
   })
