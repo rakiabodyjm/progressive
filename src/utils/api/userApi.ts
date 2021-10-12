@@ -1,11 +1,12 @@
 // import type { User, UserMetaData } from '@src/redux/data/userSlice'
-import type { User, UserMetaData, UserState, UserTypes } from '@src/redux/data/userSlice'
+import type { User, UserMetaData, UserTypes } from '@src/redux/data/userSlice'
 import { AdminResponseType } from '@src/utils/api/adminApi'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import jwtDecode from '@src/utils/lib/jwtDecode'
-import axios, { AxiosError, AxiosResponse } from 'axios'
+import type { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
+import axios, { AxiosError } from 'axios'
 
 export type LoginUserParams = {
   email: string
@@ -24,6 +25,8 @@ export type UserResponse = {
   last_name: string
   phone_number: string
   email: string
+  address1: string
+  address2?: string | null
   username: string
   created_at: Date
   updated_at: Date
@@ -32,8 +35,9 @@ export type UserResponse = {
   retailer?: RetailerResponseType
   subdistributor?: SubdistributorResponseType
   roles: UserTypes[]
+  active: boolean
 }
-export default {
+const userApi = {
   /**
    * Logs in user and dispatches actions to redux
    */
@@ -106,19 +110,28 @@ export default {
       return 'Account Types'
     }
 
-    return toCapsFirst(param)
+    switch (param) {
+      case 'address1':
+        return 'Address 1'
+      case 'address2':
+        return 'Address 2'
+      default:
+        return toCapsFirst(param)
+    }
   },
   updateUser(id: string, args: Partial<UserResponse>) {
     return axios
       .patch(`/user/${id}`, args)
-      .then((res) => res)
+      .then(({ data }: { data: UserResponse }) => data)
       .catch((err: AxiosError) => {
         throw err
       })
   },
   extractError(err: AxiosError): string {
+    console.log('serializing error', err)
     const errResponse: string | string[] = err?.response?.data?.message
     const errRequest = err?.request
+
     if (errResponse) {
       if (Array.isArray(errResponse)) {
         return errResponse.join(', ')
@@ -130,8 +143,18 @@ export default {
     }
     return err.message
   },
-  /**
-   *
-   * reduceUser used by userSlice to convert userdata fetched into something more useful
-   */
+  getUsers(params: PaginateFetchParameters): Promise<Paginated<UserResponse>> {
+    return axios
+      .get(`/user`, {
+        params,
+      })
+      .then((res) => res.data)
+      .catch((err: AxiosError) => {
+        throw err
+      })
+  },
 }
+
+export default userApi
+
+export const { getUser } = userApi
