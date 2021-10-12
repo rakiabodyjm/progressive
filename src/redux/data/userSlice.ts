@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import userApi, { UserResponse } from '@src/utils/api/userApi'
+import userApi, { UserResponse, getUser as getUserApi } from '@src/utils/api/userApi'
 import type { LoginUserParams, LoginUserResponse } from '@src/utils/api/userApi'
 import jwtDecode from '@src/utils/lib/jwtDecode'
 import { AxiosError } from 'axios'
@@ -8,9 +8,9 @@ import { NotificationTypes, setNotification } from '@src/redux/data/notification
 import { createSelector } from 'reselect'
 export enum UserRoles {
   ADMIN = 'admin',
+  SUBDISTRIBUTOR = 'subdistributor',
   DSP = 'dsp',
   RETAILER = 'retailer',
-  SUBDISTRIBUTOR = 'subdistributor',
 }
 // export type UserTypes = 'admin' | 'dsp' | 'retailer' | 'subdistributor' | 'user'
 export type UserTypes = `${UserRoles}`
@@ -65,7 +65,7 @@ export const getUser = createAsyncThunk(
     const state = thunkApi.getState() as RootState
     const { user: userState } = state
     if (userState?.data.user_id) {
-      const userResponse = await userApi.getUser(userState.data.user_id).catch((err) => {
+      const userResponse = await getUserApi(userState.data.user_id).catch((err) => {
         const error = userApi.extractError(err)
         thunkApi.dispatch(
           setNotification({
@@ -89,47 +89,9 @@ export const getUser = createAsyncThunk(
       })
     )
     throw new Error('User not logged in')
-
-    // try {
-    //   console.log('getting user')
-    //   if (state.user) {
-    //     const res = await userApi.getUser(state.user.data.user_id)
-    //     console.log(userApi.reduceUser(res))
-    //     // thunkApi.dispatch(
-    //     //   setUser({
-    //     //     data: {
-    //     //       ...userApi.reduceUser(res),
-    //     //     },
-    //     //     metadata: {
-    //     //       ...state.user.metadata,
-    //     //     },
-    //     //   })
-    //     // )
-    //     return {
-    //       data: {
-    //         ...userApi.reduceUser(res),
-    //       },
-    //       metadata: {
-    //         ...state.user.metadata,
-    //       },
-    //     }
-    //   }
-    //   throw new Error(`Getting latest logged in user data failed`)
-    // } catch (err: AxiosError<any>) {
-    //   console.log(err.response.data)
-    //   throw new Error(err.response?.data?.message || err.message)
-    // }
   }
 )
 
-// export const revalidateUser = createApi({
-//   reducerPath: 'user',
-//   baseQuery: fetchBaseQuery({
-//     baseUrl: axios.defaults.baseURL,
-//   }),
-// })
-
-// TODO initialstate from localStorage
 let initialUserState: UserState | null = null
 if (process.browser && window?.localStorage.getItem('token')) {
   const decoded: UserMetaData & User = jwtDecode(window?.localStorage.getItem('token'))
@@ -160,7 +122,6 @@ const userSlice = createSlice({
       return payload
     },
     removeUser() {
-      userApi.logoutUser()
       return null
     },
   },
