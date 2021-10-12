@@ -1,6 +1,6 @@
 import { Box, Divider, Paper, PaperProps, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import ObjectRenderer from '@src/components/common/ObjectRenderer'
+import ObjectRenderer from '@src/components/ObjectRenderer'
 import { AdminResponseType } from '@src/utils/api/adminApi'
 
 const useStyles = makeStyles((theme: Theme) => ({

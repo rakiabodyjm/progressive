@@ -9,12 +9,12 @@ import {
   Typography,
 } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import RetailerTable from '@src/components/common/RetailerTable'
+import RetailerTable from '@src/components/RetailerTable'
 import { getDsp, DspResponseType } from '@api/dspApi'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
-import DSPAccountSummaryCard from '@src/components/common/DSPAccountSummaryCard'
+import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
