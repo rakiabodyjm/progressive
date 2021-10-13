@@ -8,6 +8,7 @@ import {
   useTheme,
   TextField,
   TextFieldProps,
+  CircularProgress,
 } from '@material-ui/core'
 import companyLogo from '@public/assets/realm1000-logo.png'
 import { loginUserThunk, User } from '@src/redux/data/userSlice'
@@ -68,9 +69,11 @@ export default function AdminLogin() {
     password: '',
     remember_me: true,
   })
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false)
 
   const handleSubmit = (e: FormEvent) => {
     e?.preventDefault()
+    setButtonLoading(true)
     dispatch(loginUserThunk(formValues))
       .unwrap()
       .then((res) => {
@@ -93,6 +96,9 @@ export default function AdminLogin() {
             type: NotificationTypes.ERROR,
           })
         )
+      })
+      .finally(() => {
+        setButtonLoading(false)
       })
   }
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -215,14 +221,31 @@ export default function AdminLogin() {
                 padding: `2px 24px`,
                 borderRadius: 4,
                 color: theme.palette.primary.contrastText,
-                background: theme.palette.primary.main,
+                overflow: 'hidden',
+                // background: theme.palette.primary.main,
               }}
               variant="contained"
               disableElevation
               focusRipple
-              onClick={() => {}}
+              disabled={buttonLoading}
+              color="primary"
             >
               <Typography variant="h6">Login</Typography>
+              <div
+                style={{
+                  position: 'absolute',
+                  display: buttonLoading ? 'flex' : 'none',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'rgba(0,0,0,0.26)',
+                }}
+              >
+                <CircularProgress color="primary" thickness={4} size={24} />
+              </div>
             </Button>
           </Box>
         </Paper>
