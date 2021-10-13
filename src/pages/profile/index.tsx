@@ -11,10 +11,10 @@ import {
 } from '@material-ui/core'
 import { Cancel, Edit, FiberManualRecord, Info, InfoOutlined, MoreVert } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
-import { PopUpMenu } from '@src/components/common/PopUpMenu'
-import ObjectRenderer from '@src/components/common/ObjectRenderer'
-import ObjectFormRenderer from '@src/components/common/ObjectFormRenderer'
-import ErrorLoading from '@src/components/screens/ErrorLoadingScreen'
+import { PopUpMenu } from '@src/components/PopUpMenu'
+import ObjectRenderer from '@src/components/ObjectRenderer'
+import ObjectFormRenderer from '@src/components/ObjectFormRenderer'
+import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import { userDataSelector, getUser as getUserThunk } from '@src/redux/data/userSlice'
 import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import validator from 'validator'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import LoadingScreen from '@src/components/screens/LoadingScreen'
+import LoadingScreen from '@src/components/LoadingScreen'
 
 const reduceIntoSorted: (arg: UserResponse) => UserResponse = ({
   id,
