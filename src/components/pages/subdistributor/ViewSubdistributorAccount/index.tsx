@@ -9,9 +9,9 @@ import {
   Typography,
 } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import DspTable from '@src/components/common/DspTable'
-import RetailerTable from '@src/components/common/RetailerTable'
-import SubdistributorAccountSummaryCard from '@src/components/common/SubdistributorAccountSummaryCard'
+import DspTable from '@src/components/DspTable'
+import RetailerTable from '@src/components/RetailerTable'
+import SubdistributorAccountSummaryCard from '@src/components/SubdistributorAccountSummaryCard'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import {
   getDsps,

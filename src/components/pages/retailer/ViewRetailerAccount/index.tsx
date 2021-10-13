@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import RetailerAccountSummaryCard from '@src/components/common/RetailerAccountSummaryCard'
+import RetailerAccountSummaryCard from '@src/components/RetailerAccountSummaryCard'
 import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
 import useSWR from 'swr'
 import { getDsp } from '@api/dspApi'
