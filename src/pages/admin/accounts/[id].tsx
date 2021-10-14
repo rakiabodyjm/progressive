@@ -1,5 +1,14 @@
 import ViewRetailerAccount from '@components/pages/retailer/ViewRetailerAccount'
-import { Box, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  Theme,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import DSPSmallCard from '@src/components/DSPSmallCard'
 import RetailerSmallCard from '@src/components/RetailerSmallCard'
@@ -8,14 +17,12 @@ import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
 import WalletSmallCard from '@src/components/WalletSmallCard'
 import ViewDspAccount from '@src/components/pages/dsp/ViewDSPAccount'
 import ViewSubdistributorAccount from '@src/components/pages/subdistributor/ViewSubdistributorAccount'
-// import ViewAdminAccount from '@src/components/pages/admin/ViewAdminAccount'
-// import ViewSubdistributorAccount from '@src/components/pages/subdistributor/ViewSubdistributorAccount'
-// import ViewUserAccount from '@src/components/pages/user/ViewUserAccount'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import userApi, { UserResponse, getUser } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { InfoOutlined } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -63,7 +70,6 @@ export default function AdminAccountView() {
   }, [id])
 
   const classes = useStyles()
-
   return (
     <div className={classes.root}>
       <Paper
@@ -72,7 +78,7 @@ export default function AdminAccountView() {
         }}
       >
         <Grid container>
-          <Grid item>
+          <Grid item xs={10}>
             <Typography display="inline" variant="h4">
               Account Management
             </Typography>
@@ -97,6 +103,34 @@ export default function AdminAccountView() {
                   </Typography>
                 ))}
             </Box>
+          </Grid>
+          <Grid
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'flex-end',
+            }}
+            item
+            xs={2}
+          >
+            <Tooltip
+              arrow
+              placement="left"
+              title={<Typography variant="subtitle2">More Info</Typography>}
+            >
+              <IconButton
+                onClick={() => {
+                  router.push({
+                    pathname: '/admin/accounts/user/[id]',
+                    query: {
+                      id: account?.id,
+                    },
+                  })
+                }}
+              >
+                <InfoOutlined />
+              </IconButton>
+            </Tooltip>
           </Grid>
         </Grid>
 
