@@ -26,7 +26,7 @@ export type UserResponse = {
   phone_number: string
   email: string
   address1: string
-  address2?: string | null
+  address2: string | null
   username: string
   created_at: Date
   updated_at: Date
