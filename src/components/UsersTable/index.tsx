@@ -82,17 +82,22 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
           <TableBody>
             {!data ||
               (data.length < 1 && (
-                <Box
+                <TableRow
                   style={{
                     background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
                   }}
-                  p={2}
-                  textAlign="center"
                 >
-                  <Typography color="textSecondary" variant="h6">
-                    No Data Found
-                  </Typography>
-                </Box>
+                  <TableCell
+                    style={{
+                      padding: theme.spacing(2),
+                      textAlign: 'center',
+                    }}
+                  >
+                    <Typography color="textSecondary" variant="h6">
+                      No Data Found
+                    </Typography>
+                  </TableCell>
+                </TableRow>
               ))}
             {data.map((row) => (
               <TableRow
