@@ -122,6 +122,7 @@ export default function EditUserAccount({
         <AestheticObjectFormRenderer
           highlight="key"
           spacing={1}
+          variant="outlined"
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setFormValues((prevState) => ({
               ...prevState,

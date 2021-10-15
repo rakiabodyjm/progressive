@@ -1,11 +1,13 @@
-import { Box, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import { Box, Button, Divider, Grid, Link, Paper, Theme, Typography } from '@material-ui/core'
 import { useTheme } from '@material-ui/styles'
 import LoadingScreen from '@src/components/LoadingScreen'
 import EditUserAccount from '@src/components/pages/user/EditUserAccount'
 import ViewUserAccount from '@src/components/pages/user/ViewUserAccount'
+import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
 import { getUser } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 export default function AdminAccountsUserEdit() {
@@ -14,6 +16,13 @@ export default function AdminAccountsUserEdit() {
   const { data: user, error, mutate } = useSWR(`${id}`, (id) => getUser(id))
   const theme: Theme = useTheme()
   const [editMode, setEditMode] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (editMode === false) {
+      mutate()
+    }
+  }, [editMode])
+
   if (!user) {
     return (
       <LoadingScreen
@@ -34,6 +43,25 @@ export default function AdminAccountsUserEdit() {
             <Typography variant="body2" color="primary">
               View or Edit Account details and Login info
             </Typography>
+
+            <Typography
+              style={{
+                marginTop: 16,
+              }}
+            >
+              <Link
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setEditMode((prevState) => !prevState)
+                }}
+                variant="body2"
+              >
+                {!editMode ? 'Edit' : 'Exit Edit'}
+              </Link>
+            </Typography>
+
+            {/* < variant="body2">Edit</> */}
           </Box>
           <Divider
             style={{
@@ -42,12 +70,16 @@ export default function AdminAccountsUserEdit() {
           />
           <Grid container spacing={2}>
             <Grid xs={12} md={6} lg={5} item>
-              <EditUserAccount
-                style={{
-                  padding: 16,
-                }}
-                user={user}
-              />
+              {user && editMode ? (
+                <EditUserAccount
+                  style={{
+                    padding: 16,
+                  }}
+                  user={user}
+                />
+              ) : (
+                <UserAccountSummaryCard account={user} />
+              )}
             </Grid>
           </Grid>
         </Box>
