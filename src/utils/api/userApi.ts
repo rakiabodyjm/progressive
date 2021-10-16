@@ -139,7 +139,7 @@ const userApi = {
         throw err
       })
   },
-  extractError(err: AxiosError): string | string[] {
+  extractError(err: AxiosError): string {
     console.log('serializing error', err)
     const errResponse: string | string[] = err?.response?.data?.message
     const errRequest = err?.request
@@ -147,7 +147,8 @@ const userApi = {
     if (errResponse) {
       if (Array.isArray(errResponse)) {
         console.log('errResponse is array')
-        return errResponse as string[]
+        return errResponse.join(', ')
+        // return errResponse as string[]
       }
       return errResponse
     }
