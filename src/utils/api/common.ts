@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 
-export const extractErrorFromResponse = (err: AxiosError) => {
+export const extractErrorFromResponse = (err: AxiosError): string => {
   const errResponse: string | string[] = err?.response?.data?.message
   const errRequest = err?.request
 
@@ -16,6 +16,19 @@ export const extractErrorFromResponse = (err: AxiosError) => {
   return err.message
 }
 
+export const extractMultipleErrorFromResponse = (err: AxiosError): string[] => {
+  const errResponse: string | string[] = err?.response?.data?.message
+  const errRequest = err?.request
+
+  if (errResponse && Array.isArray(errResponse)) {
+    return errResponse
+  }
+  if (errRequest) {
+    return [errRequest]
+  }
+
+  return [extractErrorFromResponse(err)]
+}
 export function formatKeyIntoReadables(param: string) {
   if (typeof param !== 'string') {
     return JSON.stringify(param)
