@@ -1,6 +1,7 @@
 // import type { User, UserMetaData } from '@src/redux/data/userSlice'
 import type { User, UserMetaData, UserTypes } from '@src/redux/data/userSlice'
 import { AdminResponseType } from '@src/utils/api/adminApi'
+import { extractErrorFromResponse } from '@src/utils/api/common'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
@@ -36,6 +37,17 @@ export type UserResponse = {
   subdistributor?: SubdistributorResponseType
   roles: UserTypes[]
   active: boolean
+}
+
+export type CreateUser = {
+  first_name: string
+  last_name: string
+  address1: string
+  address2: string
+  email: string
+  phone_number: string
+  username: string
+  password: string
 }
 const userApi = {
   /**
@@ -127,14 +139,15 @@ const userApi = {
         throw err
       })
   },
-  extractError(err: AxiosError): string {
+  extractError(err: AxiosError): string | string[] {
     console.log('serializing error', err)
     const errResponse: string | string[] = err?.response?.data?.message
     const errRequest = err?.request
 
     if (errResponse) {
       if (Array.isArray(errResponse)) {
-        return errResponse.join(', ')
+        console.log('errResponse is array')
+        return errResponse as string[]
       }
       return errResponse
     }
@@ -158,3 +171,41 @@ const userApi = {
 export default userApi
 
 export const { getUser } = userApi
+
+export async function createUser(params: CreateUser) {
+  return axios
+    .post('/user', params)
+    .then(
+      (res) =>
+        res.data as {
+          message: string
+          user: UserResponse
+        }
+    )
+    .catch((err: AxiosError) => {
+      if (err?.response?.data?.message) {
+        throw err.response.data.message
+        // throw new Error(err.response.data.message)
+      } else {
+        throw err
+      }
+    })
+  // .catch((err) => ({
+  //   error: err,
+  // }))
+
+  // throw new Error(extractErrorFromResponse(err as AxiosError))
+}
+
+export function searchUser(userString: string) {
+  return axios
+    .get('/user/search', {
+      params: {
+        find: userString,
+      },
+    })
+    .then((res) => res.data as UserResponse[])
+    .catch((err) => {
+      throw new Error(extractErrorFromResponse(err))
+    })
+}
