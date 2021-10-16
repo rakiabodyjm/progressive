@@ -24,15 +24,26 @@ export type SubdistributorResponseType = {
 
   // retailer?: RetailerResponseType[]
 
-  area_id?: MapIdResponseType
+  area_id: MapIdResponseType
 
   zip_code: string
 }
 
+export interface CreateSubdistributor {
+  user: UserResponse['id']
+  e_bind_number: string
+  id_number: string
+  id_type: string
+  area_id: MapIdResponseType['area_id']
+  zip_code: string
+}
+export interface SubdistributorUpdateType extends Omit<SubdistributorResponseType, 'area_id'> {
+  area_id: string
+}
 export const getSubdistributor = (id: string) =>
   axios
     .get(`/subdistributor/${id}`)
-    .then((res) => res.data)
+    .then((res) => res.data as SubdistributorResponseType)
     .catch((err: AxiosError) => {
       throw new Error(extractErrorFromResponse(err))
     })
@@ -90,3 +101,24 @@ export const getDspCount = (id: string): Promise<number> =>
     .catch((err) => {
       throw new Error(extractErrorFromResponse(err))
     })
+
+export const updateSubdistributor = (id: string, params: Partial<SubdistributorUpdateType>) =>
+  axios
+    .patch(`/subdistributor/${id}`, {
+      ...params,
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw new Error(extractErrorFromResponse(err))
+    })
+
+export function createSubdistributor(args: CreateSubdistributor) {
+  return axios
+    .post('/subdistributor', {
+      ...args,
+    })
+    .then((res) => res.data as SubdistributorResponseType)
+    .catch((err: AxiosError) => {
+      throw err
+    })
+}
