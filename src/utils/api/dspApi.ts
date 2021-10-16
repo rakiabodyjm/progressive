@@ -27,6 +27,14 @@ export type DspResponseType = {
   // retailer_total: number
 }
 
+export interface CreateDspAccount {
+  dsp_code: string
+  e_bind_number: string
+  subdistributor: string
+  user: UserResponse['id']
+  area_id: MapIdResponseType['area_id'][]
+}
+
 export const getDsp = (id: string): Promise<DspResponseType> =>
   axios
     .get(`/dsp/${id}`)
@@ -63,3 +71,22 @@ export const getRetailerCount = (id: string): Promise<number> =>
     .catch((err) => {
       throw new Error(extractErrorFromResponse(err))
     })
+
+export const createDspAcconut = (arg: CreateDspAccount) => {
+  axios
+    .post('/dsp')
+    .then((res) => res.data as DspResponseType)
+    .catch((err: AxiosError) => {
+      // if (err && err.response && err.response.data) {
+      // do action here
+      // }
+      if (err.response?.data?.message) {
+        // throw new Error('Subdistributor cannot be created')
+        throw err.response?.data?.message
+      } else if (err.request) {
+        throw new Error(err.request)
+      } else {
+        throw new Error('Failed Creating DSP Account')
+      }
+    })
+}
