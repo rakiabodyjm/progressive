@@ -13,7 +13,7 @@ export interface MapIdResponseType {
   // subdistributors?: SubdistributorResponseType[]
 }
 
-interface SearchMap {
+export interface SearchMap {
   search?: string | undefined
   page?: number
   limit?: number
@@ -27,7 +27,7 @@ export function searchMap(params?: SearchMap) {
         limit: params?.limit || 100,
       },
     })
-    .then((res) => res.data as MapIdResponseType)
+    .then((res) => res.data as MapIdResponseType[])
     .catch((err) => {
       throw err
     })
