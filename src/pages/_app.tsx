@@ -82,7 +82,7 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
         }}
       >
         <CssBaseline />
-        <SnackbarProvider>
+        <SnackbarProvider maxSnack={10}>
           <Notification />
           {isAuthenticated ? (
             <NavigationLayout>
