@@ -1,6 +1,7 @@
 import ViewRetailerAccount from '@components/pages/retailer/ViewRetailerAccount'
 import {
   Box,
+  Button,
   Divider,
   Grid,
   IconButton,
@@ -62,7 +63,7 @@ export default function AdminAccountView() {
           dispatch(
             setNotification({
               type: NotificationTypes.ERROR,
-              message: error,
+              message: error.toString(),
             })
           )
         })
@@ -72,13 +73,61 @@ export default function AdminAccountView() {
   const classes = useStyles()
   return (
     <div className={classes.root}>
+      <Box
+        style={{
+          position: 'sticky',
+          top: theme.spacing(9),
+        }}
+        mb={2}
+      >
+        <Paper>
+          <Box
+            style={{
+              display: 'flex',
+              gap: 16,
+            }}
+            p={2}
+          >
+            <Button
+              onClick={() => {
+                router.push({
+                  pathname: '/admin/accounts/user/[id]',
+                  query: {
+                    id: account?.id,
+                  },
+                })
+              }}
+              variant="outlined"
+              color="primary"
+            >
+              Edit User Account
+            </Button>
+            {account?.subdistributor && (
+              <Button
+                onClick={() => {
+                  router.push({
+                    pathname: '/admin/accounts/subdistributor/[id]',
+                    query: {
+                      id: account?.subdistributor?.id,
+                    },
+                  })
+                }}
+                variant="outlined"
+                color="primary"
+              >
+                Manage Subdistibributor Account
+              </Button>
+            )}
+          </Box>
+        </Paper>
+      </Box>
       <Paper
         style={{
           padding: 16,
         }}
       >
         <Grid container>
-          <Grid item xs={10}>
+          <Grid item xs={12}>
             <Typography display="inline" variant="h4">
               Account Management
             </Typography>
@@ -104,7 +153,7 @@ export default function AdminAccountView() {
                 ))}
             </Box>
           </Grid>
-          <Grid
+          {/* <Grid
             style={{
               display: 'flex',
               alignItems: 'flex-start',
@@ -131,7 +180,7 @@ export default function AdminAccountView() {
                 <InfoOutlined />
               </IconButton>
             </Tooltip>
-          </Grid>
+          </Grid> */}
         </Grid>
 
         <Divider
