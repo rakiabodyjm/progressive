@@ -24,8 +24,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import validator from 'validator'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import LoadingScreen from '@src/components/LoadingScreen'
+import AestheticObjectRenderer from '@src/components/ObjectRendererV2'
+import AestheticObjectFormRenderer from '@src/components/ObjectFormRendererV2'
 
-const reduceIntoSorted: (arg: UserResponse) => UserResponse = ({
+const reduceIntoSorted: (arg: UserResponse) => Partial<UserResponse> = ({
   id,
   username,
   first_name,
@@ -50,8 +52,8 @@ const reduceIntoSorted: (arg: UserResponse) => UserResponse = ({
   admin,
   subdistributor,
   dsp,
-  created_at,
-  updated_at,
+  // created_at,
+  // updated_at,
   ...restArgs,
 })
 
@@ -63,7 +65,7 @@ const editableFields = ({
   phone_number,
   address1,
   address2,
-}: UserResponse) => ({
+}: Partial<UserResponse>) => ({
   username,
   last_name,
   first_name,
@@ -77,7 +79,7 @@ export default function UserProfile() {
   const user = useSelector(userDataSelector)
   const theme: Theme = useTheme()
 
-  const [userInfo, setUserInfo] = useState<UserResponse | null>(null)
+  const [userInfo, setUserInfo] = useState<Partial<UserResponse> | null>(null)
   const [editMode, setEditMode] = useState<boolean>(false)
   // const [accountInfoMode, setObjectRenderer] = useState<boolean>(true)
   const [editPopUpMenuOpen, setEditPopUpMenuOpen] = useState<boolean>(false)
@@ -188,16 +190,27 @@ export default function UserProfile() {
                     setEditMode(false)
                   }}
                 >
-                  <Cancel color="primary" />
+                  <Cancel />
                 </IconButton>
               </Tooltip>
             )}
           </div>
         </Box>
-        {userInfo && !editMode && <ObjectRenderer<UserResponse> fields={userInfo} />}
+        {userInfo && !editMode && (
+          <AestheticObjectRenderer highlight="key" spacing={1} fields={userInfo} />
+        )}
         {userInfo && editMode && (
+          // <AestheticObjectFormRenderer
+          //   fields={editableFields(userInfo)}
+          //   onChange={(e) => {
+          //     setEditFormValues((prevState) => ({
+          //       ...prevState,
+          //       [e.target.name]: e.target.value,
+          //     }))
+          //   }}
+          // />
           <ObjectFormRenderer
-            renderState
+            // renderState
             schema={editableFields(userInfo)}
             onChange={(arg) => {
               setEditFormValues(arg)
