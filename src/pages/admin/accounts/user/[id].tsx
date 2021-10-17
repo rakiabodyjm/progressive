@@ -2,6 +2,7 @@
 import { Box, Button, Divider, Grid, Link, Paper, Theme, Typography } from '@material-ui/core'
 import { useTheme } from '@material-ui/styles'
 import LoadingScreen from '@src/components/LoadingScreen'
+import AestheticObjectRenderer from '@src/components/ObjectRendererV2'
 import EditUserAccount from '@src/components/pages/user/EditUserAccount'
 import ViewUserAccount from '@src/components/pages/user/ViewUserAccount'
 import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
@@ -10,7 +11,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
-export default function AdminAccountsUserEdit() {
+export default function AdminUserManage() {
   const router = useRouter()
   const { id } = router.query
   const { data: user, error, mutate } = useSWR(`${id}`, (id) => getUser(id))
@@ -36,7 +37,13 @@ export default function AdminAccountsUserEdit() {
 
   return (
     <>
-      <Paper variant="outlined">
+      <Paper
+        style={{
+          maxWidth: 720,
+          margin: 'auto',
+        }}
+        variant="outlined"
+      >
         <Box p={2}>
           <Box>
             <Typography variant="h4">User Account Information</Typography>
@@ -68,20 +75,24 @@ export default function AdminAccountsUserEdit() {
               margin: '16px 0',
             }}
           />
-          <Grid container spacing={2}>
-            <Grid xs={12} md={6} lg={5} item>
-              {user && editMode ? (
-                <EditUserAccount
-                  style={{
-                    padding: 16,
-                  }}
-                  user={user}
-                />
-              ) : (
-                <UserAccountSummaryCard account={user} />
-              )}
-            </Grid>
-          </Grid>
+
+          {user && editMode ? (
+            <EditUserAccount
+              style={{
+                padding: 16,
+              }}
+              user={user}
+            />
+          ) : (
+            <Paper
+              style={{
+                padding: 16,
+              }}
+              variant="outlined"
+            >
+              <AestheticObjectRenderer spacing={1} fields={user} highlight="key" />
+            </Paper>
+          )}
         </Box>
       </Paper>
     </>
