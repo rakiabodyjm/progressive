@@ -1,4 +1,13 @@
-import { Box, Button, ButtonGroup, Container, Paper, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Paper,
+  Theme,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { UserRoles, UserTypes } from '@src/redux/data/userSlice'
@@ -14,6 +23,9 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import LoadingScreen from '@src/components/LoadingScreen'
 import { makeStyles } from '@material-ui/styles'
+import { AccountCircle, AddCircle, AddCircleOutline, AddCircleOutlined } from '@material-ui/icons'
+import AddAccountModal from '@components/AddAccountModal'
+
 export type UserTypesAndUser = UserTypes | 'user'
 
 type EntityTypesUnion =
@@ -181,6 +193,7 @@ export default function AdminAccountsPage() {
   const dispatch = useDispatch()
   const [users, setUsers] = useState<EntityTypesUnion[] | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [addAccountModalOpen, setAddAccountModalOpen] = useState<boolean>(false)
   const router = useRouter()
 
   const [paginatedParams, setPaginatedParams] = useState<Paginated<EntityTypesUnion>['metadata']>({
@@ -281,7 +294,42 @@ export default function AdminAccountsPage() {
         </div>
       </Box>
       <Box mt={8} />
+      {/* <Box mb={2}>
+        <Paper variant="outlined">
+          <Box p={1}>
+            <Typography variant="h6">Actions</Typography>
+            <Typography color="textSecondary" variant="body1">
+              Admin actions for Accounts
+            </Typography>
 
+            <Divider
+              style={{
+                marginBottom: 16,
+                marginTop: 16,
+              }}
+            />
+
+            <Button color="primary" variant="outlined">
+              Add User
+            </Button>
+          </Box>
+        </Paper>
+      </Box> */}
+      <Box mb={2} display="flex" justifyContent="flex-end">
+        <Tooltip
+          title={<Typography variant="subtitle2">Add User Account</Typography>}
+          arrow
+          placement="left"
+        >
+          <IconButton
+            onClick={() => {
+              setAddAccountModalOpen(true)
+            }}
+          >
+            <AddCircleOutlined />
+          </IconButton>
+        </Tooltip>
+      </Box>
       {!isLoading && users && (
         <UsersTable
           onRowClick={(e, rowValue) => {
@@ -309,6 +357,13 @@ export default function AdminAccountsPage() {
             }}
           />
         </Paper>
+      )}
+
+      {addAccountModalOpen && (
+        <AddAccountModal
+          open={addAccountModalOpen}
+          handleClose={() => setAddAccountModalOpen(false)}
+        />
       )}
     </Container>
   )
