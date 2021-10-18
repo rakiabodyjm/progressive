@@ -73,4 +73,8 @@ const subdistributorFields = (subdistributor: SubdistributorResponseType) => [
     key: 'Area',
     value: subdistributor.area_id?.area_name || '',
   },
+  {
+    key: 'Area ID',
+    value: subdistributor.area_id?.area_id,
+  },
 ]
