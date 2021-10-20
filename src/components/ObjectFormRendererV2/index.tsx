@@ -1,24 +1,28 @@
-import { Box, TextField, TextFieldProps, Theme, Typography } from '@material-ui/core'
-import { useTheme } from '@material-ui/styles'
+import { Box, TextField, TextFieldProps, Typography, TypographyTypeMap } from '@material-ui/core'
 import { formatKeyIntoReadables } from '@src/utils/api/common'
 import React, { ChangeEvent, memo, useEffect, useMemo, useRef, useState } from 'react'
 import deepEqual from '@src/utils/deepEqual'
+import { PhysicsPropsPlugin } from 'gsap/all'
 
 const RenderKeyValue = memo(
   function RenderKeyValue({
     field,
-    defaultValue,
+    // defaultValue,
     highlight,
     onChange,
     value,
     variant,
+    textFieldProps,
+    labelProps,
   }: {
     field: string | number | symbol
-    defaultValue: string | number | Date
+    // defaultValue: string | number | Date
     highlight?: 'key' | 'value'
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
     value: string | number
     variant: TextFieldProps['variant']
+    textFieldProps?: TextFieldProps
+    labelProps?: TypographyTypeMap<{}, 'label'>['props']
   }) {
     return (
       <>
@@ -26,16 +30,18 @@ const RenderKeyValue = memo(
           component="label"
           color={highlight === 'key' ? 'primary' : undefined}
           variant="body2"
+          {...labelProps}
         >
           {formatKeyIntoReadables(field as string)}
         </Typography>
         <TextField
-          variant={variant || 'standard'}
+          variant={variant || 'outlined'}
           size="small"
           name={field as string}
           value={value}
           fullWidth
           onChange={onChange}
+          {...textFieldProps}
         />
       </>
     )
@@ -49,12 +55,20 @@ export default function AestheticObjectFormRenderer({
   highlight,
   onChange,
   variant,
+  customProps,
 }: {
   fields: Record<any, any>
   spacing?: number
   highlight?: 'key' | 'value'
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
   variant?: TextFieldProps['variant']
+  customProps?: Record<
+    keyof typeof fields,
+    {
+      labelProps?: TypographyTypeMap<{}, 'label'>['props']
+      textFieldProps?: TextFieldProps
+    }
+  >
 }) {
   const fieldsToRender = useRef(fields)
   return (
@@ -64,10 +78,11 @@ export default function AestheticObjectFormRenderer({
           typeof fieldsToRender.current[key] === 'string' && (
             <Box key={key} mb={spacing}>
               <RenderKeyValue
+                labelProps={customProps && customProps[key]?.labelProps}
+                textFieldProps={customProps && customProps[key]?.textFieldProps}
                 onChange={onChange}
                 highlight={highlight}
                 field={key}
-                defaultValue={fieldsToRender?.current[key] || ''}
                 value={fields[key]}
                 variant={variant}
               />
