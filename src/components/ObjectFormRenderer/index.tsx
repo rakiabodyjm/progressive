@@ -49,7 +49,7 @@ function objectValueMutator<T>(
   return cache
 }
 
-type ObjectFormRendererType = Record<string | number | symbol, {}>
+type ObjectFormRendererType = Record<string | number | symbol, any>
 export default function ObjectFormRenderer({
   schema,
   ignoreDotNotation,
