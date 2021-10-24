@@ -6,9 +6,11 @@ import { useEffect, useRef, useState } from 'react'
 export default function UserAutoComplete({
   onChange,
   mutateOptions,
+  defaultValue,
 }: {
   onChange: (arg: UserResponse) => void
   mutateOptions?: (arg: UserResponse[]) => UserResponse[]
+  defaultValue?: UserResponse
 }) {
   const [query, setQuery] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
@@ -22,7 +24,6 @@ export default function UserAutoComplete({
     timeoutRef.current = setTimeout(() => {
       searchUser(query)
         .then((res) => {
-          console.log(res)
           setUsersOptions(mutateOptions ? mutateOptions(res) : res)
         })
         .catch((err) => {
@@ -47,9 +48,10 @@ export default function UserAutoComplete({
         onChange(value as UserResponse)
       }}
       defaultValue={
-        (Array.isArray(usersOptions) && usersOptions.length > 0 && usersOptions[0]) || undefined
+        // (Array.isArray(usersOptions) && usersOptions.length > 0 && usersOptions[0]) || undefined
+        defaultValue || undefined
       }
-      getOptionSelected={(option, value) => option.id === value.id || undefined}
+      getOptionSelected={(option, value) => option.id === value.id || false}
       getOptionLabel={(option) => `${option.last_name}, ${option.first_name}`}
       renderInput={(params) => (
         <TextField
