@@ -20,6 +20,7 @@ const CreateSubdistributorAccount = dynamic(
   () => import('@components/pages/subdistributor/CreateSubdistributorAccount')
 )
 const CreateUserAccount = dynamic(() => import('@components/pages/user/CreateUserAccount'))
+const CreateUserAccountV2 = dynamic(() => import('@components/pages/user/CreateUserAccountV2'))
 export default function AddAccountModal({
   open,
   handleClose,
@@ -111,7 +112,7 @@ export default function AddAccountModal({
       >
         <Box>
           <Paper variant="outlined">
-            <CreateUserAccount
+            <CreateUserAccountV2
               modal={() => {
                 setModalsOpen((prevState) => ({
                   ...prevState,
