@@ -38,7 +38,10 @@ const theme = (additionalProps: CustomThemeProperties): Theme => {
       },
       MuiButton: {
         root: {
-          padding: `4px 16px`,
+          dding: `4px 24px`,
+        },
+        outlined: {
+          padding: `4px 24px`,
         },
       },
     },

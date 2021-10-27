@@ -9,17 +9,17 @@ import {
   Paper,
   Typography,
 } from '@material-ui/core'
-// import CreateDSPAccountV2 from '@src/components/pages/dsp/CreateDSPAccountV2'
-// import CreateSubdistributorAccount from '@src/components/pages/subdistributor/CreateSubdistributorAccount'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
-// import CreateUserAccount from '../pages/user/CreateUserAccount'
 
 const CreateDSPAccountV2 = dynamic(() => import('@components/pages/dsp/CreateDSPAccountV2'))
 const CreateSubdistributorAccount = dynamic(
   () => import('@components/pages/subdistributor/CreateSubdistributorAccount')
 )
 const CreateUserAccount = dynamic(() => import('@components/pages/user/CreateUserAccount'))
+const CreateRetailerAccount = dynamic(
+  () => import('@components/pages/retailer/CreateRetailerAccount')
+)
 export default function AddAccountModal({
   open,
   handleClose,
@@ -100,15 +100,7 @@ export default function AddAccountModal({
           </Container>
         </Fade>
       </Modal>
-      <ModalWrapper
-        handleClose={() => {
-          setModalsOpen((prevState) => ({
-            ...prevState,
-            user: false,
-          }))
-        }}
-        open={modalsOpen.user}
-      >
+      <ModalWrapper handleClose={setSpecificModalOpen('user', false)} open={modalsOpen.user}>
         <Box>
           <Paper variant="outlined">
             <CreateUserAccount
@@ -123,37 +115,19 @@ export default function AddAccountModal({
         </Box>
       </ModalWrapper>
       <ModalWrapper
-        handleClose={() => {
-          setModalsOpen((prevState) => ({
-            ...prevState,
-            subdistributor: false,
-          }))
-        }}
+        handleClose={setSpecificModalOpen('subdistributor', false)}
         open={modalsOpen.subdistributor}
       >
         <CreateSubdistributorAccount modal={setSpecificModalOpen('subdistributor', false)} />
       </ModalWrapper>
+      <ModalWrapper handleClose={setSpecificModalOpen('dsp', false)} open={modalsOpen.dsp}>
+        <CreateDSPAccountV2 />
+      </ModalWrapper>
       <ModalWrapper
-        handleClose={() => {
-          setModalsOpen((prevState) => ({
-            ...prevState,
-            dsp: false,
-          }))
-        }}
-        open={modalsOpen.dsp}
+        open={modalsOpen.retailer}
+        handleClose={setSpecificModalOpen('retailer', false)}
       >
-        <Box>
-          <Paper variant="outlined">
-            <CreateDSPAccountV2
-              modal={() => {
-                setModalsOpen((prevState) => ({
-                  ...prevState,
-                  dsp: false,
-                }))
-              }}
-            />
-          </Paper>
-        </Box>
+        <CreateRetailerAccount modal={setSpecificModalOpen('retailer', false)} />
       </ModalWrapper>
     </>
   )

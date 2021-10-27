@@ -276,12 +276,6 @@ export default function CreateDSPAccountV2({
                 *{errors.subdistributor && errors.subdistributor}
               </Typography>
             </Grid>
-            {/* <Grid item xs={12}>
-              <Typography className={classes.formLabel} component="label" variant="body2">
-                Name of Subdistributor
-              </Typography>
-              <SimpleAutoComplete />
-            </Grid> */}
             <Grid item xs={12}>
               <Typography className={classes.formLabel} component="label" variant="body2">
                 User ID
