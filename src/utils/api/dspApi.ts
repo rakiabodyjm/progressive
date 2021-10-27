@@ -32,7 +32,7 @@ export interface CreateDspAccount {
   e_bind_number: string
   subdistributor: string
   user: UserResponse['id']
-  area_id: MapIdResponseType['area_id'][]
+  // area_id: MapIdResponseType['area_id'][]
 }
 
 export const getDsp = (id: string): Promise<DspResponseType> =>

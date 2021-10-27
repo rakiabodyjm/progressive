@@ -142,7 +142,18 @@ export default function AddAccountModal({
         }}
         open={modalsOpen.dsp}
       >
-        <CreateDSPAccountV2 />
+        <Box>
+          <Paper variant="outlined">
+            <CreateDSPAccountV2
+              modal={() => {
+                setModalsOpen((prevState) => ({
+                  ...prevState,
+                  dsp: false,
+                }))
+              }}
+            />
+          </Paper>
+        </Box>
       </ModalWrapper>
     </>
   )

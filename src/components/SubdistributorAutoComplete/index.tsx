@@ -1,28 +1,28 @@
 import { CircularProgress, TextField } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
-import { searchUser, UserResponse } from '@src/utils/api/userApi'
+import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import { useEffect, useRef, useState } from 'react'
 
-export default function UserAutoComplete({
+export default function SubdistributorAutoComplete({
   onChange,
   mutateOptions,
 }: {
-  onChange: (arg: UserResponse) => void
-  mutateOptions?: (arg: UserResponse[]) => UserResponse[]
+  onChange: (arg: SubdistributorResponseType) => void
+  mutateOptions?: (arg: SubdistributorResponseType[]) => SubdistributorResponseType[]
 }) {
   const [query, setQuery] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
-  const [value, setValue] = useState<UserResponse | undefined>()
-  const [usersOptions, setUsersOptions] = useState<UserResponse[]>([])
+  const [value, setValue] = useState<SubdistributorResponseType | undefined>()
+  const [usersOptions, setUsersOptions] = useState<SubdistributorResponseType[]>([])
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
   useEffect(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
     timeoutRef.current = setTimeout(() => {
-      searchUser(query)
+      searchSubdistributor(query)
         .then((res) => {
-          // console.log(res)
+          console.log(res)
           setUsersOptions(mutateOptions ? mutateOptions(res) : res)
         })
         .catch((err) => {
@@ -44,13 +44,13 @@ export default function UserAutoComplete({
       }}
       onChange={(_, value) => {
         // setValue(value)
-        onChange(value as UserResponse)
+        onChange(value as SubdistributorResponseType)
       }}
       defaultValue={
         (Array.isArray(usersOptions) && usersOptions.length > 0 && usersOptions[0]) || undefined
       }
       getOptionSelected={(option, value) => option.id === value.id || undefined}
-      getOptionLabel={(option) => `${option.last_name}, ${option.first_name}`}
+      getOptionLabel={(option) => `${option.name}`}
       renderInput={(params) => (
         <TextField
           {...params}
