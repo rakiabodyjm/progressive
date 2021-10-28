@@ -52,6 +52,7 @@ export default function AdminDspManage() {
         >
           {dspActionButtons.map((ea) => (
             <Button
+              key={ea.id}
               onClick={setModalOpen(ea.id as keyof DSPManageModals)}
               variant="outlined"
               color="primary"
@@ -85,7 +86,11 @@ export default function AdminDspManage() {
             onClose={setModalOpen('addRetailerModal', false)}
             containerSize="sm"
           >
-            <CreateRetailerAccount subdistributorId={dsp?.subdistributor.id} dspId={id as string} />
+            <CreateRetailerAccount
+              modal={setModalOpen('addRetailerModal', false)}
+              subdistributorId={dsp?.subdistributor.id}
+              dspId={id as string}
+            />
           </ModalWrapper>
         )}
       </Paper>
