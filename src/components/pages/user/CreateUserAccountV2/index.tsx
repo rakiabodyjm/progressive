@@ -9,15 +9,18 @@ import {
   Theme,
   TextField,
 } from '@material-ui/core'
-import { Close } from '@material-ui/icons'
+import { Close, Create } from '@material-ui/icons'
 import AestheticObjectFormRenderer from '@src/components/ObjectFormRendererV2'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { extractErrorFromResponse } from '@src/utils/api/common'
-import { createUser, CreateUser, UserResponse } from '@src/utils/api/userApi'
-import React, { useState, useEffect } from 'react'
+import { createUser, CreateUser, UserResponse, CheckUsername } from '@src/utils/api/userApi'
+import React, { useState, useEffect, StrictMode } from 'react'
 import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/styles'
 import validator from 'validator'
+import useSWR from 'swr'
+import { useRouter } from 'next/router'
+import axios from 'axios'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
@@ -25,9 +28,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   errorLabel: {
     color: theme.palette.error.main,
-  },
-  valid: {
-    color: theme.palette.success.main,
   },
   paperPadding: {
     padding: 15,
@@ -54,11 +54,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
     confirm_password: '',
   })
   const classes = useStyles()
-
   const dispatch = useDispatch()
-
-  const [status, setStatus] = useState<boolean>()
-
   const [errors, setErrors] = useState<Record<keyof CreateUser, string | null>>({
     first_name: null,
     last_name: null,
@@ -69,23 +65,23 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
     username: null,
     password: null,
   })
-
-  const [valid, setValid] = useState<Record<keyof CreateUser, string | null>>({
-    first_name: null,
-    last_name: null,
-    address1: null,
-    address2: null,
-    email: null,
-    phone_number: null,
-    username: null,
-    password: null,
-  })
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+  const { data } = useSWR<CheckUsername | undefined>('/user/', (url: string) =>
+    axios(url).then((r) => r.data)
+  )
+  console.log(data)
 
   const handleSubmit = () => {
     const schemaChecker = {
-      email: (value: string) => !validator.isEmail(value) && 'Email Address is not valid',
-      phone_number: (value: string) => !validator.isMobilePhone(value) && 'Invalid phone number',
+      email: (value: string) => !validator.isEmail(value) && '*Email Address is not valid',
+      phone_number: (value: string) => validator.isEmpty(value) && '*Phone number Required',
+      first_name: (value: string) => validator.isEmpty(value) && '*First Name Required',
+      last_name: (value: string) => validator.isEmpty(value) && '*Last Name Required',
+      address1: (value: string) => validator.isEmpty(value) && '*Current Address Required',
+      address2: (value: string) => validator.isEmpty(value) && '*Home Address Required',
+      username: (value: string) => validator.isEmpty(value) && '*Username Required',
+      password: (value: string) =>
+        !validator.isLength(value, { min: 8, max: 16 }) &&
+        '*Password must be (8-16 characters only)',
     }
     Object.keys(schemaChecker).forEach((key) => {
       const validator = schemaChecker[key as keyof typeof schemaChecker]
@@ -100,20 +96,13 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
       }
     })
 
-    if (user.username === '') {
-      dispatch(
-        setNotification({
-          type: NotificationTypes.ERROR,
-          message: `Username Required`,
-        })
-      )
-    } else if (user.password === '') {
-      dispatch(
-        setNotification({
-          type: NotificationTypes.ERROR,
-          message: `Password Required`,
-        })
-      )
+    if (validator.isEmpty(user.password)) {
+      // dispatch(
+      //   setNotification({
+      //     type: NotificationTypes.ERROR,
+      //     message: `Password Required`,
+      //   })
+      // )
     } else if (user.password !== user.confirm_password) {
       dispatch(
         setNotification({
@@ -145,6 +134,16 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
               password: '',
               confirm_password: '',
             })
+            setErrors({
+              first_name: '',
+              last_name: '',
+              address1: '',
+              address2: '',
+              email: '',
+              phone_number: '',
+              username: '',
+              password: '',
+            })
           }
         })
         .catch((err) => {
@@ -174,45 +173,6 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
       [e.target.name]: e.target.value,
     }))
   }
-  // THIS IS FOR ERRORS
-  // useEffect(() => {
-  //   const schemaChecker = {
-  //     email: (value: string) => !validator.isEmail(value) && 'Email Address is not valid',
-  //     phone_number: (value: string) => !validator.isMobilePhone(value) && 'Invalid phone number',
-  //   }
-  //   Object.keys(schemaChecker).forEach((key) => {
-  //     const validator = schemaChecker[key as keyof typeof schemaChecker]
-  //     const valuesToValidate = user[key as keyof CreateUser]
-  //     const validateResult = validator(valuesToValidate)
-  //     console.log(validateResult)
-  //     if (validateResult) {
-  //       setErrors((prevState) => ({
-  //         ...prevState,
-  //         [key]: validateResult,
-  //       }))
-  //     }
-  //   })
-  // }, [user])
-
-  // useEffect(() => {
-  //   const schemaChecker = {
-  //     email: (value: string) => validator.isEmail(value) && 'valid',
-  //     phone_number: (value: string) => !validator.isMobilePhone(value) && '',
-  //   }
-  //   Object.keys(schemaChecker).forEach((key) => {
-  //     const validator = schemaChecker[key as keyof typeof schemaChecker]
-  //     const valuesToValidate = user[key as keyof CreateUser]
-  //     const validateResult = validator(valuesToValidate)
-  //     if (validateResult) {
-  //       setValid((prevState) => ({
-  //         ...prevState,
-  //         [key]: validateResult,
-  //       }))
-  //       setIsSubmitted(true)
-  //     }
-  //   })
-  // }, [user])
-
   useEffect(() => {
     console.log(errors)
   }, [errors])
@@ -256,7 +216,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
         <Grid spacing={1} container>
           <Grid item xs={6}>
             <Typography className={classes.formLabel} component="label" variant="body2">
-              Name
+              First Name
             </Typography>
 
             <TextField
@@ -267,6 +227,22 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
               onChange={handleChange}
               value={user.first_name}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(user.first_name) ? undefined : 'none',
+                }}
+              >
+                {errors.first_name}
+              </Typography>
+            </div>
           </Grid>
 
           <Grid item xs={6}>
@@ -282,6 +258,22 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
               onChange={handleChange}
               value={user.last_name}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(user.last_name) ? undefined : 'none',
+                }}
+              >
+                {errors.last_name}
+              </Typography>
+            </div>
           </Grid>
           <Grid item xs={12}>
             <Typography className={classes.formLabel} component="label" variant="body2">
@@ -296,6 +288,22 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
               onChange={handleChange}
               value={user.address1}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(user.address1) ? undefined : 'none',
+                }}
+              >
+                {errors.address1}
+              </Typography>
+            </div>
           </Grid>
           <Grid item xs={12}>
             <Typography className={classes.formLabel} component="label" variant="body2">
@@ -310,6 +318,22 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
               onChange={handleChange}
               value={user.address2}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(user.address2) ? undefined : 'none',
+                }}
+              >
+                {errors.address2}
+              </Typography>
+            </div>
           </Grid>
           <Grid item xs={6}>
             <Typography className={classes.formLabel} component="label" variant="body2">
@@ -354,6 +378,22 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
               onChange={handleChange}
               value={user.phone_number}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(user.phone_number) ? undefined : 'none',
+                }}
+              >
+                {errors.phone_number}
+              </Typography>
+            </div>
           </Grid>
           <Grid item xs={4}>
             <Typography className={classes.formLabel} component="label" variant="body2">
@@ -368,6 +408,22 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
               onChange={handleChange}
               value={user.username}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(user.username) ? undefined : 'none',
+                }}
+              >
+                {errors.username}
+              </Typography>
+            </div>
           </Grid>
           <Grid item xs={4}>
             <Typography className={classes.formLabel} component="label" variant="body2">
@@ -383,6 +439,24 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
               onChange={handleChange}
               value={user.password}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isLength(user.password, { min: 8, max: 16 })
+                    ? 'none'
+                    : undefined,
+                }}
+              >
+                {errors.password}
+              </Typography>
+            </div>
           </Grid>
           <Grid item xs={4}>
             <Typography className={classes.formLabel} component="label" variant="body2">
@@ -400,41 +474,13 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
             />
           </Grid>
         </Grid>
-        {/* <Box>
-          <AestheticObjectFormRenderer
-            fields={user}
-            spacing={1}
-            highlight="key"
-            onChange={(e) => {
-              setUser((prevState) => ({
-                ...prevState,
-                [e.target.name]: e.target.value,
-              }))
-            }}
-            customProps={{
-              password: {
-                textFieldProps: {
-                  type: 'password',
-                },
-              },
-              confirm_password: {
-                textFieldProps: {
-                  type: 'password',
-                },
-              },
-            }}
-          />
-        </Box> */}
         <Box display="flex" gridGap={8} justifyContent="flex-end" className={classes.buttonMargin}>
           <Button
             variant="contained"
             type="submit"
             onClick={(e) => {
-              // console.log(user)
-
               e.preventDefault()
               handleSubmit()
-              setIsSubmitted(true)
             }}
             color="primary"
           >
