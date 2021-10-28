@@ -59,6 +59,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
               },
             ].map((ea) => (
               <Button
+                key={ea.method}
                 onClick={() => {
                   console.log('setting method', ea.method)
                   setMethod(ea.method as Methods)
