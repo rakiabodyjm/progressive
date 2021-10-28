@@ -16,7 +16,8 @@ const CreateDSPAccount = dynamic(() => import('@components/pages/dsp/CreateDSPAc
 const CreateSubdistributorAccount = dynamic(
   () => import('@components/pages/subdistributor/CreateSubdistributorAccount')
 )
-const CreateUserAccount = dynamic(() => import('@components/pages/user/CreateUserAccount'))
+const CreateUserAccount = dynamic(() => import('@src/components/pages/user/CreateUserAccount'))
+
 const CreateRetailerAccount = dynamic(
   () => import('@components/pages/retailer/CreateRetailerAccount')
 )
@@ -121,7 +122,7 @@ export default function AddAccountModal({
         <CreateSubdistributorAccount modal={setSpecificModalOpen('subdistributor', false)} />
       </ModalWrapper>
       <ModalWrapper handleClose={setSpecificModalOpen('dsp', false)} open={modalsOpen.dsp}>
-        <CreateDSPAccount />
+        <CreateDSPAccount modal={setSpecificModalOpen('dsp', false)} />
       </ModalWrapper>
       <ModalWrapper
         open={modalsOpen.retailer}
