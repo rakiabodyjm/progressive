@@ -11,6 +11,11 @@ type CustomThemeProperties = {
 const theme = (additionalProps: CustomThemeProperties): Theme => {
   const { prefersDarkMode } = additionalProps
   const customTheme: ThemeOptions = {
+    props: {
+      MuiButton: {
+        disableElevation: true,
+      },
+    },
     palette: {
       type: prefersDarkMode ? 'dark' : 'light',
       primary: {
