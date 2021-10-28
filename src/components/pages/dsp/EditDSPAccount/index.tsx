@@ -8,18 +8,18 @@ import {
   Typography,
   IconButton,
   Button,
+  TypographyProps,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
-import CreateDSPAccount from '@src/components/pages/dsp/CreateDSPAccount'
-import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComplete'
-import UserAutoComplete from '@src/components/UserAutoComplete'
-import { createDspAcconut, CreateDspAccount } from '@src/utils/api/dspApi'
+import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
+import { createDspAccount, CreateDspAccount } from '@src/utils/api/dspApi'
 import { MapIdResponseType, SearchMap, searchMap } from '@src/utils/api/mapIdApi'
-import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
-import { UserResponse } from '@src/utils/api/userApi'
-import React, { useEffect, useState } from 'react'
+import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import React, { ChangeEvent, useEffect, useState } from 'react'
+import useNotification from '@src/utils/hooks/useNotification'
+import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import validator from 'validator'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
@@ -29,22 +29,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.error.main,
   },
 }))
-export default function CreateDSPAccountV2({
-  modal,
-  subdistributor,
+export default function EditDSPAccountV2({
+  modal: modalClose,
+  subdistributorId,
 }: {
   modal?: () => void
-  subdistributor?: SubdistributorResponseType
+  subdistributorId?: SubdistributorResponseType
 }) {
-  const [dsp, setDsp] = useState<CreateDspAccount>({
-    // area_id: [],
-    dsp_code: '',
-    e_bind_number: '',
-    subdistributor: '',
-    user: '',
-  })
   const [newDspAccount, setNewDspAccount] = useState<CreateDspAccount>({
-    // area_id: [],
+    area_id: [],
     dsp_code: '',
     e_bind_number: '',
     subdistributor: '',
@@ -52,7 +45,7 @@ export default function CreateDSPAccountV2({
   })
 
   const [errors, setErrors] = useState<Record<keyof CreateDspAccount, string | null>>({
-    // area_id: null,
+    area_id: null,
     dsp_code: null,
     e_bind_number: null,
     subdistributor: null,
@@ -60,23 +53,34 @@ export default function CreateDSPAccountV2({
   })
   const classes = useStyles()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewDspAccount((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }))
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, value?: string | null) => {
+    if (typeof e !== 'string') {
+      const eTarget = e as ChangeEvent<HTMLInputElement>
+      setNewDspAccount((prevState) => ({
+        ...prevState,
+        [eTarget.target.name]: eTarget.target.value,
+      }))
+    } else {
+      setNewDspAccount((prevState) => ({
+        ...prevState,
+        [e as keyof CreateDspAccount]: value,
+      }))
+    }
+    const checkAreaID = newDspAccount.area_id.length > 0
+    const checkSubdistributor = newDspAccount.subdistributor.length > 0
     const schemaChecker = {
       dsp_code: (value: string) =>
-        validator.isAlphanumeric(newDspAccount.dsp_code) || 'Invalid DSP Code',
+        validator.isLength(newDspAccount.dsp_code, { min: 3 }) || 'Atleast 4 letters DSP Code',
       e_bind_number: (value: string) =>
         validator.isMobilePhone(newDspAccount.e_bind_number) || 'Invalid E Bind Number',
       subdistributor: (value: string) =>
-        validator.isAlphanumeric(newDspAccount.subdistributor) || 'Invalid Subdistributor',
-      user: (value: string) => validator.isAlphanumeric(newDspAccount.user) || 'Invalid User ID',
+        !validator.isEmpty(newDspAccount.subdistributor) || 'Empty Subdistributor',
+      user: (value: string) => checkSubdistributor || 'Empty User ID',
+      area_id: (value: string) => checkAreaID || 'Empty User ID',
     }
     Object.keys(schemaChecker).forEach((key) => {
       const validator = schemaChecker[key as keyof typeof schemaChecker]
-      const valuesToValidate = dsp[key as keyof CreateDspAccount]
+      const valuesToValidate = newDspAccount[key as keyof CreateDspAccount]
       const validateResult = validator(valuesToValidate)
       if (validateResult) {
         setErrors((prevState) => ({
@@ -87,11 +91,63 @@ export default function CreateDSPAccountV2({
       } else setIsSubmitted(true)
     })
   }
+  const { subdistributor } = newDspAccount
+
+  const TypographyLabel = ({
+    children,
+    ...restProps
+  }: { children: TypographyProps['children'] } & TypographyProps<'label'>) => (
+    <Typography
+      display="block"
+      color="primary"
+      component="label"
+      variant="body2"
+      noWrap
+      {...restProps}
+    >
+      {children}
+    </Typography>
+  )
+
+  const dispatchNotif = useNotification()
   const handleSubmit = () => {
     console.log(newDspAccount)
+    createDspAccount(newDspAccount as CreateDspAccount)
+      .then(() => {
+        dispatchNotif({
+          type: NotificationTypes.SUCCESS,
+          message: `DSP Account Created`,
+        })
+        if (modalClose) {
+          modalClose()
+        }
+      })
+      .catch((err: string[]) => {
+        err.forEach((ea) => {
+          const timeout = setTimeout(() => {
+            dispatchNotif({
+              type: NotificationTypes.ERROR,
+              message: ea,
+            })
+            clearTimeout(timeout)
+          }, 300)
+        })
+      })
   }
 
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+  const activeSubdistributorId = subdistributorId
+
+  useEffect(() => {
+    if (activeSubdistributorId) {
+      console.log('With ID passed')
+      setDisplaySubdistributor(true)
+    } else {
+      console.log('Without ID passed')
+      setDisplaySubdistributor(false)
+    }
+  }, [activeSubdistributorId])
+  const [displaySubdistributor, setDisplaySubdistributor] = useState<boolean>()
 
   // useEffect(() => {
   //   const schemaChecker = {
@@ -135,10 +191,10 @@ export default function CreateDSPAccountV2({
             </Typography>
           </Box>
           <Box>
-            {modal && (
+            {modalClose && (
               <IconButton
                 onClick={() => {
-                  modal()
+                  modalClose()
                 }}
                 style={{
                   padding: 4,
@@ -244,36 +300,43 @@ export default function CreateDSPAccountV2({
                 component="label"
                 variant="caption"
               >
-                {/* *{errors.area_id && errors.area_id} */}
+                {errors.area_id && errors.area_id}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography className={classes.formLabel} component="label" variant="body2">
-                Name of Subdistributor
-              </Typography>
-              <UserAutoComplete
-                // onChange={(arg) => {
-                //   setAccountToLink(arg)
-                //   setNewDspAccount((prevState) => ({
-                //     ...prevState,
-                //     subdistributor: arg.last_name + arg.first_name,
-                //   }))
-                // }}
-                onChange={(arg: UserResponse) => {
-                  setNewDspAccount((prevState) => ({
-                    ...prevState,
-                    subdistributor: `${arg.last_name}, ${arg.first_name}`,
-                  }))
-                }}
-                mutateOptions={(users) => users.filter((ea) => ea.subdistributor)}
+              <TypographyLabel>Subdistributor</TypographyLabel>
+
+              <TextField
+                style={{ display: !displaySubdistributor ? 'none' : undefined }}
+                variant="outlined"
+                name="user"
+                onChange={handleChange}
+                fullWidth
+                size="small"
+                value={activeSubdistributorId}
               />
+
+              {!displaySubdistributor && (
+                <SimpleAutoComplete<SubdistributorResponseType, string>
+                  initialQuery=""
+                  fetcher={(q) => searchSubdistributor(q || ' ')}
+                  getOptionLabel={(option) => option.name}
+                  getOptionSelected={(val1, val2) => val1.id === val2.id}
+                  querySetter={(arg, inputValue) => inputValue}
+                  onChange={(value) => {
+                    console.log(value?.id)
+                    console.log(newDspAccount)
+                    handleChange('subdistributor', value?.id)
+                  }}
+                />
+              )}
               <Typography
                 style={{ display: !isSubmitted ? 'none' : undefined }}
                 className={classes.errorLabel}
                 component="label"
                 variant="caption"
               >
-                *{errors.subdistributor && errors.subdistributor}
+                {errors.subdistributor && errors.subdistributor}
               </Typography>
             </Grid>
             <Grid item xs={12}>
