@@ -6,9 +6,13 @@ import {
   Typography,
   CircularProgress,
   Button,
+<<<<<<< HEAD
   IconButton,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
+=======
+} from '@material-ui/core'
+>>>>>>> jake
 import { Autocomplete } from '@material-ui/lab'
 import AestheticObjectFormRenderer from '@src/components/ObjectFormRendererV2'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
@@ -234,6 +238,10 @@ export default function EditSubdistributorAccount({
             />
           </Box>
         </Box>
+<<<<<<< HEAD
+=======
+
+>>>>>>> jake
         <Box
           style={{
             padding: 8,

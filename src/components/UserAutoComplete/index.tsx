@@ -24,6 +24,10 @@ export default function UserAutoComplete({
     timeoutRef.current = setTimeout(() => {
       searchUser(query)
         .then((res) => {
+<<<<<<< HEAD
+=======
+          console.log(res)
+>>>>>>> jake
           setUsersOptions(mutateOptions ? mutateOptions(res) : res)
         })
         .catch((err) => {
