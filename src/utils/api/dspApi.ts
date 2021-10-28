@@ -72,9 +72,9 @@ export const getRetailerCount = (id: string): Promise<number> =>
       throw new Error(extractErrorFromResponse(err))
     })
 
-export const createDspAcconut = (arg: CreateDspAccount) => {
+export const createDspAccount = (newDsp: CreateDspAccount) =>
   axios
-    .post('/dsp')
+    .post('/dsp', newDsp)
     .then((res) => res.data as DspResponseType)
     .catch((err: AxiosError) => {
       // if (err && err.response && err.response.data) {
@@ -89,4 +89,3 @@ export const createDspAcconut = (arg: CreateDspAccount) => {
         throw new Error('Failed Creating DSP Account')
       }
     })
-}

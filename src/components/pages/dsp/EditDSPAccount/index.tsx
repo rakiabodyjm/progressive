@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.error.main,
   },
 }))
-export default function CreateDSPAccount({
+export default function EditDSPAccountV2({
   modal: modalClose,
   subdistributorId,
 }: {
@@ -53,10 +53,7 @@ export default function CreateDSPAccount({
   })
   const classes = useStyles()
 
-  const handleChange = (
-    e: unknown | React.ChangeEvent<HTMLInputElement>,
-    value?: string | null
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, value?: string | null) => {
     if (typeof e !== 'string') {
       const eTarget = e as ChangeEvent<HTMLInputElement>
       setNewDspAccount((prevState) => ({
@@ -84,7 +81,7 @@ export default function CreateDSPAccount({
     Object.keys(schemaChecker).forEach((key) => {
       const validator = schemaChecker[key as keyof typeof schemaChecker]
       const valuesToValidate = newDspAccount[key as keyof CreateDspAccount]
-      const validateResult = validator(valuesToValidate as string)
+      const validateResult = validator(valuesToValidate)
       if (validateResult) {
         setErrors((prevState) => ({
           ...prevState,
@@ -151,6 +148,24 @@ export default function CreateDSPAccount({
     }
   }, [activeSubdistributorId])
   const [displaySubdistributor, setDisplaySubdistributor] = useState<boolean>()
+
+  // useEffect(() => {
+  //   const schemaChecker = {
+  //     dsp_code: (value: string) => !validator.isEmpty(value) && 'Invalid DSP Code',
+  //     e_bind_number: (value: string) => !validator.isMobilePhone(value) && 'Invalid E Bind Number',
+  //   }
+  //   Object.keys(schemaChecker).forEach((key) => {
+  //     const validator = schemaChecker[key as keyof typeof schemaChecker]
+  //     const valuesToValidate = dsp[key as keyof CreateDspAccount]
+  //     const validateResult = validator(valuesToValidate)
+  //     if (validateResult) {
+  //       setErrors((prevState) => ({
+  //         ...prevState,
+  //         [key]: validateResult,
+  //       }))
+  //     }
+  //   })
+  // }, [dsp])
 
   useEffect(() => {
     console.log(errors)
@@ -309,6 +324,8 @@ export default function CreateDSPAccount({
                   getOptionSelected={(val1, val2) => val1.id === val2.id}
                   querySetter={(arg, inputValue) => inputValue}
                   onChange={(value) => {
+                    console.log(value?.id)
+                    console.log(newDspAccount)
                     handleChange('subdistributor', value?.id)
                   }}
                 />

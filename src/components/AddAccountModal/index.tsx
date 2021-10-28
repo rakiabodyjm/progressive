@@ -12,7 +12,7 @@ import {
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
-const CreateDSPAccountV2 = dynamic(() => import('@components/pages/dsp/CreateDSPAccountV2'))
+const CreateDSPAccount = dynamic(() => import('@components/pages/dsp/CreateDSPAccount'))
 const CreateSubdistributorAccount = dynamic(
   () => import('@components/pages/subdistributor/CreateSubdistributorAccount')
 )
@@ -121,7 +121,7 @@ export default function AddAccountModal({
         <CreateSubdistributorAccount modal={setSpecificModalOpen('subdistributor', false)} />
       </ModalWrapper>
       <ModalWrapper handleClose={setSpecificModalOpen('dsp', false)} open={modalsOpen.dsp}>
-        <CreateDSPAccountV2 />
+        <CreateDSPAccount />
       </ModalWrapper>
       <ModalWrapper
         open={modalsOpen.retailer}
