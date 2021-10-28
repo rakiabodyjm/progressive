@@ -34,8 +34,9 @@ export default function CreateDSPAccount({
   subdistributorId,
 }: {
   modal?: () => void
-  subdistributorId?: SubdistributorResponseType
+  subdistributorId?: string
 }) {
+  const [loading, setLoading] = useState(false)
   const [newDspAccount, setNewDspAccount] = useState<CreateDspAccount>({
     area_id: [],
     dsp_code: '',
@@ -94,7 +95,6 @@ export default function CreateDSPAccount({
       } else setIsSubmitted(true)
     })
   }
-  const { subdistributor } = newDspAccount
 
   const TypographyLabel = ({
     children,
@@ -139,17 +139,16 @@ export default function CreateDSPAccount({
   }
 
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
-  const activeSubdistributorId = subdistributorId
 
   useEffect(() => {
-    if (activeSubdistributorId) {
+    if (subdistributorId) {
       console.log('With ID passed')
       setDisplaySubdistributor(true)
     } else {
       console.log('Without ID passed')
       setDisplaySubdistributor(false)
     }
-  }, [activeSubdistributorId])
+  }, [subdistributorId])
   const [displaySubdistributor, setDisplaySubdistributor] = useState<boolean>()
 
   useEffect(() => {
@@ -166,7 +165,7 @@ export default function CreateDSPAccount({
         }}
         p={2}
       >
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography variant="h6" color="primary">
               Create New DSP Account
@@ -298,7 +297,7 @@ export default function CreateDSPAccount({
                 onChange={handleChange}
                 fullWidth
                 size="small"
-                value={activeSubdistributorId}
+                value={subdistributorId}
               />
 
               {!displaySubdistributor && (
@@ -345,7 +344,7 @@ export default function CreateDSPAccount({
             </Grid>
           </Grid>
         </Box>
-        <Box display="flex" gridGap={8} justifyContent="flex-end" p={2}>
+        <Box display="flex" mt={2} gridGap={8} justifyContent="flex-end">
           <Button
             variant="contained"
             type="submit"
