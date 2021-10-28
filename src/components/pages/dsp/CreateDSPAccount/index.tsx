@@ -18,9 +18,11 @@ import { createDspAccount, CreateDspAccount } from '@src/utils/api/dspApi'
 import { MapIdResponseType, SearchMap, searchMap } from '@src/utils/api/mapIdApi'
 import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import useNotification from '@src/utils/hooks/useNotification'
-import { NotificationTypes } from '@src/redux/data/notificationSlice'
+import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import validator from 'validator'
+import { useDispatch } from 'react-redux'
+import { extractErrorFromResponse } from '@src/utils/api/common'
+import useNotification from '@src/utils/hooks/useNotification'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
@@ -36,6 +38,8 @@ export default function CreateDSPAccount({
   modal?: () => void
   subdistributorId?: SubdistributorResponseType
 }) {
+  const activeSubdistributorId = subdistributorId
+
   const [newDspAccount, setNewDspAccount] = useState<CreateDspAccount>({
     area_id: [],
     dsp_code: '',
@@ -43,6 +47,10 @@ export default function CreateDSPAccount({
     subdistributor: '',
     user: '',
   })
+
+  if (activeSubdistributorId) {
+    //  setNewDspAccount({ subdistributor as keyof CreateDSPAccount: activeSubdistributorId })
+  }
 
   const [errors, setErrors] = useState<Record<keyof CreateDspAccount, string | null>>({
     area_id: null,
@@ -59,6 +67,7 @@ export default function CreateDSPAccount({
   ) => {
     if (typeof e !== 'string') {
       const eTarget = e as ChangeEvent<HTMLInputElement>
+      console.log(e, value)
       setNewDspAccount((prevState) => ({
         ...prevState,
         [eTarget.target.name]: eTarget.target.value,
@@ -69,30 +78,6 @@ export default function CreateDSPAccount({
         [e as keyof CreateDspAccount]: value,
       }))
     }
-    const checkAreaID = newDspAccount.area_id.length > 0
-    const checkSubdistributor = newDspAccount.subdistributor.length > 0
-    const schemaChecker = {
-      dsp_code: (value: string) =>
-        validator.isLength(newDspAccount.dsp_code, { min: 3 }) || 'Atleast 4 letters DSP Code',
-      e_bind_number: (value: string) =>
-        validator.isMobilePhone(newDspAccount.e_bind_number) || 'Invalid E Bind Number',
-      subdistributor: (value: string) =>
-        !validator.isEmpty(newDspAccount.subdistributor) || 'Empty Subdistributor',
-      user: (value: string) => checkSubdistributor || 'Empty User ID',
-      area_id: (value: string) => checkAreaID || 'Empty User ID',
-    }
-    Object.keys(schemaChecker).forEach((key) => {
-      const validator = schemaChecker[key as keyof typeof schemaChecker]
-      const valuesToValidate = newDspAccount[key as keyof CreateDspAccount]
-      const validateResult = validator(valuesToValidate as string)
-      if (validateResult) {
-        setErrors((prevState) => ({
-          ...prevState,
-          [key]: validateResult,
-        }))
-        setIsSubmitted(true)
-      } else setIsSubmitted(true)
-    })
   }
   const { subdistributor } = newDspAccount
 
@@ -113,48 +98,111 @@ export default function CreateDSPAccount({
   )
 
   const dispatchNotif = useNotification()
+  const dispatch = useDispatch()
+
   const handleSubmit = () => {
+    // const checkAreaID = newDspAccount.area_id.length > 0
+    // const checkSubdistributor = newDspAccount.subdistributor.length > 0
+    const schemaChecker = {
+      dsp_code: (value: string) =>
+        validator.isLength(newDspAccount.dsp_code, { min: 4 }) || '*Atleast 4 letters DSP Code',
+      e_bind_number: (value: string) =>
+        validator.isMobilePhone(newDspAccount.e_bind_number) || '*Invalid E Bind Number',
+      // subdistributor: (value: string) => checkSubdistributor || '*Empty Subdistributor',
+      user: (value: string) => !validator.isEmpty(newDspAccount.user) || '*Empty User ID',
+      // area_id: (value: any) => checkAreaID || '*Empty Area ID',
+    }
+    Object.keys(schemaChecker).forEach((key) => {
+      const validator = schemaChecker[key as keyof typeof schemaChecker]
+      const valuesToValidate = newDspAccount[key as keyof CreateDspAccount]
+      const validateResult = validator(valuesToValidate as string)
+      if (validateResult) {
+        setErrors((prevState) => ({
+          ...prevState,
+          [key]: validateResult,
+        }))
+      }
+    })
     console.log(newDspAccount)
+    //   createDspAccount(newDspAccount as CreateDspAccount)
+    //     .then(() => {
+    //       dispatchNotif({
+    //         type: NotificationTypes.SUCCESS,
+    //         message: `DSP Account Created`,
+    //       })
+    //       if (modalClose) {
+    //         modalClose()
+    //       }
+    //     })
+    //     .catch((err: string[]) => {
+    //       err.forEach((ea) => {
+    //         dispatchNotif({
+    //           type: NotificationTypes.ERROR,
+    //           message: ea,
+    //         })
+    //       })
+    //     })
+    // }
     createDspAccount(newDspAccount as CreateDspAccount)
       .then(() => {
+        // const { message, user, error } = res
         dispatchNotif({
           type: NotificationTypes.SUCCESS,
           message: `DSP Account Created`,
+        })
+        setNewDspAccount({
+          area_id: [],
+          dsp_code: '',
+          e_bind_number: '',
+          subdistributor: '',
+          user: '',
+        })
+        setErrors({
+          area_id: '',
+          dsp_code: '',
+          e_bind_number: '',
+          subdistributor: '',
+          user: '',
         })
         if (modalClose) {
           modalClose()
         }
       })
       .catch((err: string[]) => {
-        err.forEach((ea) => {
-          const timeout = setTimeout(() => {
-            dispatchNotif({
+        if (Array.isArray(err)) {
+          err.forEach((ea) => {
+            dispatch({
               type: NotificationTypes.ERROR,
               message: ea,
             })
-            clearTimeout(timeout)
-          }, 300)
-        })
+          })
+        } else {
+          dispatch({
+            type: NotificationTypes.ERROR,
+            message: extractErrorFromResponse(err),
+          })
+        }
       })
   }
-
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
-  const activeSubdistributorId = subdistributorId
 
   useEffect(() => {
     if (activeSubdistributorId) {
       console.log('With ID passed')
       setDisplaySubdistributor(true)
+      const id = activeSubdistributorId
+      handleChange('subdistributor', id)
     } else {
       console.log('Without ID passed')
       setDisplaySubdistributor(false)
     }
   }, [activeSubdistributorId])
+
   const [displaySubdistributor, setDisplaySubdistributor] = useState<boolean>()
 
   useEffect(() => {
     console.log(errors)
-  }, [errors])
+    console.log(newDspAccount)
+  }, [errors, newDspAccount])
 
   return (
     <Paper variant="outlined">
@@ -178,11 +226,11 @@ export default function CreateDSPAccount({
           <Box>
             {modalClose && (
               <IconButton
-                onClick={() => {
-                  modalClose()
-                }}
                 style={{
                   padding: 4,
+                }}
+                onClick={() => {
+                  modalClose()
                 }}
               >
                 <Close />
@@ -208,7 +256,11 @@ export default function CreateDSPAccount({
               />
 
               <Typography
-                style={{ display: !isSubmitted ? 'none' : undefined }}
+                style={{
+                  display: validator.isLength(newDspAccount.dsp_code, { min: 4 })
+                    ? 'none'
+                    : undefined,
+                }}
                 className={classes.errorLabel}
                 component="label"
                 variant="caption"
@@ -229,7 +281,11 @@ export default function CreateDSPAccount({
                 value={newDspAccount.e_bind_number}
               />
               <Typography
-                style={{ display: !isSubmitted ? 'none' : undefined }}
+                style={{
+                  display: validator.isMobilePhone(newDspAccount.e_bind_number)
+                    ? 'none'
+                    : undefined,
+                }}
                 className={classes.errorLabel}
                 component="label"
                 variant="caption"
@@ -280,7 +336,7 @@ export default function CreateDSPAccount({
                 getOptionSelected={(value1, value2) => value1.area_id === value2.area_id}
               />
               <Typography
-                style={{ display: !isSubmitted ? 'none' : undefined }}
+                style={{ display: newDspAccount.area_id.length > 0 ? 'none' : undefined }}
                 className={classes.errorLabel}
                 component="label"
                 variant="caption"
@@ -294,11 +350,14 @@ export default function CreateDSPAccount({
               <TextField
                 style={{ display: !displaySubdistributor ? 'none' : undefined }}
                 variant="outlined"
-                name="user"
-                onChange={handleChange}
+                name="subdistributor"
                 fullWidth
                 size="small"
                 value={activeSubdistributorId}
+                // onChange={() => {
+                //   const id = activeSubdistributorId
+                //   handleChange('subdistributor', id)
+                // }}
               />
 
               {!displaySubdistributor && (
@@ -313,14 +372,16 @@ export default function CreateDSPAccount({
                   }}
                 />
               )}
-              <Typography
-                style={{ display: !isSubmitted ? 'none' : undefined }}
+              {/* <Typography
+                style={{
+                  display: !validator.isEmpty(newDspAccount.subdistributor) ? 'none' : undefined,
+                }}
                 className={classes.errorLabel}
                 component="label"
                 variant="caption"
               >
                 {errors.subdistributor && errors.subdistributor}
-              </Typography>
+              </Typography> */}
             </Grid>
             <Grid item xs={12}>
               <Typography className={classes.formLabel} component="label" variant="body2">
@@ -335,7 +396,7 @@ export default function CreateDSPAccount({
                 value={newDspAccount.user}
               />
               <Typography
-                style={{ display: !isSubmitted ? 'none' : undefined }}
+                style={{ display: !validator.isEmpty(newDspAccount.user) ? 'none' : undefined }}
                 className={classes.errorLabel}
                 component="label"
                 variant="caption"

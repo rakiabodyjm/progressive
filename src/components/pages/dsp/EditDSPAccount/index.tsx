@@ -14,7 +14,7 @@ import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComplete'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
-import { createDspAccount, CreateDspAccount } from '@src/utils/api/dspApi'
+import { createDspAccount, CreateDspAccount, DspResponseType } from '@src/utils/api/dspApi'
 import { MapIdResponseType, SearchMap, searchMap } from '@src/utils/api/mapIdApi'
 import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import React, { ChangeEvent, useEffect, useState } from 'react'
@@ -31,10 +31,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 export default function EditDSPAccountV2({
   modal: modalClose,
-  subdistributorId,
+  dsp,
 }: {
   modal?: () => void
-  subdistributorId?: SubdistributorResponseType
+  dsp?: DspResponseType
 }) {
   const [newDspAccount, setNewDspAccount] = useState<CreateDspAccount>({
     area_id: [],
@@ -136,7 +136,7 @@ export default function EditDSPAccountV2({
   }
 
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
-  const activeSubdistributorId = subdistributorId
+  const activeSubdistributorId = dsp
 
   useEffect(() => {
     if (activeSubdistributorId) {

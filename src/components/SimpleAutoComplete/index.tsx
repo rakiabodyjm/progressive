@@ -15,6 +15,7 @@ export default function SimpleAutoComplete<T, U>({
   getOptionSelected,
   getOptionLabel,
   inputProps,
+  ...restProps
 }: {
   onChange: (arg: T) => void
   mutateOptions?: (arg: T[]) => T[]
@@ -25,7 +26,7 @@ export default function SimpleAutoComplete<T, U>({
   getOptionSelected: (arg: T, value: T) => boolean
   getOptionLabel: (option: T) => string
   inputProps?: TextFieldProps
-}) {
+} & Omit<Partial<AutocompleteProps<T, undefined, undefined, undefined>>, 'onChange'>) {
   const [options, setOptions] = useState<T[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [query, setQuery] = useState(initialQuery)
@@ -86,6 +87,7 @@ export default function SimpleAutoComplete<T, U>({
           {...inputProps}
         />
       )}
+      {...restProps}
     />
   )
 }

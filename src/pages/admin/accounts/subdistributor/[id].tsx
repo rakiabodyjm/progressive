@@ -1,22 +1,11 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  Container,
-  Fade,
-  Modal,
-  Paper,
-  Theme,
-  Typography,
-} from '@material-ui/core'
+import { Backdrop, Box, Button, Fade, Modal, Paper, Theme, Container } from '@material-ui/core'
 import { useTheme } from '@material-ui/styles'
 import EditSubdistributorAccount from '@src/components/pages/subdistributor/EditSubdistributorAccount'
 import ViewSubdistributorAccount from '@src/components/pages/subdistributor/ViewSubdistributorAccount'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import { extractErrorFromResponse } from '@src/utils/api/common'
 import { getSubdistributor } from '@src/utils/api/subdistributorApi'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import CreateDSPAccount from '@components/pages/dsp/CreateDSPAccount'
@@ -112,15 +101,13 @@ export default function AdminSubdistributorManage() {
       )}
       {modalsOpen.addDspAccountModal && id && (
         <ModalContainer
-          handleClose={() => {
-            setModalsOpen((prevState) => ({
-              ...prevState,
-              addDspAccountModal: false,
-            }))
-          }}
+          handleClose={setModalOpen('addDspAccountModal', false)}
           open={modalsOpen.addDspAccountModal}
         >
-          <CreateDSPAccount subdistributorId={id} />
+          <CreateDSPAccount
+            subdistributorId={id as string}
+            modal={setModalOpen('addDspAccountModal', false)}
+          />
         </ModalContainer>
       )}
       {modalsOpen.addRetailerAccountModal && id && (
@@ -128,7 +115,10 @@ export default function AdminSubdistributorManage() {
           open={modalsOpen.addRetailerAccountModal}
           handleClose={setModalOpen('addRetailerAccountModal', false)}
         >
-          <CreateRetailerAccount modal={setModalOpen('addRetailerAccountModal', false)} />
+          <CreateRetailerAccount
+            subdistributorId={subdistributor?.id}
+            modal={setModalOpen('addRetailerAccountModal', false)}
+          />
         </ModalContainer>
       )}
     </div>

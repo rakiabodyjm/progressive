@@ -121,7 +121,7 @@ export default function AddAccountModal({
         <CreateSubdistributorAccount modal={setSpecificModalOpen('subdistributor', false)} />
       </ModalWrapper>
       <ModalWrapper handleClose={setSpecificModalOpen('dsp', false)} open={modalsOpen.dsp}>
-        <CreateDSPAccount />
+        <CreateDSPAccount modal={setSpecificModalOpen('dsp', false)} />
       </ModalWrapper>
       <ModalWrapper
         open={modalsOpen.retailer}

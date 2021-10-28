@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-export default function AdminAccountView() {
+export default function AdminAccountManage() {
   const router = useRouter()
   const { query } = router
   const { id } = query
@@ -116,6 +116,22 @@ export default function AdminAccountView() {
                 color="primary"
               >
                 Manage Subdistibributor Account
+              </Button>
+            )}
+            {account?.dsp && (
+              <Button
+                onClick={() => {
+                  router.push({
+                    pathname: '/admin/accounts/dsp/[id]',
+                    query: {
+                      id: account?.dsp?.id,
+                    },
+                  })
+                }}
+                variant="outlined"
+                color="primary"
+              >
+                Manage DSP Account
               </Button>
             )}
           </Box>
