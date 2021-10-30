@@ -60,7 +60,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   const theme: Theme = useTheme()
 
   return (
-    <Box maxHeight="80vh" display="grid">
+    <Box display="grid">
       <TableContainer
         component={(props) => (
           <Paper
