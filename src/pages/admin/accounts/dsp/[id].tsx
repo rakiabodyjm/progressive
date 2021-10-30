@@ -34,6 +34,7 @@ export default function AdminDspManage() {
     }
   }, [])
   const setModalOpen = (key: keyof typeof modalsOpen, isOpen?: boolean) => () => {
+    console.log(key, isOpen)
     setModalsOpen((prevState) => ({
       ...prevState,
       [key]: isOpen || !prevState[key],
@@ -42,58 +43,62 @@ export default function AdminDspManage() {
 
   return (
     <Box>
-      <Paper variant="outlined">
-        <Box
-          display="flex"
-          style={{
-            gap: 16,
-          }}
-          p={2}
+      <Box mb={2}>
+        <Paper variant="outlined">
+          <Box
+            display="flex"
+            style={{
+              gap: 16,
+            }}
+            p={2}
+          >
+            {dspActionButtons.map((ea) => (
+              <Button
+                key={ea.id}
+                onClick={setModalOpen(ea.id as keyof DSPManageModals, true)}
+                variant="outlined"
+                color="primary"
+              >
+                {ea.label}
+              </Button>
+            ))}
+          </Box>
+        </Paper>
+      </Box>
+
+      {id && <ViewDspAccount dspId={id as string} />}
+
+      {modalsOpen.editDspModal && (
+        <ModalWrapper
+          open={modalsOpen.editDspModal}
+          onClose={setModalOpen('editDspModal', false)}
+          containerSize="sm"
         >
-          {dspActionButtons.map((ea) => (
-            <Button
-              key={ea.id}
-              onClick={setModalOpen(ea.id as keyof DSPManageModals)}
-              variant="outlined"
-              color="primary"
-            >
-              {ea.label}
-            </Button>
-          ))}
-        </Box>
-        {id && <ViewDspAccount dspId={id as string} />}
-        {modalsOpen.editDspModal && (
-          <ModalWrapper
-            open={modalsOpen.editDspModal}
-            onClose={setModalOpen('editDspModal', false)}
-            containerSize="sm"
-          >
-            {/** Edit DSP Modal */}
-            <Paper variant="outlined">
-              <Typography variant="h6" color="primary">
-                Edit DSP Account
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Edit DSP Account Information
-              </Typography>
-              <Divider />
-            </Paper>
-          </ModalWrapper>
-        )}
-        {modalsOpen.addRetailerModal && dsp?.subdistributor.id && (
-          <ModalWrapper
-            open={modalsOpen.addRetailerModal}
-            onClose={setModalOpen('addRetailerModal', false)}
-            containerSize="sm"
-          >
-            <CreateRetailerAccount
-              modal={setModalOpen('addRetailerModal', false)}
-              subdistributorId={dsp?.subdistributor.id}
-              dspId={id as string}
-            />
-          </ModalWrapper>
-        )}
-      </Paper>
+          {/** Edit DSP Modal */}
+          <Paper variant="outlined">
+            <Typography variant="h6" color="primary">
+              Edit DSP Account
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Edit DSP Account Information
+            </Typography>
+            <Divider />
+          </Paper>
+        </ModalWrapper>
+      )}
+      {modalsOpen.addRetailerModal && dsp?.subdistributor.id && (
+        <ModalWrapper
+          open={modalsOpen.addRetailerModal}
+          onClose={setModalOpen('addRetailerModal', false)}
+          containerSize="sm"
+        >
+          <CreateRetailerAccount
+            modal={setModalOpen('addRetailerModal', false)}
+            subdistributorId={dsp?.subdistributor.id}
+            dspId={id as string}
+          />
+        </ModalWrapper>
+      )}
     </Box>
   )
 }
