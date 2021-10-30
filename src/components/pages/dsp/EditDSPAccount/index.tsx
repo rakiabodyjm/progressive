@@ -70,7 +70,7 @@ export default function CreateDSPAccount({
   const [formValues, setFormValues] = useState<EditDspAccountFormValues>({
     ...editableDspFields(dsp),
   })
-  const [editDspAccount, setEditDspAccount] = useState<DspRegisterParams>({
+  const [editDspAccount, setEditDspAccount] = useState<DspUpdateType>({
     area_id: [],
     dsp_code: '',
     e_bind_number: '',
@@ -99,23 +99,27 @@ export default function CreateDSPAccount({
     Object.keys(formValuesRef.current).forEach((key) => {
       const currentKey = key as keyof EditDspAccountFormValues
 
-      if (typeof formValues[currentKey] === 'object') {
-        if (!deepEqual(formValues[currentKey] as any, formValuesRef.current[currentKey] as any)) {
+      if (typeof editDspAccount[currentKey] === 'object') {
+        if (
+          !deepEqual(editDspAccount[currentKey] as any, formValuesRef.current[currentKey] as any)
+        ) {
           keyChanges.push(currentKey)
+          console.log(' if keychanges', keyChanges)
         }
-      } else if (formValuesRef.current[currentKey] !== formValues[currentKey]) {
+      } else if (formValuesRef.current[currentKey] !== editDspAccount[currentKey]) {
         keyChanges.push(currentKey)
+        console.log(' else keychanges', keyChanges)
       }
     })
 
     return keyChanges.reduce(
       (accumulator, key) => ({
-        [key]: formValues[key as keyof EditDspAccountFormValues],
+        [key]: editDspAccount[key as keyof EditDspAccountFormValues],
       }),
       {}
     ) as Partial<EditDspAccountFormValues>
     // return changes
-  }, [formValues])
+  }, [editDspAccount])
 
   const [mapIdOptions, setMapidOptions] = useState<MapIdResponseType[]>([])
   const [mapidLoading, setMapidLoading] = useState(false)
