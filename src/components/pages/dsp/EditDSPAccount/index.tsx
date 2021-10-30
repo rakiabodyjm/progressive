@@ -53,7 +53,10 @@ export default function EditDSPAccountV2({
   })
   const classes = useStyles()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, value?: string | null) => {
+  const handleChange = (
+    e: unknown | React.ChangeEvent<HTMLInputElement>,
+    value?: string | null
+  ) => {
     if (typeof e !== 'string') {
       const eTarget = e as ChangeEvent<HTMLInputElement>
       setNewDspAccount((prevState) => ({
@@ -81,7 +84,7 @@ export default function EditDSPAccountV2({
     Object.keys(schemaChecker).forEach((key) => {
       const validator = schemaChecker[key as keyof typeof schemaChecker]
       const valuesToValidate = newDspAccount[key as keyof CreateDspAccount]
-      const validateResult = validator(valuesToValidate)
+      const validateResult = validator(valuesToValidate as keyof typeof schemaChecker)
       if (validateResult) {
         setErrors((prevState) => ({
           ...prevState,
