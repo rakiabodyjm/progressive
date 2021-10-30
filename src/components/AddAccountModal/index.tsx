@@ -16,7 +16,8 @@ const CreateDSPAccount = dynamic(() => import('@components/pages/dsp/CreateDSPAc
 const CreateSubdistributorAccount = dynamic(
   () => import('@components/pages/subdistributor/CreateSubdistributorAccount')
 )
-const CreateUserAccount = dynamic(() => import('@components/pages/user/CreateUserAccount'))
+const CreateUserAccount = dynamic(() => import('@src/components/pages/user/CreateUserAccount'))
+
 const CreateRetailerAccount = dynamic(
   () => import('@components/pages/retailer/CreateRetailerAccount')
 )

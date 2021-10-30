@@ -11,6 +11,11 @@ type CustomThemeProperties = {
 const theme = (additionalProps: CustomThemeProperties): Theme => {
   const { prefersDarkMode } = additionalProps
   const customTheme: ThemeOptions = {
+    props: {
+      MuiButton: {
+        disableElevation: true,
+      },
+    },
     palette: {
       type: prefersDarkMode ? 'dark' : 'light',
       primary: {
@@ -38,7 +43,7 @@ const theme = (additionalProps: CustomThemeProperties): Theme => {
       },
       MuiButton: {
         root: {
-          dding: `4px 24px`,
+          padding: `4px 24px`,
         },
         outlined: {
           padding: `4px 24px`,

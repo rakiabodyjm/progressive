@@ -51,7 +51,7 @@ export default function AestheticObjectRenderer({
       {Object.keys(fields).map(
         (key) =>
           (typeof fields[key] === 'string' && (
-            <Box mb={spacing}>
+            <Box key={key} mb={spacing}>
               <RenderKeyValue highlight={highlight} key={key} field={key} value={fields[key]} />
             </Box>
           )) ||

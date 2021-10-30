@@ -36,7 +36,7 @@ export default function CreateDSPAccount({
   subdistributorId,
 }: {
   modal?: () => void
-  subdistributorId?: SubdistributorResponseType
+  subdistributorId?: string
 }) {
   const activeSubdistributorId = subdistributorId
 
@@ -79,7 +79,6 @@ export default function CreateDSPAccount({
       }))
     }
   }
-  const { subdistributor } = newDspAccount
 
   const TypographyLabel = ({
     children,
@@ -186,7 +185,7 @@ export default function CreateDSPAccount({
   }
 
   useEffect(() => {
-    if (activeSubdistributorId) {
+    if (subdistributorId) {
       console.log('With ID passed')
       setDisplaySubdistributor(true)
       const id = activeSubdistributorId
@@ -214,7 +213,7 @@ export default function CreateDSPAccount({
         }}
         p={2}
       >
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography variant="h6" color="primary">
               Create New DSP Account
@@ -406,7 +405,7 @@ export default function CreateDSPAccount({
             </Grid>
           </Grid>
         </Box>
-        <Box display="flex" gridGap={8} justifyContent="flex-end" p={2}>
+        <Box display="flex" mt={2} gridGap={8} justifyContent="flex-end">
           <Button
             variant="contained"
             type="submit"

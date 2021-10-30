@@ -8,6 +8,7 @@ import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import jwtDecode from '@src/utils/lib/jwtDecode'
 import type { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios, { AxiosError } from 'axios'
+import { type } from 'os'
 
 export type LoginUserParams = {
   email: string
@@ -49,6 +50,11 @@ export type CreateUser = {
   username: string
   password: string
 }
+
+export type CheckUsername = {
+  username: string
+}
+
 const userApi = {
   /**
    * Logs in user and dispatches actions to redux

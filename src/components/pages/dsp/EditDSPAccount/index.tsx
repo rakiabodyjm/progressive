@@ -45,11 +45,9 @@ interface EditDspAccountFormValues {
   dsp_code: string
   area_id: any
 }
-const editableDspFields: (args: DspRegisterParams) => EditDspAccountFormValues = ({
-  area_id,
-  dsp_code,
-  e_bind_number,
-}) => ({
+const editableDspFields: (
+  args: DspRegisterParams | DspRegisterParams2
+) => EditDspAccountFormValues = ({ area_id, dsp_code, e_bind_number }) => ({
   area_id,
   dsp_code,
   e_bind_number,
@@ -432,7 +430,7 @@ export default function CreateDSPAccount({
             </Grid> */}
           </Grid>
         </Box>
-        <Box display="flex" gridGap={8} justifyContent="flex-end" p={2}>
+        <Box mt={2} display="flex" gridGap={8} justifyContent="flex-end">
           <Button
             variant="contained"
             type="submit"
