@@ -279,7 +279,7 @@ export default function CreateRetailerAccount({
             color="primary"
             variant="contained"
           >
-            Submit
+            Confirm
           </Button>
         </Box>
       </Box>
