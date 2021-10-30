@@ -7,7 +7,7 @@ import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import EditDSPAccountV2 from '@components/pages/dsp/EditDSPAccountV2'
+import EditDSPAccount from '@components/pages/dsp/EditDSPAccount'
 import useSWR from 'swr'
 
 type DSPManageModals = {
@@ -72,7 +72,7 @@ export default function AdminDspManage() {
             containerSize="sm"
           >
             {/** Edit DSP Modal */}
-            <EditDSPAccountV2 modal={setModalOpen('editDspModal', false)} dsp={dsp} />
+            <EditDSPAccount modal={setModalOpen('editDspModal', false)} dsp={dsp} />
           </ModalWrapper>
         )}
         {modalsOpen.addRetailerModal && dsp?.subdistributor.id && (

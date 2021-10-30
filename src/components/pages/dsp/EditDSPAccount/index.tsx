@@ -17,18 +17,15 @@ import { makeStyles } from '@material-ui/styles'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import {
   updateDsp,
-  createDsp,
-  CreateDspAccount,
-  DspResponseType,
   DspRegisterParams,
   DspRegisterParams2,
-  DspRegisterParams3,
+  DspUpdateType,
 } from '@src/utils/api/dspApi'
 import { MapIdResponseType, SearchMap, searchMap } from '@src/utils/api/mapIdApi'
-import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState, useMemo } from 'react'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import validator from 'validator'
+import deepEqual from '@src/utils/deepEqual'
 import { useDispatch } from 'react-redux'
 import { extractErrorFromResponse } from '@src/utils/api/common'
 import useNotification from '@src/utils/hooks/useNotification'
@@ -47,7 +44,6 @@ interface EditDspAccountFormValues {
   e_bind_number: string
   dsp_code: string
   area_id: any
-  // user: UserResponse
 }
 const editableDspFields: (args: DspRegisterParams) => EditDspAccountFormValues = ({
   area_id,
@@ -58,6 +54,7 @@ const editableDspFields: (args: DspRegisterParams) => EditDspAccountFormValues =
   dsp_code,
   e_bind_number,
 })
+
 export default function CreateDSPAccount({
   modal: modalClose,
   dsp,
@@ -86,54 +83,71 @@ export default function CreateDSPAccount({
   })
   const classes = useStyles()
 
-  const handleChange = (
-    e: unknown | React.ChangeEvent<HTMLInputElement>,
-    value?: string | null
-  ) => {
-    if (typeof e !== 'string') {
-      const eTarget = e as ChangeEvent<HTMLInputElement>
-      console.log(e, value)
-      setEditDspAccount((prevState) => ({
-        ...prevState,
-        [eTarget.target.name]: eTarget.target.value,
-      }))
-    } else {
-      setEditDspAccount((prevState) => ({
-        ...prevState,
-        [e as keyof CreateDspAccount]: value,
-      }))
-    }
-  }
-
-  const TypographyLabel = ({
-    children,
-    ...restProps
-  }: { children: TypographyProps['children'] } & TypographyProps<'label'>) => (
-    <Typography
-      display="block"
-      color="primary"
-      component="label"
-      variant="body2"
-      noWrap
-      {...restProps}
-    >
-      {children}
-    </Typography>
-  )
-  const [mapIdOptions, setMapidOptions] = useState<MapIdResponseType[]>([])
-  const [mapidLoading, setMapidLoading] = useState(false)
+  const mapID = String(dsp?.area_id)
   const [mapidQuery, setMapidQuery] = useState({
-    search: dsp?.area_id || '',
+    search: mapID || '',
     page: 0,
     limit: 100,
   })
 
-  const dispatchNotif = useNotification()
+  const changes = useMemo(() => {
+    /**
+     * Get changes based on formValuesRef
+     */
+    const keyChanges: string[] = []
+
+    Object.keys(formValuesRef.current).forEach((key) => {
+      const currentKey = key as keyof EditDspAccountFormValues
+
+      if (typeof formValues[currentKey] === 'object') {
+        if (!deepEqual(formValues[currentKey] as any, formValuesRef.current[currentKey] as any)) {
+          keyChanges.push(currentKey)
+        }
+      } else if (formValuesRef.current[currentKey] !== formValues[currentKey]) {
+        keyChanges.push(currentKey)
+      }
+    })
+
+    return keyChanges.reduce(
+      (accumulator, key) => ({
+        [key]: formValues[key as keyof EditDspAccountFormValues],
+      }),
+      {}
+    ) as Partial<EditDspAccountFormValues>
+    // return changes
+  }, [formValues])
+
+  const [mapIdOptions, setMapidOptions] = useState<MapIdResponseType[]>([])
+  const [mapidLoading, setMapidLoading] = useState(false)
+  const timeout = useRef<ReturnType<typeof setTimeout> | undefined>()
   const dispatch = useDispatch()
+  useEffect(() => {
+    if (timeout.current) {
+      clearTimeout(timeout.current)
+    }
+    timeout.current = setTimeout(
+      () =>
+        searchMap(mapidQuery)
+          .then((res) => {
+            setMapidOptions(res)
+          })
+          .catch((err) => {
+            console.error(err)
+          })
+          .finally(() => {
+            setMapidLoading(false)
+          }),
+      3000
+    )
+    return () => {
+      if (timeout.current) {
+        clearTimeout(timeout.current)
+      }
+    }
+  }, [mapidQuery])
 
   const handleEdit = () => {
-    // const checkAreaID = editDspAccount.area_id.length > 0
-    // const checkSubdistributor = editDspAccount.subdistributor.length > 0
+    console.log(editDspAccount)
     const schemaChecker = {
       dsp_code: (value: string) =>
         validator.isLength(editDspAccount.dsp_code, { min: 4 }) || '*Atleast 4 letters DSP Code',
@@ -154,25 +168,34 @@ export default function CreateDSPAccount({
         }))
       }
     })
-    console.log(editDspAccount)
     console.log(dsp.id)
-    const { e_bind_number, dsp_code } = editDspAccount
-    updateDsp({ e_bind_number, dsp_code }, dsp.id)
-      .then((res) => {
-        dispatch({
-          type: NotificationTypes.SUCCESS,
-          message: 'DSP Account Updated',
+    console.log('update', formatUpdateValues(changes))
+    if (dsp.id) {
+      const { dsp_code, e_bind_number, area_id } = editDspAccount
+      updateDsp(formatUpdateValues(changes), dsp.id)
+        .then((res) => {
+          dispatch(
+            setNotification({
+              type: NotificationTypes.SUCCESS,
+              message: 'DSP Account Updated',
+            })
+          )
+          setErrors({
+            area_id: '',
+            dsp_code: '',
+            e_bind_number: '',
+          })
+          if (modalClose) {
+            modalClose()
+          }
         })
-        if (modalClose) {
-          modalClose()
-        }
-      })
-      .catch((err) => {
-        dispatch({
-          type: NotificationTypes.ERROR,
-          message: err.message,
+        .catch((err) => {
+          dispatch({
+            type: NotificationTypes.ERROR,
+            message: err.message,
+          })
         })
-      })
+    }
   }
 
   useEffect(() => {
@@ -196,7 +219,6 @@ export default function CreateDSPAccount({
     console.log('formvalues', formValues)
     console.log('editDspAccount', editDspAccount)
   }, [errors, formValues, editDspAccount])
-
   return (
     <Paper variant="outlined">
       <Box
@@ -423,3 +445,9 @@ export default function CreateDSPAccount({
     </Paper>
   )
 }
+
+const formatUpdateValues = (args: Partial<EditDspAccountFormValues>): Partial<DspUpdateType> =>
+  ({
+    ...args,
+    ...(args?.area_id && { area_id: args.area_id.area_id }),
+  } as Partial<DspUpdateType>)

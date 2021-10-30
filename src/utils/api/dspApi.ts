@@ -34,8 +34,10 @@ export interface CreateDspAccount {
   user: UserResponse['id']
   area_id: MapIdResponseType['area_id'][]
 }
-export interface DspUpdateType extends Omit<DspRegisterParams2, 'area_id'> {
-  area_id: string
+export interface DspUpdateType {
+  dsp_code: string
+  e_bind_number: string
+  area_id: MapIdResponseType['area_id'][]
 }
 export interface DspRegisterParams extends Omit<CreateDspAccount, 'subdistributor' | 'user'> {}
 export interface DspRegisterParams2 extends Omit<DspResponseType, 'subdistributor' | 'user'> {}
