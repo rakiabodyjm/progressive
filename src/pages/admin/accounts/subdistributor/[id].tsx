@@ -109,7 +109,10 @@ export default function AdminSubdistributorManage() {
           }}
           open={modalsOpen.addDspAccountModal}
         >
-          <CreateDSPAccount subdistributorId={id as string} />
+          <CreateDSPAccount
+            subdistributorId={id as string}
+            modal={setModalOpen('addDspAccountModal', false)}
+          />
         </ModalContainer>
       )}
       {modalsOpen.addRetailerAccountModal && id && (
