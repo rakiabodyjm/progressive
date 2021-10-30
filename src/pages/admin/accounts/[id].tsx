@@ -1,15 +1,5 @@
 import ViewRetailerAccount from '@components/pages/retailer/ViewRetailerAccount'
-import {
-  Box,
-  Button,
-  Divider,
-  Grid,
-  IconButton,
-  Paper,
-  Theme,
-  Tooltip,
-  Typography,
-} from '@material-ui/core'
+import { Box, Button, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import DSPSmallCard from '@src/components/DSPSmallCard'
 import RetailerSmallCard from '@src/components/RetailerSmallCard'
@@ -132,6 +122,22 @@ export default function AdminAccountManage() {
                 color="primary"
               >
                 Manage DSP Account
+              </Button>
+            )}
+            {account?.retailer && (
+              <Button
+                onClick={() => {
+                  router.push({
+                    pathname: '/admin/accounts/retailer/[id]',
+                    query: {
+                      id: account?.retailer?.id,
+                    },
+                  })
+                }}
+                variant="outlined"
+                color="primary"
+              >
+                Manage Retailer Account
               </Button>
             )}
           </Box>
