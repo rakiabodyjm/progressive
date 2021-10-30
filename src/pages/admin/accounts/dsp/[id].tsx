@@ -2,10 +2,13 @@ import { Box, Button, Divider, Paper, Typography } from '@material-ui/core'
 import ModalWrapper from '@src/components/ModalWrapper'
 import ViewDspAccount from '@src/components/pages/dsp/ViewDSPAccount'
 import CreateRetailerAccount from '@src/components/pages/retailer/CreateRetailerAccount'
+import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import EditDSPAccountV2 from '@components/pages/dsp/EditDSPAccountV2'
+import useSWR from 'swr'
 
 type DSPManageModals = {
   editDspModal: boolean
@@ -21,18 +24,18 @@ export default function AdminDspManage() {
     addRetailerModal: false,
   })
 
-  const [dsp, setDsp] = useState<DspResponseType>()
-  useEffect(() => {
-    if (id) {
-      getDsp(id as string)
-        .then((res) => {
-          setDsp(res)
-        })
-        .catch((err) => {
-          console.error(err)
-        })
-    }
-  }, [])
+  const { data: dsp } = useSWR(id as string, (id) =>
+    getDsp(id)
+      .then((res) => res)
+      .catch((err) => {
+        dispatch(
+          setNotification({
+            type: NotificationTypes.ERROR,
+            message: err.message,
+          })
+        )
+      })
+  )
   const setModalOpen = (key: keyof typeof modalsOpen, isOpen?: boolean) => () => {
     setModalsOpen((prevState) => ({
       ...prevState,
@@ -62,22 +65,14 @@ export default function AdminDspManage() {
           ))}
         </Box>
         {id && <ViewDspAccount dspId={id as string} />}
-        {modalsOpen.editDspModal && (
+        {modalsOpen.editDspModal && dsp && (
           <ModalWrapper
             open={modalsOpen.editDspModal}
             onClose={setModalOpen('editDspModal', false)}
             containerSize="sm"
           >
             {/** Edit DSP Modal */}
-            <Paper variant="outlined">
-              <Typography variant="h6" color="primary">
-                Edit DSP Account
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Edit DSP Account Information
-              </Typography>
-              <Divider />
-            </Paper>
+            <EditDSPAccountV2 modal={setModalOpen('editDspModal', false)} dsp={dsp} />
           </ModalWrapper>
         )}
         {modalsOpen.addRetailerModal && dsp?.subdistributor.id && (

@@ -34,7 +34,11 @@ export interface CreateDspAccount {
   user: UserResponse['id']
   area_id: MapIdResponseType['area_id'][]
 }
-
+export interface DspUpdateType extends Omit<DspRegisterParams2, 'area_id'> {
+  area_id: string
+}
+export interface DspRegisterParams extends Omit<CreateDspAccount, 'subdistributor' | 'user'> {}
+export interface DspRegisterParams2 extends Omit<DspResponseType, 'subdistributor' | 'user'> {}
 export const getDsp = (id: string): Promise<DspResponseType> =>
   axios
     .get(`/dsp/${id}`)
@@ -72,7 +76,7 @@ export const getRetailerCount = (id: string): Promise<number> =>
       throw new Error(extractErrorFromResponse(err))
     })
 
-export const createDspAccount = (newDsp: CreateDspAccount) =>
+export const createDsp = (newDsp: CreateDspAccount) =>
   axios
     .post('/dsp', newDsp)
     .then((res) => res.data as DspResponseType)
@@ -88,4 +92,13 @@ export const createDspAccount = (newDsp: CreateDspAccount) =>
       } else {
         throw new Error('Failed Creating DSP Account')
       }
+    })
+export const updateDsp = (params: Partial<DspUpdateType>, id: string) =>
+  axios
+    .patch(`/dsp/${id}`, {
+      ...params,
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw new Error(extractErrorFromResponse(err))
     })

@@ -14,7 +14,7 @@ import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComplete'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
-import { createDspAccount, CreateDspAccount } from '@src/utils/api/dspApi'
+import { createDsp, CreateDspAccount } from '@src/utils/api/dspApi'
 import { MapIdResponseType, SearchMap, searchMap } from '@src/utils/api/mapIdApi'
 import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import React, { ChangeEvent, useEffect, useState } from 'react'
@@ -143,7 +143,7 @@ export default function CreateDSPAccount({
     //       })
     //     })
     // }
-    createDspAccount(newDspAccount as CreateDspAccount)
+    createDsp(newDspAccount as CreateDspAccount)
       .then(() => {
         // const { message, user, error } = res
         dispatchNotif({
