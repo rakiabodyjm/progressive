@@ -45,51 +45,52 @@ export default function AdminDspManage() {
 
   return (
     <Box>
-      <Paper variant="outlined">
-        <Box
-          display="flex"
-          style={{
-            gap: 16,
-          }}
-          p={2}
-          mb={2}
-        >
-          {dspActionButtons.map((ea) => (
-            <Button
-              key={ea.id}
-              onClick={setModalOpen(ea.id as keyof DSPManageModals)}
-              variant="outlined"
-              color="primary"
+      <Box mb={2}>
+        <Paper variant="outlined">
+          <Box
+            display="flex"
+            style={{
+              gap: 16,
+            }}
+            p={2}
+          >
+            {dspActionButtons.map((ea) => (
+              <Button
+                key={ea.id}
+                onClick={setModalOpen(ea.id as keyof DSPManageModals)}
+                variant="outlined"
+                color="primary"
+              >
+                {ea.label}
+              </Button>
+            ))}
+          </Box>
+          {modalsOpen.editDspModal && dsp && (
+            <ModalWrapper
+              open={modalsOpen.editDspModal}
+              onClose={setModalOpen('editDspModal', false)}
+              containerSize="sm"
             >
-              {ea.label}
-            </Button>
-          ))}
-        </Box>
-        {id && <ViewDspAccount dspId={id as string} />}
-        {modalsOpen.editDspModal && dsp && (
-          <ModalWrapper
-            open={modalsOpen.editDspModal}
-            onClose={setModalOpen('editDspModal', false)}
-            containerSize="sm"
-          >
-            {/** Edit DSP Modal */}
-            <EditDSPAccount modal={setModalOpen('editDspModal', false)} dsp={dsp} />
-          </ModalWrapper>
-        )}
-        {modalsOpen.addRetailerModal && dsp?.subdistributor.id && (
-          <ModalWrapper
-            open={modalsOpen.addRetailerModal}
-            onClose={setModalOpen('addRetailerModal', false)}
-            containerSize="sm"
-          >
-            <CreateRetailerAccount
-              modal={setModalOpen('addRetailerModal', false)}
-              subdistributorId={dsp?.subdistributor.id}
-              dspId={id as string}
-            />
-          </ModalWrapper>
-        )}
-      </Paper>
+              {/** Edit DSP Modal */}
+              <EditDSPAccount modal={setModalOpen('editDspModal', false)} dsp={dsp} />
+            </ModalWrapper>
+          )}
+          {modalsOpen.addRetailerModal && dsp?.subdistributor.id && (
+            <ModalWrapper
+              open={modalsOpen.addRetailerModal}
+              onClose={setModalOpen('addRetailerModal', false)}
+              containerSize="sm"
+            >
+              <CreateRetailerAccount
+                modal={setModalOpen('addRetailerModal', false)}
+                subdistributorId={dsp?.subdistributor.id}
+                dspId={id as string}
+              />
+            </ModalWrapper>
+          )}
+        </Paper>
+      </Box>
+      {id && <ViewDspAccount dspId={id as string} />}
     </Box>
   )
 }
