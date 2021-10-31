@@ -67,7 +67,6 @@ export default function CreateDSPAccount({
   ) => {
     if (typeof e !== 'string') {
       const eTarget = e as ChangeEvent<HTMLInputElement>
-      console.log(e, value)
       setNewDspAccount((prevState) => ({
         ...prevState,
         [eTarget.target.name]: eTarget.target.value,
@@ -106,8 +105,8 @@ export default function CreateDSPAccount({
     const schemaChecker = {
       dsp_code: (value: string) =>
         validator.isLength(newDspAccount.dsp_code, { min: 4 }) || '*Atleast 4 letters DSP Code',
-      e_bind_number: (value: string) =>
-        validator.isMobilePhone(newDspAccount.e_bind_number) || '*Invalid E Bind Number',
+      // e_bind_number: (value: string) =>
+      //   validator.isMobilePhone(newDspAccount.e_bind_number) || '*Invalid E Bind Number',
       // subdistributor: (value: string) => checkSubdistributor || '*Empty Subdistributor',
       user: (value: string) => !validator.isEmpty(newDspAccount.user) || '*Empty User ID',
       // area_id: (value: any) => checkAreaID || '*Empty Area ID',
@@ -123,7 +122,6 @@ export default function CreateDSPAccount({
         }))
       }
     })
-    console.log(newDspAccount)
     //   createDspAccount(newDspAccount as CreateDspAccount)
     //     .then(() => {
     //       dispatchNotif({
@@ -187,22 +185,15 @@ export default function CreateDSPAccount({
 
   useEffect(() => {
     if (activeSubdistributorId) {
-      console.log('With ID passed')
       setDisplaySubdistributor(true)
       const id = activeSubdistributorId
       handleChange('subdistributor', id)
     } else {
-      console.log('Without ID passed')
       setDisplaySubdistributor(false)
     }
   }, [activeSubdistributorId])
 
   const [displaySubdistributor, setDisplaySubdistributor] = useState<boolean>()
-
-  useEffect(() => {
-    console.log(errors)
-    console.log(newDspAccount)
-  }, [errors, newDspAccount])
 
   return (
     <Paper variant="outlined">
@@ -280,7 +271,7 @@ export default function CreateDSPAccount({
                 size="small"
                 value={newDspAccount.e_bind_number}
               />
-              <Typography
+              {/* <Typography
                 style={{
                   display: validator.isMobilePhone(newDspAccount.e_bind_number)
                     ? 'none'
@@ -291,7 +282,7 @@ export default function CreateDSPAccount({
                 variant="caption"
               >
                 {errors.e_bind_number && errors.e_bind_number}
-              </Typography>
+              </Typography> */}
             </Grid>
             <Grid item xs={12}>
               <Typography className={classes.formLabel} component="label" variant="body2">

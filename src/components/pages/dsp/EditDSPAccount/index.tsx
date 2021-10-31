@@ -104,11 +104,9 @@ export default function CreateDSPAccount({
           !deepEqual(editDspAccount[currentKey] as any, formValuesRef.current[currentKey] as any)
         ) {
           keyChanges.push(currentKey)
-          console.log(' if keychanges', keyChanges)
         }
       } else if (formValuesRef.current[currentKey] !== editDspAccount[currentKey]) {
         keyChanges.push(currentKey)
-        console.log(' else keychanges', keyChanges)
       }
     })
 
@@ -151,12 +149,11 @@ export default function CreateDSPAccount({
   }, [mapidQuery])
 
   const handleEdit = () => {
-    console.log(editDspAccount)
     const schemaChecker = {
       dsp_code: (value: string) =>
         validator.isLength(editDspAccount.dsp_code, { min: 4 }) || '*Atleast 4 letters DSP Code',
-      e_bind_number: (value: string) =>
-        validator.isMobilePhone(editDspAccount.e_bind_number) || '*Invalid E Bind Number',
+      // e_bind_number: (value: string) =>
+      //   validator.isMobilePhone(editDspAccount.e_bind_number) || '*Invalid E Bind Number',
       // subdistributor: (value: string) => checkSubdistributor || '*Empty Subdistributor',
       // user: (value: string) => !validator.isEmpty(editDspAccount.user) || '*Empty User ID',
       // area_id: (value: any) => checkAreaID || '*Empty Area ID',
@@ -172,8 +169,6 @@ export default function CreateDSPAccount({
         }))
       }
     })
-    console.log(dsp.id)
-    console.log('update', formatUpdateValues(changes))
     if (dsp.id) {
       const { dsp_code, e_bind_number, area_id } = editDspAccount
       updateDsp(formatUpdateValues(changes), dsp.id)
@@ -204,25 +199,14 @@ export default function CreateDSPAccount({
 
   useEffect(() => {
     if (activeDSPId) {
-      console.log('With ID passed')
-      console.log(activeDSPId)
       setEditDspAccount((prevState) => ({
         ...prevState,
         e_bind_number: formValues.e_bind_number,
         dsp_code: formValues.dsp_code,
         area_id: formValues.area_id,
       }))
-    } else {
-      console.log('Without ID passed')
-      console.log(activeDSPId)
     }
   }, [activeDSPId, formValues])
-
-  useEffect(() => {
-    console.log('errors', errors)
-    console.log('formvalues', formValues)
-    console.log('editDspAccount', editDspAccount)
-  }, [errors, formValues, editDspAccount])
   return (
     <Paper variant="outlined">
       <Box
@@ -317,7 +301,7 @@ export default function CreateDSPAccount({
                 size="small"
                 value={formValues.e_bind_number}
               />
-              <Typography
+              {/* <Typography
                 style={{
                   display: validator.isMobilePhone(editDspAccount.e_bind_number)
                     ? 'none'
@@ -328,7 +312,7 @@ export default function CreateDSPAccount({
                 variant="caption"
               >
                 {errors.e_bind_number && errors.e_bind_number}
-              </Typography>
+              </Typography> */}
             </Grid>
             <Grid item xs={12}>
               <Box>
