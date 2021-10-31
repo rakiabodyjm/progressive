@@ -52,7 +52,9 @@ export default function UserAutoComplete({
         defaultValueRef?.current || undefined
       }
       getOptionSelected={(option, value) => option.id === value.id || false}
-      getOptionLabel={(option) => `${option.last_name}, ${option.first_name}`}
+      getOptionLabel={(option) =>
+        `${option.last_name}, ${option.first_name} - ${option.id.split('-')[0]}`
+      }
       renderInput={(params) => (
         <TextField
           {...params}
