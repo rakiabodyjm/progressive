@@ -52,6 +52,7 @@ export default function AdminDspManage() {
             gap: 16,
           }}
           p={2}
+          mb={2}
         >
           {dspActionButtons.map((ea) => (
             <Button
