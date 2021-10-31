@@ -25,6 +25,7 @@ export interface CreateRetailer {
   subdistributor: SubdistributorResponseType['id']
   dsp: DspResponseType['id']
 }
+export type UpdateRetailer = Omit<CreateRetailer, 'user'>
 
 export const getRetailer = (id: string): Promise<RetailerResponseType> =>
   axios
@@ -37,6 +38,16 @@ export const getRetailer = (id: string): Promise<RetailerResponseType> =>
 export const createRetailer = (newRetailer: CreateRetailer) =>
   axios
     .post('/retailer', newRetailer)
+    .then((res) => res.data as RetailerResponseType)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
+    })
+
+export const updateRetailer = (updateRetailer: Partial<CreateRetailer>) =>
+  axios
+    .patch('/retailer', {
+      ...updateRetailer,
+    })
     .then((res) => res.data as RetailerResponseType)
     .catch((err) => {
       throw extractMultipleErrorFromResponse(err)
