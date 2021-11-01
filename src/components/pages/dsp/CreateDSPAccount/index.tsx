@@ -80,7 +80,6 @@ export default function CreateDSPAccount({
       }))
     }
   }
-  const { subdistributor } = newDspAccount
 
   const TypographyLabel = ({
     children,
@@ -124,28 +123,9 @@ export default function CreateDSPAccount({
         }))
       }
     })
-    //   createDspAccount(newDspAccount as CreateDspAccount)
-    //     .then(() => {
-    //       dispatchNotif({
-    //         type: NotificationTypes.SUCCESS,
-    //         message: `DSP Account Created`,
-    //       })
-    //       if (modalClose) {
-    //         modalClose()
-    //       }
-    //     })
-    //     .catch((err: string[]) => {
-    //       err.forEach((ea) => {
-    //         dispatchNotif({
-    //           type: NotificationTypes.ERROR,
-    //           message: ea,
-    //         })
-    //       })
-    //     })
-    // }
+    console.log(newDspAccount)
     createDsp(newDspAccount as CreateDspAccount)
       .then(() => {
-        // const { message, user, error } = res
         dispatchNotif({
           type: NotificationTypes.SUCCESS,
           message: `DSP Account Created`,
@@ -206,7 +186,7 @@ export default function CreateDSPAccount({
         }}
         p={2}
       >
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography variant="h6" color="primary">
               Create New DSP Account
@@ -242,6 +222,7 @@ export default function CreateDSPAccount({
                 variant="outlined"
                 name="dsp_code"
                 onChange={handleChange}
+                placeholder="DSP Code"
                 fullWidth
                 size="small"
                 value={newDspAccount.dsp_code}
@@ -268,6 +249,7 @@ export default function CreateDSPAccount({
                 variant="outlined"
                 name="e_bind_number"
                 onChange={handleChange}
+                placeholder="DITO SIM Phone Number"
                 fullWidth
                 size="small"
                 value={newDspAccount.e_bind_number}
@@ -386,7 +368,7 @@ export default function CreateDSPAccount({
             </Grid>
           </Grid>
         </Box>
-        <Box display="flex" gridGap={8} justifyContent="flex-end" p={2}>
+        <Box display="flex" mt={2} gridGap={8} justifyContent="flex-end">
           <Button
             variant="contained"
             type="submit"
@@ -419,9 +401,6 @@ const TypographyLabel = ({
   </Typography>
 )
 
-// const CustomTextField = ({ name, ...restProps }: { name: string } & TextFieldProps) => (
-
-// )
 const useFetchEntity = (type: 'dsp' | 'subdistributor', id?: string) => {
   const [entity, setEntity] = useState<SubdistributorResponseType>()
   const [loading, setLoading] = useState<boolean>(false)
