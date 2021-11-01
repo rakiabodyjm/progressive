@@ -14,7 +14,6 @@ import {
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
-import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import {
   updateDsp,
   DspRegisterParams,
@@ -27,9 +26,6 @@ import { NotificationTypes, setNotification } from '@src/redux/data/notification
 import validator from 'validator'
 import deepEqual from '@src/utils/deepEqual'
 import { useDispatch } from 'react-redux'
-import { extractErrorFromResponse } from '@src/utils/api/common'
-import useNotification from '@src/utils/hooks/useNotification'
-import { Autocomplete } from '@material-ui/lab'
 import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComplete'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
@@ -45,11 +41,9 @@ interface EditDspAccountFormValues {
   dsp_code: string
   area_id: any
 }
-const editableDspFields: (args: DspRegisterParams) => EditDspAccountFormValues = ({
-  area_id,
-  dsp_code,
-  e_bind_number,
-}) => ({
+const editableDspFields: (
+  args: DspRegisterParams | DspRegisterParams2
+) => EditDspAccountFormValues = ({ area_id, dsp_code, e_bind_number }) => ({
   area_id,
   dsp_code,
   e_bind_number,
@@ -69,11 +63,6 @@ export default function CreateDSPAccount({
   })
   const [formValues, setFormValues] = useState<EditDspAccountFormValues>({
     ...editableDspFields(dsp),
-  })
-  const [editDspAccount, setEditDspAccount] = useState<DspUpdateType>({
-    area_id: [],
-    dsp_code: '',
-    e_bind_number: '',
   })
 
   const [errors, setErrors] = useState<Record<keyof DspRegisterParams, string | null>>({
@@ -99,25 +88,22 @@ export default function CreateDSPAccount({
     Object.keys(formValuesRef.current).forEach((key) => {
       const currentKey = key as keyof EditDspAccountFormValues
 
-      if (typeof editDspAccount[currentKey] === 'object') {
-        if (
-          !deepEqual(editDspAccount[currentKey] as any, formValuesRef.current[currentKey] as any)
-        ) {
+      if (typeof formValues[currentKey] === 'object') {
+        if (!deepEqual(formValues[currentKey] as any, formValuesRef.current[currentKey] as any)) {
           keyChanges.push(currentKey)
         }
-      } else if (formValuesRef.current[currentKey] !== editDspAccount[currentKey]) {
+      } else if (formValuesRef.current[currentKey] !== formValues[currentKey]) {
         keyChanges.push(currentKey)
       }
     })
-
     return keyChanges.reduce(
       (accumulator, key) => ({
-        [key]: editDspAccount[key as keyof EditDspAccountFormValues],
+        [key]: formValues[key as keyof EditDspAccountFormValues],
       }),
       {}
     ) as Partial<EditDspAccountFormValues>
     // return changes
-  }, [editDspAccount])
+  }, [formValues])
 
   const [mapIdOptions, setMapidOptions] = useState<MapIdResponseType[]>([])
   const [mapidLoading, setMapidLoading] = useState(false)
@@ -151,16 +137,11 @@ export default function CreateDSPAccount({
   const handleEdit = () => {
     const schemaChecker = {
       dsp_code: (value: string) =>
-        validator.isLength(editDspAccount.dsp_code, { min: 4 }) || '*Atleast 4 letters DSP Code',
-      // e_bind_number: (value: string) =>
-      //   validator.isMobilePhone(editDspAccount.e_bind_number) || '*Invalid E Bind Number',
-      // subdistributor: (value: string) => checkSubdistributor || '*Empty Subdistributor',
-      // user: (value: string) => !validator.isEmpty(editDspAccount.user) || '*Empty User ID',
-      // area_id: (value: any) => checkAreaID || '*Empty Area ID',
+        validator.isLength(formValues.dsp_code, { min: 4 }) || '*Atleast 4 letters DSP Code',
     }
     Object.keys(schemaChecker).forEach((key) => {
       const validator = schemaChecker[key as keyof typeof schemaChecker]
-      const valuesToValidate = editDspAccount[key as keyof DspRegisterParams]
+      const valuesToValidate = formValues[key as keyof DspRegisterParams]
       const validateResult = validator(valuesToValidate as string)
       if (validateResult) {
         setErrors((prevState) => ({
@@ -170,7 +151,6 @@ export default function CreateDSPAccount({
       }
     })
     if (dsp.id) {
-      const { dsp_code, e_bind_number, area_id } = editDspAccount
       updateDsp(formatUpdateValues(changes), dsp.id)
         .then((res) => {
           dispatch(
@@ -196,17 +176,6 @@ export default function CreateDSPAccount({
         })
     }
   }
-
-  useEffect(() => {
-    if (activeDSPId) {
-      setEditDspAccount((prevState) => ({
-        ...prevState,
-        e_bind_number: formValues.e_bind_number,
-        dsp_code: formValues.dsp_code,
-        area_id: formValues.area_id,
-      }))
-    }
-  }, [activeDSPId, formValues])
   return (
     <Paper variant="outlined">
       <Box
@@ -257,10 +226,6 @@ export default function CreateDSPAccount({
                     ...prevState,
                     [e.target.name]: e.target.value,
                   }))
-                  setEditDspAccount((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
                 }}
                 fullWidth
                 size="small"
@@ -269,7 +234,10 @@ export default function CreateDSPAccount({
 
               <Typography
                 style={{
-                  display: validator.isLength(editDspAccount.dsp_code, { min: 4 })
+                  display: validator.isLength(
+                    formValues.dsp_code,
+                    { min: 4 } || formValues.dsp_code
+                  )
                     ? 'none'
                     : undefined,
                 }}
@@ -292,27 +260,11 @@ export default function CreateDSPAccount({
                     ...prevState,
                     [e.target.name]: e.target.value,
                   }))
-                  setEditDspAccount((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
                 }}
                 fullWidth
                 size="small"
                 value={formValues.e_bind_number}
               />
-              {/* <Typography
-                style={{
-                  display: validator.isMobilePhone(editDspAccount.e_bind_number)
-                    ? 'none'
-                    : undefined,
-                }}
-                className={classes.errorLabel}
-                component="label"
-                variant="caption"
-              >
-                {errors.e_bind_number && errors.e_bind_number}
-              </Typography> */}
             </Grid>
             <Grid item xs={12}>
               <Box>
@@ -332,7 +284,7 @@ export default function CreateDSPAccount({
                    * onChange event of AutoComplete
                    */
                   onChange={(areaIds: MapIdResponseType[]) => {
-                    setEditDspAccount((prevState) => ({
+                    setFormValues((prevState) => ({
                       ...prevState,
                       area_id: areaIds.map((ea) => ea.area_id),
                     }))
@@ -359,64 +311,9 @@ export default function CreateDSPAccount({
                 />
               </Box>
             </Grid>
-            {/* <Grid item xs={12}>
-              <TypographyLabel>Subdistributor</TypographyLabel>
-
-              <TextField
-                variant="outlined"
-                name="subdistributor"
-                fullWidth
-                size="small"
-                value={activeSubdistributorId}
-              /> */}
-
-            {/* {!displaySubdistributor && (
-                <SimpleAutoComplete<SubdistributorResponseType, string>
-                  initialQuery=""
-                  fetcher={(q) => searchSubdistributor(q || ' ')}
-                  getOptionLabel={(option) => option.name}
-                  getOptionSelected={(val1, val2) => val1.id === val2.id}
-                  querySetter={(arg, inputValue) => inputValue}
-                  onChange={(value) => {
-                    handleChange('subdistributor', value?.id)
-                  }}
-                />
-              )} */}
-            {/* <Typography
-                style={{
-                  display: !validator.isEmpty(editDspAccount.subdistributor) ? 'none' : undefined,
-                }}
-                className={classes.errorLabel}
-                component="label"
-                variant="caption"
-              >
-                {errors.subdistributor && errors.subdistributor}
-              </Typography> */}
-            {/* </Grid> */}
-            {/* <Grid item xs={12}>
-              <Typography className={classes.formLabel} component="label" variant="body2">
-                User ID
-              </Typography>
-              <TextField
-                variant="outlined"
-                name="user"
-                onChange={handleChange}
-                fullWidth
-                size="small"
-                value={editDspAccount.user}
-              />
-              <Typography
-                style={{ display: !validator.isEmpty(editDspAccount.user) ? 'none' : undefined }}
-                className={classes.errorLabel}
-                component="label"
-                variant="caption"
-              >
-                {errors.user && errors.user}
-              </Typography>
-            </Grid> */}
           </Grid>
         </Box>
-        <Box display="flex" gridGap={8} justifyContent="flex-end" p={2}>
+        <Box mt={2} display="flex" gridGap={8} justifyContent="flex-end">
           <Button
             variant="contained"
             type="submit"
