@@ -68,8 +68,6 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
   const { data } = useSWR<CheckUsername | undefined>('/user/', (url: string) =>
     axios(url).then((r) => r.data)
   )
-  console.log(data)
-
   const handleSubmit = () => {
     const schemaChecker = {
       email: (value: string) => !validator.isEmail(value) && '*Email Address is not valid',
@@ -77,7 +75,6 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
       first_name: (value: string) => validator.isEmpty(value) && '*First Name Required',
       last_name: (value: string) => validator.isEmpty(value) && '*Last Name Required',
       address1: (value: string) => validator.isEmpty(value) && '*Current Address Required',
-      address2: (value: string) => validator.isEmpty(value) && '*Home Address Required',
       username: (value: string) => validator.isEmpty(value) && '*Username Required',
       password: (value: string) =>
         !validator.isLength(value, { min: 8, max: 16 }) &&
@@ -87,7 +84,6 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
       const validator = schemaChecker[key as keyof typeof schemaChecker]
       const valuesToValidate = user[key as keyof CreateUser]
       const validateResult = validator(valuesToValidate)
-      console.log(validateResult)
       if (validateResult) {
         setErrors((prevState) => ({
           ...prevState,
@@ -111,7 +107,6 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
         })
       )
     } else {
-      console.log(user)
       createUser(user)
         .then((res) => {
           // const { message, user, error } = res
@@ -173,9 +168,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
       [e.target.name]: e.target.value,
     }))
   }
-  useEffect(() => {
-    console.log(errors)
-  }, [errors])
+  useEffect(() => {}, [errors])
 
   return (
     <Paper variant="outlined" className={classes.paperPadding}>
@@ -220,6 +213,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="Juan"
               variant="outlined"
               name="first_name"
               fullWidth
@@ -251,6 +245,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="Dela Cruz"
               variant="outlined"
               name="last_name"
               fullWidth
@@ -281,6 +276,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="House # / Street / Municipality / City / Province"
               variant="outlined"
               name="address1"
               fullWidth
@@ -311,6 +307,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="House # / Street / Municipality / City / Province"
               variant="outlined"
               name="address2"
               fullWidth
@@ -324,15 +321,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
                 flexDirection: 'column',
               }}
             >
-              <Typography
-                className={classes.errorLabel}
-                variant="caption"
-                style={{
-                  display: validator.isEmpty(user.address2) ? undefined : 'none',
-                }}
-              >
-                {errors.address2}
-              </Typography>
+              <Typography className={classes.errorLabel} variant="caption"></Typography>
             </div>
           </Grid>
           <Grid item xs={6}>
@@ -341,6 +330,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="juandelacruz@example.com"
               variant="outlined"
               name="email"
               fullWidth
@@ -371,6 +361,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="e.g 09491272606"
               variant="outlined"
               name="phone_number"
               fullWidth
@@ -401,6 +392,7 @@ export default function CreateUserAccountV2({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="e.g juandelacruz123"
               variant="outlined"
               name="username"
               fullWidth
