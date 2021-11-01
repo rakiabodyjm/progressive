@@ -9,6 +9,7 @@ import {
   IconButton,
   Button,
   TypographyProps,
+  TextFieldProps,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
@@ -16,13 +17,18 @@ import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComple
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { createDsp, CreateDspAccount } from '@src/utils/api/dspApi'
 import { MapIdResponseType, SearchMap, searchMap } from '@src/utils/api/mapIdApi'
-import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import {
+  getSubdistributor,
+  searchSubdistributor,
+  SubdistributorResponseType,
+} from '@src/utils/api/subdistributorApi'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import validator from 'validator'
 import { useDispatch } from 'react-redux'
 import { extractErrorFromResponse } from '@src/utils/api/common'
 import useNotification from '@src/utils/hooks/useNotification'
+import UserAutoComplete from '@src/components/UserAutoComplete'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
@@ -36,7 +42,7 @@ export default function CreateDSPAccount({
   subdistributorId,
 }: {
   modal?: () => void
-  subdistributorId?: SubdistributorResponseType
+  subdistributorId?: string
 }) {
   const activeSubdistributorId = subdistributorId
 
@@ -47,10 +53,6 @@ export default function CreateDSPAccount({
     subdistributor: '',
     user: '',
   })
-
-  if (activeSubdistributorId) {
-    //  setNewDspAccount({ subdistributor as keyof CreateDSPAccount: activeSubdistributorId })
-  }
 
   const [errors, setErrors] = useState<Record<keyof CreateDspAccount, string | null>>({
     area_id: null,
@@ -182,18 +184,17 @@ export default function CreateDSPAccount({
         }
       })
   }
-
+  const { entity: autoLoadSubdistributor, loading: autoLoadSubdistributorLoading } = useFetchEntity(
+    'subdistributor',
+    subdistributorId
+  )
   useEffect(() => {
-    if (activeSubdistributorId) {
-      setDisplaySubdistributor(true)
-      const id = activeSubdistributorId
-      handleChange('subdistributor', id)
-    } else {
-      setDisplaySubdistributor(false)
+    if (autoLoadSubdistributor) {
+      handleChange('subdistributor', autoLoadSubdistributor?.id)
     }
-  }, [activeSubdistributorId])
 
-  const [displaySubdistributor, setDisplaySubdistributor] = useState<boolean>()
+    // console.log(autoLoadSubdistributor, autoLoadDsp)
+  }, [autoLoadSubdistributor])
 
   return (
     <Paper variant="outlined">
@@ -337,21 +338,7 @@ export default function CreateDSPAccount({
             </Grid>
             <Grid item xs={12}>
               <TypographyLabel>Subdistributor</TypographyLabel>
-
-              <TextField
-                style={{ display: !displaySubdistributor ? 'none' : undefined }}
-                variant="outlined"
-                name="subdistributor"
-                fullWidth
-                size="small"
-                value={activeSubdistributorId}
-                // onChange={() => {
-                //   const id = activeSubdistributorId
-                //   handleChange('subdistributor', id)
-                // }}
-              />
-
-              {!displaySubdistributor && (
+              {(subdistributorId && autoLoadSubdistributor) || !subdistributorId ? (
                 <SimpleAutoComplete<SubdistributorResponseType, string>
                   initialQuery=""
                   fetcher={(q) => searchSubdistributor(q || ' ')}
@@ -359,9 +346,13 @@ export default function CreateDSPAccount({
                   getOptionSelected={(val1, val2) => val1.id === val2.id}
                   querySetter={(arg, inputValue) => inputValue}
                   onChange={(value) => {
-                    handleChange('subdistributor', value?.id)
+                    handleChange('subdistributor', value?.id || null)
                   }}
+                  defaultValue={autoLoadSubdistributor as SubdistributorResponseType}
+                  disabled={subdistributorId ? true : undefined}
                 />
+              ) : (
+                <CustomTextField name="subdistributor" disabled />
               )}
               {/* <Typography
                 style={{
@@ -378,13 +369,11 @@ export default function CreateDSPAccount({
               <Typography className={classes.formLabel} component="label" variant="body2">
                 User ID
               </Typography>
-              <TextField
-                variant="outlined"
-                name="user"
-                onChange={handleChange}
-                fullWidth
-                size="small"
-                value={newDspAccount.user}
+              <UserAutoComplete
+                onChange={(value) => {
+                  handleChange('user', value?.id || null)
+                }}
+                mutateOptions={(users) => users.filter((ea) => !ea.retailer)}
               />
               <Typography
                 style={{ display: !validator.isEmpty(newDspAccount.user) ? 'none' : undefined }}
@@ -413,4 +402,64 @@ export default function CreateDSPAccount({
       </Box>
     </Paper>
   )
+}
+const TypographyLabel = ({
+  children,
+  ...restProps
+}: { children: TypographyProps['children'] } & TypographyProps<'label'>) => (
+  <Typography
+    display="block"
+    color="primary"
+    component="label"
+    variant="body2"
+    noWrap
+    {...restProps}
+  >
+    {children}
+  </Typography>
+)
+
+// const CustomTextField = ({ name, ...restProps }: { name: string } & TextFieldProps) => (
+
+// )
+const useFetchEntity = (type: 'dsp' | 'subdistributor', id?: string) => {
+  const [entity, setEntity] = useState<SubdistributorResponseType>()
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const fetcher = (argType: typeof type) => {
+    if (argType === 'subdistributor') {
+      return getSubdistributor
+    }
+
+    throw new Error('useFetch entity must have type DSP | Subdistributor')
+  }
+  useEffect(() => {
+    if (type && id) {
+      setLoading(true)
+      fetcher(type)(id)
+        .then((res) => {
+          setEntity(res)
+        })
+        .catch((err) => {
+          console.error(err)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+  }, [type, id])
+
+  return {
+    loading,
+    entity,
+  }
+}
+
+function CustomTextField<T extends CreateDspAccount>({
+  name,
+  ...restProps
+}: {
+  name: keyof T & string
+} & TextFieldProps) {
+  return <TextField fullWidth variant="outlined" size="small" name={name} {...restProps} />
 }
