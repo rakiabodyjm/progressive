@@ -79,7 +79,7 @@ export default function CreateRetailerAccount({
   }
   const { subdistributor } = newRetailerAccount
 
-  const [dspOptions, setDspOptions] = useState<DspResponseType[] | undefined>()
+  const [dspOptions, setDspOptions] = useState<DspResponseType[]>([])
   useEffect(() => {
     /**
      * Fetch only if there is not dspId given
@@ -123,6 +123,12 @@ export default function CreateRetailerAccount({
         })
       })
   }
+
+  useEffect(() => {
+    if (!newRetailerAccount.subdistributor) {
+      handleChange('dsp', null)
+    }
+  }, [newRetailerAccount.subdistributor])
   return (
     <Paper variant="outlined">
       <Box
@@ -252,7 +258,10 @@ export default function CreateRetailerAccount({
                 disabled
                 onClick={() => {
                   dispatchNotif({
-                    message: `Select Subdistributor First`,
+                    message:
+                      newRetailerAccount?.subdistributor && dspOptions.length === 0
+                        ? `Subdistributor doesn't have DSP's`
+                        : `Select Subdistributor First`,
                     type: NotificationTypes.WARNING,
                   })
                 }}
