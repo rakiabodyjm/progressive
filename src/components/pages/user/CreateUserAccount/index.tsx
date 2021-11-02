@@ -10,7 +10,6 @@ import {
   TextField,
 } from '@material-ui/core'
 import { Close, Create } from '@material-ui/icons'
-import AestheticObjectFormRenderer from '@src/components/ObjectFormRendererV2'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { extractErrorFromResponse } from '@src/utils/api/common'
 import { createUser, CreateUser, UserResponse, CheckUsername } from '@src/utils/api/userApi'
@@ -19,7 +18,6 @@ import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/styles'
 import validator from 'validator'
 import useSWR from 'swr'
-import { useRouter } from 'next/router'
 import axios from 'axios'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -29,7 +27,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   errorLabel: {
     color: theme.palette.error.main,
   },
-
+  paperPadding: {
+    padding: 15,
+  },
   buttonMargin: {
     marginTop: 10,
   },
@@ -74,7 +74,6 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
       first_name: (value: string) => validator.isEmpty(value) && '*First Name Required',
       last_name: (value: string) => validator.isEmpty(value) && '*Last Name Required',
       address1: (value: string) => validator.isEmpty(value) && '*Current Address Required',
-      address2: (value: string) => validator.isEmpty(value) && '*Home Address Required',
       username: (value: string) => validator.isEmpty(value) && '*Username Required',
       password: (value: string) =>
         !validator.isLength(value, { min: 8, max: 16 }) &&
@@ -171,7 +170,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
   useEffect(() => {}, [errors])
 
   return (
-    <Paper variant="outlined">
+    <Paper variant="outlined" className={classes.paperPadding}>
       <Box
         component="form"
         onSubmit={(e) => {
@@ -213,6 +212,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="Juan"
               variant="outlined"
               name="first_name"
               fullWidth
@@ -244,6 +244,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="Dela Cruz"
               variant="outlined"
               name="last_name"
               fullWidth
@@ -274,6 +275,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="Home # / Street / Municipality / City / Province"
               variant="outlined"
               name="address1"
               fullWidth
@@ -304,6 +306,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="Home # / Street / Municipality / City / Province"
               variant="outlined"
               name="address2"
               fullWidth
@@ -334,6 +337,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="juandelacruz@example.com"
               variant="outlined"
               name="email"
               fullWidth
@@ -364,6 +368,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="e.g 09491272606"
               variant="outlined"
               name="phone_number"
               fullWidth
@@ -394,6 +399,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             </Typography>
 
             <TextField
+              placeholder="e.g juandelacruz123"
               variant="outlined"
               name="username"
               fullWidth
