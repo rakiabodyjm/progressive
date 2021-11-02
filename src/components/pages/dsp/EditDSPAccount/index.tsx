@@ -234,10 +234,10 @@ export default function CreateDSPAccount({
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box>
             <Typography variant="h6" color="primary">
-              Edit Account
+              Edit DSP Account
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Edit DSP Account Dettails
+              Edit DSP Account Details
             </Typography>
           </Box>
           <Box>
