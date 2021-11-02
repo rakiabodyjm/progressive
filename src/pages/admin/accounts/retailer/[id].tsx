@@ -5,6 +5,7 @@ import ViewRetailerAccount from '@src/components/pages/retailer/ViewRetailerAcco
 import dynamic from 'next/dynamic'
 import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
 import ModalWrapper from '@src/components/ModalWrapper'
+import useSWR, { useSWRConfig } from 'swr'
 const EditRetailerAccount = dynamic(
   () => import('@src/components/pages/retailer/EditRetailerAccount')
 )
@@ -20,18 +21,17 @@ export default function AdminRetailerManage() {
       }))
     }
   }
+
   const { query } = useRouter()
   const { id } = query
 
-  const [retailer, setRetailer] = useState<RetailerResponseType | undefined>()
+  const { data: retailer, error } = useSWR(id as string, getRetailer)
+  const { mutate } = useSWRConfig()
   useEffect(() => {
     if (id) {
-      getRetailer(id as string).then((res) => {
-        setRetailer(res)
-      })
+      mutate(id as string)
     }
-  }, [id])
-
+  }, [modalsOpen, id])
   return (
     <Box>
       <Box mb={2}>
