@@ -66,7 +66,6 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
   const { data } = useSWR<CheckUsername | undefined>('/user/', (url: string) =>
     axios(url).then((r) => r.data)
   )
-  console.log(data)
 
   const handleSubmit = () => {
     const schemaChecker = {
@@ -85,7 +84,6 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
       const validator = schemaChecker[key as keyof typeof schemaChecker]
       const valuesToValidate = user[key as keyof CreateUser]
       const validateResult = validator(valuesToValidate)
-      console.log(validateResult)
       if (validateResult) {
         setErrors((prevState) => ({
           ...prevState,
@@ -109,7 +107,6 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
         })
       )
     } else {
-      console.log(user)
       createUser(user)
         .then((res) => {
           // const { message, user, error } = res
@@ -171,9 +168,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
       [e.target.name]: e.target.value,
     }))
   }
-  useEffect(() => {
-    console.log(errors)
-  }, [errors])
+  useEffect(() => {}, [errors])
 
   return (
     <Paper variant="outlined">
