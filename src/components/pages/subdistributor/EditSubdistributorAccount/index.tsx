@@ -6,7 +6,9 @@ import {
   Typography,
   CircularProgress,
   Button,
+  IconButton,
 } from '@material-ui/core'
+import { Close } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import AestheticObjectFormRenderer from '@src/components/ObjectFormRendererV2'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
@@ -53,8 +55,10 @@ const editableSubdistributorFields: (
 
 export default function EditSubdistributorAccount({
   subdistributor,
+  modal,
 }: {
   subdistributor: SubdistributorResponseType
+  modal?: () => void
 }) {
   const formValuesRef = useRef({
     ...editableSubdistributorFields(subdistributor),
@@ -127,12 +131,30 @@ export default function EditSubdistributorAccount({
   return (
     <Paper variant="outlined">
       <Box p={2}>
-        <Typography variant="h6" color="primary">
-          Edit Account
-        </Typography>
-        <Typography variant="body2" color="textSecondary">
-          Edit Subdistributor Account Details
-        </Typography>
+        <Box display="flex" justifyContent="space-between">
+          <Box>
+            <Typography variant="h6" color="primary">
+              Edit Account
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Edit Subdistributor Account Details
+            </Typography>
+          </Box>
+          <Box>
+            {modal && (
+              <IconButton
+                style={{
+                  padding: 4,
+                }}
+                onClick={() => {
+                  modal()
+                }}
+              >
+                <Close />
+              </IconButton>
+            )}
+          </Box>
+        </Box>
         <Divider
           style={{
             marginTop: 8,
@@ -212,7 +234,6 @@ export default function EditSubdistributorAccount({
             />
           </Box>
         </Box>
-
         <Box
           style={{
             padding: 8,

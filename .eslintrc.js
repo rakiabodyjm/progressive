@@ -118,7 +118,7 @@ module.exports = {
     // '@typescript-eslint/no-use-before-define': ['error', { variables: false }],
     '@typescript-eslint/no-use-before-define': [
       'error',
-      { classes: true, functions: true, variables: false },
+      { classes: false, functions: false, variables: false },
     ],
     'object-curly-newline': 'off',
     '@typescript-eslint/semi': [0],

@@ -1,4 +1,4 @@
-import { CircularProgress, TextField } from '@material-ui/core'
+import { CircularProgress, TextField, TextFieldProps } from '@material-ui/core'
 import { Autocomplete, AutocompleteProps } from '@material-ui/lab'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
@@ -14,6 +14,8 @@ export default function SimpleAutoComplete<T, U>({
   defaultValue,
   getOptionSelected,
   getOptionLabel,
+  inputProps,
+  ...restProps
 }: {
   onChange: (arg: T) => void
   mutateOptions?: (arg: T[]) => T[]
@@ -23,7 +25,8 @@ export default function SimpleAutoComplete<T, U>({
   defaultValue?: T
   getOptionSelected: (arg: T, value: T) => boolean
   getOptionLabel: (option: T) => string
-}) {
+  inputProps?: TextFieldProps
+} & Omit<Partial<AutocompleteProps<T, undefined, undefined, undefined>>, 'onChange'>) {
   const [options, setOptions] = useState<T[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [query, setQuery] = useState(initialQuery)
@@ -81,8 +84,10 @@ export default function SimpleAutoComplete<T, U>({
               </>
             ),
           }}
+          {...inputProps}
         />
       )}
+      {...restProps}
     />
   )
 }

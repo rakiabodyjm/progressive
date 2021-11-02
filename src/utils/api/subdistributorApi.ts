@@ -122,3 +122,16 @@ export function createSubdistributor(args: CreateSubdistributor) {
       throw err
     })
 }
+
+export function searchSubdistributor(arg: string) {
+  return axios
+    .get('/subdistributor/search', {
+      params: {
+        searchQuery: arg,
+      },
+    })
+    .then((res) => res.data as SubdistributorResponseType[])
+    .catch((err) => {
+      throw new Error(extractErrorFromResponse(err))
+    })
+}

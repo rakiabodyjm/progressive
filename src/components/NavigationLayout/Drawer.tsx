@@ -23,6 +23,7 @@ import {
   ExitToApp,
   AccountTree,
   PeopleAlt,
+  CardGiftcard,
 } from '@material-ui/icons'
 import { logoutUser, User, UserTypes } from '@src/redux/data/userSlice'
 import { MouseEvent, MouseEventHandler, useCallback } from 'react'
@@ -64,6 +65,11 @@ const adminMenuItems = [
     title: 'Users Management',
     icon: <PeopleAlt />,
     url: '/admin/accounts',
+  },
+  {
+    title: 'Asset Management',
+    icon: <CardGiftcard />,
+    url: '/admin/assets',
   },
 ]
 const drawerWidth = 240
@@ -275,44 +281,42 @@ export default function DrawerComponent({
       </List>
 
       <Divider></Divider>
+      <Box display="flex" flexDirection="column" justifyContent="space-between" height="100%">
+        <List
+          style={{
+            flexGrow: 1,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {adminMenuItems.map((menuItem) => (
+            <ListItem
+              style={{
+                paddingTop: 16,
+                paddingBottom: 16,
+              }}
+              className={classes.drawerItem}
+              button
+              key={menuItem.title}
+              onClick={() => {
+                router.push(menuItem.url)
+              }}
+            >
+              <ListItemIcon>{menuItem.icon}</ListItemIcon>
+              <ListItemText>
+                <Typography
+                  variant="body1"
+                  style={{
+                    fontWeight: 600,
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {menuItem.title}
+                </Typography>
+              </ListItemText>
+            </ListItem>
+          ))}
+        </List>
 
-      <List
-        style={{
-          display: 'flex',
-          flexGrow: 1,
-          flexDirection: 'column',
-          // justifyContent: 'flex-end',
-          justifyContent: 'space-between',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {adminMenuItems.map((menuItem) => (
-          <ListItem
-            style={{
-              paddingTop: 16,
-              paddingBottom: 16,
-            }}
-            className={classes.drawerItem}
-            button
-            key={menuItem.title}
-            onClick={() => {
-              router.push(menuItem.url)
-            }}
-          >
-            <ListItemIcon>{menuItem.icon}</ListItemIcon>
-            <ListItemText>
-              <Typography
-                variant="body1"
-                style={{
-                  fontWeight: 600,
-                  textTransform: 'capitalize',
-                }}
-              >
-                {menuItem.title}
-              </Typography>
-            </ListItemText>
-          </ListItem>
-        ))}
         <ListItem
           className={clsx(classes.drawerItem, classes.logoutButton)}
           button
@@ -347,7 +351,7 @@ export default function DrawerComponent({
             </Typography>
           </ListItemText>
         </ListItem>
-      </List>
+      </Box>
     </Drawer>
   )
 }
