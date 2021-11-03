@@ -17,6 +17,11 @@ export type UserTypes = `${UserRoles}`
 
 export type User = {
   user_id: string
+  admin_id?: string
+  subdistributor_id?: string
+  retailer_id?: string
+  dsp_id?: string
+
   email: string
   first_name: string
   last_name: string
@@ -32,12 +37,16 @@ export type UserState = {
 }
 
 function reduceUser(response: UserResponse): UserState['data'] {
-  const { id, email, first_name, last_name, roles } = response
+  const { id, email, first_name, last_name, roles, subdistributor, retailer, dsp, admin } = response
   return {
     user_id: id,
     email,
     first_name,
     last_name,
+    admin_id: admin?.id,
+    retailer_id: retailer?.id,
+    subdistributor_id: subdistributor?.id,
+    dsp_id: dsp?.id,
     roles,
   }
 }
@@ -47,7 +56,7 @@ export const loginUserThunk = createAsyncThunk(
   async (params: LoginUserParams, thunkApi) =>
     userApi
       .loginUser(params)
-      .then((res) => res)
+      .then((res) => res as User & UserMetaData)
       .catch((err: AxiosError) => {
         throw new Error(err.response?.data?.message || err.message)
       })
@@ -73,10 +82,9 @@ export const getUser = createAsyncThunk(
             message: error,
           })
         )
-        throw new Error()
+        throw new Error(error)
       })
       const user = reduceUser(userResponse)
-
       return {
         data: user,
         metadata: { ...userState?.metadata },
@@ -126,22 +134,25 @@ const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(loginUserThunk.fulfilled, (state, { payload }) => {
-      const { user_id, email, first_name, last_name, roles, iat, exp } = Object(payload)
-      return {
-        data: {
-          user_id,
-          email,
-          first_name,
-          last_name,
-          roles,
-        },
-        metadata: {
-          iat,
-          exp,
-        },
+    builder.addCase(
+      loginUserThunk.fulfilled,
+      (state, { payload }: { payload: User & UserMetaData }) => {
+        const { user_id, email, first_name, last_name, roles, iat, exp } = payload
+        return {
+          data: {
+            user_id,
+            email,
+            first_name,
+            last_name,
+            roles,
+          },
+          metadata: {
+            iat,
+            exp,
+          },
+        }
       }
-    })
+    )
     builder.addCase(
       getUser.fulfilled,
       (state, action: { payload: UserState }): UserState => action.payload

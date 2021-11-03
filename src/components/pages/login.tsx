@@ -9,15 +9,14 @@ import {
   TextField,
   TextFieldProps,
   CircularProgress,
+  Checkbox,
 } from '@material-ui/core'
 import companyLogo from '@public/assets/realm1000-logo.png'
 import { loginUserThunk, User } from '@src/redux/data/userSlice'
 import type { LoginUserParams } from '@src/utils/api/userApi'
-import userApi from '@src/utils/api/userApi'
 import Image from 'next/image'
 import { ChangeEvent, useState, FormEvent, useEffect, ChangeEventHandler } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { AppDispatch, RootState } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
@@ -69,6 +68,7 @@ export default function AdminLogin() {
     password: '',
     remember_me: true,
   })
+
   const [buttonLoading, setButtonLoading] = useState<boolean>(false)
 
   const handleSubmit = (e: FormEvent) => {
@@ -86,6 +86,7 @@ export default function AdminLogin() {
           )
         }
       })
+
       // .then(() => {
       //   router.push('/')
       // })
@@ -208,10 +209,30 @@ export default function AdminLogin() {
                 onChange={handleChange}
               ></TextInput>
             </div>
+            <Box pt={2} textAlign="center">
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                className={classes.inputContainer}
+              >
+                <Typography variant="body1">Remember Me: </Typography>
+
+                <Checkbox
+                  name="remember_me"
+                  color="primary"
+                  checked={formValues.remember_me}
+                  onChange={(e, checked) => {
+                    setFormValues((prev) => ({
+                      ...prev,
+                      [e.target.name]: checked,
+                    }))
+                  }}
+                />
+              </Box>
+            </Box>
           </Box>
-          {/* <Box py={3}>
-          <Divider />
-        </Box> */}
+
           <Box pt={3} />
           <Box display="flex" justifyContent="center">
             <Button

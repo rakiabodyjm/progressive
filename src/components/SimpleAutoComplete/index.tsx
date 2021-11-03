@@ -15,6 +15,7 @@ export default function SimpleAutoComplete<T, U>({
   getOptionSelected,
   getOptionLabel,
   inputProps,
+  // defaultOptions,
   ...restProps
 }: {
   onChange: (arg: T) => void
@@ -25,6 +26,7 @@ export default function SimpleAutoComplete<T, U>({
   defaultValue?: T
   getOptionSelected: (arg: T, value: T) => boolean
   getOptionLabel: (option: T) => string
+  // defaultOptions?: T[]
   inputProps?: TextFieldProps
 } & Omit<Partial<AutocompleteProps<T, undefined, undefined, undefined>>, 'onChange'>) {
   const [options, setOptions] = useState<T[]>([])
@@ -32,7 +34,10 @@ export default function SimpleAutoComplete<T, U>({
   const [query, setQuery] = useState(initialQuery)
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
   const dispatch = useDispatch()
+  const defaultValueRef = useRef<T | undefined>(defaultValue)
+
   useEffect(() => {
+    setLoading(true)
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
@@ -61,13 +66,12 @@ export default function SimpleAutoComplete<T, U>({
     <Autocomplete
       options={options}
       onInputChange={(_, inputValue) => {
-        setLoading(true)
         setQuery((prevState) => querySetter(prevState, inputValue))
       }}
       onChange={(_, value) => {
         onChange(value as T)
       }}
-      defaultValue={defaultValue || undefined}
+      defaultValue={defaultValueRef?.current || undefined}
       getOptionSelected={getOptionSelected}
       getOptionLabel={getOptionLabel}
       renderInput={(params) => (

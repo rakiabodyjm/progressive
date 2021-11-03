@@ -13,139 +13,137 @@ import {
 import { Close } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
-import UserAutoComplete from '@src/components/UserAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
-import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
-import { CreateRetailer, createRetailer } from '@src/utils/api/retailerApi'
+import { DspResponseType } from '@src/utils/api/dspApi'
+import {
+  CreateRetailer,
+  RetailerResponseType,
+  updateRetailer,
+  UpdateRetailer,
+} from '@src/utils/api/retailerApi'
 import {
   getDsps,
-  getSubdistributor,
   searchSubdistributor,
   SubdistributorResponseType,
 } from '@src/utils/api/subdistributorApi'
 import useNotification from '@src/utils/hooks/useNotification'
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import validator from 'validator'
 
-export default function CreateRetailerAccount({
+function reduceRetailer(arg: RetailerResponseType): UpdateRetailer {
+  return {
+    store_name: arg.store_name,
+    e_bind_number: arg.e_bind_number,
+    id_type: arg.id_type,
+    id_number: arg.id_number,
+    subdistributor: arg.subdistributor.id,
+    dsp: arg.dsp.id,
+  }
+}
+export default function EditRetailerAccount({
   modal: modalClose,
-  subdistributorId,
-  dspId,
+  retailer: retailerProps,
 }: {
   modal?: () => void
-  subdistributorId?: string
-  dspId?: string
+  retailer: RetailerResponseType
 }) {
-  const [newRetailerAccount, setNewRetailerAccount] = useState<
-    Record<keyof CreateRetailer, string | null>
-  >({
-    store_name: '',
-    e_bind_number: '',
-    id_type: '',
-    id_number: '',
-    user: null,
-    subdistributor: null,
-    dsp: null,
-  })
+  const retailerPropsDefault = useRef<RetailerResponseType>(retailerProps)
+  const updateRetailerDefault = useRef<UpdateRetailer>(reduceRetailer(retailerProps))
 
-  const { entity: autoLoadDsp, loading: autoLoadDspLoading } = useFetchEntity('dsp', dspId)
+  const [retailer, setRetailer] = useState<UpdateRetailer>(reduceRetailer(retailerProps))
 
-  const { entity: autoLoadSubdistributor, loading: autoLoadSubdistributorLoading } = useFetchEntity(
-    'subdistributor',
-    subdistributorId
-  )
-  useEffect(() => {
-    if (autoLoadSubdistributor) {
-      handleChange('subdistributor', autoLoadSubdistributor?.id)
-    }
-    if (autoLoadDsp) {
-      handleChange('dsp', autoLoadDsp?.id)
-    }
-    // console.log(autoLoadSubdistributor, autoLoadDsp)
-  }, [autoLoadSubdistributor, autoLoadDsp])
-
-  const handleChange = (e: unknown | ChangeEvent<HTMLInputElement>, value?: string | null) => {
+  const handleChange = (e: unknown, value?: string | string[] | undefined) => {
     if (typeof e !== 'string') {
       const eTarget = e as ChangeEvent<HTMLInputElement>
-      setNewRetailerAccount((prevState) => ({
+      setRetailer((prevState) => ({
         ...prevState,
         [eTarget.target.name]: eTarget.target.value,
       }))
     } else {
-      setNewRetailerAccount((prevState) => ({
+      setRetailer((prevState) => ({
         ...prevState,
-        [e as keyof CreateRetailer]: value,
+        [e as keyof UpdateRetailer]: value,
       }))
     }
   }
-  const { subdistributor } = newRetailerAccount
 
   const [dspOptions, setDspOptions] = useState<DspResponseType[]>([])
+
+  const dispatchNotif = useNotification()
+
   useEffect(() => {
-    /**
-     * Fetch only if there is not dspId given
-     */
-    if (subdistributor && !dspId) {
-      getDsps(subdistributor)
+    if (retailer?.subdistributor) {
+      setDspOptions([])
+      getDsps(retailer?.subdistributor)
         .then((res) => {
           setDspOptions(res.data)
         })
         .catch((err) => {
-          console.error(err)
+          dispatchNotif({
+            type: NotificationTypes.ERROR,
+            message: err.message,
+          })
         })
+    } else {
+      setDspSelected(undefined)
     }
-    if (dspId && autoLoadDsp) {
-      setDspOptions([autoLoadDsp as DspResponseType])
+    if (!retailer.subdistributor) {
+      setRetailer((prevState) => ({
+        ...prevState,
+        dsp: undefined,
+      }))
     }
-  }, [subdistributor, dspId, autoLoadDsp])
 
-  const dispatchNotif = useNotification()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [retailer.subdistributor])
 
-  const handleSubmit = () => {
-    createRetailer(newRetailerAccount as CreateRetailer)
-      .then(() => {
+  const [dspSelected, setDspSelected] = useState<RetailerResponseType['dsp'] | undefined>(
+    retailerProps.dsp
+  )
+
+  const handleSubmit = useCallback(() => {
+    const changes = Object.entries(updateRetailerDefault.current).reduce((acc, [key, value]) => {
+      if (retailer[key as keyof typeof updateRetailerDefault.current] !== value) {
+        return {
+          ...acc,
+          [key]: retailer[key as keyof typeof retailer],
+        }
+      }
+      return acc
+    }, {})
+
+    updateRetailer(retailerProps.id, changes)
+      .then((res) => {
         dispatchNotif({
           type: NotificationTypes.SUCCESS,
-          message: `Retailer Account Created`,
+          message: `Retailer Updated`,
         })
+        // close and Trigger rerender
         if (modalClose) {
+          console.log('executing modalclose')
           modalClose()
         }
       })
       .catch((err: string[]) => {
-        err.forEach((ea) => {
-          const timeout = setTimeout(() => {
-            dispatchNotif({
-              type: NotificationTypes.ERROR,
-              message: ea,
-            })
-            clearTimeout(timeout)
-          }, 300)
+        err.forEach((error) => {
+          dispatchNotif({
+            type: NotificationTypes.ERROR,
+            message: error,
+          })
         })
       })
-  }
+  }, [modalClose, retailer, retailerProps.id])
 
-  useEffect(() => {
-    if (!newRetailerAccount.subdistributor) {
-      handleChange('dsp', null)
-    }
-  }, [newRetailerAccount.subdistributor])
   return (
     <Paper variant="outlined">
-      <Box
-        component="form"
-        onSubmit={(e) => {
-          e?.preventDefault()
-          handleSubmit()
-        }}
-        p={2}
-      >
+      <Box p={2}>
         <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography color="primary" variant="h6">
-              Create New Retailer Account
+              Edit Retailer Account
             </Typography>
             <Typography color="textSecondary" variant="body2">
-              Complete the form to Create a new Retailer Account
+              Edit Retailer Account Details
             </Typography>
           </Box>
           <Box>
@@ -176,6 +174,7 @@ export default function CreateRetailerAccount({
               onChange={handleChange}
               placeholder="Name of Store"
               name="store_name"
+              defaultValue={retailerPropsDefault.current?.store_name || ''}
             />
           </Grid>
           <Grid item xs={5}>
@@ -184,6 +183,7 @@ export default function CreateRetailerAccount({
               onChange={handleChange}
               placeholder="DITO SIM Phone Number"
               name="e_bind_number"
+              defaultValue={retailerPropsDefault?.current?.e_bind_number || ''}
             />
           </Grid>
         </Grid>
@@ -195,6 +195,7 @@ export default function CreateRetailerAccount({
               onChange={handleChange}
               placeholder={`LTO Driver's License, Passport...`}
               name="id_type"
+              defaultValue={retailerPropsDefault.current?.id_type || ''}
             />
           </Grid>
           <Grid item xs={6}>
@@ -203,13 +204,14 @@ export default function CreateRetailerAccount({
               onChange={handleChange}
               name="id_number"
               placeholder="ID Number: e.g. B01-12-345678"
+              defaultValue={retailerPropsDefault.current?.id_number || ''}
             />
           </Grid>
         </Grid>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TypographyLabel>Subdistributor</TypographyLabel>
-            {(subdistributorId && autoLoadSubdistributor) || !subdistributorId ? (
+            {retailer ? (
               <SimpleAutoComplete<SubdistributorResponseType, string>
                 initialQuery=""
                 fetcher={(q) => searchSubdistributor(q || ' ')}
@@ -217,10 +219,9 @@ export default function CreateRetailerAccount({
                 getOptionSelected={(val1, val2) => val1.id === val2.id}
                 querySetter={(arg, inputValue) => inputValue}
                 onChange={(value) => {
-                  handleChange('subdistributor', value?.id || null)
+                  handleChange('subdistributor', value?.id || undefined)
                 }}
-                defaultValue={autoLoadSubdistributor as SubdistributorResponseType}
-                disabled={subdistributorId ? true : undefined}
+                defaultValue={retailerPropsDefault.current?.subdistributor || undefined}
               />
             ) : (
               <CustomTextField name="subdistributor" disabled />
@@ -231,14 +232,12 @@ export default function CreateRetailerAccount({
           <Grid item xs={12}>
             <TypographyLabel>Subdistributor DSP</TypographyLabel>
 
-            {newRetailerAccount.subdistributor && dspOptions ? (
+            {retailer?.dsp && dspOptions?.length > 0 && retailer.subdistributor ? (
               <Autocomplete<DspResponseType>
                 options={dspOptions}
-                getOptionLabel={(option) =>
-                  `${option.dsp_code} - ${option.user.last_name}, ${option.user.first_name}`
-                }
+                getOptionLabel={(option) => `${option.dsp_code}`}
                 getOptionSelected={(val1, val2) => val1.id === val2.id}
-                onChange={(_, value) => handleChange('dsp', value?.id || null)}
+                onChange={(_, value) => handleChange('dsp', value?.id || undefined)}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -249,8 +248,7 @@ export default function CreateRetailerAccount({
                     }}
                   />
                 )}
-                defaultValue={(autoLoadDsp as DspResponseType) || null}
-                disabled={autoLoadDsp ? true : undefined}
+                value={dspSelected}
               />
             ) : (
               <CustomTextField
@@ -259,7 +257,7 @@ export default function CreateRetailerAccount({
                 onClick={() => {
                   dispatchNotif({
                     message:
-                      newRetailerAccount?.subdistributor && dspOptions.length === 0
+                      retailer?.subdistributor && dspOptions?.length === 0
                         ? `Subdistributor doesn't have DSP's`
                         : `Select Subdistributor First`,
                     type: NotificationTypes.WARNING,
@@ -269,25 +267,9 @@ export default function CreateRetailerAccount({
             )}
           </Grid>
         </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TypographyLabel>Link to User:</TypographyLabel>
-            <UserAutoComplete
-              onChange={(value) => {
-                handleChange('user', value?.id || null)
-              }}
-              mutateOptions={(users) => users.filter((ea) => !ea.retailer)}
-            />
-          </Grid>
-        </Grid>
+
         <Box display="flex" mt={2} justifyContent="flex-end">
-          <Button
-            onClick={() => {
-              handleSubmit()
-            }}
-            color="primary"
-            variant="contained"
-          >
+          <Button onClick={handleSubmit} color="primary" variant="contained">
             Confirm
           </Button>
         </Box>
@@ -312,45 +294,6 @@ const TypographyLabel = ({
   </Typography>
 )
 
-// const CustomTextField = ({ name, ...restProps }: { name: string } & TextFieldProps) => (
-
-// )
-const useFetchEntity = (type: 'dsp' | 'subdistributor', id?: string) => {
-  const [entity, setEntity] = useState<DspResponseType | SubdistributorResponseType>()
-  const [loading, setLoading] = useState<boolean>(false)
-
-  const fetcher = (argType: typeof type) => {
-    if (argType === 'dsp') {
-      return getDsp
-    }
-    if (argType === 'subdistributor') {
-      return getSubdistributor
-    }
-
-    throw new Error('useFetch entity must have type DSP | Subdistributor')
-  }
-  useEffect(() => {
-    if (type && id) {
-      setLoading(true)
-      fetcher(type)(id)
-        .then((res) => {
-          setEntity(res)
-        })
-        .catch((err) => {
-          console.error(err)
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    }
-  }, [type, id])
-
-  return {
-    loading,
-    entity,
-  }
-}
-
 function CustomTextField<T extends CreateRetailer>({
   name,
   ...restProps
@@ -358,4 +301,19 @@ function CustomTextField<T extends CreateRetailer>({
   name: keyof T & string
 } & TextFieldProps) {
   return <TextField fullWidth variant="outlined" size="small" name={name} {...restProps} />
+}
+
+function customValidator(key: '', value: string[] | string) {
+  const schemaValidators = {
+    store_name: (val: string) =>
+      validator.isLength(val, {
+        max: 26,
+        min: 3,
+      })
+        ? undefined
+        : 'Store Name must be between 3 and 26 characters',
+
+    e_bind_number: (val: string) =>
+      !validator.isMobilePhone(val) ? undefined : `Invalid Phone number format`,
+  }
 }

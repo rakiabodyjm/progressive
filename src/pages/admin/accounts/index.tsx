@@ -261,7 +261,7 @@ export default function AdminAccountsPage() {
     >
       <Box className={classes.headerContainer}>
         <Typography
-          variant="h3"
+          variant="h4"
           style={{
             fontWeight: 700,
           }}

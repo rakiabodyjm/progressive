@@ -1,5 +1,5 @@
 import { CircularProgress, TextField } from '@material-ui/core'
-import { Autocomplete } from '@material-ui/lab'
+import { Autocomplete, AutocompleteProps } from '@material-ui/lab'
 import { searchUser, UserResponse } from '@src/utils/api/userApi'
 import { useEffect, useRef, useState } from 'react'
 
@@ -11,12 +11,12 @@ export default function UserAutoComplete({
   onChange: (arg: UserResponse) => void
   mutateOptions?: (arg: UserResponse[]) => UserResponse[]
   defaultValue?: UserResponse
-}) {
+} & Partial<Omit<AutocompleteProps<UserResponse, undefined, undefined, undefined>, 'onChange'>>) {
   const [query, setQuery] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
-  const [value, setValue] = useState<UserResponse | undefined>()
   const [usersOptions, setUsersOptions] = useState<UserResponse[]>([])
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const defaultValueRef = useRef(defaultValue)
   useEffect(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
@@ -49,10 +49,12 @@ export default function UserAutoComplete({
       }}
       defaultValue={
         // (Array.isArray(usersOptions) && usersOptions.length > 0 && usersOptions[0]) || undefined
-        defaultValue || undefined
+        defaultValueRef?.current || undefined
       }
       getOptionSelected={(option, value) => option.id === value.id || false}
-      getOptionLabel={(option) => `${option.last_name}, ${option.first_name}`}
+      getOptionLabel={(option) =>
+        `${option.last_name}, ${option.first_name} - ${option.id.split('-')[0]}`
+      }
       renderInput={(params) => (
         <TextField
           {...params}

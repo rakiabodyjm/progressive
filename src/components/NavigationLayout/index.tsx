@@ -1,7 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 import Drawer from '@src/components/NavigationLayout/Drawer'
 import Nav from '@src/components/NavigationLayout/Nav'
-import { getUser, User, UserState } from '@src/redux/data/userSlice'
 import { RootState } from '@src/redux/store'
 import useWidth from '@src/utils/hooks/useWidth'
 import { useMemo, useState } from 'react'
