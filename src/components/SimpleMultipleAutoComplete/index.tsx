@@ -15,6 +15,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
   getOptionSelected,
   getOptionLabel,
   tagLabel,
+  ...restProps
 }: {
   onChange: (arg: T[]) => void
   mutateOptions?: (arg: T[]) => T[]
@@ -25,7 +26,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
   getOptionSelected: (arg: T, value: T) => boolean
   getOptionLabel: (option: T) => string
   tagLabel: (option: T) => string
-}) {
+} & Omit<Partial<AutocompleteProps<T, true, undefined, undefined>>, 'onChange'>) {
   const [options, setOptions] = useState<T[]>([])
   const [value, setValue] = useState<T[]>([])
   const [loading, setLoading] = useState<boolean>(false)
@@ -103,6 +104,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
           }}
         />
       )}
+      {...restProps}
     />
   )
 }

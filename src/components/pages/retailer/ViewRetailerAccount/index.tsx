@@ -48,7 +48,7 @@ export default function ViewRetailerAccount({
 
   return (
     <Paper className={classes.root} {...restProps} variant="outlined">
-      <Typography variant="h4">Retailer Account</Typography>
+      <Typography variant="h4">Retailer Account Management</Typography>
       <Typography color="primary" variant="subtitle2">
         Manage Retailer Account
       </Typography>

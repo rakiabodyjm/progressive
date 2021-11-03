@@ -1,6 +1,5 @@
 import {
   Divider,
-  hexToRgb,
   IconButton,
   List,
   ListItem,
@@ -9,7 +8,6 @@ import {
   Theme,
   Typography,
   Box,
-  ClickAwayListener,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import Drawer from '@material-ui/core/Drawer'
@@ -25,7 +23,6 @@ import {
   PeopleAlt,
 } from '@material-ui/icons'
 import { logoutUser, User, UserTypes } from '@src/redux/data/userSlice'
-import { MouseEvent, MouseEventHandler, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'

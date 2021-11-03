@@ -29,6 +29,12 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
   const dispatch = useDispatch()
 
   /**
+   * get User on load
+   */
+  useEffect(() => {
+    dispatch(getUser())
+  }, [])
+  /**
    * set  color scheme according to device
    */
 
@@ -38,6 +44,7 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
 
   const user = useSelector((state: RootState) => state.user)
   const isAuthenticated = useMemo<boolean>(() => !!user?.data.user_id, [user])
+
   const isAuthExpired = useMemo<boolean>(() => {
     console.log('checking for authentication expiration')
     if (isAuthenticated && user) {
