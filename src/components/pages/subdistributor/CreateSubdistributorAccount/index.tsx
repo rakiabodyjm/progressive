@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Theme,
   Grid,
+  TextField,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
@@ -22,10 +23,25 @@ import { createSubdistributor, CreateSubdistributor } from '@src/utils/api/subdi
 import { UserResponse } from '@src/utils/api/userApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import { useState } from 'react'
+const useStyles = makeStyles((theme: Theme) => ({
+  formLabel: {
+    color: theme.palette.primary.main,
+  },
+  errorLabel: {
+    color: theme.palette.error.main,
+  },
+  paperPadding: {
+    padding: 2,
+  },
+  buttonMargin: {
+    marginTop: 10,
+  },
+}))
 
 type Methods = 'link' | 'create'
 export default function CreateSubdistributorAccount({ modal }: { modal?: () => void }) {
   const theme: Theme = useTheme()
+  const classes = useStyles()
   const [method, setMethod] = useState<Methods>('link')
   const [accountToLink, setAccountToLink] = useState<UserResponse | undefined>()
   const [subdistributorFields, setSubdistributorFields] = useState<
@@ -119,20 +135,15 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
             margin: `16px 0px`,
           }}
         />
-        <Box
-          display="grid"
-          style={{
-            gap: 16,
-          }}
-        >
-          <Box>
+        <Grid spacing={1} container>
+          <Grid item xs={7}>
             <Typography
+              className={classes.formLabel}
               component="label"
               style={{
                 marginBottom: 16,
               }}
               variant="subtitle2"
-              color="primary"
             >
               Select User Account to Link
             </Typography>
@@ -142,15 +153,15 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
               }}
               mutateOptions={(users) => users.filter((ea) => !ea.subdistributor)}
             />
-          </Box>
-          <Box>
+          </Grid>
+          <Grid item xs={5}>
             <Typography
+              className={classes.formLabel}
               component="label"
               style={{
                 marginBottom: 16,
               }}
               variant="body2"
-              color="primary"
             >
               Map ID of Subdistributor Account
             </Typography>
@@ -165,9 +176,72 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
                 setAreaId(arg)
               }}
             />
-          </Box>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography className={classes.formLabel} component="label" variant="body2">
+              Id Type
+            </Typography>
+            <TextField
+              placeholder=""
+              variant="outlined"
+              name="e_bind_number"
+              fullWidth
+              size="small"
+              // onChange={handleChange}
+              // value={user.first_name}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography className={classes.formLabel} component="label" variant="body2">
+              Id Number
+            </Typography>
+            <TextField
+              placeholder=""
+              variant="outlined"
+              name="e_bind_number"
+              fullWidth
+              size="small"
+              // onChange={handleChange}
+              // value={user.first_name}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography className={classes.formLabel} component="label" variant="body2">
+              E Bind Number
+            </Typography>
+            <TextField
+              placeholder=""
+              variant="outlined"
+              name="e_bind_number"
+              fullWidth
+              size="small"
+              // onChange={handleChange}
+              // value={user.first_name}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography className={classes.formLabel} component="label" variant="body2">
+              Zip Code
+            </Typography>
+            <TextField
+              placeholder=""
+              variant="outlined"
+              name="e_bind_number"
+              fullWidth
+              size="small"
+              // onChange={handleChange}
+              // value={user.first_name}
+            />
+          </Grid>
+        </Grid>
 
-          <AestheticObjectFormRenderer
+        <Box
+          display="grid"
+          style={{
+            gap: 16,
+          }}
+        >
+          {/* <AestheticObjectFormRenderer
             highlight="key"
             fields={subdistributorFields}
             onChange={(e) => {
@@ -176,7 +250,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
                 [e.target.name]: e.target.value,
               }))
             }}
-          />
+          /> */}
         </Box>
 
         <Box mt={2} display="flex" justifyContent="flex-end">
