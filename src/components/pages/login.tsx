@@ -233,7 +233,7 @@ export default function AdminLogin() {
             </Box>
           </Box>
 
-          <Box pt={3} />
+          <Box pt={2} />
           <Box display="flex" justifyContent="center">
             <Button
               type="submit"
