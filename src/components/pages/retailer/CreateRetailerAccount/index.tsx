@@ -5,12 +5,14 @@ import {
   Grid,
   IconButton,
   Paper,
+  Theme,
   TextField,
   TextFieldProps,
   Typography,
   TypographyProps,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
+import { makeStyles } from '@material-ui/styles'
 import { Autocomplete } from '@material-ui/lab'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import UserAutoComplete from '@src/components/UserAutoComplete'
@@ -25,6 +27,17 @@ import {
 } from '@src/utils/api/subdistributorApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import React, { ChangeEvent, useEffect, useState } from 'react'
+import validator from 'validator'
+import { useDispatch } from 'react-redux'
+import { extractErrorFromResponse } from '@src/utils/api/common'
+const useStyles = makeStyles((theme: Theme) => ({
+  formLabel: {
+    color: theme.palette.primary.main,
+  },
+  errorLabel: {
+    color: theme.palette.error.main,
+  },
+}))
 
 export default function CreateRetailerAccount({
   modal: modalClose,
@@ -46,6 +59,20 @@ export default function CreateRetailerAccount({
     subdistributor: null,
     dsp: null,
   })
+  const [errors, setErrors] = useState<Record<keyof CreateRetailer, string | null>>({
+    store_name: null,
+    e_bind_number: null,
+    id_type: null,
+    id_number: null,
+    user: null,
+    subdistributor: null,
+    dsp: null,
+  })
+  const classes = useStyles()
+  const checkStore_name = String(newRetailerAccount.store_name)
+  const checkE_bind_number = String(newRetailerAccount.e_bind_number)
+  const checkId_type = String(newRetailerAccount.id_type)
+  const checkId_number = String(newRetailerAccount.id_number)
 
   const { entity: autoLoadDsp, loading: autoLoadDspLoading } = useFetchEntity('dsp', dspId)
 
@@ -98,12 +125,32 @@ export default function CreateRetailerAccount({
     }
   }, [subdistributor, dspId, autoLoadDsp])
 
+  const dispatch = useDispatch()
   const dispatchNotif = useNotification()
 
   const handleSubmit = () => {
+    const schemaChecker = {
+      store_name: (value: string) =>
+        validator.isLength(checkStore_name, { min: 4 }) || '*Store Name Required (4+ Letters)',
+      e_bind_number: (value: string) =>
+        !validator.isEmpty(checkE_bind_number) || '*E Bind Number Required',
+      id_type: (value: string) => !validator.isEmpty(checkId_type) || '*Id Type Required',
+      id_number: (value: string) => !validator.isEmpty(checkId_number) || '*Id Number Required',
+    }
+    Object.keys(schemaChecker).forEach((key) => {
+      const validator = schemaChecker[key as keyof typeof schemaChecker]
+      const valuesToValidate = newRetailerAccount[key as keyof CreateRetailer]
+      const validateResult = validator(valuesToValidate as string)
+      if (validateResult) {
+        setErrors((prevState) => ({
+          ...prevState,
+          [key]: validateResult,
+        }))
+      }
+    })
     createRetailer(newRetailerAccount as CreateRetailer)
       .then(() => {
-        dispatchNotif({
+        dispatch({
           type: NotificationTypes.SUCCESS,
           message: `Retailer Account Created`,
         })
@@ -112,15 +159,19 @@ export default function CreateRetailerAccount({
         }
       })
       .catch((err: string[]) => {
-        err.forEach((ea) => {
-          const timeout = setTimeout(() => {
-            dispatchNotif({
+        if (Array.isArray(err)) {
+          err.forEach((ea) => {
+            dispatch({
               type: NotificationTypes.ERROR,
               message: ea,
             })
-            clearTimeout(timeout)
-          }, 300)
-        })
+          })
+        } else {
+          dispatch({
+            type: NotificationTypes.ERROR,
+            message: extractErrorFromResponse(err),
+          })
+        }
       })
   }
 
@@ -177,6 +228,16 @@ export default function CreateRetailerAccount({
               placeholder="Name of Store"
               name="store_name"
             />
+            <Typography
+              style={{
+                display: validator.isLength(checkStore_name, { min: 4 }) ? 'none' : undefined,
+              }}
+              className={classes.errorLabel}
+              component="label"
+              variant="caption"
+            >
+              {errors.store_name && errors.store_name}
+            </Typography>
           </Grid>
           <Grid item xs={5}>
             <TypographyLabel noWrap>E Bind Number / Phone Number: </TypographyLabel>
@@ -185,6 +246,16 @@ export default function CreateRetailerAccount({
               placeholder="DITO SIM Phone Number"
               name="e_bind_number"
             />
+            <Typography
+              style={{
+                display: !validator.isEmpty(checkE_bind_number) ? 'none' : undefined,
+              }}
+              className={classes.errorLabel}
+              component="label"
+              variant="caption"
+            >
+              {errors.e_bind_number && errors.e_bind_number}
+            </Typography>
           </Grid>
         </Grid>
 
@@ -196,6 +267,16 @@ export default function CreateRetailerAccount({
               placeholder={`LTO Driver's License, Passport...`}
               name="id_type"
             />
+            <Typography
+              style={{
+                display: !validator.isEmpty(checkId_type) ? 'none' : undefined,
+              }}
+              className={classes.errorLabel}
+              component="label"
+              variant="caption"
+            >
+              {errors.id_type && errors.id_type}
+            </Typography>
           </Grid>
           <Grid item xs={6}>
             <TypographyLabel>ID Number</TypographyLabel>
@@ -204,6 +285,16 @@ export default function CreateRetailerAccount({
               name="id_number"
               placeholder="ID Number: e.g. B01-12-345678"
             />
+            <Typography
+              style={{
+                display: !validator.isEmpty(checkId_number) ? 'none' : undefined,
+              }}
+              className={classes.errorLabel}
+              component="label"
+              variant="caption"
+            >
+              {errors.id_number && errors.id_number}
+            </Typography>
           </Grid>
         </Grid>
         <Grid container spacing={2}>

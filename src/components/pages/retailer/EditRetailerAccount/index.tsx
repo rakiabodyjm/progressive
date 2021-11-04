@@ -5,12 +5,14 @@ import {
   Grid,
   IconButton,
   Paper,
+  Theme,
   TextField,
   TextFieldProps,
   Typography,
   TypographyProps,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
+import { makeStyles } from '@material-ui/styles'
 import { Autocomplete } from '@material-ui/lab'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
@@ -29,6 +31,16 @@ import {
 import useNotification from '@src/utils/hooks/useNotification'
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import validator from 'validator'
+import { useDispatch } from 'react-redux'
+import { extractErrorFromResponse } from '@src/utils/api/common'
+const useStyles = makeStyles((theme: Theme) => ({
+  formLabel: {
+    color: theme.palette.primary.main,
+  },
+  errorLabel: {
+    color: theme.palette.error.main,
+  },
+}))
 
 function reduceRetailer(arg: RetailerResponseType): UpdateRetailer {
   return {
@@ -66,10 +78,25 @@ export default function EditRetailerAccount({
       }))
     }
   }
+  const [errors, setErrors] = useState<Record<keyof CreateRetailer, string | null>>({
+    store_name: null,
+    e_bind_number: null,
+    id_type: null,
+    id_number: null,
+    user: null,
+    subdistributor: null,
+    dsp: null,
+  })
+  const classes = useStyles()
+  const checkStore_name = String(retailer.store_name)
+  const checkE_bind_number = String(retailer.e_bind_number)
+  const checkId_type = String(retailer.id_type)
+  const checkId_number = String(retailer.id_number)
 
   const [dspOptions, setDspOptions] = useState<DspResponseType[]>([])
 
   const dispatchNotif = useNotification()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (retailer?.subdistributor) {
@@ -111,22 +138,40 @@ export default function EditRetailerAccount({
       }
       return acc
     }, {})
+    const schemaChecker = {
+      store_name: (value: string) =>
+        validator.isLength(checkStore_name, { min: 4 }) || '*Store Name Required (4+ Letters)',
+      e_bind_number: (value: string) =>
+        !validator.isEmpty(checkE_bind_number) || '*E Bind Number Required',
+      id_type: (value: string) => !validator.isEmpty(checkId_type) || '*Id Type Required',
+      id_number: (value: string) => !validator.isEmpty(checkId_number) || '*Id Number Required',
+    }
+    Object.keys(schemaChecker).forEach((key) => {
+      const validator = schemaChecker[key as keyof typeof schemaChecker]
+      const valuesToValidate = retailer[key as keyof UpdateRetailer]
+      const validateResult = validator(valuesToValidate as string)
+      if (validateResult) {
+        setErrors((prevState) => ({
+          ...prevState,
+          [key]: validateResult,
+        }))
+      }
+    })
 
     updateRetailer(retailerProps.id, changes)
       .then((res) => {
-        dispatchNotif({
+        dispatch({
           type: NotificationTypes.SUCCESS,
           message: `Retailer Updated`,
         })
         // close and Trigger rerender
         if (modalClose) {
-          console.log('executing modalclose')
           modalClose()
         }
       })
       .catch((err: string[]) => {
         err.forEach((error) => {
-          dispatchNotif({
+          dispatch({
             type: NotificationTypes.ERROR,
             message: error,
           })
@@ -176,6 +221,16 @@ export default function EditRetailerAccount({
               name="store_name"
               defaultValue={retailerPropsDefault.current?.store_name || ''}
             />
+            <Typography
+              style={{
+                display: validator.isLength(checkStore_name, { min: 4 }) ? 'none' : undefined,
+              }}
+              className={classes.errorLabel}
+              component="label"
+              variant="caption"
+            >
+              {errors.store_name && errors.store_name}
+            </Typography>
           </Grid>
           <Grid item xs={5}>
             <TypographyLabel noWrap>E Bind Number / Phone Number: </TypographyLabel>
@@ -185,6 +240,16 @@ export default function EditRetailerAccount({
               name="e_bind_number"
               defaultValue={retailerPropsDefault?.current?.e_bind_number || ''}
             />
+            <Typography
+              style={{
+                display: !validator.isEmpty(checkE_bind_number) ? 'none' : undefined,
+              }}
+              className={classes.errorLabel}
+              component="label"
+              variant="caption"
+            >
+              {errors.e_bind_number && errors.e_bind_number}
+            </Typography>
           </Grid>
         </Grid>
 
@@ -197,6 +262,16 @@ export default function EditRetailerAccount({
               name="id_type"
               defaultValue={retailerPropsDefault.current?.id_type || ''}
             />
+            <Typography
+              style={{
+                display: !validator.isEmpty(checkId_type) ? 'none' : undefined,
+              }}
+              className={classes.errorLabel}
+              component="label"
+              variant="caption"
+            >
+              {errors.id_type && errors.id_type}
+            </Typography>
           </Grid>
           <Grid item xs={6}>
             <TypographyLabel>ID Number</TypographyLabel>
@@ -206,6 +281,16 @@ export default function EditRetailerAccount({
               placeholder="ID Number: e.g. B01-12-345678"
               defaultValue={retailerPropsDefault.current?.id_number || ''}
             />
+            <Typography
+              style={{
+                display: !validator.isEmpty(checkId_number) ? 'none' : undefined,
+              }}
+              className={classes.errorLabel}
+              component="label"
+              variant="caption"
+            >
+              {errors.id_number && errors.id_number}
+            </Typography>
           </Grid>
         </Grid>
         <Grid container spacing={2}>
@@ -303,17 +388,17 @@ function CustomTextField<T extends CreateRetailer>({
   return <TextField fullWidth variant="outlined" size="small" name={name} {...restProps} />
 }
 
-function customValidator(key: '', value: string[] | string) {
-  const schemaValidators = {
-    store_name: (val: string) =>
-      validator.isLength(val, {
-        max: 26,
-        min: 3,
-      })
-        ? undefined
-        : 'Store Name must be between 3 and 26 characters',
+// function customValidator(key: '', value: string[] | string) {
+//   const schemaValidators = {
+//     store_name: (val: string) =>
+//       validator.isLength(val, {
+//         max: 26,
+//         min: 3,
+//       })
+//         ? undefined
+//         : 'Store Name must be between 3 and 26 characters',
 
-    e_bind_number: (val: string) =>
-      !validator.isMobilePhone(val) ? undefined : `Invalid Phone number format`,
-  }
-}
+//     e_bind_number: (val: string) =>
+//       !validator.isMobilePhone(val) ? undefined : `Invalid Phone number format`,
+//   }
+// }
