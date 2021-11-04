@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.error.main,
   },
   paperPadding: {
-    padding: 15,
+    padding: 2,
   },
   buttonMargin: {
     marginTop: 10,
