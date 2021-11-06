@@ -1,4 +1,5 @@
-import ViewRetailerAccount from '@components/pages/retailer/ViewRetailerAccount'
+/* eslint-disable no-redeclare */
+
 import { Box, Button, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import DSPSmallCard from '@src/components/DSPSmallCard'
@@ -6,14 +7,17 @@ import RetailerSmallCard from '@src/components/RetailerSmallCard'
 import SubdistributorSmallCard from '@src/components/SubdistributorSmallCard'
 import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
 import WalletSmallCard from '@src/components/WalletSmallCard'
-import ViewDspAccount from '@src/components/pages/dsp/ViewDSPAccount'
-import ViewSubdistributorAccount from '@src/components/pages/subdistributor/ViewSubdistributorAccount'
-import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import userApi, { UserResponse, getUser } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { InfoOutlined } from '@material-ui/icons'
+import SubdistributorAccountSummaryCard from '@src/components/SubdistributorAccountSummaryCard'
+import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
+import RetailerAccountSummaryCard from '@src/components/RetailerAccountSummaryCard'
+import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
+import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
+import { getSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -39,6 +43,35 @@ export default function AdminAccountManage() {
   const theme: Theme = useTheme()
   const [account, setAccount] = useState<UserResponse>()
   const dispatch = useDispatch()
+
+  const { loading: dspLoading, entity: dsp } = useFetchEntity('dsp', account?.dsp?.id)
+
+  const { loading: subdistributorLoading, entity: subdistributor } = useFetchEntity(
+    'subdistributor',
+    account?.subdistributor?.id
+  )
+  const { loading: retailerLoading, entity: retailer } = useFetchEntity(
+    'retailer',
+    account?.retailer?.id
+  )
+
+  useEffect(() => {
+    const record = {
+      retailer,
+      subdistributor,
+      dsp,
+    }
+
+    Object.keys(record).forEach((key) => {
+      const currentKey = key as keyof typeof record
+      if (account && account?.[currentKey] && record?.[currentKey]) {
+        setAccount((prevState) => ({
+          ...(prevState as UserResponse),
+          [currentKey]: record[currentKey],
+        }))
+      }
+    })
+  }, [retailer, dsp, subdistributor])
 
   useEffect(() => {
     if (id) {
@@ -67,6 +100,7 @@ export default function AdminAccountManage() {
         style={{
           position: 'sticky',
           top: theme.spacing(9),
+          zIndex: theme.zIndex.drawer,
         }}
         mb={2}
       >
@@ -175,34 +209,6 @@ export default function AdminAccountManage() {
                 ))}
             </Box>
           </Grid>
-          {/* <Grid
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'flex-end',
-            }}
-            item
-            xs={2}
-          >
-            <Tooltip
-              arrow
-              placement="left"
-              title={<Typography variant="subtitle2">More Info</Typography>}
-            >
-              <IconButton
-                onClick={() => {
-                  router.push({
-                    pathname: '/admin/accounts/user/[id]',
-                    query: {
-                      id: account?.id,
-                    },
-                  })
-                }}
-              >
-                <InfoOutlined />
-              </IconButton>
-            </Tooltip>
-          </Grid> */}
         </Grid>
 
         <Divider
@@ -218,7 +224,7 @@ export default function AdminAccountManage() {
             <Grid container spacing={2}>
               {account?.id && (
                 <Grid item xs={12} lg={6}>
-                  <WalletSmallCard userId={account?.id} />
+                  <WalletSmallCard accountType="user" accountId={account?.id} />
                 </Grid>
               )}
               {account?.dsp && (
@@ -239,9 +245,70 @@ export default function AdminAccountManage() {
             </Grid>
           </Grid>
         </Grid>
+
+        {account?.subdistributor && (
+          <>
+            <Box my={2}>
+              <Divider />
+            </Box>
+
+            <Grid spacing={2} container>
+              <Grid item xs={12} md={6}>
+                <SubdistributorAccountSummaryCard subdistributor={account.subdistributor} />
+              </Grid>
+              <Grid container item xs={12} md={6}>
+                <Grid item xs={12} lg={6}>
+                  <WalletSmallCard
+                    accountId={account.subdistributor.id}
+                    accountType="subdistributor"
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        )}
+
+        {account?.dsp && (
+          <>
+            <Box my={2}>
+              <Divider />
+            </Box>
+
+            <Grid spacing={2} container>
+              <Grid item xs={12} md={6}>
+                <DSPAccountSummaryCard dsp={account.dsp} />
+              </Grid>
+
+              <Grid container item xs={12} md={6}>
+                <Grid item xs={12} lg={6}>
+                  <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        )}
+
+        {account?.retailer && (
+          <>
+            <Box my={2}>
+              <Divider />
+            </Box>
+
+            <Grid spacing={2} container>
+              <Grid item xs={12} md={6}>
+                <RetailerAccountSummaryCard retailer={account.retailer} />
+              </Grid>
+              <Grid container item xs={12} md={6}>
+                <Grid item xs={12} lg={6}>
+                  <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        )}
       </Paper>
 
-      <Box mt={8} />
+      {/* <Box mt={8} />
       {account?.subdistributor && (
         <ViewSubdistributorAccount subdistributorId={account.subdistributor.id} />
       )}
@@ -249,7 +316,70 @@ export default function AdminAccountManage() {
       {account?.dsp && <ViewDspAccount dspId={account.dsp.id} />}
 
       <Box mt={8} />
-      {account?.retailer && <ViewRetailerAccount retailerId={account.retailer.id} />}
+      {account?.retailer && <ViewRetailerAccount retailerId={account.retailer.id} />} */}
     </div>
   )
+}
+
+type EntityTypes = 'subdistributor' | 'retailer' | 'dsp'
+function useFetchEntity<T extends EntityTypes = 'dsp'>(
+  type: T,
+  id: string | undefined
+): {
+  loading: boolean
+  entity: DspResponseType
+}
+function useFetchEntity<T extends EntityTypes = 'retailer'>(
+  type: T,
+  id: string | undefined
+): {
+  loading: boolean
+  entity: DspResponseType
+}
+function useFetchEntity<T extends EntityTypes = 'subdistributor'>(
+  type: T,
+  id: string | undefined
+): {
+  loading: boolean
+  entity: SubdistributorResponseType
+}
+function useFetchEntity(type: EntityTypes, id: any) {
+  const [entity, setEntity] = useState<
+    DspResponseType | SubdistributorResponseType | RetailerResponseType
+  >()
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const fetcher = (argType: typeof type) => {
+    if (argType === 'dsp') {
+      return getDsp
+    }
+    if (argType === 'subdistributor') {
+      return getSubdistributor
+    }
+    if (argType === 'retailer') {
+      return getRetailer
+    }
+
+    throw new Error('useFetch entity must have type DSP | Subdistributor')
+  }
+  useEffect(() => {
+    if (type && id) {
+      setLoading(true)
+      fetcher(type)(id)
+        .then((res) => {
+          setEntity(res)
+        })
+        .catch((err) => {
+          console.error(err)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+  }, [type, id])
+
+  return {
+    loading,
+    entity,
+  }
 }
