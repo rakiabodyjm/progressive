@@ -75,7 +75,7 @@ export function getWallet(
       })
   }
   return axios
-    .get('/ceasar', {
+    .get('/ceasar/account', {
       params,
     })
     .then((res) => res.data)
