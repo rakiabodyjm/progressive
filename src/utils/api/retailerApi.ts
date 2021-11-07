@@ -53,3 +53,15 @@ export const updateRetailer = (id: string, updateRetailer: Partial<CreateRetaile
       console.error(error)
       throw extractMultipleErrorFromResponse(error)
     })
+
+export const searchRetailer = (searchString: string): Promise<RetailerResponseType[]> =>
+  axios
+    .get('/retailer/search', {
+      params: {
+        searchQuery: searchString,
+      },
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw new Error(extractErrorFromResponse(err))
+    })
