@@ -1,11 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Box, Button, Divider, Grid, Link, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, Divider, Link, Paper, Theme, Typography } from '@material-ui/core'
 import { useTheme } from '@material-ui/styles'
 import LoadingScreen from '@src/components/LoadingScreen'
 import AestheticObjectRenderer from '@src/components/ObjectRendererV2'
 import EditUserAccount from '@src/components/pages/user/EditUserAccount'
-import ViewUserAccount from '@src/components/pages/user/ViewUserAccount'
-import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
 import { getUser } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
