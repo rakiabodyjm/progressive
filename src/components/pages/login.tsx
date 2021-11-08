@@ -12,7 +12,7 @@ import {
   Checkbox,
 } from '@material-ui/core'
 import companyLogo from '@public/assets/realm1000-logo.png'
-import { loginUserThunk, User } from '@src/redux/data/userSlice'
+import { loginUserThunk, getUser } from '@src/redux/data/userSlice'
 import type { LoginUserParams } from '@src/utils/api/userApi'
 import Image from 'next/image'
 import { ChangeEvent, useState, FormEvent, useEffect, ChangeEventHandler } from 'react'
@@ -85,11 +85,9 @@ export default function AdminLogin() {
             })
           )
         }
+        return res
       })
 
-      // .then(() => {
-      //   router.push('/')
-      // })
       .catch((err) => {
         dispatch(
           setNotification({
