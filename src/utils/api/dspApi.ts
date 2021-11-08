@@ -104,3 +104,15 @@ export const updateDsp = (params: Partial<DspUpdateType>, id: string) =>
     .catch((err) => {
       throw new Error(extractErrorFromResponse(err))
     })
+
+export const searchDsp = (params: string): Promise<DspResponseType[]> =>
+  axios
+    .get('/dsp/search', {
+      params: {
+        searchQuery: params,
+      },
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw new Error(extractErrorFromResponse(err))
+    })
