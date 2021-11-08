@@ -16,3 +16,25 @@ export default function useNotification() {
     )
   //   return dispatch(setNotification(payload))
 }
+
+export function useSuccessNotification() {
+  const dispatch = useDispatch()
+  return (message: string) =>
+    dispatch(
+      setNotification({
+        message,
+        type: NotificationTypes.SUCCESS,
+      })
+    )
+}
+
+export function useErrorNotification() {
+  const dispatch = useDispatch()
+  return (message: string) =>
+    dispatch(
+      setNotification({
+        message,
+        type: NotificationTypes.ERROR,
+      })
+    )
+}
