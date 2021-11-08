@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import userApi, { UserResponse, getUser as getUserApi } from '@src/utils/api/userApi'
-import type { LoginUserParams, LoginUserResponse } from '@src/utils/api/userApi'
+import type { LoginUserParams } from '@src/utils/api/userApi'
 import jwtDecode from '@src/utils/lib/jwtDecode'
 import { AxiosError } from 'axios'
 import type { RootState } from '@src/redux/store'
@@ -57,7 +57,7 @@ export const loginUserThunk = createAsyncThunk(
   async (params: LoginUserParams, thunkApi) =>
     userApi
       .loginUser(params)
-      .then((res) => res as User & UserMetaData)
+      .then((res) => res!)
       .catch((err: AxiosError) => {
         throw new Error(err.response?.data?.message || err.message)
       })
