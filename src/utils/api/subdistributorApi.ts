@@ -1,4 +1,4 @@
-import { extractErrorFromResponse } from '@src/utils/api/common'
+import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import type { DspResponseType } from '@src/utils/api/dspApi'
 import type { MapIdResponseType } from '@src/utils/api/mapIdApi'
 import type { RetailerResponseType } from '@src/utils/api/retailerApi'
@@ -119,7 +119,7 @@ export function createSubdistributor(args: CreateSubdistributor) {
     })
     .then((res) => res.data as SubdistributorResponseType)
     .catch((err: AxiosError) => {
-      throw err
+      throw extractMultipleErrorFromResponse(err)
     })
 }
 
