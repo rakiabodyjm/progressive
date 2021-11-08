@@ -36,7 +36,9 @@ export interface CreateSubdistributor {
   id_type: string
   area_id: MapIdResponseType['area_id']
   zip_code: string
+  name: string
 }
+export interface ValidateFields extends Omit<CreateSubdistributor, 'user' | 'area_id'> {}
 export interface SubdistributorUpdateType extends Omit<SubdistributorResponseType, 'area_id'> {
   area_id: string
 }

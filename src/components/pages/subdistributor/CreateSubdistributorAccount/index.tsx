@@ -19,10 +19,15 @@ import UserAutoComplete from '@src/components/UserAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { MapIdResponseType } from '@src/utils/api/mapIdApi'
-import { createSubdistributor, CreateSubdistributor } from '@src/utils/api/subdistributorApi'
+import {
+  createSubdistributor,
+  CreateSubdistributor,
+  ValidateFields,
+} from '@src/utils/api/subdistributorApi'
 import { UserResponse } from '@src/utils/api/userApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import { useState } from 'react'
+import validator from 'validator'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
@@ -52,6 +57,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
     id_number: '',
     id_type: '',
     zip_code: '',
+    name: '',
   })
   const dispatchNotification = useNotification()
   // const dispatch = useDispatch()
@@ -60,45 +66,90 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
   // }
   const [loading, setLoading] = useState<boolean>(false)
   const [areaId, setAreaId] = useState<MapIdResponseType | undefined>()
+
+  const [errors, setErrors] = useState<Record<keyof ValidateFields, string | null>>({
+    e_bind_number: null,
+    // area_id: '',
+    id_number: null,
+    id_type: null,
+    zip_code: null,
+    name: null,
+  })
   const handleSubmit = () => {
-    setLoading(true)
-    if (accountToLink && areaId) {
-      createSubdistributor({
-        ...subdistributorFields,
-        user: accountToLink.id,
-        area_id: areaId.area_id,
-      })
-        .then((res) => {
-          dispatchNotification({
-            message: `Subdistributor Account ${res.name} created`,
-            type: NotificationTypes.SUCCESS,
-          })
+    const schemaChecker = {
+      e_bind_number: (value: string) => validator.isEmpty(value) && 'E Bind Number Required*',
+      id_number: (value: string) => validator.isEmpty(value) && 'Id Number Required*',
+      zip_code: (value: string) => validator.isEmpty(value) && 'Zip Code Required*',
+      id_type: (value: string) => validator.isEmpty(value) && 'Id Type Required*',
+      name: (value: string) => validator.isEmpty(value) && 'Must be 3-5 characters required*',
+    }
+    Object.keys(schemaChecker).forEach((key) => {
+      const validator = schemaChecker[key as keyof typeof schemaChecker]
+      const valuesToValidate =
+        subdistributorFields[key as keyof Omit<CreateSubdistributor, 'user' | 'area_id'>]
+      const validateResult = validator(valuesToValidate)
+      if (validateResult) {
+        setErrors((prevState) => ({
+          ...prevState,
+          [key]: validateResult,
+        }))
+      }
+    })
+    if (validator.isEmpty(subdistributorFields.id_type)) {
+      //
+    } else if (validator.isEmpty(subdistributorFields.id_number)) {
+      //
+    } else if (validator.isEmpty(subdistributorFields.zip_code)) {
+      //
+    } else if (validator.isEmpty(subdistributorFields.e_bind_number)) {
+      //
+    } else {
+      setLoading(true)
+      if (accountToLink && areaId) {
+        createSubdistributor({
+          ...subdistributorFields,
+          user: accountToLink.id,
+          area_id: areaId.area_id,
         })
-        .catch((err) => {
-          extractMultipleErrorFromResponse(err).forEach((ea) => {
+          .then((res) => {
             dispatchNotification({
-              message: ea,
-              type: NotificationTypes.ERROR,
+              message: `Subdistributor Account ${res.name} created`,
+              type: NotificationTypes.SUCCESS,
             })
           })
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    } else {
-      if (!areaId) {
-        dispatchNotification({
-          message: `Area Id is required`,
-          type: NotificationTypes.ERROR,
-        })
+          .catch((err) => {
+            extractMultipleErrorFromResponse(err).forEach((ea) => {
+              dispatchNotification({
+                message: ea,
+                type: NotificationTypes.ERROR,
+              })
+            })
+          })
+          .finally(() => {
+            setLoading(false)
+          })
       } else {
-        dispatchNotification({
-          message: `You must link a User Account first`,
-          type: NotificationTypes.ERROR,
-        })
+        if (!areaId) {
+          dispatchNotification({
+            message: `Area Id is required`,
+            type: NotificationTypes.ERROR,
+          })
+        } else {
+          dispatchNotification({
+            message: `You must link a User Account first`,
+            type: NotificationTypes.ERROR,
+          })
+        }
+        setLoading(false)
       }
-      setLoading(false)
     }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSubdistributorFields((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }))
   }
 
   return (
@@ -135,8 +186,8 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
             margin: `16px 0px`,
           }}
         />
-        <Grid spacing={1} container>
-          <Grid item xs={7}>
+        <Grid spacing={2} container>
+          <Grid item xs={6}>
             <Typography
               className={classes.formLabel}
               component="label"
@@ -154,7 +205,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
               mutateOptions={(users) => users.filter((ea) => !ea.subdistributor)}
             />
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={6}>
             <Typography
               className={classes.formLabel}
               component="label"
@@ -165,12 +216,6 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
             >
               Map ID of Subdistributor Account
             </Typography>
-            {/* <UserAutoComplete
-          onChange={(arg) => {
-            setAccountToLink(arg)
-          }}
-          mutateOptions={(users) => users.filter((ea) => !ea.subdistributor)}
-        /> */}
             <MapIdAutoComplete
               onChange={(arg) => {
                 setAreaId(arg)
@@ -179,59 +224,155 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
           </Grid>
           <Grid item xs={6}>
             <Typography className={classes.formLabel} component="label" variant="body2">
-              Id Type
+              Full Name
             </Typography>
             <TextField
-              placeholder=""
+              placeholder="eg. Juan Dela Cruz"
               variant="outlined"
-              name="e_bind_number"
+              name="name"
               fullWidth
               size="small"
-              // onChange={handleChange}
-              // value={user.first_name}
+              onChange={handleChange}
+              value={subdistributorFields.name}
             />
-          </Grid>
-          <Grid item xs={6}>
-            <Typography className={classes.formLabel} component="label" variant="body2">
-              Id Number
-            </Typography>
-            <TextField
-              placeholder=""
-              variant="outlined"
-              name="e_bind_number"
-              fullWidth
-              size="small"
-              // onChange={handleChange}
-              // value={user.first_name}
-            />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: subdistributorFields.name.length < 3 ? undefined : 'none',
+                }}
+              >
+                {errors.name}
+              </Typography>
+            </div>
           </Grid>
           <Grid item xs={6}>
             <Typography className={classes.formLabel} component="label" variant="body2">
               E Bind Number
             </Typography>
             <TextField
-              placeholder=""
+              placeholder="eg. 555-5555-5555"
               variant="outlined"
               name="e_bind_number"
               fullWidth
               size="small"
-              // onChange={handleChange}
-              // value={user.first_name}
+              onChange={handleChange}
+              value={subdistributorFields.e_bind_number}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(subdistributorFields.e_bind_number)
+                    ? undefined
+                    : 'none',
+                }}
+              >
+                {errors.e_bind_number}
+              </Typography>
+            </div>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
+            <Typography className={classes.formLabel} component="label" variant="body2">
+              Id Type
+            </Typography>
+            <TextField
+              placeholder="eg. DRIVERS LICENSE"
+              variant="outlined"
+              name="id_type"
+              fullWidth
+              size="small"
+              onChange={handleChange}
+              value={subdistributorFields.id_type}
+            />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(subdistributorFields.id_type) ? undefined : 'none',
+                }}
+              >
+                {errors.id_type}
+              </Typography>
+            </div>
+          </Grid>
+          <Grid item xs={5}>
+            <Typography className={classes.formLabel} component="label" variant="body2">
+              Id Number
+            </Typography>
+            <TextField
+              placeholder="eg. 5555-5555-5555"
+              variant="outlined"
+              name="id_number"
+              fullWidth
+              size="small"
+              onChange={handleChange}
+              value={subdistributorFields.id_number}
+            />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(subdistributorFields.id_number) ? undefined : 'none',
+                }}
+              >
+                {errors.id_number}
+              </Typography>
+            </div>
+          </Grid>
+          <Grid item xs={3}>
             <Typography className={classes.formLabel} component="label" variant="body2">
               Zip Code
             </Typography>
             <TextField
-              placeholder=""
+              placeholder="eg. 2211"
               variant="outlined"
-              name="e_bind_number"
+              name="zip_code"
               fullWidth
               size="small"
-              // onChange={handleChange}
-              // value={user.first_name}
+              onChange={handleChange}
+              value={subdistributorFields.zip_code}
             />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                className={classes.errorLabel}
+                variant="caption"
+                style={{
+                  display: validator.isEmpty(subdistributorFields.zip_code) ? undefined : 'none',
+                }}
+              >
+                {errors.zip_code}
+              </Typography>
+            </div>
           </Grid>
         </Grid>
 
@@ -240,18 +381,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
           style={{
             gap: 16,
           }}
-        >
-          {/* <AestheticObjectFormRenderer
-            highlight="key"
-            fields={subdistributorFields}
-            onChange={(e) => {
-              setSubdistributorFields((prevState) => ({
-                ...prevState,
-                [e.target.name]: e.target.value,
-              }))
-            }}
-          /> */}
-        </Box>
+        ></Box>
 
         <Box mt={2} display="flex" justifyContent="flex-end">
           <Button
