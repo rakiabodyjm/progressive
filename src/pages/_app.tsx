@@ -15,6 +15,7 @@ import { getUser, logoutUser } from '@src/redux/data/userSlice'
 import { ThemeProvider } from '@material-ui/styles'
 import { ColorSchemeTypes, setColorScheme } from '@src/redux/data/colorSchemeSlice'
 import { useRouter } from 'next/router'
+import useNotification from '@src/utils/hooks/useNotification'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
 
@@ -27,13 +28,10 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
   const { pathname } = router
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)')
   const dispatch = useDispatch()
-
   /**
    * get User on load
    */
-  useEffect(() => {
-    dispatch(getUser())
-  }, [])
+
   /**
    * set  color scheme according to device
    */
@@ -43,28 +41,34 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
   }, [prefersDark])
 
   const user = useSelector((state: RootState) => state.user)
+  /**
+   * Is in Redux User State
+   */
   const isAuthenticated = useMemo<boolean>(() => !!user?.data.user_id, [user])
 
+  /**
+   * Redux User State is expired
+   */
   const isAuthExpired = useMemo<boolean>(() => {
-    console.log('checking for authentication expiration')
-    if (isAuthenticated && user) {
-      if (user?.metadata.exp < Date.now() / 1000) {
+    if (isAuthenticated) {
+      if (user!.metadata.exp < Date.now() / 1000) {
         return true
       }
       return false
     }
     return true
-  }, [isAuthenticated, user, pathname])
+  }, [isAuthenticated, user])
 
+  const dispatchNotif = useNotification()
   useEffect(() => {
     if (isAuthenticated && isAuthExpired) {
-      dispatch(
-        setNotification({
-          message: `User session expired, please relogin`,
-          type: NotificationTypes.WARNING,
-        })
-      )
+      dispatchNotif({
+        type: NotificationTypes.WARNING,
+        message: 'User Session is expired, please login again',
+      })
       dispatch(logoutUser())
+    } else {
+      dispatch(getUser())
     }
   }, [isAuthenticated, isAuthExpired])
 
