@@ -11,6 +11,7 @@ export enum UserRoles {
   SUBDISTRIBUTOR = 'subdistributor',
   DSP = 'dsp',
   RETAILER = 'retailer',
+  USER = 'user',
 }
 // export type UserTypes = 'admin' | 'dsp' | 'retailer' | 'subdistributor' | 'user'
 export type UserTypes = `${UserRoles}`

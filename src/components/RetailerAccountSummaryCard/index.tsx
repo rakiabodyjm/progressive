@@ -3,6 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/styles'
 import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import { useEffect, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountInfo: {
@@ -18,6 +19,7 @@ export default function RetailerAccountSummaryCard({
 }) {
   const theme: Theme = useTheme()
   const classes = useStyles()
+
   return (
     <Paper
       style={{
@@ -33,7 +35,7 @@ export default function RetailerAccountSummaryCard({
             }}
             variant="h5"
           >
-            DSP Account Summary
+            Retailer Account Summary
           </Typography>
           {retailer &&
             retailerFields(retailer).map(({ key, value }) => (
@@ -77,7 +79,8 @@ const retailerFields = ({
   },
   {
     key: 'Attending DSP',
-    value: dsp?.user?.first_name || '     ',
+    // value: dsp?.user?.first_name || '     ',
+    value: dsp?.dsp_code,
   },
   {
     key: 'Subdistributor',

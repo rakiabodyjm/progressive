@@ -13,11 +13,7 @@ import DspTable from '@src/components/DspTable'
 import RetailerTable from '@src/components/RetailerTable'
 import SubdistributorAccountSummaryCard from '@src/components/SubdistributorAccountSummaryCard'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import {
-  getDsps,
-  getSubdistributor,
-  SubdistributorResponseType,
-} from '@src/utils/api/subdistributorApi'
+import { getSubdistributor } from '@src/utils/api/subdistributorApi'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 

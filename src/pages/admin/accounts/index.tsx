@@ -26,7 +26,7 @@ import { makeStyles } from '@material-ui/styles'
 import { AccountCircle, AddCircle, AddCircleOutline, AddCircleOutlined } from '@material-ui/icons'
 import AddAccountModal from '@components/AddAccountModal'
 
-export type UserTypesAndUser = UserTypes | 'user'
+export type UserTypesAndUser = UserTypes
 
 type EntityTypesUnion =
   | UserResponse
@@ -38,10 +38,7 @@ type EntityTypesUnion =
 type EntityFormatter<T> = (
   entityFormatterArg: T
 ) => Partial<Record<keyof T, Partial<T> | any>> & { user_id: string }
-const userTypes: UserTypesAndUser[] = [
-  ...Object.values(UserRoles),
-  'user',
-].reverse() as UserTypesAndUser[]
+const userTypes: UserTypesAndUser[] = [...Object.values(UserRoles)].reverse() as UserTypesAndUser[]
 
 const formatUsers: EntityFormatter<UserResponse> = ({
   id,

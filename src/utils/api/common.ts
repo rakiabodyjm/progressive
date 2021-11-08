@@ -35,12 +35,6 @@ export function formatKeyIntoReadables(param: string) {
     // throw new Error(`To Readable case received non string ${JSON.stringify(param)}`)
   }
 
-  const toCapsFirst = (toCapitalParam: string): string =>
-    toCapitalParam
-      .split('_')
-      .map((ea) => ea.charAt(0).toUpperCase() + ea.slice(1))
-      .join(' ')
-
   if (param.indexOf('_') > 0) {
     return toCapsFirst(param)
   }
@@ -60,3 +54,8 @@ export function formatKeyIntoReadables(param: string) {
       return toCapsFirst(param)
   }
 }
+export const toCapsFirst = (toCapitalParam: string): string =>
+  toCapitalParam
+    .split('_')
+    .map((ea) => ea.charAt(0).toUpperCase() + ea.slice(1))
+    .join(' ')

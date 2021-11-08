@@ -45,7 +45,14 @@ export default function DSPAccountSummaryCard({ dsp }: { dsp: DspResponseType })
   )
 }
 
-const dspFields = ({ id, user, dsp_code, e_bind_number, area_id }: DspResponseType) => [
+const dspFields = ({
+  id,
+  user,
+  dsp_code,
+  e_bind_number,
+  area_id,
+  subdistributor,
+}: DspResponseType) => [
   {
     key: 'DSP ID',
     value: id,
@@ -57,6 +64,10 @@ const dspFields = ({ id, user, dsp_code, e_bind_number, area_id }: DspResponseTy
   {
     key: 'DSP Code',
     value: dsp_code,
+  },
+  {
+    key: 'Subdistributor',
+    value: subdistributor?.name || '',
   },
   {
     key: 'Area ID',
