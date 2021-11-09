@@ -1,7 +1,17 @@
-import { Paper, Box, Typography } from '@material-ui/core'
+import { Paper, Box, Typography, ButtonBase } from '@material-ui/core'
+import { KeyboardArrowDown } from '@material-ui/icons'
 import { UserResponse } from '@src/utils/api/userApi'
+import { useState } from 'react'
 
-export default function UserAccountSummaryCard({ account }: { account: UserResponse | undefined }) {
+export default function UserAccountSummaryCard({
+  account,
+  isAccordion,
+}: {
+  account: UserResponse | undefined
+  isAccordion?: true | never
+}) {
+  const [isExpanded, setIsExpanded] = useState<boolean>(true)
+
   return (
     <Paper
       style={{
@@ -28,11 +38,26 @@ export default function UserAccountSummaryCard({ account }: { account: UserRespo
             </Box>
           ))}
       </Box>
+      {isAccordion && (
+        <ButtonBase
+          style={{
+            display: 'flex',
+            width: '100%',
+            padding: 4,
+          }}
+        >
+          <KeyboardArrowDown />
+        </ButtonBase>
+      )}
     </Paper>
   )
 }
 
 const userAccountFields = (params: UserResponse) => [
+  {
+    key: 'User ID',
+    value: params.id,
+  },
   {
     key: 'Name',
     value: `${params.first_name} ${params.last_name}`,
