@@ -105,11 +105,11 @@ export default function CreateDSPAccount({
     // const checkSubdistributor = newDspAccount.subdistributor.length > 0
     const schemaChecker = {
       dsp_code: (value: string) =>
-        validator.isLength(newDspAccount.dsp_code, { min: 4 }) || '*Atleast 4 letters DSP Code',
-      // e_bind_number: (value: string) =>
-      //   validator.isMobilePhone(newDspAccount.e_bind_number) || '*Invalid E Bind Number',
+        validator.isLength(newDspAccount.dsp_code, { min: 4 }) || '*DSP Code Required (4+ Letters)',
+      e_bind_number: (value: string) =>
+        !validator.isEmpty(newDspAccount.e_bind_number) || '*E Bind Number Required',
       // subdistributor: (value: string) => checkSubdistributor || '*Empty Subdistributor',
-      user: (value: string) => !validator.isEmpty(newDspAccount.user) || '*Empty User ID',
+      // user: (value: string) => !validator.isEmpty(newDspAccount.user) || '*Empty User ID',
       // area_id: (value: any) => checkAreaID || '*Empty Area ID',
     }
     Object.keys(schemaChecker).forEach((key) => {
@@ -123,7 +123,6 @@ export default function CreateDSPAccount({
         }))
       }
     })
-    console.log(newDspAccount)
     createDsp(newDspAccount as CreateDspAccount)
       .then(() => {
         dispatchNotif({
@@ -254,18 +253,16 @@ export default function CreateDSPAccount({
                 size="small"
                 value={newDspAccount.e_bind_number}
               />
-              {/* <Typography
+              <Typography
                 style={{
-                  display: validator.isMobilePhone(newDspAccount.e_bind_number)
-                    ? 'none'
-                    : undefined,
+                  display: !validator.isEmpty(newDspAccount.e_bind_number) ? 'none' : undefined,
                 }}
                 className={classes.errorLabel}
                 component="label"
                 variant="caption"
               >
                 {errors.e_bind_number && errors.e_bind_number}
-              </Typography> */}
+              </Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography className={classes.formLabel} component="label" variant="body2">
@@ -357,14 +354,14 @@ export default function CreateDSPAccount({
                 }}
                 mutateOptions={(users) => users.filter((ea) => !ea.retailer)}
               />
-              <Typography
+              {/* <Typography
                 style={{ display: !validator.isEmpty(newDspAccount.user) ? 'none' : undefined }}
                 className={classes.errorLabel}
                 component="label"
                 variant="caption"
               >
                 {errors.user && errors.user}
-              </Typography>
+              </Typography> */}
             </Grid>
           </Grid>
         </Box>
