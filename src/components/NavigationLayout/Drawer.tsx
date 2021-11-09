@@ -23,28 +23,26 @@ import {
   PeopleAlt,
   CardGiftcard,
 } from '@material-ui/icons'
-import { logoutUser, User, UserTypes } from '@src/redux/data/userSlice'
-import { useDispatch } from 'react-redux'
+import { logoutUser, User, userDataSelector, UserTypes } from '@src/redux/data/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { red } from '@material-ui/core/colors'
+import { useMemo } from 'react'
 // import { makeStyles, useTheme } from '@mui/styles'
 // import { Theme } from '@mui/material'
 
-const mainMenuItems = [
+const menuItems = [
   {
     title: 'Dashboard',
     icon: <Dashboard />,
     url: '/',
   },
-  {
-    title: 'Subdistributors',
-    // icon: <Typography>SUBd</Typography>,
-    icon: <AccountTree />,
-    url: '/subdistributor',
-  },
+]
+
+const subdMenuItems = [
   {
     title: 'DSPs',
     icon: <PersonPinCircle />,
@@ -56,8 +54,24 @@ const mainMenuItems = [
     url: '/retailer',
   },
 ]
+const dspMenuItems = [
+  {
+    title: 'Retailers',
+    icon: <ContactPhone />,
+    url: '/retailer',
+  },
+]
 
-const adminMenuItems = [
+const adminUpperMenuItems = [
+  {
+    title: 'Subdistributors',
+    // icon: <Typography>SUBd</Typography>,
+    icon: <AccountTree />,
+    url: '/subdistributor',
+  },
+]
+
+const adminLowerMenuItems = [
   {
     title: 'Users Management',
     icon: <PeopleAlt />,
@@ -69,10 +83,10 @@ const adminMenuItems = [
     url: '/admin/assets',
   },
 ]
-const drawerWidth = 240
+
 const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
-    width: drawerWidth,
+    width: 240,
     flexShrink: 0,
     /**
      * Destroys welcome sign
@@ -80,7 +94,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     // whiteSpace: 'nowrap',
   },
   drawerOpen: {
-    width: drawerWidth,
+    width: 240,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -157,6 +171,37 @@ export default function DrawerComponent({
   const theme: Theme = useTheme()
   const dispatch = useDispatch<AppDispatch>()
   const router = useRouter()
+  const user = useSelector(userDataSelector)
+  const mainMenuItems = useMemo(() => {
+    if (user) {
+      let returnMenuItems = [...menuItems]
+
+      if (user.admin_id) {
+        // returnMenuItems = [...returnMenuItems, ...adminUpperMenuItems]
+      }
+      if (user.subdistributor_id) {
+        returnMenuItems = [...returnMenuItems, ...subdMenuItems]
+      }
+      if (user.dsp_id) {
+        returnMenuItems = [...returnMenuItems, ...dspMenuItems]
+      }
+      if (user.retailer_id) {
+        returnMenuItems = [...returnMenuItems]
+      }
+
+      return returnMenuItems.filter(
+        (filter, index, array) => array.map((ea) => ea.url).indexOf(filter.url) === index
+      )
+    }
+    return []
+  }, [user])
+  const lowerMenuItems = useMemo(
+    () => (user?.admin_id ? adminLowerMenuItems : []),
+    [user?.admin_id]
+  )
+
+  console.log(router.pathname)
+
   return (
     <Drawer
       variant="permanent"
@@ -285,7 +330,7 @@ export default function DrawerComponent({
             whiteSpace: 'nowrap',
           }}
         >
-          {adminMenuItems.map((menuItem) => (
+          {lowerMenuItems.map((menuItem) => (
             <ListItem
               style={{
                 paddingTop: 16,
