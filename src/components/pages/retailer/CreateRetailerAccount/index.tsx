@@ -150,7 +150,7 @@ export default function CreateRetailerAccount({
     })
     createRetailer(newRetailerAccount as CreateRetailer)
       .then(() => {
-        dispatch({
+        dispatchNotif({
           type: NotificationTypes.SUCCESS,
           message: `Retailer Account Created`,
         })
