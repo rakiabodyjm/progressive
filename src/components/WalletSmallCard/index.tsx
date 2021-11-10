@@ -38,10 +38,7 @@ export default function WalletSmallCard({
     }
   )
   const { mutate } = useSWRConfig()
-  // console.log(data, error)
-  // useEffect(() => {
-  //   console.error(error)
-  // }, [error])
+
   const dispatchError = useErrorNotification()
   const dispatchSuccess = useSuccessNotification()
   const [walletCreating, setWalletCreating] = useState<boolean>(false)
@@ -122,7 +119,7 @@ export default function WalletSmallCard({
                       marginRight: 8,
                     }}
                   >
-                    0
+                    {data.data?.ceasar_coin || 0}
                   </span>
                   <Typography component="span" variant="body1" noWrap>
                     Ceasar Coins
