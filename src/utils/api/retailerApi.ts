@@ -56,7 +56,7 @@ export const updateRetailer = (id: string, updateRetailer: Partial<CreateRetaile
 
 export const searchRetailer = (
   searchString: string,
-  filter: {
+  filter?: {
     subdistributor: string
     dsp: string
   }
@@ -65,10 +65,10 @@ export const searchRetailer = (
     .get('/retailer/search', {
       params: {
         searchQuery: searchString,
-        ...(filter.subdistributor && {
+        ...(filter?.subdistributor && {
           subdistributor: filter.subdistributor,
         }),
-        ...(filter.dsp && {
+        ...(filter?.dsp && {
           dsp: filter.dsp,
         }),
       },
