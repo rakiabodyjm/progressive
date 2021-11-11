@@ -107,7 +107,7 @@ export const updateDsp = (params: Partial<DspUpdateType>, id: string) =>
 
 export const searchDsp = (
   params: string,
-  filter: {
+  filter?: {
     subdistributor: string
   }
 ): Promise<DspResponseType[]> =>
@@ -115,7 +115,7 @@ export const searchDsp = (
     .get('/dsp/search', {
       params: {
         searchQuery: params,
-        ...(filter.subdistributor && {
+        ...(filter?.subdistributor && {
           subdistributor: filter.subdistributor,
         }),
       },
