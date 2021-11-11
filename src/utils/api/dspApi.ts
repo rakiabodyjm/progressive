@@ -105,11 +105,19 @@ export const updateDsp = (params: Partial<DspUpdateType>, id: string) =>
       throw new Error(extractErrorFromResponse(err))
     })
 
-export const searchDsp = (params: string): Promise<DspResponseType[]> =>
+export const searchDsp = (
+  params: string,
+  filter: {
+    subdistributor: string
+  }
+): Promise<DspResponseType[]> =>
   axios
     .get('/dsp/search', {
       params: {
         searchQuery: params,
+        ...(filter.subdistributor && {
+          subdistributor: filter.subdistributor,
+        }),
       },
     })
     .then((res) => res.data)
