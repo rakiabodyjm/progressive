@@ -54,11 +54,23 @@ export const updateRetailer = (id: string, updateRetailer: Partial<CreateRetaile
       throw extractMultipleErrorFromResponse(error)
     })
 
-export const searchRetailer = (searchString: string): Promise<RetailerResponseType[]> =>
+export const searchRetailer = (
+  searchString: string,
+  filter?: {
+    subdistributor: string
+    dsp: string
+  }
+): Promise<RetailerResponseType[]> =>
   axios
     .get('/retailer/search', {
       params: {
         searchQuery: searchString,
+        ...(filter?.subdistributor && {
+          subdistributor: filter.subdistributor,
+        }),
+        ...(filter?.dsp && {
+          dsp: filter.dsp,
+        }),
       },
     })
     .then((res) => res.data)
