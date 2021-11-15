@@ -1,7 +1,9 @@
-import { Box, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, ButtonBase, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import { useEffect, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountInfo: {
@@ -11,6 +13,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 export default function DSPAccountSummaryCard({ dsp }: { dsp: DspResponseType }) {
+  const [isExpanded, setIsExpanded] = useState<boolean>()
+
+  useEffect(() => {
+    setIsExpanded(false)
+  }, [setIsExpanded])
   const theme: Theme = useTheme()
   const classes = useStyles()
   return (
@@ -30,8 +37,19 @@ export default function DSPAccountSummaryCard({ dsp }: { dsp: DspResponseType })
           >
             DSP Account Summary
           </Typography>
-          {dsp &&
-            dspFields(dsp).map(({ key, value }) => (
+          {isExpanded &&
+            dsp &&
+            dspFieldsFull(dsp).map(({ key, value }) => (
+              <div key={key}>
+                <Typography color="primary" variant="body2">
+                  {key}:
+                </Typography>
+                <Typography variant="body1">{value}</Typography>
+              </div>
+            ))}
+          {!isExpanded &&
+            dsp &&
+            dspFieldsSimple(dsp).map(({ key, value }) => (
               <div key={key}>
                 <Typography color="primary" variant="body2">
                   {key}:
@@ -40,12 +58,36 @@ export default function DSPAccountSummaryCard({ dsp }: { dsp: DspResponseType })
               </div>
             ))}
         </Box>
+        {isExpanded && (
+          <ButtonBase
+            style={{
+              display: 'flex',
+              width: '100%',
+              padding: 4,
+            }}
+            onClick={() => setIsExpanded(false)}
+          >
+            <KeyboardArrowUp />
+          </ButtonBase>
+        )}
+        {!isExpanded && (
+          <ButtonBase
+            style={{
+              display: 'flex',
+              width: '100%',
+              padding: 4,
+            }}
+            onClick={() => setIsExpanded(true)}
+          >
+            <KeyboardArrowDown />
+          </ButtonBase>
+        )}
       </Grid>
     </Paper>
   )
 }
 
-const dspFields = ({
+const dspFieldsFull = ({
   id,
   user,
   dsp_code,
@@ -77,5 +119,23 @@ const dspFields = ({
   {
     key: 'User',
     value: user ? `${user?.last_name}, ${user?.first_name}` : '',
+  },
+]
+const dspFieldsSimple = ({ id, dsp_code, e_bind_number, subdistributor }: DspResponseType) => [
+  {
+    key: 'DSP ID',
+    value: id,
+  },
+  {
+    key: 'E-Bind Number',
+    value: e_bind_number,
+  },
+  {
+    key: 'DSP Code',
+    value: dsp_code,
+  },
+  {
+    key: 'Subdistributor',
+    value: subdistributor?.name || '',
   },
 ]

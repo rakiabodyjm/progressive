@@ -1,21 +1,19 @@
-import { Paper, Box, Typography, ButtonBase } from '@material-ui/core'
-import { KeyboardArrowDown } from '@material-ui/icons'
+import { Paper, Box, Typography, ButtonBase, IconButton } from '@material-ui/core'
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons'
 import { UserResponse } from '@src/utils/api/userApi'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-export default function UserAccountSummaryCard({
-  account,
-  isAccordion,
-}: {
-  account: UserResponse | undefined
-  isAccordion?: true | never
-}) {
-  const [isExpanded, setIsExpanded] = useState<boolean>(true)
+export default function UserAccountSummaryCard({ account }: { account: UserResponse | undefined }) {
+  const [isExpanded, setIsExpanded] = useState<boolean>()
+
+  useEffect(() => {
+    setIsExpanded(false)
+  }, [setIsExpanded])
 
   return (
     <Paper
       style={{
-        height: '100%',
+        height: 'max-content',
       }}
       variant="outlined"
     >
@@ -28,8 +26,19 @@ export default function UserAccountSummaryCard({
         >
           User Account Summary
         </Typography>
-        {account &&
-          userAccountFields(account).map(({ key, value }) => (
+        {isExpanded &&
+          account &&
+          userAccountFieldsFull(account).map(({ key, value }) => (
+            <Box mb={1} key={key}>
+              <Typography color="primary" variant="body2">
+                {key}:
+              </Typography>
+              <Typography variant="body1">{value}</Typography>
+            </Box>
+          ))}
+        {!isExpanded &&
+          account &&
+          userAccountFieldsSimple(account).map(({ key, value }) => (
             <Box mb={1} key={key}>
               <Typography color="primary" variant="body2">
                 {key}:
@@ -38,13 +47,27 @@ export default function UserAccountSummaryCard({
             </Box>
           ))}
       </Box>
-      {isAccordion && (
+
+      {isExpanded && (
         <ButtonBase
           style={{
             display: 'flex',
             width: '100%',
             padding: 4,
           }}
+          onClick={() => setIsExpanded(false)}
+        >
+          <KeyboardArrowUp />
+        </ButtonBase>
+      )}
+      {!isExpanded && (
+        <ButtonBase
+          style={{
+            display: 'flex',
+            width: '100%',
+            padding: 4,
+          }}
+          onClick={() => setIsExpanded(true)}
         >
           <KeyboardArrowDown />
         </ButtonBase>
@@ -53,7 +76,7 @@ export default function UserAccountSummaryCard({
   )
 }
 
-const userAccountFields = (params: UserResponse) => [
+const userAccountFieldsFull = (params: UserResponse) => [
   {
     key: 'User ID',
     value: params.id,
@@ -81,5 +104,23 @@ const userAccountFields = (params: UserResponse) => [
   {
     key: 'Secondary Address',
     value: params?.address2 || null,
+  },
+]
+const userAccountFieldsSimple = (params: UserResponse) => [
+  {
+    key: 'User ID',
+    value: params.id,
+  },
+  {
+    key: 'Name',
+    value: `${params.first_name} ${params.last_name}`,
+  },
+  {
+    key: 'Contact Number',
+    value: params.phone_number,
+  },
+  {
+    key: 'Email Address',
+    value: params.email,
   },
 ]

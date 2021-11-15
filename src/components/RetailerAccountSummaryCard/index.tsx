@@ -1,4 +1,5 @@
-import { Box, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, ButtonBase, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
@@ -17,6 +18,11 @@ export default function RetailerAccountSummaryCard({
 }: {
   retailer: RetailerResponseType
 }) {
+  const [isExpanded, setIsExpanded] = useState<boolean>()
+
+  useEffect(() => {
+    setIsExpanded(false)
+  }, [setIsExpanded])
   const theme: Theme = useTheme()
   const classes = useStyles()
 
@@ -37,8 +43,19 @@ export default function RetailerAccountSummaryCard({
           >
             Retailer Account Summary
           </Typography>
-          {retailer &&
-            retailerFields(retailer).map(({ key, value }) => (
+          {isExpanded &&
+            retailer &&
+            retailerFieldsFull(retailer).map(({ key, value }) => (
+              <div key={key}>
+                <Typography color="primary" variant="body2">
+                  {key}:
+                </Typography>
+                <Typography variant="body1">{value}</Typography>
+              </div>
+            ))}
+          {!isExpanded &&
+            retailer &&
+            retailerFieldsSimple(retailer).map(({ key, value }) => (
               <div key={key}>
                 <Typography color="primary" variant="body2">
                   {key}:
@@ -47,12 +64,36 @@ export default function RetailerAccountSummaryCard({
               </div>
             ))}
         </Box>
+        {isExpanded && (
+          <ButtonBase
+            style={{
+              display: 'flex',
+              width: '100%',
+              padding: 4,
+            }}
+            onClick={() => setIsExpanded(false)}
+          >
+            <KeyboardArrowUp />
+          </ButtonBase>
+        )}
+        {!isExpanded && (
+          <ButtonBase
+            style={{
+              display: 'flex',
+              width: '100%',
+              padding: 4,
+            }}
+            onClick={() => setIsExpanded(true)}
+          >
+            <KeyboardArrowDown />
+          </ButtonBase>
+        )}
       </Grid>
     </Paper>
   )
 }
 
-const retailerFields = ({
+const retailerFieldsFull = ({
   id,
   e_bind_number,
   store_name,
@@ -85,5 +126,19 @@ const retailerFields = ({
   {
     key: 'Subdistributor',
     value: subdistributor?.name || '',
+  },
+]
+const retailerFieldsSimple = ({ id, e_bind_number, store_name }: RetailerResponseType) => [
+  {
+    key: 'Retailer ID',
+    value: id,
+  },
+  {
+    key: 'E Bind Number',
+    value: e_bind_number,
+  },
+  {
+    key: `Store Name`,
+    value: store_name,
   },
 ]

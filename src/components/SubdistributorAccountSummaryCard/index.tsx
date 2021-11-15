@@ -1,6 +1,8 @@
-import { Box, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, ButtonBase, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import { useEffect, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountInfo: {
@@ -14,12 +16,18 @@ export default function SubdistributorAccountSummaryCard({
 }: {
   subdistributor: SubdistributorResponseType
 }) {
+  const [isExpanded, setIsExpanded] = useState<boolean>()
+
+  useEffect(() => {
+    setIsExpanded(false)
+  }, [setIsExpanded])
   const theme: Theme = useTheme()
   const classes = useStyles()
   return (
     <Paper
       style={{
         background: theme.palette.background.paper,
+        height: 'max-content',
       }}
       variant="outlined"
     >
@@ -33,8 +41,19 @@ export default function SubdistributorAccountSummaryCard({
           >
             Subdistributor Account Summary
           </Typography>
-          {subdistributor &&
-            subdistributorFields(subdistributor).map(({ key, value }) => (
+          {isExpanded &&
+            subdistributor &&
+            subdistributorFieldsFull(subdistributor).map(({ key, value }) => (
+              <div key={key}>
+                <Typography color="primary" variant="body2">
+                  {key}:
+                </Typography>
+                <Typography variant="body1">{value}</Typography>
+              </div>
+            ))}
+          {!isExpanded &&
+            subdistributor &&
+            subdistributorFieldsSimple(subdistributor).map(({ key, value }) => (
               <div key={key}>
                 <Typography color="primary" variant="body2">
                   {key}:
@@ -43,12 +62,36 @@ export default function SubdistributorAccountSummaryCard({
               </div>
             ))}
         </Box>
+        {isExpanded && (
+          <ButtonBase
+            style={{
+              display: 'flex',
+              width: '100%',
+              padding: 4,
+            }}
+            onClick={() => setIsExpanded(false)}
+          >
+            <KeyboardArrowUp />
+          </ButtonBase>
+        )}
+        {!isExpanded && (
+          <ButtonBase
+            style={{
+              display: 'flex',
+              width: '100%',
+              padding: 4,
+            }}
+            onClick={() => setIsExpanded(true)}
+          >
+            <KeyboardArrowDown />
+          </ButtonBase>
+        )}
       </Grid>
     </Paper>
   )
 }
 
-const subdistributorFields = (subdistributor: SubdistributorResponseType) => [
+const subdistributorFieldsFull = (subdistributor: SubdistributorResponseType) => [
   {
     key: 'Subdistributor ID',
     value: subdistributor.id,
@@ -76,5 +119,20 @@ const subdistributorFields = (subdistributor: SubdistributorResponseType) => [
   {
     key: 'Area ID',
     value: subdistributor.area_id?.area_id,
+  },
+]
+const subdistributorFieldsSimple = (subdistributor: SubdistributorResponseType) => [
+  {
+    key: 'Subdistributor ID',
+    value: subdistributor.id,
+  },
+  {
+    key: 'Subdistributor',
+    value: subdistributor.name,
+  },
+
+  {
+    key: 'E-Bind Number',
+    value: subdistributor.e_bind_number,
   },
 ]
