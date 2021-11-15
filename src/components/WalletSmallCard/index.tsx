@@ -7,8 +7,14 @@ import {
   Paper,
   PaperProps,
   Tooltip,
+  Modal,
   Typography,
   useTheme,
+  Backdrop,
+  Theme,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from '@material-ui/core'
 import { Info, InfoOutlined } from '@material-ui/icons'
 import SubdistributorsPage from '@src/pages/subdistributor'
@@ -23,7 +29,14 @@ import useNotification, {
 import { useEffect, useState } from 'react'
 
 import useSWR, { useSWRConfig } from 'swr'
+import { makeStyles } from '@material-ui/styles'
 import { getWallet, CeasarWalletResponse, createWallet } from '../../utils/api/walletApi'
+
+const useStyles = makeStyles((theme: Theme) => ({
+  cancelButton: {
+    color: theme.palette.error.main,
+  },
+}))
 
 export default function WalletSmallCard({
   accountType,
@@ -39,11 +52,14 @@ export default function WalletSmallCard({
   )
   const { mutate } = useSWRConfig()
 
+  const classes = useStyles()
+
   const dispatchError = useErrorNotification()
   const dispatchSuccess = useSuccessNotification()
   const [walletCreating, setWalletCreating] = useState<boolean>(false)
   const handleCreateWallet = () => {
     setWalletCreating(true)
+    setModalOpen(false)
     createWallet({ [accountType]: accountId } as Record<UserTypes, string>)
       .then((res) => {
         console.log('wallet created', res)
@@ -59,6 +75,23 @@ export default function WalletSmallCard({
       })
   }
   const theme = useTheme()
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const handleModalOpen = () => {
+    setModalOpen(true)
+  }
+  const handleModalClose = () => {
+    setModalOpen(false)
+  }
+  const [check, setCheck] = useState({ checkbox1: false, checkbox2: false })
+  const { checkbox1, checkbox2 } = check
+  const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCheck({
+      ...check,
+      [event.target.name]: event.target.checked,
+    })
+  }
+  const checkAll = [checkbox1, checkbox2].filter((v) => v).length !== 2
+
   if (!data) {
     return (
       <Paper variant="outlined" {...restProps}>
@@ -83,11 +116,91 @@ export default function WalletSmallCard({
                   </Paper>
                 </Box>
               ) : (
-                <Button onClick={handleCreateWallet} fullWidth variant="contained" color="primary">
+                <Button onClick={handleModalOpen} fullWidth variant="contained" color="primary">
                   Create Wallet
                 </Button>
               )}
             </Grid>
+            <Modal
+              open={modalOpen}
+              onClose={() => {
+                setModalOpen(false)
+              }}
+              closeAfterTransition
+              BackdropComponent={Backdrop}
+              BackdropProps={{
+                timeout: 500,
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Paper variant="outlined">
+                <Box p={2}>
+                  <Typography color="primary" variant="h6">
+                    Are You Sure?
+                  </Typography>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="primary"
+                          checked={checkbox1}
+                          name="checkbox1"
+                          onChange={handleCheckbox}
+                        />
+                      }
+                      label="Yes, I want to create my Ceasar Wallet"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="primary"
+                          checked={checkbox2}
+                          name="checkbox2"
+                          onChange={handleCheckbox}
+                        />
+                      }
+                      label="Yes, I agree to REALM1000 and Ceasar Coins Terms and Conditions"
+                    />
+                  </FormGroup>
+                </Box>
+                <Box p={2}>
+                  <Divider />
+                </Box>
+                <Grid spacing={2} container>
+                  <Grid item xs={12} md={12}>
+                    <Box p={2}>
+                      <Grid spacing={2} container>
+                        <Grid item xs={12} md={6}>
+                          <Button
+                            onClick={handleCreateWallet}
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            disabled={checkAll}
+                          >
+                            I agree
+                          </Button>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <Button
+                            onClick={handleModalClose}
+                            fullWidth
+                            variant="contained"
+                            className={classes.cancelButton}
+                          >
+                            Cancel
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Modal>
           </Grid>
         </Box>
       </Paper>
