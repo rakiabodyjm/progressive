@@ -15,6 +15,15 @@ const theme = (additionalProps: CustomThemeProperties): Theme => {
       MuiButton: {
         disableElevation: true,
       },
+      MuiContainer: {
+        style: {
+          padding: 0,
+          width: '100%',
+        },
+      },
+      MuiPaper: {
+        variant: 'outlined',
+      },
     },
     palette: {
       type: prefersDarkMode ? 'dark' : 'light',
