@@ -16,6 +16,24 @@ export default function DspTable({ subdistributorId }: { subdistributorId: strin
     getDsps
   )
 
+  const [searchString, setSearchString] = useState(' ')
+
+  const { data: dspSearchResult, error: dspSearchError } = useSWR([
+    /**
+     * first parameter of searchDsp from dspApi of type:string
+     * String from textField
+     */
+    searchString,
+
+    /**
+     * second parameter of searchDsp from dspApi of type:{ subdistributor: string }
+     * subdistributorId from props
+     */
+    {
+      subdistributor: subdistributorId,
+    },
+    [`dsp-search${searchString}`],
+  ])
   return (
     <div>
       {dsps && (
