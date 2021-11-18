@@ -8,6 +8,7 @@ import {
   Theme,
   Typography,
   Box,
+  Collapse,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import Drawer from '@material-ui/core/Drawer'
@@ -22,6 +23,8 @@ import {
   AccountTree,
   PeopleAlt,
   CardGiftcard,
+  ExpandLess,
+  ExpandMore,
 } from '@material-ui/icons'
 import { logoutUser, User, userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -30,7 +33,7 @@ import { NotificationTypes, setNotification } from '@src/redux/data/notification
 import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { red } from '@material-ui/core/colors'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 // import { makeStyles, useTheme } from '@mui/styles'
 // import { Theme } from '@mui/material'
 
@@ -39,6 +42,27 @@ const menuItems = [
     title: 'Dashboard',
     icon: <Dashboard />,
     url: '/',
+  },
+]
+
+const subdDspRetailers = [
+  {
+    title: 'Subdistributor',
+    icon: <AccountTree />,
+    url: '/subdistributor/retailer',
+  },
+  {
+    title: 'DSP',
+    icon: <PersonPinCircle />,
+    url: '/dsp/retailer',
+  },
+]
+
+const subdDspRetailerItem = [
+  {
+    title: 'DSPs',
+    icon: <PersonPinCircle />,
+    url: '/dsp',
   },
 ]
 
@@ -51,14 +75,14 @@ const subdMenuItems = [
   {
     title: 'Retailers',
     icon: <ContactPhone />,
-    url: '/retailer',
+    url: '/subdistributor/retailer',
   },
 ]
-const dspMenuItems = [
+const dspOnlyMenuItems = [
   {
     title: 'Retailers',
     icon: <ContactPhone />,
-    url: '/retailer',
+    url: '/dsp/retailer',
   },
 ]
 
@@ -154,6 +178,14 @@ const useStyles = makeStyles((theme: Theme) => ({
       // color: 'var(--primary-dark)',
     },
   },
+  nested: {
+    paddingLeft: theme.spacing(4),
+    '& svg': {
+      color: theme.palette.primary.main,
+      // color: theme.palette.primary.contrastText,
+      // color: 'var(--primary-dark)',
+    },
+  },
 }))
 type DrawerComponentProps = {
   open: boolean
@@ -172,6 +204,7 @@ export default function DrawerComponent({
   const dispatch = useDispatch<AppDispatch>()
   const router = useRouter()
   const user = useSelector(userDataSelector)
+  const [isToggle, setIsToggle] = useState<boolean>(false)
   const mainMenuItems = useMemo(() => {
     if (user) {
       let returnMenuItems = [...menuItems]
@@ -179,11 +212,14 @@ export default function DrawerComponent({
       if (user.admin_id) {
         // returnMenuItems = [...returnMenuItems, ...adminUpperMenuItems]
       }
-      if (user.subdistributor_id) {
+      if (user.subdistributor_id && !user.dsp_id) {
         returnMenuItems = [...returnMenuItems, ...subdMenuItems]
       }
-      if (user.dsp_id) {
-        returnMenuItems = [...returnMenuItems, ...dspMenuItems]
+      if (user.dsp_id && !user.subdistributor_id) {
+        returnMenuItems = [...returnMenuItems, ...dspOnlyMenuItems]
+      }
+      if (user.dsp_id && user.subdistributor_id) {
+        returnMenuItems = [...returnMenuItems, ...subdDspRetailerItem]
       }
       if (user.retailer_id) {
         returnMenuItems = [...returnMenuItems]
@@ -201,6 +237,67 @@ export default function DrawerComponent({
   )
 
   console.log(router.pathname)
+
+  const handleClick = () => setIsToggle(!isToggle)
+
+  const subdiDspWithRetailer = () =>
+    subdDspRetailers.map((items) => (
+      <ListItem
+        style={{
+          paddingTop: 16,
+          paddingBottom: 16,
+        }}
+        className={classes.nested}
+        button
+        key={items.title}
+        onClick={() => {
+          router.push(items.url)
+        }}
+      >
+        <ListItemIcon>{items.icon}</ListItemIcon>
+        <ListItemText>
+          <Typography
+            variant="body1"
+            style={{
+              fontWeight: 600,
+              textTransform: 'capitalize',
+            }}
+          >
+            {items.title}
+          </Typography>
+        </ListItemText>
+      </ListItem>
+    ))
+
+  const mainMenu = () =>
+    mainMenuItems.map((menuItem) => (
+      <ListItem
+        style={{
+          paddingTop: 16,
+          paddingBottom: 16,
+        }}
+        className={classes.drawerItem}
+        button
+        key={menuItem.title}
+        onClick={() => {
+          router.push(menuItem.url)
+        }}
+      >
+        <ListItemIcon>{menuItem.icon}</ListItemIcon>
+        <ListItemText>
+          <Typography
+            variant="body1"
+            style={{
+              fontWeight: 600,
+              textTransform: 'capitalize',
+            }}
+          >
+            {menuItem.title}
+          </Typography>
+        </ListItemText>
+        {/* {user?.subdistributor_id && user.dsp_id ? <ExpandMore /> : <ExpandLess />} */}
+      </ListItem>
+    ))
 
   return (
     <Drawer
@@ -293,33 +390,41 @@ export default function DrawerComponent({
           whiteSpace: 'nowrap',
         }}
       >
-        {mainMenuItems.map((menuItem) => (
-          <ListItem
-            style={{
-              paddingTop: 16,
-              paddingBottom: 16,
-            }}
-            className={classes.drawerItem}
-            button
-            key={menuItem.title}
-            onClick={() => {
-              router.push(menuItem.url)
-            }}
-          >
-            <ListItemIcon>{menuItem.icon}</ListItemIcon>
-            <ListItemText>
-              <Typography
-                variant="body1"
-                style={{
-                  fontWeight: 600,
-                  textTransform: 'capitalize',
-                }}
-              >
-                {menuItem.title}
-              </Typography>
-            </ListItemText>
-          </ListItem>
-        ))}
+        {mainMenu()}
+        {user?.subdistributor_id && user.dsp_id ? (
+          <>
+            <ListItem
+              style={{
+                paddingTop: 16,
+                paddingBottom: 16,
+              }}
+              className={classes.drawerItem}
+              button
+              onClick={handleClick}
+            >
+              <ListItemIcon>
+                <ContactPhone />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography
+                  variant="body1"
+                  style={{
+                    fontWeight: 600,
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  retailers
+                </Typography>
+              </ListItemText>
+              {isToggle ? <ExpandLess /> : <ExpandMore />}
+            </ListItem>
+            <Collapse in={isToggle} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {subdiDspWithRetailer()}
+              </List>
+            </Collapse>
+          </>
+        ) : null}
       </List>
 
       <Divider></Divider>
