@@ -11,14 +11,11 @@ import {
   Tooltip,
   IconButton,
 } from '@material-ui/core'
-import DSPSmallCard from '@src/components/DSPSmallCard'
 import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
-import { getRetailer } from '@src/utils/api/retailerApi'
 import RoleBadge from '@src/components/RoleBadge'
 import RetailerTable from '@src/components/RetailerTable'
 import { getDsp } from '@src/utils/api/dspApi'
@@ -137,12 +134,6 @@ export default function RetailersPage() {
                     <RetailerTable subdistributorId={account.subdistributor.id} />
                   </Paper>
                 </Grid>
-
-                {/* {account.dsp && (
-                  <Grid item xs={12}>
-                    <RetailerTable dspId={account?.dsp.id} />
-                  </Grid>
-                )} */}
               </Grid>
             </>
           )}
@@ -175,8 +166,6 @@ function ModalContainer({
 }) {
   return (
     <Modal
-      // aria-labelledby="transition-modal-title"
-      // aria-describedby="transition-modal-description"
       open={open}
       onClose={handleClose}
       closeAfterTransition

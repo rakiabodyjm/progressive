@@ -32,10 +32,7 @@ import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { red } from '@material-ui/core/colors'
 import { useMemo, useState } from 'react'
-// import { makeStyles, useTheme } from '@mui/styles'
-// import { Theme } from '@mui/material'
 
 const menuItems = [
   {
@@ -295,7 +292,6 @@ export default function DrawerComponent({
             {menuItem.title}
           </Typography>
         </ListItemText>
-        {/* {user?.subdistributor_id && user.dsp_id ? <ExpandMore /> : <ExpandLess />} */}
       </ListItem>
     ))
 
