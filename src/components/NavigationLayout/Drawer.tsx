@@ -26,6 +26,7 @@ import {
   CardGiftcard,
   ExpandLess,
   ExpandMore,
+  ListAlt,
 } from '@material-ui/icons'
 import { logoutUser, User, userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -95,20 +96,27 @@ const adminUpperMenuItems = [
 
 const adminLowerMenuItems = [
   {
-    title: 'Users Management',
+    title: 'Users',
     icon: <PeopleAlt />,
     url: '/admin/accounts',
   },
   {
-    title: 'Asset Management',
+    title: 'Asset',
     icon: <CardGiftcard />,
     url: '/admin/assets',
   },
+
+  {
+    title: 'Inventory',
+    icon: <ListAlt />,
+    url: '/admin/inventory',
+  },
 ]
 
+const drawerWidth = 240
 const useStyles = makeStyles((theme: Theme) => ({
   drawer: {
-    width: 240,
+    width: drawerWidth,
     flexShrink: 0,
     /**
      * Destroys welcome sign
@@ -116,7 +124,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     // whiteSpace: 'nowrap',
   },
   drawerOpen: {
-    width: 240,
+    width: drawerWidth,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
