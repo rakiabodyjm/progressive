@@ -35,7 +35,8 @@ function objectValueMutator<T>(
   value: string | number | Date | object | null
 ) {
   let cache = { ...objectToMutate }
-  targetKeys.forEach((key, index, array) => {
+  targetKeys.forEach((currentKey, index, array) => {
+    const key = currentKey as string | number
     if (index === 0) {
       cache = {
         ...cache,
