@@ -42,7 +42,7 @@ export default function RetailerSmallCard({
             />
             <Typography variant="h6">Subdistributor</Typography>
             <Typography color="primary" variant="subtitle2">
-              {data?.subdistributor.name}
+              {data?.subdistributor?.name || 'NONE'}
             </Typography>
 
             {/* <Typography variant="h6">DSP: </Typography>
