@@ -15,7 +15,7 @@ export default function SimpleAutoComplete<T, U>({
   getOptionSelected,
   getOptionLabel,
   inputProps,
-  // defaultOptions,
+  overrideTimeout,
   ...restProps
 }: {
   onChange: (arg: T) => void
@@ -26,6 +26,7 @@ export default function SimpleAutoComplete<T, U>({
   defaultValue?: T
   getOptionSelected: (arg: T, value: T) => boolean
   getOptionLabel: (option: T) => string
+  overrideTimeout?: number
   // defaultOptions?: T[]
   inputProps?: TextFieldProps
 } & Omit<Partial<AutocompleteProps<T, undefined, undefined, undefined>>, 'onChange'>) {
@@ -60,7 +61,7 @@ export default function SimpleAutoComplete<T, U>({
         .finally(() => {
           setLoading(false)
         })
-    })
+    }, overrideTimeout || 500)
   }, [query])
   return (
     <Autocomplete
