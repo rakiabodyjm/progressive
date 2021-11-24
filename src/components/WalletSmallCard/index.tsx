@@ -63,7 +63,7 @@ export default function WalletSmallCard({
       })
       .catch((err: string[]) => {
         console.log('error', err)
-        err.forEach((ea) => dispatchError(ea))
+        // err.forEach((ea) => dispatchError(ea))
       })
       .finally(() => {
         setWalletCreating(false)
