@@ -18,11 +18,16 @@ export const extractErrorFromResponse = (err: AxiosError): string => {
 
 export const extractMultipleErrorFromResponse = (err: AxiosError): string[] => {
   const errResponse: string | string[] = err?.response?.data?.message
+
   const errRequest = err?.request
 
   if (errResponse && Array.isArray(errResponse)) {
     return errResponse
   }
+  if (errResponse && !Array.isArray(errResponse)) {
+    return [errResponse]
+  }
+
   if (errRequest) {
     return [errRequest]
   }
@@ -39,7 +44,7 @@ export function formatKeyIntoReadables(param: string) {
     return toCapsFirst(param)
   }
   if (param === 'id') {
-    return 'User ID'
+    return 'ID'
   }
   if (param === 'roles') {
     return 'Account Types'
