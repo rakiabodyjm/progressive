@@ -61,7 +61,6 @@ export function getWallet(
   params: Record<UserTypes, string>,
   value?: string
 ): Promise<CeasarWalletResponse> {
-  console.log('getWallet params', params, value)
   if (typeof params === 'string') {
     return axios
       .get('/ceasar/account', {
