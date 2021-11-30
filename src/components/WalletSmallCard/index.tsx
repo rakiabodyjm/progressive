@@ -16,17 +16,13 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@material-ui/core'
-import { Info, InfoOutlined } from '@material-ui/icons'
-import SubdistributorsPage from '@src/pages/subdistributor'
 import { UserTypes } from '@src/redux/data/userSlice'
 import { toCapsFirst } from '@src/utils/api/common'
-import { UserResponse, getUser } from '@src/utils/api/userApi'
-import useFetch from '@src/utils/hooks/useFetch'
 import useNotification, {
   useErrorNotification,
   useSuccessNotification,
 } from '@src/utils/hooks/useNotification'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import useSWR, { useSWRConfig } from 'swr'
 import { makeStyles } from '@material-ui/styles'
@@ -94,7 +90,7 @@ export default function WalletSmallCard({
 
   if (!data) {
     return (
-      <Paper variant="outlined" {...restProps}>
+      <Paper variant="outlined" {...restProps} style={{ height: 147 }}>
         <Box p={2}>
           <Grid container>
             <Grid item xs={12}>
@@ -108,12 +104,10 @@ export default function WalletSmallCard({
                 <Divider />
               </Box>
               {walletCreating ? (
-                <Box textAlign="center" height={theme.typography.h6.height}>
-                  <Paper variant="outlined">
-                    <Box p={0.5}>
-                      <CircularProgress size={theme.typography.h3.fontSize} color="primary" />
-                    </Box>
-                  </Paper>
+                <Box textAlign="center">
+                  <Box p={0.5} pb={1}>
+                    <CircularProgress size={theme.typography.h3.fontSize} color="primary" />
+                  </Box>
                 </Box>
               ) : (
                 <Button onClick={handleModalOpen} fullWidth variant="contained" color="primary">
@@ -166,14 +160,22 @@ export default function WalletSmallCard({
                       label="Yes, I agree to REALM1000 and Ceasar Coins Terms and Conditions"
                     />
                   </FormGroup>
-                </Box>
-                <Box p={2}>
-                  <Divider />
-                </Box>
-                <Grid spacing={2} container>
-                  <Grid item xs={12} md={12}>
-                    <Box p={2}>
+                  <Box pb={2} pt={2}>
+                    <Divider />
+                  </Box>
+                  <Grid spacing={2} container>
+                    <Grid item xs={12} md={12}>
                       <Grid spacing={2} container>
+                        <Grid item xs={12} md={6}>
+                          <Button
+                            onClick={handleModalClose}
+                            fullWidth
+                            variant="contained"
+                            className={classes.cancelButton}
+                          >
+                            Cancel
+                          </Button>
+                        </Grid>
                         <Grid item xs={12} md={6}>
                           <Button
                             onClick={handleCreateWallet}
@@ -185,20 +187,10 @@ export default function WalletSmallCard({
                             I agree
                           </Button>
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                          <Button
-                            onClick={handleModalClose}
-                            fullWidth
-                            variant="contained"
-                            className={classes.cancelButton}
-                          >
-                            Cancel
-                          </Button>
-                        </Grid>
                       </Grid>
-                    </Box>
+                    </Grid>
                   </Grid>
-                </Grid>
+                </Box>
               </Paper>
             </Modal>
           </Grid>
@@ -207,8 +199,8 @@ export default function WalletSmallCard({
     )
   }
   return (
-    <Paper variant="outlined" {...restProps}>
-      <Box {...(isValidating && { textAlign: 'center' })} p={2}>
+    <Paper variant="outlined" {...restProps} style={{ height: 147 }}>
+      <Box {...(isValidating && { textAlign: 'center' })} p={2} pt={1}>
         {isValidating ? (
           <CircularProgress size={theme.typography.h3.fontSize} color="primary" />
         ) : (
@@ -221,6 +213,8 @@ export default function WalletSmallCard({
                 <Typography
                   style={{
                     fontWeight: 700,
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
                   }}
                   color="primary"
                   variant="body1"

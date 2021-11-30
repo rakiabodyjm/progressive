@@ -60,6 +60,8 @@ export default memo(
                   <Typography
                     style={{
                       fontWeight: 700,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
                     }}
                     color="primary"
                     variant="body1"
