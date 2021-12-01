@@ -12,12 +12,16 @@ import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { UserRoles, UserTypes } from '@src/redux/data/userSlice'
 import { AdminResponseType } from '@src/utils/api/adminApi'
-import { DspResponseType } from '@src/utils/api/dspApi'
-import { RetailerResponseType } from '@src/utils/api/retailerApi'
-import { getRetailerCount, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
-import userApi, { UserResponse } from '@src/utils/api/userApi'
+import { DspResponseType, searchDsp } from '@src/utils/api/dspApi'
+import { RetailerResponseType, searchRetailer } from '@src/utils/api/retailerApi'
+import {
+  getRetailerCount,
+  searchSubdistributor,
+  SubdistributorResponseType,
+} from '@src/utils/api/subdistributorApi'
+import userApi, { searchUser, UserResponse } from '@src/utils/api/userApi'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import { useMemo, useState, useEffect, useCallback, MouseEvent } from 'react'
+import { useMemo, useState, useEffect, useCallback, MouseEvent, ChangeEvent, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -25,6 +29,8 @@ import LoadingScreen from '@src/components/LoadingScreen'
 import { makeStyles } from '@material-ui/styles'
 import { AccountCircle, AddCircle, AddCircleOutline, AddCircleOutlined } from '@material-ui/icons'
 import AddAccountModal from '@components/AddAccountModal'
+import FormLabel from '@src/components/FormLabel'
+import FormTextField from '@src/components/FormTextField'
 
 export type UserTypesAndUser = UserTypes
 
@@ -212,41 +218,89 @@ export default function AdminAccountsPage() {
       page: param,
     }))
   }
+  const [searchString, setSearchString] = useState('')
 
   useEffect(() => {
     setIsLoading(true)
-    axios
-      .get(`${activeUserType}/`, {
-        params: {
-          ...paginatedParams,
-        },
-      })
-      .then(async ({ data }: { data: Paginated<EntityTypesUnion> }) => {
-        setIsLoading(false)
-        setPaginatedParams({
-          ...data.metadata,
+    console.log(searchString)
+    if (searchString === '') {
+      axios
+        .get(`${activeUserType}/`, {
+          params: {
+            ...paginatedParams,
+          },
         })
-        if (data.data.length < 1) {
-          setUsers(null)
-          return
-        }
-
-        /**
-         * if Subdistributor, show number of retailers
-         */
-
-        setUsers(data.data)
-      })
-      .catch((err) => {
-        const message = userApi.extractError(err)
-        dispatch(
-          setNotification({
-            type: NotificationTypes.ERROR,
-            message: typeof message !== 'string' ? 'Error Fetching Users' : message,
+        .then(async ({ data }: { data: Paginated<EntityTypesUnion> }) => {
+          setPaginatedParams({
+            ...data.metadata,
           })
-        )
-      })
-  }, [activeUserType, paginatedParams.page, paginatedParams.limit])
+          if (data.data.length < 1) {
+            setUsers(null)
+            return
+          }
+
+          /**
+           * if Subdistributor, show number of retailers
+           */
+
+          setUsers(data.data)
+        })
+        .catch((err) => {
+          const message = userApi.extractError(err)
+          dispatch(
+            setNotification({
+              type: NotificationTypes.ERROR,
+              message: typeof message !== 'string' ? 'Error Fetching Users' : message,
+            })
+          )
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    } else {
+      console.log(searchString)
+      searchFunctions[activeUserType](searchString)
+        .then((res) => {
+          setPaginatedParams({
+            limit: 100,
+            page: 0,
+            total_page: 0,
+            total: res.length,
+          })
+          setSearchData(
+            res as (UserResponse &
+              DspResponseType &
+              AdminResponseType &
+              RetailerResponseType &
+              SubdistributorResponseType)[]
+          )
+          console.log(res)
+        })
+        .catch((err) => {
+          const message = userApi.extractError(err)
+          dispatch(
+            setNotification({
+              type: NotificationTypes.ERROR,
+              message: typeof message !== 'string' ? 'Error Fetching Users' : message,
+            })
+          )
+          console.log(err)
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    }
+  }, [activeUserType, searchString])
+
+  const [searchData, setSearchData] = useState<
+    (UserResponse &
+      DspResponseType &
+      AdminResponseType &
+      RetailerResponseType &
+      SubdistributorResponseType)[]
+  >([])
+
+  const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
 
   return (
     <Container
@@ -327,6 +381,25 @@ export default function AdminAccountsPage() {
           </IconButton>
         </Tooltip>
       </Box>
+      <Box mb={2}>
+        <Paper variant="outlined">
+          <Box p={2}>
+            <FormLabel>Search: </FormLabel>
+            <FormTextField
+              name="search-retailer"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                if (timeoutRef.current) {
+                  clearTimeout(timeoutRef.current)
+                }
+                timeoutRef.current = setTimeout(() => {
+                  setSearchString(e.target.value)
+                }, 1500)
+              }}
+            />
+          </Box>
+        </Paper>
+      </Box>
+
       {!isLoading && users && (
         <UsersTable
           onRowClick={(e, rowValue) => {
@@ -337,7 +410,7 @@ export default function AdminAccountsPage() {
               },
             })
           }}
-          data={formatSelector(users)}
+          data={searchString.length > 1 ? formatSelector(searchData) : formatSelector(users)}
           hiddenFields={['id', 'user_id']}
           limit={paginatedParams.limit}
           page={paginatedParams.page}
@@ -364,4 +437,11 @@ export default function AdminAccountsPage() {
       )}
     </Container>
   )
+}
+const searchFunctions = {
+  user: (searchString: string) => searchUser(searchString),
+  admin: (searchString: string) => searchUser(searchString),
+  dsp: (searchString: string) => searchDsp(searchString),
+  subdistributor: (searchString: string) => searchSubdistributor(searchString),
+  retailer: (searchString: string) => searchRetailer(searchString),
 }

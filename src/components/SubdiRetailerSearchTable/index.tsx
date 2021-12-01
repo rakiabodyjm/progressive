@@ -1,28 +1,43 @@
 import { Box, Divider, Paper } from '@material-ui/core'
+import UsersTable from '@src/components/UsersTable'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
-import { DspResponseType, searchDsp } from '@src/utils/api/dspApi'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
-import UsersTable from '../UsersTable'
+import { RetailerResponseType, searchRetailer } from '@src/utils/api/retailerApi'
+import { getDsp } from '@src/utils/api/dspApi'
 
-export default function DSPSearchTable({ subdistributorId }: { subdistributorId: string }) {
-  const [searchDspQuery, setSearchDspQuery] = useState(' ')
-  const [data, setData] = useState<DspResponseType[]>()
+type SubdiRetailerTableProps =
+  | {
+      dspId: string
+      subdistributorId?: never
+    }
+  | {
+      subdistributorId: string
+      dspId?: never
+    }
+
+export default function SubdiRetailerSearchTable({
+  dspId,
+  subdistributorId,
+}: SubdiRetailerTableProps) {
+  const [searchDspRetailerQuery, setSearchDspRetailerQuery] = useState(' ')
+  const [data, setData] = useState<RetailerResponseType[]>()
   const [metadata, setMetadata] = useState({
     page: 0,
     limit: 100,
   })
 
   useEffect(() => {
-    if (!searchDspQuery) {
-      setSearchDspQuery(' ')
+    if (!searchDspRetailerQuery) {
+      setSearchDspRetailerQuery(' ')
     } else
-      searchDsp(searchDspQuery, { subdistributor: subdistributorId }).then((res) => {
-        console.log(res)
+      searchRetailer(searchDspRetailerQuery, {
+        dsp: dspId,
+        subdistributor: subdistributorId as string,
+      }).then((res) => {
         setData(res)
       })
-  }, [searchDspQuery, subdistributorId])
-
+  }, [searchDspRetailerQuery, dspId, subdistributorId])
   const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
 
   return (
@@ -31,15 +46,15 @@ export default function DSPSearchTable({ subdistributorId }: { subdistributorId:
         <Box p={2}>
           <Paper>
             <Box p={2}>
-              <FormLabel>Search DSP</FormLabel>
+              <FormLabel>Search Retailer</FormLabel>
               <FormTextField
-                name="search-dsp"
+                name="search-retailer"
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   if (timeoutRef.current) {
                     clearTimeout(timeoutRef.current)
                   }
                   timeoutRef.current = setTimeout(() => {
-                    setSearchDspQuery(e.target.value)
+                    setSearchDspRetailerQuery(e.target.value)
                   }, 1500)
                 }}
               />
@@ -50,10 +65,10 @@ export default function DSPSearchTable({ subdistributorId }: { subdistributorId:
           <Divider />
         </Box>
         <Box>
-          {searchDspQuery === null && setSearchDspQuery(' ')}
+          {searchDspRetailerQuery === null && setSearchDspRetailerQuery(' ')}
           {data && (
             <UsersTable
-              data={formatDsp(data)}
+              data={formatRetailersForSubd(data)}
               limit={metadata.limit}
               page={metadata.page}
               total={data.length}
@@ -80,11 +95,10 @@ export default function DSPSearchTable({ subdistributorId }: { subdistributorId:
     </Box>
   )
 }
-const formatDsp = (param: DspResponseType[]) =>
-  param.map(({ id, user, dsp_code, e_bind_number, area_id }) => ({
-    dsp_id: id,
-    user: user.first_name,
-    dsp_code,
+const formatRetailersForSubd = (param: RetailerResponseType[]) =>
+  param.map(({ id, store_name, e_bind_number, dsp }) => ({
+    retailer_id: id,
+    store_name,
     e_bind_number,
-    area_id: area_id.map((ea) => ea.area_name).join(', '),
+    dsp: dsp.dsp_code,
   }))
