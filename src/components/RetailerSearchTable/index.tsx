@@ -79,10 +79,6 @@ export default function RetailerSearchTable({
             />
           )}
         </Box>
-        {/** https://v4.mui.com/components/tables/#table */}
-        {/** Try to be as much as possible close to our original design */}
-        {/** You can use UsersTable as guide */}
-        {/** You can't use UsersTable fully since it requires pagination data */}
       </Paper>
     </Box>
   )

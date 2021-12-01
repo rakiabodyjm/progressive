@@ -14,20 +14,16 @@ import { UserRoles, UserTypes } from '@src/redux/data/userSlice'
 import { AdminResponseType } from '@src/utils/api/adminApi'
 import { DspResponseType, searchDsp } from '@src/utils/api/dspApi'
 import { RetailerResponseType, searchRetailer } from '@src/utils/api/retailerApi'
-import {
-  getRetailerCount,
-  searchSubdistributor,
-  SubdistributorResponseType,
-} from '@src/utils/api/subdistributorApi'
+import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import userApi, { searchUser, UserResponse } from '@src/utils/api/userApi'
-import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import { useMemo, useState, useEffect, useCallback, MouseEvent, ChangeEvent, useRef } from 'react'
+import { Paginated } from '@src/utils/types/PaginatedEntity'
+import { useState, useEffect, useCallback, ChangeEvent, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import LoadingScreen from '@src/components/LoadingScreen'
 import { makeStyles } from '@material-ui/styles'
-import { AccountCircle, AddCircle, AddCircleOutline, AddCircleOutlined } from '@material-ui/icons'
+import { AddCircleOutlined } from '@material-ui/icons'
 import AddAccountModal from '@components/AddAccountModal'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
@@ -94,8 +90,6 @@ const formatRetailer: EntityFormatter<RetailerResponseType> = ({
   id,
   e_bind_number,
   store_name,
-  id_type,
-  id_number,
   subdistributor,
   dsp,
   user,
@@ -111,8 +105,6 @@ const formatRetailer: EntityFormatter<RetailerResponseType> = ({
 
 const formatSubdistributor: EntityFormatter<SubdistributorResponseType> = ({
   name,
-  // dsp,
-  // retailer,
   area_id,
   user,
 }) => ({
@@ -120,8 +112,6 @@ const formatSubdistributor: EntityFormatter<SubdistributorResponseType> = ({
   user_id: user?.id,
   user: user ? `${user.last_name}, ${user.first_name}` : '',
   area_id: area_id?.area_name || '',
-  // retailers: retailer?.length || 0,
-  // dsps: dsp?.length || 0,
 })
 
 const formatter = {
@@ -132,13 +122,6 @@ const formatter = {
   user: formatUsers,
 }
 
-// const fetcher: Record<UserTypesAndUser, (params) => any>{
-//   admin,
-//   dsp,
-//   retailer,
-//   subdistributor,
-//   user,
-// }
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
   headerContainer: {
@@ -222,7 +205,6 @@ export default function AdminAccountsPage() {
 
   useEffect(() => {
     setIsLoading(true)
-    console.log(searchString)
     if (searchString === '') {
       axios
         .get(`${activeUserType}/`, {
@@ -238,11 +220,6 @@ export default function AdminAccountsPage() {
             setUsers(null)
             return
           }
-
-          /**
-           * if Subdistributor, show number of retailers
-           */
-
           setUsers(data.data)
         })
         .catch((err) => {
@@ -258,7 +235,6 @@ export default function AdminAccountsPage() {
           setIsLoading(false)
         })
     } else {
-      console.log(searchString)
       searchFunctions[activeUserType](searchString)
         .then((res) => {
           setPaginatedParams({
@@ -274,7 +250,6 @@ export default function AdminAccountsPage() {
               RetailerResponseType &
               SubdistributorResponseType)[]
           )
-          console.log(res)
         })
         .catch((err) => {
           const message = userApi.extractError(err)
@@ -284,7 +259,6 @@ export default function AdminAccountsPage() {
               message: typeof message !== 'string' ? 'Error Fetching Users' : message,
             })
           )
-          console.log(err)
         })
         .finally(() => {
           setIsLoading(false)
@@ -324,7 +298,6 @@ export default function AdminAccountsPage() {
           <Typography color="textSecondary" className="user-type-title">
             Select User Type
           </Typography>
-          {/* <ButtonGroup disableElevation variant="outlined"> */}
           <Box className="user-type-button-group">
             {userTypes.map((userType: UserTypesAndUser) => (
               <Button
@@ -345,27 +318,6 @@ export default function AdminAccountsPage() {
         </div>
       </Box>
       <Box mt={8} />
-      {/* <Box mb={2}>
-        <Paper variant="outlined">
-          <Box p={1}>
-            <Typography variant="h6">Actions</Typography>
-            <Typography color="textSecondary" variant="body1">
-              Admin actions for Accounts
-            </Typography>
-
-            <Divider
-              style={{
-                marginBottom: 16,
-                marginTop: 16,
-              }}
-            />
-
-            <Button color="primary" variant="outlined">
-              Add User
-            </Button>
-          </Box>
-        </Paper>
-      </Box> */}
       <Box mb={2} display="flex" justifyContent="flex-end">
         <Tooltip
           title={<Typography variant="subtitle2">Add User Account</Typography>}

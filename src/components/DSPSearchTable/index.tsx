@@ -18,7 +18,6 @@ export default function DSPSearchTable({ subdistributorId }: { subdistributorId:
       setSearchDspQuery(' ')
     } else
       searchDsp(searchDspQuery, { subdistributor: subdistributorId }).then((res) => {
-        console.log(res)
         setData(res)
       })
   }, [searchDspQuery, subdistributorId])
@@ -72,10 +71,6 @@ export default function DSPSearchTable({ subdistributorId }: { subdistributorId:
             />
           )}
         </Box>
-        {/** https://v4.mui.com/components/tables/#table */}
-        {/** Try to be as much as possible close to our original design */}
-        {/** You can use UsersTable as guide */}
-        {/** You can't use UsersTable fully since it requires pagination data */}
       </Paper>
     </Box>
   )
