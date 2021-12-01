@@ -11,7 +11,28 @@ export default function axiosDefaults() {
   /**
    * have interceptor
    */
+  axios.interceptors.request.use(
+    (config) => {
+      const token = window?.localStorage.getItem('token')
+      if (token) {
+        return {
+          ...config,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      }
+      return { ...config }
+      // headers =
+    },
+    (err) => {
+      console.log('Error in axios defaults')
+      console.error(err)
+      return Promise.reject(err)
+    }
+  )
   axios.interceptors.response.use((response: AxiosResponse) => {
+    console.log('intercepted axios error', response)
     if (response.status === 401) {
       store.dispatch(
         setNotification({
