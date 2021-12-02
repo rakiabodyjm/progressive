@@ -46,8 +46,8 @@ export default memo(
       }
     }, [entities])
     return (
-      <Paper variant="outlined" {...restProps}>
-        <Box {...(isLoading && { textAlign: 'center' })} p={2}>
+      <Paper variant="outlined" {...restProps} style={{ height: 153 }}>
+        <Box {...(isLoading && { textAlign: 'center' })} p={2} pt={1}>
           {isLoading ? (
             <CircularProgress size={theme.typography.h3.fontSize} color="primary" />
           ) : (
@@ -60,7 +60,6 @@ export default memo(
                   <Typography
                     style={{
                       fontWeight: 700,
-                      overflow: 'hidden',
                       whiteSpace: 'nowrap',
                     }}
                     color="primary"

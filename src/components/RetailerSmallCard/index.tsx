@@ -23,8 +23,8 @@ export default function RetailerSmallCard({
   const theme = useTheme()
 
   return (
-    <Paper {...restProps} variant="outlined">
-      <Box {...(isValidating && { textAlign: 'center' })} p={2}>
+    <Paper {...restProps} variant="outlined" style={{ height: 153 }}>
+      <Box {...(isValidating && { textAlign: 'center' })} p={2} pt={1}>
         {isValidating ? (
           <CircularProgress size={theme.typography.h3.fontSize} color="primary" />
         ) : (

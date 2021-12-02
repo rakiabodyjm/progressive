@@ -139,25 +139,6 @@ export default function AccountDashboard() {
           }}
         />
         <Grid spacing={2} container>
-          <Grid item xs={12} md={12}>
-            <Grid container spacing={2}>
-              {account?.dsp && (
-                <Grid item xs={12} lg={4}>
-                  <DSPSmallCard dspId={account.dsp.id} />
-                </Grid>
-              )}
-              {account?.subdistributor && (
-                <Grid item xs={12} lg={4}>
-                  <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
-                </Grid>
-              )}
-              {account?.retailer && (
-                <Grid item xs={12} lg={4}>
-                  <RetailerSmallCard retailerId={account.retailer.id} />
-                </Grid>
-              )}
-            </Grid>
-          </Grid>
           <Grid item xs={12} md={6}>
             <Grid spacing={2} container>
               <Grid item xs={12}>
@@ -198,12 +179,58 @@ export default function AccountDashboard() {
                   }}
                 />
               </Grid>
-              {account?.id && (
+              <Grid item xs={12} md={6}>
+                <Grid container spacing={2}>
+                  {account?.id && (
+                    <Grid item xs={12}>
+                      <WalletSmallCard accountType="user" accountId={account.id} />
+                    </Grid>
+                  )}
+                  {account?.subdistributor && (
+                    <Grid item xs={12}>
+                      <WalletSmallCard
+                        accountId={account.subdistributor.id}
+                        accountType="subdistributor"
+                      />
+                    </Grid>
+                  )}
+                  {account?.dsp && (
+                    <Grid item xs={12}>
+                      <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
+                    </Grid>
+                  )}
+                  {account?.retailer && (
+                    <Grid item xs={12}>
+                      <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
+                    </Grid>
+                  )}
+                </Grid>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Grid container spacing={2}>
+                  {account?.dsp && (
+                    <Grid item xs={12}>
+                      <DSPSmallCard dspId={account.dsp.id} />
+                    </Grid>
+                  )}
+                  {account?.subdistributor && (
+                    <Grid item xs={12}>
+                      <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
+                    </Grid>
+                  )}
+                  {account?.retailer && (
+                    <Grid item xs={12}>
+                      <RetailerSmallCard retailerId={account.retailer.id} />
+                    </Grid>
+                  )}
+                </Grid>
+              </Grid>
+              {/* {account?.id && (
                 <Grid item xs={12} lg={6}>
                   <WalletSmallCard accountType="user" accountId={account.id} />
                 </Grid>
-              )}
-              {account?.subdistributor && (
+              )} */}
+              {/* {account?.subdistributor && (
                 <Grid item xs={12} lg={6}>
                   <WalletSmallCard
                     accountId={account.subdistributor.id}
@@ -220,7 +247,7 @@ export default function AccountDashboard() {
                 <Grid item xs={12} lg={6}>
                   <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
                 </Grid>
-              )}
+              )} */}
             </Grid>
           </Grid>
         </Grid>
