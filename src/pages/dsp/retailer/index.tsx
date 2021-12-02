@@ -21,8 +21,9 @@ import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
 import RoleBadge from '@src/components/RoleBadge'
 import RetailerTable from '@src/components/RetailerTable'
 import { getDsp } from '@src/utils/api/dspApi'
-import { AddCircleOutlined } from '@material-ui/icons'
+import { AccountBoxRounded, AddCircleOutlined } from '@material-ui/icons'
 import CreateRetailerAccount from '@src/components/pages/retailer/CreateRetailerAccount'
+import RetailerSearchTable from '@src/components/RetailerSearchTable'
 
 export default function RetailersPage() {
   const user = useSelector(userDataSelector)
@@ -59,7 +60,7 @@ export default function RetailersPage() {
           )
         })
     }
-  }, [user])
+  }, [dispatch, user])
 
   return (
     <div>
@@ -95,7 +96,6 @@ export default function RetailersPage() {
                 placement="left"
               >
                 <IconButton onClick={setModalOpen('retailer', true)}>
-                  {console.log(addRetailerAccountModal.retailer)}
                   <AddCircleOutlined />
                 </IconButton>
               </Tooltip>
@@ -130,8 +130,11 @@ export default function RetailersPage() {
                         Retailer Accounts this DSP Services
                       </Typography>
                     </Box>
-
-                    <RetailerTable dspId={account.dsp.id} />
+                    <RetailerSearchTable
+                      dspId={account.dsp.id}
+                      subdistributorId={account.dsp.subdistributor.id}
+                    />
+                    {/* <RetailerTable dspId={account.dsp.id} /> */}
                   </Paper>
                 </Grid>
               </Grid>
@@ -139,7 +142,6 @@ export default function RetailersPage() {
           )}
         </Grid>
       </Paper>
-      {console.log(account)}
       {account?.subdistributor && account.dsp && addRetailerAccountModal.retailer && (
         <ModalContainer
           handleClose={setModalOpen('retailer', false)}
@@ -147,7 +149,7 @@ export default function RetailersPage() {
         >
           <CreateRetailerAccount
             dspId={account.dsp?.id as string}
-            subdistributorId={account.subdistributor.id as string}
+            subdistributorId={account.dsp.subdistributor.id as string}
             modal={setModalOpen('retailer', false)}
           />
         </ModalContainer>

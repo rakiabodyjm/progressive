@@ -12,9 +12,12 @@ import { makeStyles, useTheme } from '@material-ui/styles'
 import RetailerTable from '@src/components/RetailerTable'
 import { getDsp, DspResponseType } from '@api/dspApi'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import useSWR from 'swr'
 import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
+import DSPSearchTable from '@src/components/DSPSearchTable'
+import RetailerSearchTable from '@src/components/RetailerSearchTable'
+import { userDataSelector } from '@src/redux/data/userSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -30,7 +33,7 @@ export default function ViewDspAccount({
 } & PaperProps) {
   //   const [subdistributor, setSubdistributor] = useState<SubdistributorResponseType>()
   //   const [dsp, setDsp] = useState<DspResponseType>()
-
+  const user = useSelector(userDataSelector)
   const classes = useStyles()
   const theme: Theme = useTheme()
   const dispatch = useDispatch()
