@@ -27,6 +27,7 @@ import DspTable from '@src/components/DspTable'
 import { getSubdistributor } from '@src/utils/api/subdistributorApi'
 import { AddCircleOutlined } from '@material-ui/icons'
 import CreateDSPAccount from '@src/components/pages/dsp/CreateDSPAccount'
+import DSPSearchTable from '@src/components/DSPSearchTable'
 
 export default function DspPage() {
   const user = useSelector(userDataSelector)
@@ -63,7 +64,7 @@ export default function DspPage() {
           )
         })
     }
-  }, [user])
+  }, [dispatch, user])
 
   return (
     <div>
@@ -135,7 +136,7 @@ export default function DspPage() {
                       </Typography>
                     </Box>
 
-                    <DspTable subdistributorId={account.subdistributor.id} />
+                    <DSPSearchTable subdistributorId={account.subdistributor.id} />
                   </Paper>
                 </Grid>
               </Grid>

@@ -12,19 +12,21 @@ import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { UserRoles, UserTypes } from '@src/redux/data/userSlice'
 import { AdminResponseType } from '@src/utils/api/adminApi'
-import { DspResponseType } from '@src/utils/api/dspApi'
-import { RetailerResponseType } from '@src/utils/api/retailerApi'
-import { getRetailerCount, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
-import userApi, { UserResponse } from '@src/utils/api/userApi'
-import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import { useMemo, useState, useEffect, useCallback, MouseEvent } from 'react'
+import { DspResponseType, searchDsp } from '@src/utils/api/dspApi'
+import { RetailerResponseType, searchRetailer } from '@src/utils/api/retailerApi'
+import { searchSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import userApi, { searchUser, UserResponse } from '@src/utils/api/userApi'
+import { Paginated } from '@src/utils/types/PaginatedEntity'
+import { useState, useEffect, useCallback, ChangeEvent, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import LoadingScreen from '@src/components/LoadingScreen'
 import { makeStyles } from '@material-ui/styles'
-import { AccountCircle, AddCircle, AddCircleOutline, AddCircleOutlined } from '@material-ui/icons'
+import { AddCircleOutlined } from '@material-ui/icons'
 import AddAccountModal from '@components/AddAccountModal'
+import FormLabel from '@src/components/FormLabel'
+import FormTextField from '@src/components/FormTextField'
 
 export type UserTypesAndUser = UserTypes
 
@@ -88,8 +90,6 @@ const formatRetailer: EntityFormatter<RetailerResponseType> = ({
   id,
   e_bind_number,
   store_name,
-  id_type,
-  id_number,
   subdistributor,
   dsp,
   user,
@@ -105,8 +105,6 @@ const formatRetailer: EntityFormatter<RetailerResponseType> = ({
 
 const formatSubdistributor: EntityFormatter<SubdistributorResponseType> = ({
   name,
-  // dsp,
-  // retailer,
   area_id,
   user,
 }) => ({
@@ -114,8 +112,6 @@ const formatSubdistributor: EntityFormatter<SubdistributorResponseType> = ({
   user_id: user?.id,
   user: user ? `${user.last_name}, ${user.first_name}` : '',
   area_id: area_id?.area_name || '',
-  // retailers: retailer?.length || 0,
-  // dsps: dsp?.length || 0,
 })
 
 const formatter = {
@@ -126,13 +122,6 @@ const formatter = {
   user: formatUsers,
 }
 
-// const fetcher: Record<UserTypesAndUser, (params) => any>{
-//   admin,
-//   dsp,
-//   retailer,
-//   subdistributor,
-//   user,
-// }
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
   headerContainer: {
@@ -212,41 +201,80 @@ export default function AdminAccountsPage() {
       page: param,
     }))
   }
+  const [searchString, setSearchString] = useState('')
 
   useEffect(() => {
     setIsLoading(true)
-    axios
-      .get(`${activeUserType}/`, {
-        params: {
-          ...paginatedParams,
-        },
-      })
-      .then(async ({ data }: { data: Paginated<EntityTypesUnion> }) => {
-        setIsLoading(false)
-        setPaginatedParams({
-          ...data.metadata,
+    if (searchString === '') {
+      axios
+        .get(`${activeUserType}/`, {
+          params: {
+            ...paginatedParams,
+          },
         })
-        if (data.data.length < 1) {
-          setUsers(null)
-          return
-        }
-
-        /**
-         * if Subdistributor, show number of retailers
-         */
-
-        setUsers(data.data)
-      })
-      .catch((err) => {
-        const message = userApi.extractError(err)
-        dispatch(
-          setNotification({
-            type: NotificationTypes.ERROR,
-            message: typeof message !== 'string' ? 'Error Fetching Users' : message,
+        .then(async ({ data }: { data: Paginated<EntityTypesUnion> }) => {
+          setPaginatedParams({
+            ...data.metadata,
           })
-        )
-      })
-  }, [activeUserType, paginatedParams.page, paginatedParams.limit])
+          if (data.data.length < 1) {
+            setUsers(null)
+            return
+          }
+          setUsers(data.data)
+        })
+        .catch((err) => {
+          const message = userApi.extractError(err)
+          dispatch(
+            setNotification({
+              type: NotificationTypes.ERROR,
+              message: typeof message !== 'string' ? 'Error Fetching Users' : message,
+            })
+          )
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    } else {
+      searchFunctions[activeUserType](searchString)
+        .then((res) => {
+          setPaginatedParams({
+            limit: 100,
+            page: 0,
+            total_page: 0,
+            total: res.length,
+          })
+          setSearchData(
+            res as (UserResponse &
+              DspResponseType &
+              AdminResponseType &
+              RetailerResponseType &
+              SubdistributorResponseType)[]
+          )
+        })
+        .catch((err) => {
+          const message = userApi.extractError(err)
+          dispatch(
+            setNotification({
+              type: NotificationTypes.ERROR,
+              message: typeof message !== 'string' ? 'Error Fetching Users' : message,
+            })
+          )
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    }
+  }, [activeUserType, searchString])
+
+  const [searchData, setSearchData] = useState<
+    (UserResponse &
+      DspResponseType &
+      AdminResponseType &
+      RetailerResponseType &
+      SubdistributorResponseType)[]
+  >([])
+
+  const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
 
   return (
     <Container
@@ -270,7 +298,6 @@ export default function AdminAccountsPage() {
           <Typography color="textSecondary" className="user-type-title">
             Select User Type
           </Typography>
-          {/* <ButtonGroup disableElevation variant="outlined"> */}
           <Box className="user-type-button-group">
             {userTypes.map((userType: UserTypesAndUser) => (
               <Button
@@ -291,27 +318,6 @@ export default function AdminAccountsPage() {
         </div>
       </Box>
       <Box mt={8} />
-      {/* <Box mb={2}>
-        <Paper variant="outlined">
-          <Box p={1}>
-            <Typography variant="h6">Actions</Typography>
-            <Typography color="textSecondary" variant="body1">
-              Admin actions for Accounts
-            </Typography>
-
-            <Divider
-              style={{
-                marginBottom: 16,
-                marginTop: 16,
-              }}
-            />
-
-            <Button color="primary" variant="outlined">
-              Add User
-            </Button>
-          </Box>
-        </Paper>
-      </Box> */}
       <Box mb={2} display="flex" justifyContent="flex-end">
         <Tooltip
           title={<Typography variant="subtitle2">Add User Account</Typography>}
@@ -327,6 +333,25 @@ export default function AdminAccountsPage() {
           </IconButton>
         </Tooltip>
       </Box>
+      <Box mb={2}>
+        <Paper variant="outlined">
+          <Box p={2}>
+            <FormLabel>Search: </FormLabel>
+            <FormTextField
+              name="search-retailer"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                if (timeoutRef.current) {
+                  clearTimeout(timeoutRef.current)
+                }
+                timeoutRef.current = setTimeout(() => {
+                  setSearchString(e.target.value)
+                }, 1500)
+              }}
+            />
+          </Box>
+        </Paper>
+      </Box>
+
       {!isLoading && users && (
         <UsersTable
           onRowClick={(e, rowValue) => {
@@ -337,7 +362,7 @@ export default function AdminAccountsPage() {
               },
             })
           }}
-          data={formatSelector(users)}
+          data={searchString.length > 1 ? formatSelector(searchData) : formatSelector(users)}
           hiddenFields={['id', 'user_id']}
           limit={paginatedParams.limit}
           page={paginatedParams.page}
@@ -364,4 +389,11 @@ export default function AdminAccountsPage() {
       )}
     </Container>
   )
+}
+const searchFunctions = {
+  user: (searchString: string) => searchUser(searchString),
+  admin: (searchString: string) => searchUser(searchString),
+  dsp: (searchString: string) => searchDsp(searchString),
+  subdistributor: (searchString: string) => searchSubdistributor(searchString),
+  retailer: (searchString: string) => searchRetailer(searchString),
 }

@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
+import DSPSearchTable from '@src/components/DSPSearchTable'
 import DspTable from '@src/components/DspTable'
 import RetailerTable from '@src/components/RetailerTable'
 import SubdistributorAccountSummaryCard from '@src/components/SubdistributorAccountSummaryCard'
@@ -76,8 +77,7 @@ export default function ViewSubdistributorAccount({
                         DSP Accounts this Subdistributor owns
                       </Typography>
                     </Box>
-
-                    <DspTable subdistributorId={subdistributor.id} />
+                    <DSPSearchTable subdistributorId={subdistributor.id} />
                   </Paper>
                 </Box>
               </Grid>

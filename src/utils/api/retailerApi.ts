@@ -57,8 +57,8 @@ export const updateRetailer = (id: string, updateRetailer: Partial<CreateRetaile
 export const searchRetailer = (
   searchString: string,
   filter?: {
-    subdistributor: string
-    dsp: string
+    subdistributor: string | undefined
+    dsp: string | undefined
   }
 ): Promise<RetailerResponseType[]> =>
   axios
