@@ -256,8 +256,8 @@ export default function DrawerComponent({
       >
         <ListItem
           style={{
-            paddingTop: 16,
-            paddingBottom: 16,
+            paddingTop: 5,
+            paddingBottom: 5,
           }}
           className={classes.nested}
           button
