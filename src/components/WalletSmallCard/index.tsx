@@ -90,7 +90,7 @@ export default function WalletSmallCard({
 
   if (!data) {
     return (
-      <Paper variant="outlined" {...restProps} style={{ height: 147 }}>
+      <Paper variant="outlined" {...restProps} style={{ height: 153 }}>
         <Box p={2}>
           <Grid container>
             <Grid item xs={12}>
@@ -199,7 +199,7 @@ export default function WalletSmallCard({
     )
   }
   return (
-    <Paper variant="outlined" {...restProps} style={{ height: 147 }}>
+    <Paper variant="outlined" {...restProps} style={{ height: 153 }}>
       <Box {...(isValidating && { textAlign: 'center' })} p={2} pt={1}>
         {isValidating ? (
           <CircularProgress size={theme.typography.h3.fontSize} color="primary" />
@@ -213,7 +213,6 @@ export default function WalletSmallCard({
                 <Typography
                   style={{
                     fontWeight: 700,
-                    overflow: 'hidden',
                     whiteSpace: 'nowrap',
                   }}
                   color="primary"
@@ -240,6 +239,7 @@ export default function WalletSmallCard({
                   justifyContent="flex-end"
                   alignItems="flex-start"
                   pt={0.5}
+                  whiteSpace="noWrap"
                 >
                   <Typography
                     style={{

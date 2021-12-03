@@ -9,6 +9,7 @@ import {
   Typography,
   Box,
   Collapse,
+  Tooltip,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import Drawer from '@material-ui/core/Drawer'
@@ -233,66 +234,80 @@ export default function DrawerComponent({
     [user?.admin_id]
   )
 
-  console.log(router.pathname)
-
   const handleClick = () => setIsToggle(!isToggle)
 
   const subdiDspWithRetailer = () =>
     subdDspRetailers.map((items) => (
-      <ListItem
-        style={{
-          paddingTop: 16,
-          paddingBottom: 16,
-        }}
-        className={classes.nested}
-        button
-        key={items.title}
-        onClick={() => {
-          router.push(items.url)
-        }}
+      <Tooltip
+        disableHoverListener={open}
+        disableTouchListener={open}
+        title={<Typography variant="body1">{items.title}</Typography>}
+        placement="right"
+        arrow
       >
-        <ListItemIcon>{items.icon}</ListItemIcon>
-        <ListItemText>
-          <Typography
-            variant="body1"
-            style={{
-              fontWeight: 600,
-              textTransform: 'capitalize',
-            }}
-          >
-            {items.title}
-          </Typography>
-        </ListItemText>
-      </ListItem>
+        <ListItem
+          style={{
+            paddingTop: 16,
+            paddingBottom: 16,
+          }}
+          className={classes.nested}
+          button
+          key={items.title}
+          onClick={() => {
+            router.push(items.url)
+          }}
+        >
+          <ListItemIcon>{items.icon}</ListItemIcon>
+          <ListItemText>
+            <Typography
+              variant="body1"
+              style={{
+                fontWeight: 600,
+                textTransform: 'capitalize',
+              }}
+            >
+              {items.title}
+            </Typography>
+          </ListItemText>
+        </ListItem>
+      </Tooltip>
     ))
 
   const mainMenu = () =>
     mainMenuItems.map((menuItem) => (
-      <ListItem
-        style={{
-          paddingTop: 16,
-          paddingBottom: 16,
-        }}
-        className={classes.drawerItem}
-        button
-        key={menuItem.title}
-        onClick={() => {
-          router.push(menuItem.url)
-        }}
+      <Tooltip
+        disableHoverListener={open}
+        disableTouchListener={open}
+        title={<Typography variant="body1">{menuItem.title}</Typography>}
+        placement="right"
+        arrow
       >
-        <ListItemIcon>{menuItem.icon}</ListItemIcon>
-        <ListItemText>
-          <Typography
-            variant="body1"
-            style={{
-              fontWeight: 600,
-              textTransform: 'capitalize',
-            }}
-          >
-            {menuItem.title}
-          </Typography>
-        </ListItemText>
-      </ListItem>
+        <ListItem
+          style={{
+            paddingTop: 16,
+            paddingBottom: 16,
+          }}
+          className={classes.drawerItem}
+          button
+          key={menuItem.title}
+          onClick={() => {
+            router.push(menuItem.url)
+          }}
+        >
+          <ListItemIcon>{menuItem.icon}</ListItemIcon>
+          <ListItemText>
+            <Typography
+              variant="body1"
+              style={{
+                fontWeight: 600,
+                textTransform: 'capitalize',
+              }}
+            >
+              {menuItem.title}
+            </Typography>
+          </ListItemText>
+        </ListItem>
+      </Tooltip>
     ))
 
   return (
@@ -389,31 +404,40 @@ export default function DrawerComponent({
         {mainMenu()}
         {user?.subdistributor_id && user.dsp_id ? (
           <>
-            <ListItem
-              style={{
-                paddingTop: 16,
-                paddingBottom: 16,
-              }}
-              className={classes.drawerItem}
-              button
-              onClick={handleClick}
+            <Tooltip
+              disableHoverListener={open}
+              disableTouchListener={open}
+              title={<Typography variant="body1">Retailers</Typography>}
+              placement="right"
+              arrow
             >
-              <ListItemIcon>
-                <ContactPhone />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography
-                  variant="body1"
-                  style={{
-                    fontWeight: 600,
-                    textTransform: 'capitalize',
-                  }}
-                >
-                  retailers
-                </Typography>
-              </ListItemText>
-              {isToggle ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
+              <ListItem
+                style={{
+                  paddingTop: 16,
+                  paddingBottom: 16,
+                }}
+                className={classes.drawerItem}
+                button
+                onClick={handleClick}
+              >
+                <ListItemIcon>
+                  <ContactPhone />
+                </ListItemIcon>
+                <ListItemText>
+                  <Typography
+                    variant="body1"
+                    style={{
+                      fontWeight: 600,
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    retailers
+                  </Typography>
+                </ListItemText>
+
+                {isToggle ? <ExpandLess /> : <ExpandMore />}
+              </ListItem>
+            </Tooltip>
             <Collapse in={isToggle} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 {subdiDspWithRetailer()}
@@ -432,68 +456,83 @@ export default function DrawerComponent({
           }}
         >
           {lowerMenuItems.map((menuItem) => (
-            <ListItem
-              style={{
-                paddingTop: 16,
-                paddingBottom: 16,
-              }}
-              className={classes.drawerItem}
-              button
-              key={menuItem.title}
-              onClick={() => {
-                router.push(menuItem.url)
-              }}
+            <Tooltip
+              disableHoverListener={open}
+              disableTouchListener={open}
+              title={<Typography variant="body1">{menuItem.title}</Typography>}
+              placement="right"
+              arrow
             >
-              <ListItemIcon>{menuItem.icon}</ListItemIcon>
-              <ListItemText>
-                <Typography
-                  variant="body1"
-                  style={{
-                    fontWeight: 600,
-                    textTransform: 'capitalize',
-                  }}
-                >
-                  {menuItem.title}
-                </Typography>
-              </ListItemText>
-            </ListItem>
+              <ListItem
+                style={{
+                  paddingTop: 16,
+                  paddingBottom: 16,
+                }}
+                className={classes.drawerItem}
+                button
+                key={menuItem.title}
+                onClick={() => {
+                  router.push(menuItem.url)
+                }}
+              >
+                <ListItemIcon>{menuItem.icon}</ListItemIcon>
+                <ListItemText>
+                  <Typography
+                    variant="body1"
+                    style={{
+                      fontWeight: 600,
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {menuItem.title}
+                  </Typography>
+                </ListItemText>
+              </ListItem>
+            </Tooltip>
           ))}
         </List>
-
-        <ListItem
-          className={clsx(classes.drawerItem, classes.logoutButton)}
-          button
-          onClick={() => {
-            dispatch(logoutUser()).then(() => {
-              dispatch(
-                setNotification({
-                  message: `User logged out`,
-                  type: NotificationTypes.INFO,
-                })
-              )
-              router.push('/')
-            })
-          }}
+        <Tooltip
+          disableHoverListener={open}
+          disableTouchListener={open}
+          title={<Typography variant="body1">Log Out</Typography>}
+          placement="right"
+          arrow
         >
-          <ListItemIcon
-            style={{
-              color: 'currentcolor',
+          <ListItem
+            className={clsx(classes.drawerItem, classes.logoutButton)}
+            button
+            onClick={() => {
+              dispatch(logoutUser()).then(() => {
+                dispatch(
+                  setNotification({
+                    message: `User logged out`,
+                    type: NotificationTypes.INFO,
+                  })
+                )
+                router.push('/')
+              })
             }}
           >
-            <ExitToApp />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography
-              variant="body1"
+            <ListItemIcon
               style={{
-                textTransform: 'uppercase',
-                fontWeight: 700,
+                color: 'currentcolor',
               }}
             >
-              Log Out
-            </Typography>
-          </ListItemText>
-        </ListItem>
+              <ExitToApp />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography
+                variant="body1"
+                style={{
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                }}
+              >
+                Log Out
+              </Typography>
+            </ListItemText>
+          </ListItem>
+        </Tooltip>
       </Box>
     </Drawer>
   )

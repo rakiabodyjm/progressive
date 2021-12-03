@@ -135,4 +135,8 @@ const subdistributorFieldsSimple = (subdistributor: SubdistributorResponseType) 
     key: 'E-Bind Number',
     value: subdistributor.e_bind_number,
   },
+  {
+    key: 'Area',
+    value: subdistributor.area_id?.area_name || '',
+  },
 ]
