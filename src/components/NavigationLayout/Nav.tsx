@@ -69,7 +69,7 @@ export default function Nav({
   const [toggleMenuOpen, setToggleMenuOpen] = useState<boolean>(false)
   return (
     <>
-      <Box
+      {/* <Box
         position="absolute"
         zIndex={theme.zIndex.drawer + 200}
         className="dev-width-container"
@@ -83,7 +83,7 @@ export default function Nav({
         }}
       >
         {width}
-      </Box>
+      </Box> */}
       <AppBar
         position="fixed"
         className={clsx(classes.appBar, {

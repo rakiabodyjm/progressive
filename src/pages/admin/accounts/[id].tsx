@@ -18,6 +18,7 @@ import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
 import { getSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
+import AdminAccountSummaryCard from '@src/components/AdminAccountSummaryCard'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -227,25 +228,28 @@ export default function AdminAccountManage() {
                   <WalletSmallCard accountType="user" accountId={account?.id} />
                 </Grid>
               )}
-              {account?.dsp && (
-                <Grid item xs={12} lg={6}>
-                  <DSPSmallCard dspId={account.dsp.id} />
-                </Grid>
-              )}
-              {account?.subdistributor && (
-                <Grid item xs={12} lg={6}>
-                  <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
-                </Grid>
-              )}
-              {account?.retailer && (
-                <Grid item xs={12} lg={6}>
-                  <RetailerSmallCard retailerId={account.retailer.id} />
-                </Grid>
-              )}
             </Grid>
           </Grid>
         </Grid>
 
+        {account?.admin && (
+          <>
+            <Box my={2}>
+              <Divider />
+            </Box>
+
+            <Grid spacing={2} container>
+              <Grid item xs={12} md={6}>
+                <AdminAccountSummaryCard admin={{ ...account.admin, user: account }} />
+              </Grid>
+              <Grid container item xs={12} md={6} spacing={2}>
+                <Grid item xs={12} lg={6}>
+                  <WalletSmallCard accountId={account.admin.id} accountType="admin" />
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        )}
         {account?.subdistributor && (
           <>
             <Box my={2}>
@@ -256,7 +260,10 @@ export default function AdminAccountManage() {
               <Grid item xs={12} md={6}>
                 <SubdistributorAccountSummaryCard subdistributor={account.subdistributor} />
               </Grid>
-              <Grid container item xs={12} md={6}>
+              <Grid container item xs={12} md={6} spacing={2}>
+                <Grid item xs={12} lg={6}>
+                  <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
+                </Grid>
                 <Grid item xs={12} lg={6}>
                   <WalletSmallCard
                     accountId={account.subdistributor.id}
@@ -279,7 +286,10 @@ export default function AdminAccountManage() {
                 <DSPAccountSummaryCard dsp={account.dsp} />
               </Grid>
 
-              <Grid container item xs={12} md={6}>
+              <Grid container item xs={12} md={6} spacing={2}>
+                <Grid item xs={12} lg={6}>
+                  <DSPSmallCard dspId={account.dsp.id} />
+                </Grid>
                 <Grid item xs={12} lg={6}>
                   <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
                 </Grid>
@@ -298,7 +308,10 @@ export default function AdminAccountManage() {
               <Grid item xs={12} md={6}>
                 <RetailerAccountSummaryCard retailer={account.retailer} />
               </Grid>
-              <Grid container item xs={12} md={6}>
+              <Grid container item xs={12} md={6} spacing={2}>
+                <Grid item xs={12} lg={6}>
+                  <RetailerSmallCard retailerId={account.retailer.id} />
+                </Grid>
                 <Grid item xs={12} lg={6}>
                   <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
                 </Grid>

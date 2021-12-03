@@ -35,9 +35,11 @@ export default memo(
               setCeasarAmount((prevState) => prevState + (res?.data?.ceasar_coin || 0))
             })
             .catch((err: string[]) => {
-              err.forEach((each) => {
-                dispatchError(each)
-              })
+              console.log(`Error retrieving wallet for ${key}, wallet may not exist`, err)
+
+              // err.forEach((each) => {
+              //   dispatchError(each)
+              // })
             })
             .finally(() => {
               setIsLoading(false)

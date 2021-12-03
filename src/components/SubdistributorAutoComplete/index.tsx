@@ -49,7 +49,7 @@ export default function SubdistributorAutoComplete({
       defaultValue={
         (Array.isArray(usersOptions) && usersOptions.length > 0 && usersOptions[0]) || undefined
       }
-      getOptionSelected={(option, value) => option.id === value.id || undefined}
+      getOptionSelected={(option, value) => option.id === value.id || false}
       getOptionLabel={(option) => `${option.name}`}
       renderInput={(params) => (
         <TextField

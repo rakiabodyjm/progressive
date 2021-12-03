@@ -1,232 +1,275 @@
 import {
   Box,
-  Button,
+  Checkbox,
   Container,
   Divider,
   Grid,
+  IconButton,
+  Menu,
   Paper,
-  Table,
-  TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
   TableRow,
-  TextField,
-  TextFieldProps,
+  Tooltip,
   Typography,
-  TypographyProps,
 } from '@material-ui/core'
-import UserAutoComplete from '@src/components/UserAutoComplete'
+import { AddCircleOutlined, MoreVert } from '@material-ui/icons'
+import ModalWrapper from '@src/components/ModalWrapper'
+import CreateAsset from '@src/components/pages/assets/CreateAsset'
+import EditAsset from '@src/components/pages/assets/EditAsset'
+import { PopUpMenu } from '@src/components/PopUpMenu'
+import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
-import { addAsset, Asset } from '@src/redux/data/assetSlice'
 import { userDataSelector } from '@src/redux/data/userSlice'
-import { RootState } from '@src/redux/store'
-import { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { Asset, getAssets, GetAllAssetDto } from '@src/utils/api/assetApi'
+import { useErrorNotification } from '@src/utils/hooks/useNotification'
+import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 export default function AdminAssetManagement() {
-  const assets = useSelector((state: RootState) => state.assets)
-  const dispatch = useDispatch()
-  const [newAsset, setNewAsset] = useState<Asset>()
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>()
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-    timeoutRef.current = setTimeout(() => {
-      setNewAsset(
-        (prevState) =>
-          ({
-            ...prevState,
-            [e.target.name]: e.target.value,
-          } as Asset)
-      )
-    }, 200)
-  }
-
-  //   const validate = () => {
-  //     const validators: Record<keyof Asset, () => string | null> = {}
-  //   }
+  const [addAssetModalOpen, setAddAssetModalOpen] = useState<boolean>(false)
+  const [editAssetModalOpen, setEditAssetModalOpen] = useState<{
+    state: boolean
+    asset: Asset | undefined
+  }>({ state: false, asset: undefined })
   const user = useSelector(userDataSelector)
+  const [assets, setAssets] = useState<Asset[] | undefined>()
+
+  const [paginatedParams, setPaginatedParams] = useState<PaginateFetchParameters>({
+    page: 0,
+    limit: 100,
+  })
+
+  const [getAllAssetOptions, setGetAllAssetOptions] = useState<GetAllAssetDto>({
+    active: true,
+  })
+  const [assetMetadata, setAssetMetadata] = useState<Paginated<Asset>['metadata'] | undefined>()
+
+  const dispatchError = useErrorNotification()
+
+  const fetchAssets = useCallback(() => {
+    getAssets({ ...paginatedParams, ...getAllAssetOptions })
+      .then((res) => {
+        console.log('fetching')
+        setAssets(res.data)
+        setAssetMetadata(res.metadata)
+      })
+      .catch((err) => {
+        dispatchError(err)
+      })
+  }, [paginatedParams, getAllAssetOptions])
+
+  const moreAnchorEl = useRef<HTMLElement | undefined>()
+  const [assetMoreOptionsOpen, setAssetMoreOptionsOpen] = useState<boolean>(false)
   useEffect(() => {
-    if (user) {
-      setNewAsset(
-        (prevState) =>
-          ({
-            ...prevState,
-            created_by: user.user_id,
-          } as Asset)
-      )
-    }
-  }, [user])
+    fetchAssets()
+  }, [fetchAssets])
+
   return (
-    <Container
-      style={{
-        padding: 0,
-        overflow: 'hidden',
-      }}
-    >
-      <Box>
-        <Typography
-          variant="h3"
-          style={{
-            fontWeight: 700,
-          }}
-        >
-          Asset Management
-        </Typography>
-
-        <Box mt={2}>
-          <Paper variant="outlined">
-            <Box p={2}>
-              <Typography variant="h6" color="primary">
-                Create an Asset
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Create an Asset to be transferred into accounts
-              </Typography>
-              <Divider
-                style={{
-                  margin: '16px 0',
-                }}
-              />
-              <Grid spacing={2} container>
-                <Grid item xs={4}>
-                  <TypographyLabel>Asset Code</TypographyLabel>
-                  <CustomTextField onChange={handleChange} placeholder="R-1000" name="code" />
-                </Grid>
-                <Grid item xs={8}>
-                  <TypographyLabel>Asset Name</TypographyLabel>
-                  <CustomTextField onChange={handleChange} placeholder="Regular Load" name="name" />
-                </Grid>
-              </Grid>
-              <Grid spacing={2} justifyContent="space-between" container>
-                <Grid item container xs={4} spacing={2}>
-                  <Grid item xs={12}>
-                    <TypographyLabel>Asset Price</TypographyLabel>
-                    <CustomTextField
-                      onChange={handleChange}
-                      name="price"
-                      placeholder="1000 Pesos"
-                      type="number"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TypographyLabel>Quantity</TypographyLabel>
-                    <CustomTextField
-                      placeholder="pcs. | quantity"
-                      name="quantity"
-                      type="number"
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid item xs={8}>
-                  <TypographyLabel>Description</TypographyLabel>
-                  <CustomTextField
-                    onChange={handleChange}
-                    placeholder="REALM1000 Issued Regular Load 1000"
-                    name="description"
-                    multiline
-                    minRows={5}
-                    maxRows={5}
-                  />
-                </Grid>
-              </Grid>
-              <Box textAlign="center" p={2}>
-                <Typography variant="h6">To</Typography>
-              </Box>
-
+    <>
+      <Container>
+        <Paper variant="outlined">
+          <Box p={2}>
+            <Box display="flex" justifyContent="space-between">
               <Box>
-                <UserAutoComplete
-                  onChange={(user) => {
-                    setNewAsset(
-                      (prevState) =>
-                        ({
-                          ...prevState,
-                          owner: user.id,
-                        } as Asset)
-                    )
-                  }}
-                />
+                {user?.admin_id && <RoleBadge uppercase>Admin</RoleBadge>}
+                <Typography noWrap color="textSecondary" variant="h6">
+                  {user?.first_name}
+                </Typography>
+                <Typography variant="h4">Asset Management</Typography>
+                <Typography variant="body2" color="primary">
+                  Create Assets to be acquired by Admin and sold to different Account types
+                </Typography>
               </Box>
-              <Divider
-                style={{
-                  margin: `16px 0`,
-                }}
-              />
-              <Box display="flex" justifyContent="flex-end">
-                <Button
+              <Box>
+                <IconButton
                   onClick={() => {
-                    dispatch(addAsset(newAsset))
+                    setAssetMoreOptionsOpen(true)
                   }}
-                  disableElevation
-                  variant="contained"
-                  color="primary"
+                  innerRef={moreAnchorEl}
                 >
-                  Confirm
-                </Button>
+                  <MoreVert />
+                </IconButton>
+                <Menu
+                  anchorEl={moreAnchorEl.current}
+                  open={assetMoreOptionsOpen}
+                  onClose={() => {
+                    setAssetMoreOptionsOpen(false)
+                  }}
+                >
+                  <Box p={1}>
+                    <Typography variant="body1">Asset View Options</Typography>
+                    <Box pt={1.5}>
+                      <Divider />
+                    </Box>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      onClick={() => {
+                        if (getAllAssetOptions.withDeleted === undefined) {
+                          setGetAllAssetOptions((prevState) => ({
+                            ...prevState,
+                            withDeleted: true,
+                          }))
+                        } else {
+                          const prevStateCopy = {
+                            ...getAllAssetOptions,
+                          }
+                          delete prevStateCopy.withDeleted
+                          setGetAllAssetOptions(prevStateCopy)
+                        }
+                      }}
+                    >
+                      <Typography color="primary" variant="body2" component="label">
+                        Include Deleted Data
+                      </Typography>
+                      <Checkbox
+                        checked={!(getAllAssetOptions.withDeleted === undefined)}
+                        name="withDeleted"
+                        color="primary"
+                      />
+                    </Box>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      onClick={() => {
+                        setGetAllAssetOptions((prevState) => ({
+                          ...prevState,
+                          active: !prevState.active,
+                        }))
+                      }}
+                    >
+                      <Typography color="primary" variant="body2" component="label">
+                        Show only Disabled Data
+                      </Typography>
+                      <Checkbox
+                        name="withDeleted"
+                        checked={!getAllAssetOptions.active}
+                        color="primary"
+                      />
+                    </Box>
+                  </Box>
+                </Menu>
               </Box>
             </Box>
-          </Paper>
-        </Box>
 
-        <Box mt={2}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="left">Code</TableCell>
-                  <TableCell align="left">Name</TableCell>
-                  <TableCell align="left">Created By</TableCell>
-                  <TableCell align="left">Owner</TableCell>
-                  <TableCell align="left">Price</TableCell>
-                  <TableCell align="left">Quantity</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {assets.map((row, index) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <TableRow key={row.name + index}>
-                    <TableCell component="th" scope="row">
-                      {row.code}
-                    </TableCell>
-                    <TableCell align="left">{row.name}</TableCell>
-                    <TableCell align="left">{row.created_by}</TableCell>
-                    <TableCell align="left">{row.owner}</TableCell>
-                    <TableCell align="left">{row.price}</TableCell>
-                    <TableCell align="left">{row.quantity}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+            <Box display="flex" justifyContent="flex-end">
+              <Tooltip
+                arrow
+                placement="left"
+                title={<Typography variant="subtitle2">Add new Asset</Typography>}
+              >
+                <IconButton
+                  onClick={() => {
+                    setAddAssetModalOpen(true)
+                  }}
+                >
+                  <AddCircleOutlined />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            <Box my={2}>
+              <Divider />
+            </Box>
+
+            <Grid container spacing={2}>
+              <Grid xs={12} item>
+                <Box>
+                  {assets && (
+                    <UsersTable
+                      data={assets}
+                      limit={paginatedParams.limit}
+                      page={paginatedParams.page}
+                      total={assetMetadata?.total || 0}
+                      setLimit={(limit: number) => {
+                        setPaginatedParams((prevState) => ({
+                          ...prevState,
+                          limit,
+                        }))
+                      }}
+                      setPage={(page: number) => {
+                        setPaginatedParams((prevState) => ({
+                          ...prevState,
+                          page,
+                        }))
+                      }}
+                      formatRow={{
+                        srp_for_subd: 'SRP (Subd)',
+                        srp_for_dsp: 'SRP (DSP)',
+                        srp_for_retailer: 'SRP (Ret.)',
+                        srp_for_user: 'SRP (User)',
+                      }}
+                      hiddenFields={['id', 'deleted_at', 'active', 'updated_at']}
+                      onRowClick={(e, asset) => {
+                        if (!asset.deleted_at) {
+                          setEditAssetModalOpen(objectSpread('asset', asset))
+                          setEditAssetModalOpen(objectSpread('state', true))
+                        }
+                      }}
+                      // renderRow={(row, DefaultRender) => {
+                      //   if (row.deleted_at) {
+                      //     return (
+                      //       <TableRow>
+                      //         {Object.keys(row).map((ea) => (
+                      //           <TableCell>{row[ea] as string}</TableCell>
+                      //         ))}
+                      //       </TableRow>
+                      //     )
+                      //   }
+                      //   return (
+                      //     <>
+                      //       <DefaultRender />
+                      //     </>
+                      //   )
+                      // }}
+                    />
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        </Paper>
+      </Container>
+      <ModalWrapper
+        open={addAssetModalOpen}
+        containerSize="sm"
+        onClose={() => setAddAssetModalOpen(false)}
+      >
+        <Box>
+          <CreateAsset
+            modal={() => {
+              setAddAssetModalOpen(false)
+            }}
+            revalidateFunction={() => {
+              fetchAssets()
+            }}
+          />
         </Box>
-      </Box>
-    </Container>
+      </ModalWrapper>
+      <ModalWrapper
+        open={editAssetModalOpen.state && !!editAssetModalOpen.asset}
+        containerSize="sm"
+        onClose={() => setEditAssetModalOpen(objectSpread('state', false))}
+      >
+        <Box>
+          {editAssetModalOpen.asset && (
+            <EditAsset
+              modal={() => setEditAssetModalOpen(objectSpread('state', false))}
+              asset={editAssetModalOpen.asset}
+              revalidateFunction={() => fetchAssets()}
+            />
+          )}
+        </Box>
+      </ModalWrapper>
+    </>
   )
 }
 
-const TypographyLabel = ({
-  children,
-  ...restProps
-}: { children: TypographyProps['children'] } & TypographyProps<'label'>) => (
-  <Typography
-    display="block"
-    color="primary"
-    component="label"
-    variant="body2"
-    noWrap
-    {...restProps}
-  >
-    {children}
-  </Typography>
-)
-function CustomTextField<T extends Asset>({
-  name,
-  ...restProps
-}: {
-  name: keyof T & string
-} & Omit<TextFieldProps, 'name'>) {
-  return <TextField fullWidth variant="outlined" size="small" name={name} {...restProps} />
+function objectSpread<T extends {}>(key: keyof T, value: unknown) {
+  return (prevState: T) => ({
+    ...prevState,
+    [key]: value,
+  })
 }

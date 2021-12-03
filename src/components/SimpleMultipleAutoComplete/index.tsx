@@ -15,6 +15,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
   getOptionSelected,
   getOptionLabel,
   tagLabel,
+  overrideTimeout,
   ...restProps
 }: {
   onChange: (arg: T[]) => void
@@ -26,6 +27,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
   getOptionSelected: (arg: T, value: T) => boolean
   getOptionLabel: (option: T) => string
   tagLabel: (option: T) => string
+  overrideTimeout?: number
 } & Omit<Partial<AutocompleteProps<T, true, undefined, undefined>>, 'onChange'>) {
   const [options, setOptions] = useState<T[]>([])
   const [value, setValue] = useState<T[]>([])
@@ -56,12 +58,12 @@ export default function SimpleMultipleAutoComplete<T, U>({
         .finally(() => {
           setLoading(false)
         })
-    })
-  }, [query])
+    }, overrideTimeout || 500)
+  }, [query, value, overrideTimeout])
 
-  useEffect(() => {
-    onChange(value)
-  }, [value])
+  // useEffect(() => {
+  //   onChange(value)
+  // }, [value])
 
   return (
     <Autocomplete
