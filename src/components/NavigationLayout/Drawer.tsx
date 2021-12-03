@@ -47,12 +47,12 @@ const menuItems = [
 const subdDspRetailers = [
   {
     title: 'Subdistributor',
-    icon: <AccountTree />,
+    icon: <AccountTree style={{ fontSize: 18 }} />,
     url: '/subdistributor/retailer',
   },
   {
     title: 'DSP',
-    icon: <PersonPinCircle />,
+    icon: <PersonPinCircle style={{ fontSize: 18 }} />,
     url: '/dsp/retailer',
   },
 ]
@@ -185,13 +185,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   nested: {
-    paddingLeft: theme.spacing(4),
+    paddingLeft: theme.spacing(2.5),
     '& svg': {
       color: theme.palette.primary.main,
       // color: theme.palette.primary.contrastText,
       // color: 'var(--primary-dark)',
     },
   },
+  iconSize: {},
 }))
 type DrawerComponentProps = {
   open: boolean
@@ -246,6 +247,7 @@ export default function DrawerComponent({
 
   const subdiDspWithRetailer = () =>
     subdDspRetailers.map((items) => (
+<<<<<<< Updated upstream
       <Tooltip
         disableHoverListener={open}
         disableTouchListener={open}
@@ -279,6 +281,33 @@ export default function DrawerComponent({
           </ListItemText>
         </ListItem>
       </Tooltip>
+=======
+      <ListItem
+        style={{
+          paddingTop: 5,
+          paddingBottom: 5,
+        }}
+        className={classes.nested}
+        button
+        key={items.title}
+        onClick={() => {
+          router.push(items.url)
+        }}
+      >
+        <ListItemIcon className={classes.iconSize}>{items.icon}</ListItemIcon>
+        <ListItemText>
+          <Typography
+            variant="body1"
+            style={{
+              fontWeight: 600,
+              textTransform: 'capitalize',
+            }}
+          >
+            {items.title}
+          </Typography>
+        </ListItemText>
+      </ListItem>
+>>>>>>> Stashed changes
     ))
 
   const mainMenu = () =>
