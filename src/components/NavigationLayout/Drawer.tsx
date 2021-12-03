@@ -247,7 +247,6 @@ export default function DrawerComponent({
 
   const subdiDspWithRetailer = () =>
     subdDspRetailers.map((items) => (
-<<<<<<< Updated upstream
       <Tooltip
         disableHoverListener={open}
         disableTouchListener={open}
@@ -281,33 +280,6 @@ export default function DrawerComponent({
           </ListItemText>
         </ListItem>
       </Tooltip>
-=======
-      <ListItem
-        style={{
-          paddingTop: 5,
-          paddingBottom: 5,
-        }}
-        className={classes.nested}
-        button
-        key={items.title}
-        onClick={() => {
-          router.push(items.url)
-        }}
-      >
-        <ListItemIcon className={classes.iconSize}>{items.icon}</ListItemIcon>
-        <ListItemText>
-          <Typography
-            variant="body1"
-            style={{
-              fontWeight: 600,
-              textTransform: 'capitalize',
-            }}
-          >
-            {items.title}
-          </Typography>
-        </ListItemText>
-      </ListItem>
->>>>>>> Stashed changes
     ))
 
   const mainMenu = () =>
