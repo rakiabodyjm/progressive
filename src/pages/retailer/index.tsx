@@ -164,7 +164,6 @@ export default function RetailersPage() {
             subdistributorId={account.dsp.subdistributor.id as string}
             modal={setModalOpen('retailer', false)}
           />
-          {console.log(account)}
         </ModalContainer>
       )}
     </div>
