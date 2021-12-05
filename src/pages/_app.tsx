@@ -1,5 +1,5 @@
 import { CssBaseline, useMediaQuery } from '@material-ui/core'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import Head from 'next/head'
 import theme from '@src/theme'
 import { Provider, useSelector, useDispatch } from 'react-redux'
@@ -60,6 +60,8 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
   }, [isAuthenticated, user])
 
   const dispatchNotif = useNotification()
+  const authCheckerIntervalRef = useRef<ReturnType<typeof setTimeout> | undefined>()
+
   useEffect(() => {
     if (isAuthenticated && isAuthExpired) {
       dispatchNotif({
@@ -71,6 +73,26 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
       dispatch(getUser())
     }
   }, [isAuthenticated, isAuthExpired])
+
+  useEffect(() => {
+    if (user) {
+      authCheckerIntervalRef.current = setInterval(() => {
+        if (user!.metadata.exp < Date.now() / 1000) {
+          dispatchNotif({
+            type: NotificationTypes.WARNING,
+            message: 'User Session is expired, please login again',
+          })
+          dispatch(logoutUser())
+        }
+      }, 60 * 1000)
+    }
+    return () => {
+      const authChecherInterval = authCheckerIntervalRef.current
+      if (authChecherInterval) {
+        clearInterval(authChecherInterval)
+      }
+    }
+  }, [user])
 
   const colorScheme = useSelector(
     (state: RootState) => state.colorScheme === ColorSchemeTypes.DARK || false
