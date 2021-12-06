@@ -1,4 +1,5 @@
 /* eslint-disable no-redeclare */
+import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { Asset } from '@src/utils/api/assetApi'
 import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { CeasarWalletResponse } from '@src/utils/api/walletApi'
@@ -23,7 +24,14 @@ export type UpdateInventory = {
   quantity: number
 }
 
-export function getAllInventory(params: PaginateFetchParameters): Promise<Paginated<Inventory>>
+type GetAllInventoryDto = {
+  disabled?: true
+  account?: Record<UserTypesAndUser, string>
+}
+
+export function getAllInventory(
+  params: PaginateFetchParameters & GetAllInventoryDto
+): Promise<Paginated<Inventory>>
 export function getAllInventory(...params: never): Promise<Inventory[]>
 export function getAllInventory(params: unknown) {
   return axios
@@ -47,9 +55,17 @@ export function getInventory(id: Inventory['id']): Promise<Inventory> {
 
 export function adminAcquireInventory(params: CreateInventory) {
   return axios
-    .post('/inventory/admin-acquire', {
-      ...params,
-    })
+    .post(
+      '/inventory/admin-acquire',
+      {
+        ...params,
+      },
+      {
+        headers: {
+          role: 'admin',
+        },
+      }
+    )
     .then((res) => res.data as Inventory)
     .catch((err) => {
       throw extractMultipleErrorFromResponse(err)
