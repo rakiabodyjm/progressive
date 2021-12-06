@@ -39,7 +39,7 @@ export default function SubdistributorSmallCard({
   const theme = useTheme()
   // TODO
   return (
-    <Paper {...restProps} variant="outlined" style={{ height: 153 }}>
+    <Paper {...restProps} variant="outlined" style={{ height: 134 }}>
       <Box {...(isValidating && { textAlign: 'center' })} p={2} pt={1}>
         {isValidating ? (
           <CircularProgress size={theme.typography.h3.fontSize} color="primary" />
@@ -53,7 +53,7 @@ export default function SubdistributorSmallCard({
             </Typography>
             <div
               style={{
-                marginBottom: 16,
+                marginBottom: 6,
               }}
             />
             <Grid container>
