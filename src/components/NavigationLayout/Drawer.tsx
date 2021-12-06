@@ -35,6 +35,7 @@ import { NotificationTypes, setNotification } from '@src/redux/data/notification
 import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { useMemo, useState } from 'react'
+import RoleBadge from '@src/components/RoleBadge'
 
 const menuItems = [
   {
@@ -252,81 +253,79 @@ export default function DrawerComponent({
 
   const handleClick = () => setIsToggle(!isToggle)
 
-  const subdiDspWithRetailer = () =>
-    collapseSubdDspRetailers.map((items) => (
-      <Tooltip
-        disableHoverListener={open}
-        disableTouchListener={open}
-        title={<Typography variant="body1">{items.title}</Typography>}
-        placement="right"
-        arrow
+  const subdiDspWithRetailer = collapseSubdDspRetailers.map((items) => (
+    <Tooltip
+      disableHoverListener={open}
+      disableTouchListener={open}
+      title={<Typography variant="body1">{items.title}</Typography>}
+      placement="right"
+      arrow
+      key={items.id}
+    >
+      <ListItem
+        style={{
+          paddingTop: 5,
+          paddingBottom: 5,
+        }}
+        className={classes.nested}
+        button
         key={items.id}
+        onClick={() => {
+          router.push(items.url)
+        }}
       >
-        <ListItem
-          style={{
-            paddingTop: 5,
-            paddingBottom: 5,
-          }}
-          className={classes.nested}
-          button
-          key={items.id}
-          onClick={() => {
-            router.push(items.url)
-          }}
-        >
-          <ListItemIcon>{items.icon}</ListItemIcon>
-          <ListItemText>
-            <Typography
-              variant="body1"
-              style={{
-                fontWeight: 600,
-                textTransform: 'capitalize',
-              }}
-            >
-              {items.title}
-            </Typography>
-          </ListItemText>
-        </ListItem>
-      </Tooltip>
-    ))
+        <ListItemIcon>{items.icon}</ListItemIcon>
+        <ListItemText>
+          <Typography
+            variant="body2"
+            style={{
+              // fontWeight: 600,
+              textTransform: 'capitalize',
+            }}
+          >
+            {items.title}
+          </Typography>
+        </ListItemText>
+      </ListItem>
+    </Tooltip>
+  ))
 
-  const mainMenu = () =>
-    mainMenuItems.map((menuItem) => (
-      <Tooltip
-        disableHoverListener={open}
-        disableTouchListener={open}
-        title={<Typography variant="body1">{menuItem.title}</Typography>}
-        placement="right"
-        arrow
+  const mainMenu = mainMenuItems.map((menuItem) => (
+    <Tooltip
+      disableHoverListener={open}
+      disableTouchListener={open}
+      title={<Typography variant="body1">{menuItem.title}</Typography>}
+      placement="right"
+      arrow
+      key={menuItem.id}
+    >
+      <ListItem
+        style={{
+          paddingTop: 16,
+          paddingBottom: 16,
+        }}
+        className={classes.drawerItem}
+        button
         key={menuItem.id}
+        onClick={() => {
+          router.push(menuItem.url)
+        }}
       >
-        <ListItem
-          style={{
-            paddingTop: 16,
-            paddingBottom: 16,
-          }}
-          className={classes.drawerItem}
-          button
-          key={menuItem.id}
-          onClick={() => {
-            router.push(menuItem.url)
-          }}
-        >
-          <ListItemIcon>{menuItem.icon}</ListItemIcon>
-          <ListItemText>
-            <Typography
-              variant="body1"
-              style={{
-                fontWeight: 600,
-                textTransform: 'capitalize',
-              }}
-            >
-              {menuItem.title}
-            </Typography>
-          </ListItemText>
-        </ListItem>
-      </Tooltip>
-    ))
+        <ListItemIcon>{menuItem.icon}</ListItemIcon>
+        <ListItemText>
+          <Typography
+            variant="body1"
+            style={{
+              fontWeight: 600,
+              textTransform: 'capitalize',
+            }}
+          >
+            {menuItem.title}
+          </Typography>
+        </ListItemText>
+      </ListItem>
+    </Tooltip>
+  ))
 
   return (
     <Drawer
@@ -395,21 +394,9 @@ export default function DrawerComponent({
           }}
         >
           {roles.map((role) => (
-            <Typography
-              key={role}
-              style={{
-                border: `2px solid ${theme.palette.primary.main}`,
-                borderRadius: 4,
-                fontWeight: 500,
-                display: 'inline',
-                padding: '2px 8px',
-                marginRight: 8,
-                marginBottom: 8,
-              }}
-              variant="body2"
-            >
-              {role.toUpperCase()}
-            </Typography>
+            <Box key={role} p={0.5}>
+              <RoleBadge uppercase>{role}</RoleBadge>
+            </Box>
           ))}
         </div>
       </div>
@@ -419,7 +406,7 @@ export default function DrawerComponent({
           whiteSpace: 'nowrap',
         }}
       >
-        {mainMenu()}
+        {mainMenu}
         {user?.subdistributor_id && user.dsp_id ? (
           <>
             <Tooltip
@@ -449,7 +436,7 @@ export default function DrawerComponent({
                       textTransform: 'capitalize',
                     }}
                   >
-                    retailers
+                    Retailers
                   </Typography>
                 </ListItemText>
 
@@ -457,8 +444,15 @@ export default function DrawerComponent({
               </ListItem>
             </Tooltip>
             <Collapse in={isToggle} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                {subdiDspWithRetailer()}
+              <List
+                style={{
+                  borderRadius: 8,
+                  // background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                }}
+                component="div"
+                disablePadding
+              >
+                {subdiDspWithRetailer}
               </List>
             </Collapse>
           </>
