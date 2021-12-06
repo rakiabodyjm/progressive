@@ -32,7 +32,6 @@ export default function axiosDefaults() {
     }
   )
   axios.interceptors.response.use((response: AxiosResponse) => {
-    console.log('intercepted axios error', response)
     if (response.status === 401) {
       store.dispatch(
         setNotification({
