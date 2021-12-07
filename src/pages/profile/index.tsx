@@ -98,23 +98,15 @@ export default function UserProfile() {
       <Paper
         style={{
           padding: 16,
-          maxWidth: 720,
+          maxWidth: 700,
           margin: 'auto',
         }}
         variant="outlined"
       >
         <Box display="flex" justifyContent="space-between" mb={4}>
           <div>
-            <Typography
-              style={{
-                fontWeight: 700,
-                color: theme.palette.primary.main,
-              }}
-              variant="h3"
-            >
-              User Account Information
-            </Typography>
-            <Typography variant="h6">
+            <Typography variant="h4">User Account Information</Typography>
+            <Typography variant="body2" color="primary">
               {!editMode ? 'Show' : 'Edit'} current user account information
             </Typography>
           </div>
@@ -176,220 +168,294 @@ export default function UserProfile() {
             )}
           </div>
         </Box>
-        <Box my={2}>
+        <Box my={1}>
           <Divider />
         </Box>
         {userInfo && !editMode && (
           <Grid spacing={1} container>
             <Grid item xs={12}>
-              <Typography variant="h5" color="primary">
-                Account Profile
+              <Typography variant="h6">Account Profile</Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Typography color="primary" variant="body2">
+                User ID:
               </Typography>
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">User ID:</Typography>
-            </Grid>
             <Grid item xs={9}>
-              <Typography variant="h6">{userInfo.id}</Typography>
+              <Typography variant="body1">{userInfo.id}</Typography>
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="h6">First Name:</Typography>
+              <Typography color="primary" variant="body2">
+                First Name:
+              </Typography>
             </Grid>
             <Grid item xs={9}>
-              <Typography variant="h6">{userInfo.first_name}</Typography>
+              <Typography variant="body1">{userInfo.first_name}</Typography>
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="h6">Last Name:</Typography>
+              <Typography color="primary" variant="body2">
+                Last Name:
+              </Typography>
             </Grid>
             <Grid item xs={9}>
-              <Typography variant="h6">{userInfo.last_name}</Typography>
+              <Typography variant="body1">{userInfo.last_name}</Typography>
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="h6">Username:</Typography>
+              <Typography color="primary" variant="body2">
+                Username:
+              </Typography>
             </Grid>
             <Grid item xs={9}>
-              <Typography variant="h6">{userInfo.username}</Typography>
+              <Typography variant="body1">{userInfo.username}</Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: 10 }}>
               <Divider />
             </Grid>
             <Grid item xs={12} style={{ paddingTop: 10 }}>
-              <Typography variant="h5" color="primary">
-                Contact Information
+              <Typography variant="h6">Contact Information</Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Typography color="primary" variant="body2">
+                Phone Number:
               </Typography>
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">Phone Number:</Typography>
-            </Grid>
             <Grid item xs={9}>
-              <Typography variant="h6">{userInfo.phone_number}</Typography>
+              <Typography variant="body1">{userInfo.phone_number}</Typography>
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="h6">Email Address:</Typography>
+              <Typography color="primary" variant="body2">
+                Email Address:
+              </Typography>
             </Grid>
             <Grid item xs={9}>
-              <Typography variant="h6">{userInfo.email}</Typography>
+              <Typography variant="body1">{userInfo.email}</Typography>
             </Grid>
             <Grid item xs={3}>
-              <Typography variant="h6">Address:</Typography>
+              <Typography color="primary" variant="body2">
+                Address:
+              </Typography>
             </Grid>
             <Grid item xs={9}>
-              <Typography variant="h6">{userInfo.address1}</Typography>
+              <Typography variant="body1">{userInfo.address1}</Typography>
             </Grid>
           </Grid>
         )}
         {userInfo && editMode && (
           <Grid spacing={1} container>
             <Grid item xs={12}>
-              <Typography variant="h5" color="primary">
-                Account Profile
+              <Typography variant="h6">Account Profile</Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Typography color="primary" variant="body2">
+                User ID:
               </Typography>
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">User ID:</Typography>
-            </Grid>
             <Grid item xs={9}>
-              <Typography variant="h6">{userInfo.id}</Typography>
+              <Typography variant="body1">{userInfo.id}</Typography>
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">First Name:</Typography>
+            <Grid
+              item
+              xs={12}
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Grid item xs={3}>
+                <Typography color="primary" variant="body2">
+                  First Name:
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  value={userInfo.first_name}
+                  name="first_name"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setEditFormValues((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                    setUserInfo((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={9}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                size="small"
-                value={userInfo.first_name}
-                name="first_name"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setEditFormValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                  setUserInfo((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                }}
-              />
+            <Grid
+              item
+              xs={12}
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Grid item xs={3}>
+                <Typography color="primary" variant="body2">
+                  Last Name:
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  value={userInfo.last_name}
+                  name="last_name"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setEditFormValues((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                    setUserInfo((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">Last Name:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                size="small"
-                value={userInfo.last_name}
-                name="last_name"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setEditFormValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                  setUserInfo((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                }}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">Username:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                size="small"
-                value={userInfo.username}
-                name="username"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setEditFormValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                  setUserInfo((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                }}
-              />
+            <Grid
+              item
+              xs={12}
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Grid item xs={3}>
+                <Typography color="primary" variant="body2">
+                  Username:
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  value={userInfo.username}
+                  name="username"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setEditFormValues((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                    setUserInfo((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                  }}
+                />
+              </Grid>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: 10 }}>
               <Divider />
             </Grid>
             <Grid item xs={12} style={{ paddingTop: 10 }}>
-              <Typography variant="h5" color="primary">
-                Contact Information
-              </Typography>
+              <Typography variant="h6">Contact Information</Typography>
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">Phone Number:</Typography>
+            <Grid
+              item
+              xs={12}
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Grid item xs={3}>
+                <Typography color="primary" variant="body2">
+                  Phone Number:
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  value={userInfo.phone_number}
+                  name="phone_number"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setEditFormValues((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                    setUserInfo((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={9}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                size="small"
-                value={userInfo.phone_number}
-                name="phone_number"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setEditFormValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                  setUserInfo((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                }}
-              />
+            <Grid
+              item
+              xs={12}
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Grid item xs={3}>
+                <Typography color="primary" variant="body2">
+                  Email Address:
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  value={userInfo.email}
+                  name="email"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setEditFormValues((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                    setUserInfo((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">Email Address:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                size="small"
-                value={userInfo.email}
-                name="email"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setEditFormValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                  setUserInfo((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                }}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <Typography variant="h6">Address:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                size="small"
-                value={userInfo.address1}
-                name="address1"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setEditFormValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                  setUserInfo((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                }}
-              />
+            <Grid
+              item
+              xs={12}
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Grid item xs={3}>
+                <Typography color="primary" variant="body2">
+                  Address:
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  value={userInfo.address1}
+                  name="address1"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setEditFormValues((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                    setUserInfo((prevState) => ({
+                      ...prevState,
+                      [e.target.name]: e.target.value,
+                    }))
+                  }}
+                />
+              </Grid>
             </Grid>
           </Grid>
         )}
