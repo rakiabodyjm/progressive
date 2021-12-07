@@ -38,6 +38,7 @@ export type UserResponse = {
   subdistributor?: SubdistributorResponseType
   roles: UserTypes[]
   active: boolean
+  password: string
 }
 
 export type CreateUser = {
