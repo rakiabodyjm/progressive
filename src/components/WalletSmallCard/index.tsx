@@ -27,6 +27,7 @@ import { useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { makeStyles } from '@material-ui/styles'
 import { getWallet, CeasarWalletResponse, createWallet } from '../../utils/api/walletApi'
+import RoleBadge from '../RoleBadge'
 
 const useStyles = makeStyles((theme: Theme) => ({
   cancelButton: {
@@ -93,10 +94,42 @@ export default function WalletSmallCard({
       <Paper variant="outlined" {...restProps} style={{ height: 153 }}>
         <Box p={2}>
           <Grid container>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
               <Typography noWrap variant="h5" style={{}}>
                 Wallet
               </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Box
+                display="flex"
+                height="100%"
+                justifyContent="flex-end"
+                alignItems="flex-start"
+                pt={0.5}
+                whiteSpace="noWrap"
+              >
+                <RoleBadge
+                  style={{
+                    marginRight: 4,
+                  }}
+                  display="inline"
+                  uppercase
+                >
+                  {accountType}
+                </RoleBadge>
+                {/* <Tooltip
+                    arrow
+                    placement="left"
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                    title={<Typography variant="subtitle2">Coming Soon</Typography>}
+                  >
+                    <InfoOutlined color="primary" />
+                  </Tooltip> */}
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
               <Typography variant="subtitle2" color="primary">
                 {toCapsFirst(accountType)} has no wallet
               </Typography>
@@ -167,12 +200,7 @@ export default function WalletSmallCard({
                     <Grid item xs={12} md={12}>
                       <Grid spacing={2} container>
                         <Grid item xs={12} md={6}>
-                          <Button
-                            onClick={handleModalClose}
-                            fullWidth
-                            variant="contained"
-                            className={classes.cancelButton}
-                          >
+                          <Button onClick={handleModalClose} fullWidth variant="contained">
                             Cancel
                           </Button>
                         </Grid>
@@ -241,18 +269,15 @@ export default function WalletSmallCard({
                   pt={0.5}
                   whiteSpace="noWrap"
                 >
-                  <Typography
+                  <RoleBadge
                     style={{
-                      padding: '2px 8px',
-                      border: `1px solid ${theme.palette.primary.main}`,
-                      borderRadius: 4,
+                      marginRight: 4,
                     }}
-                    color="primary"
                     display="inline"
-                    variant="body2"
+                    uppercase
                   >
-                    {data?.account_type.toUpperCase()}
-                  </Typography>
+                    {data?.account_type}
+                  </RoleBadge>
                   {/* <Tooltip
                     arrow
                     placement="left"
