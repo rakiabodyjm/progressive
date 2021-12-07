@@ -352,7 +352,7 @@ export default function CreateDSPAccount({
                 onChange={(value) => {
                   handleChange('user', value?.id || null)
                 }}
-                mutateOptions={(users) => users.filter((ea) => !ea.retailer)}
+                mutateOptions={(users) => users.filter((ea) => !ea.dsp && !ea.retailer)}
               />
               {/* <Typography
                 style={{ display: !validator.isEmpty(newDspAccount.user) ? 'none' : undefined }}

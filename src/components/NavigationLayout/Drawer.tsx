@@ -41,19 +41,22 @@ const menuItems = [
     title: 'Dashboard',
     icon: <Dashboard />,
     url: '/',
+    id: 'dash',
   },
 ]
 
-const subdDspRetailers = [
+const collapseSubdDspRetailers = [
   {
     title: 'Subdistributor',
-    icon: <AccountTree />,
+    icon: <AccountTree style={{ fontSize: 18 }} />,
     url: '/subdistributor/retailer',
+    id: 'collapseSubdRetailers',
   },
   {
     title: 'DSP',
-    icon: <PersonPinCircle />,
+    icon: <PersonPinCircle style={{ fontSize: 18 }} />,
     url: '/dsp/retailer',
+    id: 'collapseDspRetailers',
   },
 ]
 
@@ -62,6 +65,7 @@ const subdDspRetailerItem = [
     title: 'DSPs',
     icon: <PersonPinCircle />,
     url: '/dsp',
+    id: 'subdDsp',
   },
 ]
 
@@ -70,11 +74,13 @@ const subdMenuItems = [
     title: 'DSPs',
     icon: <PersonPinCircle />,
     url: '/dsp',
+    id: 'subdDsp',
   },
   {
     title: 'Retailers',
     icon: <ContactPhone />,
     url: '/subdistributor/retailer',
+    id: 'subdRetailer',
   },
 ]
 const dspOnlyMenuItems = [
@@ -82,6 +88,7 @@ const dspOnlyMenuItems = [
     title: 'Retailers',
     icon: <ContactPhone />,
     url: '/dsp/retailer',
+    id: 'dspRetailer',
   },
 ]
 
@@ -185,13 +192,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   nested: {
-    paddingLeft: theme.spacing(4),
+    paddingLeft: theme.spacing(2.5),
     '& svg': {
       color: theme.palette.primary.main,
       // color: theme.palette.primary.contrastText,
       // color: 'var(--primary-dark)',
     },
   },
+  iconSize: {},
 }))
 type DrawerComponentProps = {
   open: boolean
@@ -245,22 +253,23 @@ export default function DrawerComponent({
   const handleClick = () => setIsToggle(!isToggle)
 
   const subdiDspWithRetailer = () =>
-    subdDspRetailers.map((items) => (
+    collapseSubdDspRetailers.map((items) => (
       <Tooltip
         disableHoverListener={open}
         disableTouchListener={open}
         title={<Typography variant="body1">{items.title}</Typography>}
         placement="right"
         arrow
+        key={items.id}
       >
         <ListItem
           style={{
-            paddingTop: 16,
-            paddingBottom: 16,
+            paddingTop: 5,
+            paddingBottom: 5,
           }}
           className={classes.nested}
           button
-          key={items.title}
+          key={items.id}
           onClick={() => {
             router.push(items.url)
           }}
@@ -289,6 +298,7 @@ export default function DrawerComponent({
         title={<Typography variant="body1">{menuItem.title}</Typography>}
         placement="right"
         arrow
+        key={menuItem.id}
       >
         <ListItem
           style={{
@@ -297,7 +307,7 @@ export default function DrawerComponent({
           }}
           className={classes.drawerItem}
           button
-          key={menuItem.title}
+          key={menuItem.id}
           onClick={() => {
             router.push(menuItem.url)
           }}
@@ -460,7 +470,7 @@ export default function DrawerComponent({
         <List
           style={{
             flexGrow: 1,
-            whiteSpace: 'nowrap',
+            // whiteSpace: 'nowrap',
           }}
         >
           {lowerMenuItems.map((menuItem) => (
@@ -470,6 +480,7 @@ export default function DrawerComponent({
               title={<Typography variant="body1">{menuItem.title}</Typography>}
               placement="right"
               arrow
+              key={menuItem.title}
             >
               <ListItem
                 style={{

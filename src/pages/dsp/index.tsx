@@ -79,7 +79,9 @@ export default function DspPage() {
             {account &&
               account.roles
                 .filter((role) => role === 'subdistributor')
-                .map((filtered) => <RoleBadge>{filtered.toUpperCase()}</RoleBadge>)}
+                .map((filtered) => (
+                  <RoleBadge key={filtered.toString()}>{filtered.toUpperCase()}</RoleBadge>
+                ))}
             <Typography
               style={{
                 fontWeight: 600,
