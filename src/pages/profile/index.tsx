@@ -468,6 +468,7 @@ export default function UserProfile() {
                   variant="outlined"
                   fullWidth
                   size="small"
+                  type="password"
                   name="checkpassword"
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setCheckPassword(e.target.value)
