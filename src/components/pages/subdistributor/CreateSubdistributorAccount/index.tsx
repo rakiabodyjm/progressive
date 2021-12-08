@@ -60,10 +60,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
     name: '',
   })
   const dispatchNotification = useNotification()
-  // const dispatch = useDispatch()
-  // const dispatchNotification = (payload: { message: string; type: NotificationTypes }) => {
-  //   dispatch(setNotification(payload))
-  // }
+
   const [loading, setLoading] = useState<boolean>(false)
   const [areaId, setAreaId] = useState<MapIdResponseType | undefined>()
 
@@ -95,53 +92,50 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
         }))
       }
     })
-    if (validator.isEmpty(subdistributorFields.id_type)) {
-      //
-    } else if (validator.isEmpty(subdistributorFields.id_number)) {
-      //
-    } else if (validator.isEmpty(subdistributorFields.zip_code)) {
-      //
-    } else if (validator.isEmpty(subdistributorFields.e_bind_number)) {
-      //
-    } else {
-      setLoading(true)
-      if (accountToLink && areaId) {
-        createSubdistributor({
-          ...subdistributorFields,
-          user: accountToLink.id,
-          area_id: areaId.area_id,
-        })
-          .then((res) => {
-            dispatchNotification({
-              message: `Subdistributor Account ${res.name} created`,
-              type: NotificationTypes.SUCCESS,
-            })
+
+    setLoading(true)
+    if (accountToLink && areaId) {
+      createSubdistributor({
+        ...subdistributorFields,
+        user: accountToLink.id,
+        area_id: areaId.area_id,
+      })
+        .then((res) => {
+          dispatchNotification({
+            message: `Subdistributor Account ${res.name} created`,
+            type: NotificationTypes.SUCCESS,
           })
-          .catch((err) => {
-            extractMultipleErrorFromResponse(err).forEach((ea) => {
-              dispatchNotification({
-                message: ea,
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-unused-expressions
+          Array.isArray(err)
+            ? err.forEach((ea: string) => {
+                dispatchNotification({
+                  message: ea,
+                  type: NotificationTypes.ERROR,
+                })
+              })
+            : dispatchNotification({
+                message: err.message,
                 type: NotificationTypes.ERROR,
               })
-            })
-          })
-          .finally(() => {
-            setLoading(false)
-          })
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    } else {
+      if (!areaId) {
+        dispatchNotification({
+          message: `Map Id is required`,
+          type: NotificationTypes.ERROR,
+        })
       } else {
-        if (!areaId) {
-          dispatchNotification({
-            message: `Area Id is required`,
-            type: NotificationTypes.ERROR,
-          })
-        } else {
-          dispatchNotification({
-            message: `You must link a User Account first`,
-            type: NotificationTypes.ERROR,
-          })
-        }
-        setLoading(false)
+        dispatchNotification({
+          message: `You must link a User Account first`,
+          type: NotificationTypes.ERROR,
+        })
       }
+      setLoading(false)
     }
   }
 
@@ -214,7 +208,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
               }}
               variant="body2"
             >
-              Map ID of Subdistributor Account
+              Map ID
             </Typography>
             <MapIdAutoComplete
               onChange={(arg) => {
@@ -224,7 +218,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
           </Grid>
           <Grid item xs={6}>
             <Typography className={classes.formLabel} component="label" variant="body2">
-              Full Name
+              Subdistributor Name
             </Typography>
             <TextField
               placeholder="eg. Juan Dela Cruz"
@@ -286,7 +280,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
           </Grid>
           <Grid item xs={4}>
             <Typography className={classes.formLabel} component="label" variant="body2">
-              Id Type
+              ID Type
             </Typography>
             <TextField
               placeholder="eg. DRIVERS LICENSE"
@@ -316,7 +310,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
           </Grid>
           <Grid item xs={5}>
             <Typography className={classes.formLabel} component="label" variant="body2">
-              Id Number
+              ID Number
             </Typography>
             <TextField
               placeholder="eg. 5555-5555-5555"
