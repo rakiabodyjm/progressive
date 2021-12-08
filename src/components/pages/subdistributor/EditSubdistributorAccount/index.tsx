@@ -176,7 +176,7 @@ export default function EditSubdistributorAccount({
           />
           <Box>
             <Typography color="primary" component="label" variant="body2">
-              Area ID
+              Map ID
             </Typography>
             <Autocomplete
               /**
