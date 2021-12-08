@@ -36,6 +36,11 @@ const useStyles = makeStyles((theme: Theme) => ({
       width: '100%',
     },
   },
+  gridContainer: {
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column-reverse',
+    },
+  },
 }))
 
 export default function AccountDashboard() {
@@ -138,7 +143,7 @@ export default function AccountDashboard() {
             margin: '16px 0px',
           }}
         />
-        <Grid spacing={2} container>
+        <Grid className={classes.gridContainer} spacing={2} container>
           <Grid item xs={12} md={6}>
             <Grid spacing={2} container>
               <Grid item xs={12}>
