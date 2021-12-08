@@ -31,6 +31,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
 } & Omit<Partial<AutocompleteProps<T, true, undefined, undefined>>, 'onChange'>) {
   const [options, setOptions] = useState<T[]>([])
   const [value, setValue] = useState<T[]>([])
+  const [map, setMap] = useState<T[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [query, setQuery] = useState(initialQuery)
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
@@ -61,9 +62,9 @@ export default function SimpleMultipleAutoComplete<T, U>({
     }, overrideTimeout || 500)
   }, [query, value, overrideTimeout])
 
-  // useEffect(() => {
-  //   onChange(value)
-  // }, [value])
+  useEffect(() => {
+    onChange(value)
+  }, [value])
 
   return (
     <Autocomplete
@@ -74,8 +75,8 @@ export default function SimpleMultipleAutoComplete<T, U>({
         setQuery((prevState) => querySetter(prevState, inputValue))
       }}
       onChange={(_, value) => {
-        setValue((prevState) => [...value])
-        // onChange(value as T)
+        setValue(() => [...value])
+        // onChange(value as unknown as T)
       }}
       value={value}
       //   defaultValue={defaultValue || undefined}

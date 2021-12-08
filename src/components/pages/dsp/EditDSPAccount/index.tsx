@@ -57,7 +57,6 @@ export default function CreateDSPAccount({
   modal?: () => void
   dsp: DspRegisterParams2
 } & PaperProps) {
-  const activeDSPId = dsp.id
   const formValuesRef = useRef({
     ...editableDspFields(dsp),
   })
@@ -71,7 +70,6 @@ export default function CreateDSPAccount({
     e_bind_number: null,
   })
   const classes = useStyles()
-
   const mapID = String(dsp?.area_id)
   const [mapidQuery, setMapidQuery] = useState({
     search: mapID || '',
@@ -83,7 +81,7 @@ export default function CreateDSPAccount({
     /**
      * Get changes based on formValuesRef
      */
-    const keyChanges: string[] = []
+    const keyChanges: (keyof EditDspAccountFormValues)[] = []
 
     Object.keys(formValuesRef.current).forEach((key) => {
       const currentKey = key as keyof EditDspAccountFormValues
@@ -91,6 +89,7 @@ export default function CreateDSPAccount({
       if (typeof formValues[currentKey] === 'object') {
         if (!deepEqual(formValues[currentKey] as any, formValuesRef.current[currentKey] as any)) {
           keyChanges.push(currentKey)
+          console.log(currentKey)
         }
       } else if (formValuesRef.current[currentKey] !== formValues[currentKey]) {
         keyChanges.push(currentKey)
@@ -102,7 +101,6 @@ export default function CreateDSPAccount({
       }),
       {}
     ) as Partial<EditDspAccountFormValues>
-    // return changes
   }, [formValues])
 
   const [mapIdOptions, setMapidOptions] = useState<MapIdResponseType[]>([])
@@ -150,31 +148,33 @@ export default function CreateDSPAccount({
         }))
       }
     })
-    if (dsp.id) {
-      updateDsp(formatUpdateValues(changes), dsp.id)
-        .then((res) => {
-          dispatch(
-            setNotification({
-              type: NotificationTypes.SUCCESS,
-              message: 'DSP Account Updated',
-            })
-          )
-          setErrors({
-            area_id: '',
-            dsp_code: '',
-            e_bind_number: '',
-          })
-          if (modalClose) {
-            modalClose()
-          }
-        })
-        .catch((err) => {
-          dispatch({
-            type: NotificationTypes.ERROR,
-            message: err.message,
-          })
-        })
-    }
+    console.log(formatUpdateValues(changes))
+    console.log(formValues.area_id)
+    // if (dsp.id) {
+    //   updateDsp(formatUpdateValues(changes), dsp.id)
+    //     .then((res) => {
+    //       dispatch(
+    //         setNotification({
+    //           type: NotificationTypes.SUCCESS,
+    //           message: 'DSP Account Updated',
+    //         })
+    //       )
+    //       setErrors({
+    //         area_id: '',
+    //         dsp_code: '',
+    //         e_bind_number: '',
+    //       })
+    //       if (modalClose) {
+    //         modalClose()
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       dispatch({
+    //         type: NotificationTypes.ERROR,
+    //         message: err.message,
+    //       })
+    //     })
+    // }
   }
   return (
     <Paper variant="outlined">
@@ -272,6 +272,7 @@ export default function CreateDSPAccount({
                   Area ID
                 </Typography>
                 <SimpleMultipleAutoComplete
+                  disabled
                   /**
                    * Initial value needed by searchMap async function
                    */
