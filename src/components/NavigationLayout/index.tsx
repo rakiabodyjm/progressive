@@ -43,6 +43,7 @@ export default function NavigationLayout({ children }: { children: JSX.Element }
     <div
       style={{
         display: 'flex',
+        minHeight: '100vh',
       }}
     >
       <Drawer

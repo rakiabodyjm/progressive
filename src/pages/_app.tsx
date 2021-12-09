@@ -85,6 +85,8 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
           dispatch(logoutUser())
         }
       }, 60 * 1000)
+    } else if (authCheckerIntervalRef.current) {
+      clearInterval(authCheckerIntervalRef.current)
     }
     return () => {
       const authChecherInterval = authCheckerIntervalRef.current
@@ -126,6 +128,7 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
           )}
         </SnackbarProvider>
       </ThemeProvider>
+
       {/* </Provider> */}
     </>
   )
