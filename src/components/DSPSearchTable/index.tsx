@@ -28,27 +28,20 @@ export default function DSPSearchTable({ subdistributorId }: { subdistributorId:
     <Box>
       <Paper>
         <Box p={2}>
-          <Paper>
-            <Box p={2}>
-              <FormLabel>Search DSP</FormLabel>
-              <FormTextField
-                name="search-dsp"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  if (timeoutRef.current) {
-                    clearTimeout(timeoutRef.current)
-                  }
-                  timeoutRef.current = setTimeout(() => {
-                    setSearchDspQuery(e.target.value)
-                  }, 1500)
-                }}
-              />
-            </Box>
-          </Paper>
+          <FormLabel>Search DSP</FormLabel>
+          <FormTextField
+            name="search-dsp"
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+              }
+              timeoutRef.current = setTimeout(() => {
+                setSearchDspQuery(e.target.value)
+              }, 1500)
+            }}
+          />
         </Box>
-        <Box my={2}>
-          <Divider />
-        </Box>
-        <Box>
+        <Box p={2}>
           {searchDspQuery === null && setSearchDspQuery(' ')}
           {data && (
             <UsersTable
