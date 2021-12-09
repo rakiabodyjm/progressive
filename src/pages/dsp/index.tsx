@@ -102,7 +102,6 @@ export default function DspPage() {
                 placement="left"
               >
                 <IconButton onClick={setModalOpen('dsp', true)}>
-                  {console.log(addDspAccountModal.dsp)}
                   <AddCircleOutlined />
                 </IconButton>
               </Tooltip>
@@ -137,7 +136,6 @@ export default function DspPage() {
                         DSP Accounts this Subdistributor owns
                       </Typography>
                     </Box>
-
                     <DSPSearchTable subdistributorId={account.subdistributor.id} />
                   </Paper>
                 </Grid>

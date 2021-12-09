@@ -363,35 +363,56 @@ export default function AdminAccountsPage() {
             </IconButton>
           </Tooltip>
         </Box>
-        {!isLoading && users && (
-          <UsersTable
-            onRowClick={(e, rowValue) => {
-              router.push({
-                pathname: '/admin/accounts/[id]',
-                query: {
-                  id: rowValue.user_id,
-                },
-              })
-            }}
-            data={formatSelector(users)}
-            hiddenFields={['id', 'user_id']}
-            limit={paginatedParams.limit}
-            page={paginatedParams.page}
-            total={paginatedParams.total}
-            setLimit={setLimit}
-            setPage={setPage}
-          />
-        )}
-        {isLoading && (
+        <Box mb={2}>
           <Paper variant="outlined">
-            <LoadingScreen
-              style={{
-                height: 480,
-              }}
-            />
+            <Box p={2}>
+              <FormLabel>Search: </FormLabel>
+              <FormTextField
+                name="search-retailer"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current)
+                  }
+                  timeoutRef.current = setTimeout(() => {
+                    setSearchString(e.target.value)
+                  }, 1500)
+                }}
+              />
+            </Box>
+            <Box p={2}>
+              {!isLoading && users && (
+                <UsersTable
+                  onRowClick={(e, rowValue) => {
+                    router.push({
+                      pathname: '/admin/accounts/[id]',
+                      query: {
+                        id: rowValue.user_id,
+                      },
+                    })
+                  }}
+                  data={
+                    searchString.length > 1 ? formatSelector(searchData) : formatSelector(users)
+                  }
+                  hiddenFields={['id', 'user_id']}
+                  limit={paginatedParams.limit}
+                  page={paginatedParams.page}
+                  total={paginatedParams.total}
+                  setLimit={setLimit}
+                  setPage={setPage}
+                />
+              )}
+              {isLoading && (
+                <Paper variant="outlined">
+                  <LoadingScreen
+                    style={{
+                      height: 480,
+                    }}
+                  />
+                </Paper>
+              )}
+            </Box>
           </Paper>
-        )}
-
+        </Box>
         {addAccountModalOpen && (
           <AddAccountModal
             open={addAccountModalOpen}
