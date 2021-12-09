@@ -14,6 +14,10 @@ type SearchRetailerTableProps =
       subdistributorId: string
       dspId?: never
     }
+  | {
+      subdistributorId: string
+      dspId: string
+    }
 
 export default function RetailerSearchTable({ dspId, subdistributorId }: SearchRetailerTableProps) {
   const [searchDspRetailerQuery, setSearchDspRetailerQuery] = useState(' ')
