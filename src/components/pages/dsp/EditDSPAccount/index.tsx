@@ -63,7 +63,9 @@ export default function CreateDSPAccount({
   const [formValues, setFormValues] = useState<EditDspAccountFormValues>({
     ...editableDspFields(dsp),
   })
-
+  const [formValuesMap, setFormValuesMap] = useState<EditDspAccountFormValues>({
+    ...editableDspFields(dsp),
+  })
   const [errors, setErrors] = useState<Record<keyof DspRegisterParams, string | null>>({
     area_id: null,
     dsp_code: null,
@@ -89,7 +91,6 @@ export default function CreateDSPAccount({
       if (typeof formValues[currentKey] === 'object') {
         if (!deepEqual(formValues[currentKey] as any, formValuesRef.current[currentKey] as any)) {
           keyChanges.push(currentKey)
-          console.log(currentKey)
         }
       } else if (formValuesRef.current[currentKey] !== formValues[currentKey]) {
         keyChanges.push(currentKey)
@@ -148,33 +149,31 @@ export default function CreateDSPAccount({
         }))
       }
     })
-    console.log(formatUpdateValues(changes))
-    console.log(formValues.area_id)
-    // if (dsp.id) {
-    //   updateDsp(formatUpdateValues(changes), dsp.id)
-    //     .then((res) => {
-    //       dispatch(
-    //         setNotification({
-    //           type: NotificationTypes.SUCCESS,
-    //           message: 'DSP Account Updated',
-    //         })
-    //       )
-    //       setErrors({
-    //         area_id: '',
-    //         dsp_code: '',
-    //         e_bind_number: '',
-    //       })
-    //       if (modalClose) {
-    //         modalClose()
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       dispatch({
-    //         type: NotificationTypes.ERROR,
-    //         message: err.message,
-    //       })
-    //     })
-    // }
+    if (dsp.id) {
+      updateDsp(changes, dsp.id)
+        .then((res) => {
+          dispatch(
+            setNotification({
+              type: NotificationTypes.SUCCESS,
+              message: 'DSP Account Updated',
+            })
+          )
+          setErrors({
+            area_id: '',
+            dsp_code: '',
+            e_bind_number: '',
+          })
+          if (modalClose) {
+            modalClose()
+          }
+        })
+        .catch((err) => {
+          dispatch({
+            type: NotificationTypes.ERROR,
+            message: err.message,
+          })
+        })
+    }
   }
   return (
     <Paper variant="outlined">
@@ -272,7 +271,6 @@ export default function CreateDSPAccount({
                   Area ID
                 </Typography>
                 <SimpleMultipleAutoComplete
-                  disabled
                   /**
                    * Initial value needed by searchMap async function
                    */

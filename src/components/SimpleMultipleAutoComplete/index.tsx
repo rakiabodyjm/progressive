@@ -58,13 +58,14 @@ export default function SimpleMultipleAutoComplete<T, U>({
         })
         .finally(() => {
           setLoading(false)
+          onChange(value)
         })
     }, overrideTimeout || 500)
   }, [query, value, overrideTimeout])
 
-  useEffect(() => {
-    onChange(value)
-  }, [value])
+  // useEffect(() => {
+  //   onChange(value)
+  // }, [value])
 
   return (
     <Autocomplete
