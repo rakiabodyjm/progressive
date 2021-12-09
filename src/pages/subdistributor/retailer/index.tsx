@@ -24,7 +24,6 @@ import CreateRetailerAccount from '@src/components/pages/retailer/CreateRetailer
 import SubdistributorAccountSummaryCard from '@src/components/SubdistributorAccountSummaryCard'
 import SubdistributorSmallCard from '@src/components/SubdistributorSmallCard'
 import RetailerSearchTable from '@src/components/RetailerSearchTable'
-import SubdiRetailerSearchTable from '@src/components/SubdiRetailerSearchTable'
 
 export default function RetailersPage() {
   const user = useSelector(userDataSelector)
@@ -133,7 +132,7 @@ export default function RetailersPage() {
                         Retailer Accounts this Subdistributor Services
                       </Typography>
                     </Box>
-                    <SubdiRetailerSearchTable subdistributorId={account.subdistributor.id} />
+                    <RetailerSearchTable subdistributorId={account.subdistributor.id} />
                     {/* <RetailerTable subdistributorId={account.subdistributor.id} /> */}
                   </Paper>
                 </Grid>
@@ -142,7 +141,7 @@ export default function RetailersPage() {
           )}
         </Grid>
       </Paper>
-      {account?.subdistributor && account.dsp && addRetailerAccountModal.retailer && (
+      {account?.subdistributor && addRetailerAccountModal.retailer && (
         <ModalContainer
           handleClose={setModalOpen('retailer', false)}
           open={addRetailerAccountModal.retailer}

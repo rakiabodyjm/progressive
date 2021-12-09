@@ -144,7 +144,7 @@ export default function RetailersPage() {
           )}
         </Grid>
       </Paper>
-      {account?.subdistributor && account.dsp && addRetailerAccountModal.retailer && (
+      {account?.dsp && addRetailerAccountModal.retailer && (
         <ModalContainer
           handleClose={setModalOpen('retailer', false)}
           open={addRetailerAccountModal.retailer}
