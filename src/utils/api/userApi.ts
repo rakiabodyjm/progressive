@@ -38,6 +38,7 @@ export type UserResponse = {
   subdistributor?: SubdistributorResponseType
   roles: UserTypes[]
   active: boolean
+  // password: string
 }
 
 export type CreateUser = {
@@ -50,6 +51,12 @@ export type CreateUser = {
   username: string
   password: string
 }
+
+export type UpdateUser = Partial<
+  UserResponse & {
+    password: string
+  }
+>
 
 export type CheckUsername = {
   username: string
@@ -137,7 +144,7 @@ const userApi = {
         return toCapsFirst(param)
     }
   },
-  updateUser(id: string, args: Partial<UserResponse>) {
+  updateUser(id: string, args: UpdateUser) {
     return axios
       .patch(`/user/${id}`, args)
       .then(({ data }: { data: UserResponse }) => data)

@@ -57,6 +57,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
         })
         .finally(() => {
           setLoading(false)
+          onChange(value)
         })
     }, overrideTimeout || 500)
   }, [query, value, overrideTimeout])
@@ -74,8 +75,8 @@ export default function SimpleMultipleAutoComplete<T, U>({
         setQuery((prevState) => querySetter(prevState, inputValue))
       }}
       onChange={(_, value) => {
-        setValue((prevState) => [...value])
-        // onChange(value as T)
+        setValue(() => [...value])
+        // onChange(value as unknown as T)
       }}
       value={value}
       //   defaultValue={defaultValue || undefined}

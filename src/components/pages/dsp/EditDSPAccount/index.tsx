@@ -57,21 +57,21 @@ export default function CreateDSPAccount({
   modal?: () => void
   dsp: DspRegisterParams2
 } & PaperProps) {
-  const activeDSPId = dsp.id
   const formValuesRef = useRef({
     ...editableDspFields(dsp),
   })
   const [formValues, setFormValues] = useState<EditDspAccountFormValues>({
     ...editableDspFields(dsp),
   })
-
+  const [formValuesMap, setFormValuesMap] = useState<EditDspAccountFormValues>({
+    ...editableDspFields(dsp),
+  })
   const [errors, setErrors] = useState<Record<keyof DspRegisterParams, string | null>>({
     area_id: null,
     dsp_code: null,
     e_bind_number: null,
   })
   const classes = useStyles()
-
   const mapID = String(dsp?.area_id)
   const [mapidQuery, setMapidQuery] = useState({
     search: mapID || '',
@@ -83,7 +83,7 @@ export default function CreateDSPAccount({
     /**
      * Get changes based on formValuesRef
      */
-    const keyChanges: string[] = []
+    const keyChanges: (keyof EditDspAccountFormValues)[] = []
 
     Object.keys(formValuesRef.current).forEach((key) => {
       const currentKey = key as keyof EditDspAccountFormValues
@@ -102,7 +102,6 @@ export default function CreateDSPAccount({
       }),
       {}
     ) as Partial<EditDspAccountFormValues>
-    // return changes
   }, [formValues])
 
   const [mapIdOptions, setMapidOptions] = useState<MapIdResponseType[]>([])
@@ -151,7 +150,7 @@ export default function CreateDSPAccount({
       }
     })
     if (dsp.id) {
-      updateDsp(formatUpdateValues(changes), dsp.id)
+      updateDsp(changes, dsp.id)
         .then((res) => {
           dispatch(
             setNotification({
