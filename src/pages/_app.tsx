@@ -1,11 +1,10 @@
 import { CssBaseline, useMediaQuery } from '@material-ui/core'
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Head from 'next/head'
 import theme from '@src/theme'
 import { Provider, useSelector, useDispatch } from 'react-redux'
 import store, { RootState } from '@src/redux/store'
 import { SnackbarProvider } from 'notistack'
-import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import Notification from '@src/components/Notification'
 import { AppProps } from 'next/dist/next-server/lib/router/router'
 import dynamic from 'next/dynamic'
@@ -16,8 +15,11 @@ import { ThemeProvider } from '@material-ui/styles'
 import { ColorSchemeTypes, setColorScheme } from '@src/redux/data/colorSchemeSlice'
 import { useRouter } from 'next/router'
 import useNotification from '@src/utils/hooks/useNotification'
+import { nanoid } from '@reduxjs/toolkit'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
+const LoginExtensionModal = dynamic(() => import(`@src/components/LoginExtensionModal`))
+const ModalWrapper = dynamic(() => import(`@src/components/ModalWrapper`))
 
 /**
  * sets axios defaults
@@ -28,77 +30,90 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
   const { pathname } = router
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)')
   const dispatch = useDispatch()
-  /**
-   * get User on load
-   */
-
-  /**
-   * set  color scheme according to device
-   */
+  const [loginExtensionModalOpen, setLoginExtensionModalOpen] = useState<boolean>(false)
 
   useEffect(() => {
     dispatch(setColorScheme(prefersDark ? ColorSchemeTypes.DARK : ColorSchemeTypes.LIGHT))
   }, [prefersDark])
 
   const user = useSelector((state: RootState) => state.user)
+
   /**
-   * Is in Redux User State
+   * User State exist in redux user state
    */
   const isAuthenticated = useMemo<boolean>(() => !!user?.data.user_id, [user])
 
   /**
-   * Redux User State is expired
+   * Change value of useCallback function
    */
-  const isAuthExpired = useMemo<boolean>(() => {
-    if (isAuthenticated) {
-      if (user!.metadata.exp < Date.now() / 1000) {
+  const [triggerCheckExpiry, setTriggerCheckExpiry] = useState<string>(nanoid())
+
+  const checkLoginExpiryRef = useRef<ReturnType<typeof setInterval> | undefined>()
+
+  useEffect(() => {
+    if (checkLoginExpiryRef.current) {
+      clearInterval(checkLoginExpiryRef.current)
+    }
+    checkLoginExpiryRef.current = setInterval(() => {
+      console.log('checking')
+      if (!loginExtensionModalOpen) {
+        setTriggerCheckExpiry(nanoid())
+      }
+    }, 1000 * 10)
+
+    return () => {
+      if (checkLoginExpiryRef.current) {
+        clearInterval(checkLoginExpiryRef.current)
+      }
+    }
+  }, [loginExtensionModalOpen])
+
+  const checkAuthExpired = useCallback(() => {
+    if (user) {
+      if (user.metadata.exp < Date.now() / 1000) {
         return true
       }
       return false
     }
     return true
-  }, [isAuthenticated, user])
-
-  const dispatchNotif = useNotification()
-  const authCheckerIntervalRef = useRef<ReturnType<typeof setTimeout> | undefined>()
-
-  useEffect(() => {
-    if (isAuthenticated && isAuthExpired) {
-      dispatchNotif({
-        type: NotificationTypes.WARNING,
-        message: 'User Session is expired, please login again',
-      })
-      dispatch(logoutUser())
-    } else {
-      dispatch(getUser())
-    }
-  }, [isAuthenticated, isAuthExpired])
-
-  useEffect(() => {
-    if (user) {
-      authCheckerIntervalRef.current = setInterval(() => {
-        if (user!.metadata.exp < Date.now() / 1000) {
-          dispatchNotif({
-            type: NotificationTypes.WARNING,
-            message: 'User Session is expired, please login again',
-          })
-          dispatch(logoutUser())
-        }
-      }, 60 * 1000)
-    } else if (authCheckerIntervalRef.current) {
-      clearInterval(authCheckerIntervalRef.current)
-    }
-    return () => {
-      const authChecherInterval = authCheckerIntervalRef.current
-      if (authChecherInterval) {
-        clearInterval(authChecherInterval)
-      }
-    }
-  }, [user])
+  }, [user, triggerCheckExpiry])
 
   const colorScheme = useSelector(
     (state: RootState) => state.colorScheme === ColorSchemeTypes.DARK || false
   )
+
+  useEffect(() => {
+    // get user data
+    if (user) {
+      dispatch(getUser())
+    }
+  }, [])
+
+  useEffect(() => {
+    if (checkAuthExpired()) {
+      if (isAuthenticated) {
+        // Show relogin modal
+        setLoginExtensionModalOpen(true)
+      }
+    }
+  }, [checkAuthExpired, isAuthenticated])
+
+  // useEffect(() => {
+  //   window.triggerExpiration = () => {
+  //     if (user) {
+  //       dispatch(
+  //         setUser({
+  //           ...user,
+  //           metadata: {
+  //             ...user.metadata,
+  //             exp: Date.now() / 1000,
+  //           },
+  //         })
+  //       )
+  //       dispatch(getUser())
+  //     }
+  //   }
+  // }, [dispatch, getUser, setUser])
 
   return (
     <>
@@ -125,6 +140,25 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
             </NavigationLayout>
           ) : (
             <Login />
+          )}
+          {loginExtensionModalOpen && isAuthenticated && (
+            <ModalWrapper
+              onClose={() => {
+                // setLoginExtensionModalOpen(false)
+              }}
+              containerSize="xs"
+              open={loginExtensionModalOpen}
+            >
+              <LoginExtensionModal
+                logout={() => {
+                  dispatch(logoutUser())
+                  setLoginExtensionModalOpen(false)
+                }}
+                close={() => {
+                  setLoginExtensionModalOpen(false)
+                }}
+              />
+            </ModalWrapper>
           )}
         </SnackbarProvider>
       </ThemeProvider>

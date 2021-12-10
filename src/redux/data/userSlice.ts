@@ -67,6 +67,12 @@ export const loginUserThunk = createAsyncThunk(
 export const logoutUser = createAsyncThunk('user/logoutUser', (_, thunkApi) => {
   userApi.logoutUser()
   thunkApi.dispatch(removeUser())
+  thunkApi.dispatch(
+    setNotification({
+      message: `You've been logged out`,
+      type: NotificationTypes.INFO,
+    })
+  )
 })
 
 export const getUser = createAsyncThunk(

@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-export default function AdminLogin() {
+export default function AdminLogin({ reloginFunction }: { reloginFunction?: () => any }) {
   const classes = useStyles()
   const dispatch = useDispatch<AppDispatch>()
 
@@ -84,8 +84,14 @@ export default function AdminLogin() {
               type: NotificationTypes.SUCCESS,
             })
           )
+          if (reloginFunction) {
+            reloginFunction()
+          }
         }
         return res
+      })
+      .then(() => {
+        dispatch(getUser())
       })
 
       .catch((err) => {
@@ -136,6 +142,9 @@ export default function AdminLogin() {
         style={{
           height: 64,
           background: theme.palette.secondary.main,
+          ...(reloginFunction && {
+            visibility: 'hidden',
+          }),
           // background: 'var(--secondary-main)',
         }}
       >
@@ -158,7 +167,8 @@ export default function AdminLogin() {
             }}
             onClick={(e) => {
               e.preventDefault()
-              router.push('/')
+              // router.push('/')
+              // reloginFunction()
             }}
           >
             <Image src={companyLogo} alt="REALM1000 DITO" layout="fill" objectFit="contain" />
