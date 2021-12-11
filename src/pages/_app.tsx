@@ -6,7 +6,6 @@ import { Provider, useSelector, useDispatch } from 'react-redux'
 import store, { RootState } from '@src/redux/store'
 import { SnackbarProvider } from 'notistack'
 import Notification from '@src/components/Notification'
-import { AppProps } from 'next/dist/next-server/lib/router/router'
 import dynamic from 'next/dynamic'
 import NavigationLayout from '@src/components/NavigationLayout'
 import axiosDefaults from '@src/utils/lib/axiosDefaults'
@@ -16,6 +15,7 @@ import { ColorSchemeTypes, setColorScheme } from '@src/redux/data/colorSchemeSli
 import { useRouter } from 'next/router'
 import useNotification from '@src/utils/hooks/useNotification'
 import { nanoid } from '@reduxjs/toolkit'
+import { AppProps } from 'next/dist/shared/lib/router/router'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
 const LoginExtensionModal = dynamic(() => import(`@src/components/LoginExtensionModal`))

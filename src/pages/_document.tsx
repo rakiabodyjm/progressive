@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-document-import-in-page */
 import React from 'react'
 import Document, { Main, NextScript, Html, Head, DocumentContext } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/styles'
