@@ -1,6 +1,16 @@
 {
-  "name": "realm1000-admin",
-  "version": "1.1.0-a.1",
+  "name": "realm1000-dito-frontend",
+  "description": "REALM1000 Telco Project NextJS Frontend",
+  "author": {
+    "name": "Janeo Miguel Tiongson",
+    "email": "rakiabodyjm@gmail.com",
+    "url": "https://github.com/rakiabodyjm"
+  },
+  "contributors": [
+    "Jake Durante",
+    "Jerome Gapasin"
+  ],
+  "version": "1.1.0-alpha",
   "private": true,
   "scripts": {
     "dev": "next dev -- -p 2006",
