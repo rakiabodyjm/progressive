@@ -31,7 +31,8 @@
     "src/pages/_document.js",
     "tests/counts.test.js",
     "jest.config.js",
-    "server.js"
+    "server.js",
+    "ecosystem.config.js"
   ],
   "exclude": ["node_modules"]
 }

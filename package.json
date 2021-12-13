@@ -1,6 +1,6 @@
 {
   "name": "realm1000-admin",
-  "version": "0.1.0",
+  "version": "1.1.0-a.1",
   "private": true,
   "scripts": {
     "dev": "next dev -- -p 2006",
@@ -8,9 +8,10 @@
     "start": "next start -- -p 2006",
     "test": "jest",
     "lint": "next lint",
-    "dev:server": "nodemon server.js",
+    "dev:server": "cross-env NODE_ENV=development nodemon server.js",
     "start:server": "cross-env NODE_ENV=production node server.js",
-    "start:build:server": "npm run build && npm run start:server"
+    "start:build:server": "npm run build && npm run start:server",
+    "start:pm2": "npm run build && pm2 delete all && pm2 start --env production"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.12.1",
