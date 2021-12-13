@@ -9,7 +9,8 @@
     "test": "jest",
     "lint": "next lint",
     "dev:server": "nodemon server.js",
-    "start:server": "next build && $env:NODE_ENV=production node server.js"
+    "start:server": "set NODE_ENV=production && node server.js",
+    "start:build:server": "npm run build && npm run start:server"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.12.1",
@@ -24,6 +25,7 @@
     "cli-boxes": "^3.0.0",
     "clsx": "^1.1.1",
     "deep-equal": "^2.0.5",
+    "dotenv": "^10.0.0",
     "fs": "^0.0.1-security",
     "gsap": "^3.7.0",
     "next": "^11.0.1",

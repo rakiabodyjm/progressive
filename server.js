@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')
@@ -43,6 +44,8 @@ ${`${chalk.greenBright('Ready on PORT: ')}${chalk.yellow(port)}`}
 
 
 ${chalk.greenBright('BACKEND_HOSTNAME: ') + chalk.yellow(process.env.BACKEND_HOSTNAME)}
+${chalk.greenBright('NODE_ENV: ') + chalk.yellow(process.env.NODE_ENV)}
+
 
 ${bottomBorder}
 `)
