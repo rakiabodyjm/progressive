@@ -9,7 +9,7 @@
     "test": "jest",
     "lint": "next lint",
     "dev:server": "nodemon server.js",
-    "start:server": "next build && NODE_ENV=production node server.js"
+    "start:server": "next build && $env:NODE_ENV=production node server.js"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.12.1",
