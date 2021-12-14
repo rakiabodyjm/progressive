@@ -2,7 +2,7 @@
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { Asset } from '@src/utils/api/assetApi'
 import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { CeasarWalletResponse } from '@src/utils/api/walletApi'
+import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { EntityWithMessage } from '../types/EntityMessage'
@@ -11,13 +11,13 @@ export interface Inventory {
   id: string
   quantity: number
   asset: Asset
-  ceasar: CeasarWalletResponse
+  caesar: CaesarWalletResponse
 }
 
 export interface CreateInventory {
   quantity: number
   asset: string
-  // ceasar: string
+  // caesar: string
 }
 
 export type UpdateInventory = {

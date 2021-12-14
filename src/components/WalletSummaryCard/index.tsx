@@ -77,7 +77,7 @@ export default memo(
                       {ceasarAmount || 0}
                     </span>
                     <Typography component="span" variant="body1" noWrap>
-                      Ceasar Coins
+                      Caesar Coins
                     </Typography>
                   </Typography>
                 </Grid>

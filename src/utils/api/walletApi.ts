@@ -19,7 +19,7 @@ interface ExternalCeasar {
   ceasar_coin: number
 }
 
-export interface CeasarWalletResponse {
+export interface CaesarWalletResponse {
   id: string
 
   account_type: UserRoles
@@ -35,9 +35,9 @@ export interface CeasarWalletResponse {
   updated_at: Date
 }
 
-export function createWallet(param: Record<UserTypes, string>): Promise<CeasarWalletResponse> {
+export function createWallet(param: Record<UserTypes, string>): Promise<CaesarWalletResponse> {
   return axios
-    .post('/ceasar', {
+    .post('/caesar', {
       ...param,
     })
     .then((res) => res.data)
@@ -46,24 +46,24 @@ export function createWallet(param: Record<UserTypes, string>): Promise<CeasarWa
     })
 }
 
-export function getWalletById(id: string): Promise<CeasarWalletResponse> {
+export function getWalletById(id: string): Promise<CaesarWalletResponse> {
   return axios
-    .get(`/ceasar/${id}`)
+    .get(`/caesar/${id}`)
     .then((res) => res.data)
     .catch((err) => {
       throw extractMultipleErrorFromResponse(err)
     })
 }
 
-export function getWallet<T = string>(...arg: T[]): Promise<CeasarWalletResponse>
-export function getWallet<T = Record<UserTypes, string>>(params: T): Promise<CeasarWalletResponse>
+export function getWallet<T = string>(...arg: T[]): Promise<CaesarWalletResponse>
+export function getWallet<T = Record<UserTypes, string>>(params: T): Promise<CaesarWalletResponse>
 export function getWallet(
   params: Record<UserTypes, string>,
   value?: string
-): Promise<CeasarWalletResponse> {
+): Promise<CaesarWalletResponse> {
   if (typeof params === 'string') {
     return axios
-      .get('/ceasar/account', {
+      .get('/caesar/account', {
         params: {
           [params]: value,
         },
@@ -74,7 +74,7 @@ export function getWallet(
       })
   }
   return axios
-    .get('/ceasar/account', {
+    .get('/caesar/account', {
       params,
     })
     .then((res) => res.data)

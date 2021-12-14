@@ -26,7 +26,7 @@ import { useState } from 'react'
 
 import useSWR, { useSWRConfig } from 'swr'
 import { makeStyles } from '@material-ui/styles'
-import { getWallet, CeasarWalletResponse, createWallet } from '../../utils/api/walletApi'
+import { getWallet, CaesarWalletResponse, createWallet } from '../../utils/api/walletApi'
 import RoleBadge from '../RoleBadge'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -40,8 +40,8 @@ export default function WalletSmallCard({
   accountId,
   ...restProps
 }: { accountType: UserTypes; accountId: string } & PaperProps) {
-  const { data, error, isValidating } = useSWR<CeasarWalletResponse>(
-    [accountType, accountId, 'ceasar-wallet'],
+  const { data, error, isValidating } = useSWR<CaesarWalletResponse>(
+    [accountType, accountId, 'caesar-wallet'],
     getWallet,
     {
       revalidateOnFocus: false,
@@ -60,7 +60,7 @@ export default function WalletSmallCard({
     createWallet({ [accountType]: accountId } as Record<UserTypes, string>)
       .then((res) => {
         console.log('wallet created', res)
-        dispatchSuccess(`Ceasar Wallet Created`)
+        dispatchSuccess(`Caesar Wallet Created`)
       })
       .catch((err: string[]) => {
         console.log('error', err)
@@ -68,7 +68,7 @@ export default function WalletSmallCard({
       })
       .finally(() => {
         setWalletCreating(false)
-        mutate([accountType, accountId, 'ceasar-wallet'])
+        mutate([accountType, accountId, 'caesar-wallet'])
       })
   }
   const theme = useTheme()
@@ -179,7 +179,7 @@ export default function WalletSmallCard({
                           onChange={handleCheckbox}
                         />
                       }
-                      label="Yes, I want to create my Ceasar Wallet"
+                      label="Yes, I want to create my Caesar Wallet"
                     />
                     <FormControlLabel
                       control={
@@ -190,7 +190,7 @@ export default function WalletSmallCard({
                           onChange={handleCheckbox}
                         />
                       }
-                      label="Yes, I agree to REALM1000 and Ceasar Coins Terms and Conditions"
+                      label="Yes, I agree to REALM1000 and Caesar Coins Terms and Conditions"
                     />
                   </FormGroup>
                   <Box pb={2} pt={2}>
@@ -256,7 +256,7 @@ export default function WalletSmallCard({
                     {data.data?.ceasar_coin || 0}
                   </span>
                   <Typography component="span" variant="body1" noWrap>
-                    Ceasar Coins
+                    Caesar Coins
                   </Typography>
                 </Typography>
               </Grid>

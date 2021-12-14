@@ -29,7 +29,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Asset, searchAsset } from '@src/utils/api/assetApi'
 import { useSelector } from 'react-redux'
 import { userDataSelector } from '@src/redux/data/userSlice'
-import { CeasarWalletResponse, getWallet } from '@src/utils/api/walletApi'
+import { CaesarWalletResponse, getWallet } from '@src/utils/api/walletApi'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -49,7 +49,7 @@ export default function CreateInventory({
   const classes = useStyles()
   const [inventory, setInventory] = useState<CreateInventoryPost>({
     asset: '',
-    // ceasar: '',
+    // caesar: '',
     quantity: 0,
   })
 

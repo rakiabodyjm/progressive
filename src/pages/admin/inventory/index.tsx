@@ -16,7 +16,7 @@ import UsersTable from '@src/components/UsersTable'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { Asset } from '@src/utils/api/assetApi'
 import { getAllInventory, Inventory } from '@src/utils/api/inventoryApi'
-import { CeasarWalletResponse } from '@src/utils/api/walletApi'
+import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import { PaginateFetchParameters, Paginated } from '@src/utils/types/PaginatedEntity'
 import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -179,7 +179,7 @@ export default function AdminInventoryManagement() {
   )
 }
 
-const formatInventory = ({ id, asset, quantity, ceasar }: Inventory) => ({
+const formatInventory = ({ id, asset, quantity, caesar }: Inventory) => ({
   id,
   asset: asset.name,
   code: asset.code,
