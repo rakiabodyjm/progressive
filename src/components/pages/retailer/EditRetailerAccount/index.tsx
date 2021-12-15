@@ -32,7 +32,6 @@ import useNotification from '@src/utils/hooks/useNotification'
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import validator from 'validator'
 import { useDispatch } from 'react-redux'
-import { extractErrorFromResponse } from '@src/utils/api/common'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
