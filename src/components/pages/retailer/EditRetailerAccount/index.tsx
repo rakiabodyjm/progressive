@@ -15,7 +15,7 @@ import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import { Autocomplete } from '@material-ui/lab'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
-import { NotificationTypes } from '@src/redux/data/notificationSlice'
+import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import {
   CreateRetailer,
@@ -160,10 +160,12 @@ export default function EditRetailerAccount({
 
     updateRetailer(retailerProps.id, changes)
       .then((res) => {
-        dispatch({
-          type: NotificationTypes.SUCCESS,
-          message: `Retailer Updated`,
-        })
+        dispatch(
+          setNotification({
+            type: NotificationTypes.SUCCESS,
+            message: 'Retailer Account Updated',
+          })
+        )
         // close and Trigger rerender
         if (modalClose) {
           modalClose()
