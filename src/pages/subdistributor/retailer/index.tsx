@@ -147,7 +147,6 @@ export default function RetailersPage() {
           open={addRetailerAccountModal.retailer}
         >
           <CreateRetailerAccount
-            dspId={account.dsp?.id as string}
             subdistributorId={account.subdistributor.id as string}
             modal={setModalOpen('retailer', false)}
           />
