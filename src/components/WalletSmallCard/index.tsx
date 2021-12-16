@@ -26,6 +26,7 @@ import { useState } from 'react'
 
 import useSWR, { useSWRConfig } from 'swr'
 import { makeStyles } from '@material-ui/styles'
+import dynamic from 'next/dynamic'
 import { getWallet, CaesarWalletResponse, createWallet } from '../../utils/api/walletApi'
 import RoleBadge from '../RoleBadge'
 
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.error.main,
   },
 }))
-
+const ModalWrapper = dynamic(() => import(`@components/ModalWrapper`))
 export default function WalletSmallCard({
   accountType,
   accountId,
@@ -148,27 +149,21 @@ export default function WalletSmallCard({
                 </Button>
               )}
             </Grid>
-            <Modal
+            <ModalWrapper
               open={modalOpen}
               onClose={() => {
                 setModalOpen(false)
               }}
-              closeAfterTransition
-              BackdropComponent={Backdrop}
-              BackdropProps={{
-                timeout: 500,
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              containerSize="xs"
             >
               <Paper variant="outlined">
                 <Box p={2}>
                   <Typography color="primary" variant="h6">
                     Are You Sure?
                   </Typography>
+                  <Box my={2}>
+                    <Divider />
+                  </Box>
                   <FormGroup>
                     <FormControlLabel
                       control={
@@ -220,7 +215,7 @@ export default function WalletSmallCard({
                   </Grid>
                 </Box>
               </Paper>
-            </Modal>
+            </ModalWrapper>
           </Grid>
         </Box>
       </Paper>
