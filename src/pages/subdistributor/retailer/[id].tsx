@@ -87,7 +87,7 @@ export default function RetailerAccountView() {
             onClose={() => {
               setModalOpen(false)
             }}
-            containerSize="xs"
+            containerSize="sm"
           >
             <EditRetailerAccount retailer={retailer} />
           </ModalWrapper>

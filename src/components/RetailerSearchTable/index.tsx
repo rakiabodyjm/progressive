@@ -1,4 +1,5 @@
 import { Box, Divider, Paper } from '@material-ui/core'
+import router from 'next/router'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
@@ -80,6 +81,14 @@ export default function RetailerSearchTable({ dspId, subdistributorId }: SearchR
                     limit,
                   }))
                 }}
+                onRowClick={(e, rowValue) => {
+                  router.push({
+                    pathname: '/dsp/retailer/[id]',
+                    query: {
+                      id: rowValue.retailer_id,
+                    },
+                  })
+                }}
                 setPage={(page: number) => {
                   setMetadata((prevState) => ({
                     ...prevState,
@@ -98,6 +107,14 @@ export default function RetailerSearchTable({ dspId, subdistributorId }: SearchR
                     ...prevState,
                     limit,
                   }))
+                }}
+                onRowClick={(e, rowValue) => {
+                  router.push({
+                    pathname: '/subdistributor/retailer/[id]',
+                    query: {
+                      id: rowValue.retailer_id,
+                    },
+                  })
                 }}
                 setPage={(page: number) => {
                   setMetadata((prevState) => ({

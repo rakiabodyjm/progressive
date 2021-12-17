@@ -88,7 +88,7 @@ export default function DSPAccountView() {
             onClose={() => {
               setModalOpen(false)
             }}
-            containerSize="xs"
+            containerSize="sm"
           >
             <EditDSPAccount dsp={dsp} />
           </ModalWrapper>
