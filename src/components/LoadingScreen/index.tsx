@@ -26,6 +26,7 @@ interface LoadingScreenTypes {
   style?: CSSProperties
   textColor?: string
   loadedBy?: string
+  hiddenText?: true
 }
 
 export default function LoadingScreen({
@@ -35,6 +36,7 @@ export default function LoadingScreen({
   variant,
   style,
   textColor,
+  hiddenText,
   ...restProps
 }: LoadingScreenTypes & BoxProps) {
   const theme = useTheme()
@@ -58,6 +60,7 @@ export default function LoadingScreen({
           width: 'max-content',
           fontWeight: 600,
           color: textColor || 'currentColor',
+          display: hiddenText && 'none',
         }}
         variant={variant}
       >

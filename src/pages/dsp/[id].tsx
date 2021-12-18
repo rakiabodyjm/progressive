@@ -12,6 +12,7 @@ import useSWR from 'swr'
 import dynamic from 'next/dynamic'
 import EditDSPAccount from '@src/components/pages/dsp/EditDSPAccount'
 import RetailerSearchTable from '@src/components/RetailerSearchTable'
+import LoadingScreen from '@src/components/LoadingScreen'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -55,7 +56,7 @@ export default function DSPAccountView() {
   const classes = useStyles()
   return (
     <div className={classes.root}>
-      {dsp && (
+      {dsp ? (
         <>
           <Box
             style={{
@@ -144,10 +145,8 @@ export default function DSPAccountView() {
                 <UserAccountSummaryCard account={dsp.user} />
               </Grid>
 
-              <Grid container item xs={12} md={6}>
-                <Grid item xs={12} lg={6}>
-                  <DSPAccountSummaryCard dsp={dsp} />
-                </Grid>
+              <Grid item xs={12} md={6}>
+                <DSPAccountSummaryCard dsp={dsp} />
               </Grid>
               <Grid item xs={12}>
                 <Paper variant="outlined">
@@ -167,6 +166,8 @@ export default function DSPAccountView() {
             </Grid>
           </Paper>
         </>
+      ) : (
+        <LoadingScreen hiddenText />
       )}
     </div>
   )

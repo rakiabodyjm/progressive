@@ -11,6 +11,7 @@ import RoleBadge from '@src/components/RoleBadge'
 import useSWR from 'swr'
 import dynamic from 'next/dynamic'
 import EditRetailerAccount from '@src/components/pages/retailer/EditRetailerAccount'
+import LoadingScreen from '@src/components/LoadingScreen'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -44,7 +45,7 @@ export default function RetailerAccountView() {
   const { data: retailer, error } = useSWR([id], getRetailer)
 
   const classes = useStyles()
-  return (
+  return retailer ? (
     <div className={classes.root}>
       <Box
         style={{
@@ -134,5 +135,7 @@ export default function RetailerAccountView() {
         </Grid>
       </Paper>
     </div>
+  ) : (
+    <LoadingScreen hiddenText />
   )
 }
