@@ -177,20 +177,23 @@ export default function AccountDashboard() {
                     ...(account && {
                       user: account.id,
                     }),
-                    ...(account?.dsp && { dsp: account.dsp.id as string }),
+                    ...(account?.dsp && { dsp: account.dsp.id }),
                     ...(account?.subdistributor && {
-                      subdistributor: account.subdistributor.id as string,
+                      subdistributor: account.subdistributor.id,
+                    }),
+                    ...(account?.retailer && {
+                      retailer: account.retailer.id,
                     }),
                   }}
                 />
               </Grid>
               {account?.id && (
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard accountType="user" accountId={account.id} />
                 </Grid>
               )}
               {account?.subdistributor && (
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard
                     accountId={account.subdistributor.id}
                     accountType="subdistributor"
@@ -198,12 +201,12 @@ export default function AccountDashboard() {
                 </Grid>
               )}
               {account?.dsp && (
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
                 </Grid>
               )}
               {account?.retailer && (
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
                 </Grid>
               )}
@@ -217,17 +220,17 @@ export default function AccountDashboard() {
               <Grid item xs={12}>
                 <Grid container spacing={2}>
                   {account?.dsp && (
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12} sm={6} md={12} lg={6}>
                       <DSPSmallCard dspId={account.dsp.id} />
                     </Grid>
                   )}
                   {account?.subdistributor && (
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12} sm={6} md={12} lg={6}>
                       <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
                     </Grid>
                   )}
                   {account?.retailer && (
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12} sm={6} md={12} lg={6}>
                       <RetailerSmallCard retailerId={account.retailer.id} />
                     </Grid>
                   )}
