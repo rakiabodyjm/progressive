@@ -2,6 +2,7 @@ import { Box, Divider, Paper } from '@material-ui/core'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import { DspResponseType, searchDsp } from '@src/utils/api/dspApi'
+import router from 'next/router'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import UsersTable from '../UsersTable'
 
@@ -54,6 +55,14 @@ export default function DSPSearchTable({ subdistributorId }: { subdistributorId:
                   ...prevState,
                   limit,
                 }))
+              }}
+              onRowClick={(e, rowValue) => {
+                router.push({
+                  pathname: '/dsp/[id]',
+                  query: {
+                    id: rowValue.dsp_id,
+                  },
+                })
               }}
               setPage={(page: number) => {
                 setMetadata((prevState) => ({
