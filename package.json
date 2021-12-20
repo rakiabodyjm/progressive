@@ -38,6 +38,7 @@
     "cross-env": "^7.0.3",
     "deep-equal": "^2.0.5",
     "dotenv": "^10.0.0",
+    "formik": "^2.2.9",
     "fs": "^0.0.1-security",
     "gsap": "^3.7.0",
     "next": "^11.0.1",
@@ -51,7 +52,8 @@
     "react-use": "^17.2.4",
     "reselect": "^4.0.0",
     "swr": "^1.0.1",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
