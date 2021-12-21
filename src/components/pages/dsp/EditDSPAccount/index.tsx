@@ -27,6 +27,9 @@ import validator from 'validator'
 import deepEqual from '@src/utils/deepEqual'
 import { useDispatch } from 'react-redux'
 import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComplete'
+import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
+import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
+import { SubdistributorResponseType, searchSubdistributor } from '@src/utils/api/subdistributorApi'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
@@ -40,13 +43,18 @@ interface EditDspAccountFormValues {
   e_bind_number: string
   dsp_code: string
   area_id: any
+  subdistributor: any
 }
-const editableDspFields: (
-  args: DspRegisterParams | DspRegisterParams2
-) => EditDspAccountFormValues = ({ area_id, dsp_code, e_bind_number }) => ({
+const editableDspFields: (args: DspRegisterParams2) => EditDspAccountFormValues = ({
   area_id,
   dsp_code,
   e_bind_number,
+  subdistributor,
+}) => ({
+  area_id,
+  dsp_code,
+  e_bind_number,
+  subdistributor,
 })
 
 export default function CreateDSPAccount({
@@ -78,11 +86,22 @@ export default function CreateDSPAccount({
     page: 0,
     limit: 100,
   })
+  const handleChange = (e: unknown, value?: string | string[] | undefined) => {
+    if (typeof e !== 'string') {
+      const eTarget = e as ChangeEvent<HTMLInputElement>
+      setFormValues((prevState) => ({
+        ...prevState,
+        [eTarget.target.name]: eTarget.target.value,
+      }))
+    } else {
+      setFormValues((prevState) => ({
+        ...prevState,
+        [e as keyof DspUpdateType]: value,
+      }))
+    }
+  }
 
   const changes = useMemo(() => {
-    /**
-     * Get changes based on formValuesRef
-     */
     const keyChanges: (keyof EditDspAccountFormValues)[] = []
 
     Object.keys(formValuesRef.current).forEach((key) => {
@@ -220,12 +239,7 @@ export default function CreateDSPAccount({
               <TextField
                 variant="outlined"
                 name="dsp_code"
-                onChange={(e) => {
-                  setFormValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                }}
+                onChange={handleChange}
                 fullWidth
                 size="small"
                 value={formValues.dsp_code}
@@ -254,12 +268,7 @@ export default function CreateDSPAccount({
               <TextField
                 variant="outlined"
                 name="e_bind_number"
-                onChange={(e) => {
-                  setFormValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: e.target.value,
-                  }))
-                }}
+                onChange={handleChange}
                 fullWidth
                 size="small"
                 value={formValues.e_bind_number}
@@ -271,44 +280,39 @@ export default function CreateDSPAccount({
                   Area ID
                 </Typography>
                 <SimpleMultipleAutoComplete
-                  /**
-                   * Initial value needed by searchMap async function
-                   */
                   initialQuery={{ limit: 100, page: 0, search: '' } as SearchMap}
-                  /**
-                   * searchMap async function with the initialQuery as 'q'
-                   */
                   fetcher={(q) => searchMap(q).then((res) => res)}
-                  /**
-                   * onChange event of AutoComplete
-                   */
                   onChange={(areaIds: MapIdResponseType[]) => {
                     setFormValues((prevState) => ({
                       ...prevState,
                       area_id: areaIds.map((ea) => ea.area_id),
                     }))
                   }}
-                  /**
-                   * This is how options are previewed as selections
-                   */
                   getOptionLabel={(option) => `${option.area_name}, ${option.parent_name}`}
-                  /**
-                   * This is how options are previewed as selected
-                   */
                   tagLabel={(option) => `${option.area_name}`}
-                  /**
-                   * setting the query parameter according to keyboard onChange event
-                   */
                   querySetter={(previousQuery, keryboardEvent) => ({
                     ...previousQuery,
                     search: keryboardEvent,
                   })}
-                  /**
-                   * equality test for AutoComplete to know which options are selected
-                   */
                   getOptionSelected={(value1, value2) => value1.area_id === value2.area_id}
                 />
               </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography className={classes.formLabel} component="label" variant="body2">
+                Subdistributor
+              </Typography>
+              <SimpleAutoComplete<SubdistributorResponseType, string>
+                initialQuery=""
+                fetcher={(q) => searchSubdistributor(q || ' ')}
+                getOptionLabel={(option) => option.name}
+                getOptionSelected={(val1, val2) => val1.id === val2.id}
+                querySetter={(arg, inputValue) => inputValue}
+                onChange={(value) => {
+                  handleChange('subdistributor', value?.id || undefined)
+                }}
+                defaultValue={formValues.subdistributor || undefined}
+              />
             </Grid>
           </Grid>
         </Box>
@@ -329,9 +333,6 @@ export default function CreateDSPAccount({
     </Paper>
   )
 }
-
-const formatUpdateValues = (args: Partial<EditDspAccountFormValues>): Partial<DspUpdateType> =>
-  ({
-    ...args,
-    ...(args?.area_id && { area_id: args.area_id.area_id }),
-  } as Partial<DspUpdateType>)
+function useFetchEntity(arg0: string, subdistributorId: any): { entity: any; loading: any } {
+  throw new Error('Function not implemented.')
+}

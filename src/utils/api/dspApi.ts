@@ -38,9 +38,10 @@ export interface DspUpdateType {
   dsp_code: string
   e_bind_number: string
   area_id: MapIdResponseType['area_id'][]
+  subdistributor: string
 }
 export interface DspRegisterParams extends Omit<CreateDspAccount, 'subdistributor' | 'user'> {}
-export interface DspRegisterParams2 extends Omit<DspResponseType, 'subdistributor' | 'user'> {}
+export interface DspRegisterParams2 extends Omit<DspResponseType, 'user'> {}
 export const getDsp = (id: string): Promise<DspResponseType> =>
   axios
     .get(`/dsp/${id}`)
