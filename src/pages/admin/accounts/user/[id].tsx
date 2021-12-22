@@ -1,8 +1,9 @@
 import EditUserAccount from '@src/components/pages/user/EditUserAccount'
-import { userDataSelector } from '@src/redux/data/userSlice'
-import { useSelector } from 'react-redux'
+import { useRouter } from 'next/router'
 
 export default function AdminUserManage() {
-  const user = useSelector(userDataSelector)
-  return <EditUserAccount adminId={user?.admin_id} />
+  const router = useRouter()
+  const { query } = router
+  const { id } = query
+  return <EditUserAccount adminId={id as string} />
 }

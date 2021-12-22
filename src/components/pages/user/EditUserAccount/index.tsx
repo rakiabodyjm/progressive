@@ -60,8 +60,8 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
   const [editPopUpMenuOpen, setEditPopUpMenuOpen] = useState<boolean>(false)
   const editPopUpMenuRef = useRef<HTMLElement | null>(null)
   useEffect(() => {
-    if (user?.user_id) {
-      getUser(user?.user_id)
+    if (adminId) {
+      getUser(adminId as string)
         .then((res) => {
           setUserInfo(editableFields({ ...res, password: '' }))
         })
@@ -73,19 +73,34 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
             })
           )
         })
-    } else if (id) {
-      getUser(id as string)
-        .then((res) => {
-          setUserInfo(editableFields({ ...res, password: '' }))
-        })
-        .catch((err) => {
-          dispatch(
-            setNotification({
-              type: NotificationTypes.ERROR,
-              message: userApi.extractError(err),
-            })
-          )
-        })
+    } else if (!adminId) {
+      if (user?.user_id) {
+        getUser(user?.user_id)
+          .then((res) => {
+            setUserInfo(editableFields({ ...res, password: '' }))
+          })
+          .catch((err) => {
+            dispatch(
+              setNotification({
+                type: NotificationTypes.ERROR,
+                message: userApi.extractError(err),
+              })
+            )
+          })
+      } else if (id) {
+        getUser(id as string)
+          .then((res) => {
+            setUserInfo(editableFields({ ...res, password: '' }))
+          })
+          .catch((err) => {
+            dispatch(
+              setNotification({
+                type: NotificationTypes.ERROR,
+                message: userApi.extractError(err),
+              })
+            )
+          })
+      }
     }
   }, [user])
 
