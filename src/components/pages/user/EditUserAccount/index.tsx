@@ -74,7 +74,7 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
           )
         })
     } else if (!adminId) {
-      if (user?.user_id) {
+      if (user?.user_id && !id) {
         getUser(user?.user_id)
           .then((res) => {
             setUserInfo(editableFields({ ...res, password: '' }))
