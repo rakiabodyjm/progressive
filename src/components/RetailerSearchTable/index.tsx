@@ -10,17 +10,24 @@ type SearchRetailerTableProps =
   | {
       dspId: string
       subdistributorId?: never
+      role?: string
     }
   | {
       subdistributorId: string
       dspId?: never
+      role?: string
     }
   | {
       subdistributorId: string
       dspId: string
+      role?: string
     }
 
-export default function RetailerSearchTable({ dspId, subdistributorId }: SearchRetailerTableProps) {
+export default function RetailerSearchTable({
+  dspId,
+  subdistributorId,
+  role,
+}: SearchRetailerTableProps) {
   const [searchDspRetailerQuery, setSearchDspRetailerQuery] = useState(' ')
   const [data, setData] = useState<RetailerResponseType[]>()
   const [metadata, setMetadata] = useState({
@@ -69,7 +76,7 @@ export default function RetailerSearchTable({ dspId, subdistributorId }: SearchR
         <Box p={2}>
           {searchDspRetailerQuery === null && setSearchDspRetailerQuery(' ')}
           {data &&
-            (dspId && subdistributorId ? (
+            (role === 'dsp' || role === null ? (
               <UsersTable
                 data={formatRetailersForDsp(data)}
                 limit={metadata.limit}

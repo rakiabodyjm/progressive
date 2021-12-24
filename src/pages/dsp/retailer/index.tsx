@@ -62,6 +62,12 @@ export default function RetailersPage() {
     }
   }, [dispatch, user])
 
+  const [userRole, setUserRole] = useState<string>()
+
+  useEffect(() => {
+    user?.roles.filter((role) => role === 'dsp').map((filtered) => setUserRole(filtered))
+  }, [user?.roles])
+
   return (
     <div>
       <Paper
@@ -135,6 +141,7 @@ export default function RetailersPage() {
                     <RetailerSearchTable
                       dspId={account.dsp.id}
                       subdistributorId={account.dsp.subdistributor.id}
+                      role={userRole}
                     />
                     {/* <RetailerTable dspId={account.dsp.id} /> */}
                   </Paper>
