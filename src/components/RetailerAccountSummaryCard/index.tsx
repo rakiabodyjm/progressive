@@ -128,7 +128,12 @@ const retailerFieldsFull = ({
     value: subdistributor?.name || '',
   },
 ]
-const retailerFieldsSimple = ({ id, e_bind_number, store_name }: RetailerResponseType) => [
+const retailerFieldsSimple = ({
+  id,
+  e_bind_number,
+  store_name,
+  subdistributor,
+}: RetailerResponseType) => [
   {
     key: 'Retailer ID',
     value: id,
@@ -140,5 +145,9 @@ const retailerFieldsSimple = ({ id, e_bind_number, store_name }: RetailerRespons
   {
     key: `Store Name`,
     value: store_name,
+  },
+  {
+    key: 'Subdistributor',
+    value: subdistributor?.name || '',
   },
 ]
