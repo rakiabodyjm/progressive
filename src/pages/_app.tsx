@@ -16,6 +16,7 @@ import { useRouter } from 'next/router'
 import useNotification from '@src/utils/hooks/useNotification'
 import { nanoid } from '@reduxjs/toolkit'
 import { AppProps } from 'next/dist/shared/lib/router/router'
+import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
 const LoginExtensionModal = dynamic(() => import(`@src/components/LoginExtensionModal`))
@@ -140,6 +141,7 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
             </NavigationLayout>
           ) : (
             <Login />
+            // <Registration />
           )}
           {loginExtensionModalOpen && isAuthenticated && (
             <ModalWrapper
