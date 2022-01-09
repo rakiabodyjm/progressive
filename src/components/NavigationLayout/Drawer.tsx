@@ -27,6 +27,7 @@ import {
   ExpandLess,
   ExpandMore,
   ListAlt,
+  AllInbox,
 } from '@material-ui/icons'
 import { logoutUser, User, userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -116,8 +117,13 @@ const adminLowerMenuItems = [
 
   {
     title: 'Inventory',
-    icon: <ListAlt />,
+    icon: <AllInbox />,
     url: '/admin/inventory',
+  },
+  {
+    title: 'Transactions',
+    icon: <ListAlt />,
+    url: '/admin/transactions',
   },
 ]
 
@@ -487,6 +493,7 @@ export default function DrawerComponent({
                 onClick={() => {
                   router.push(menuItem.url)
                 }}
+                href={menuItem.url}
               >
                 <ListItemIcon>{menuItem.icon}</ListItemIcon>
                 <ListItemText>
