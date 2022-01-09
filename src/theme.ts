@@ -34,7 +34,7 @@ const theme = (additionalProps: CustomThemeProperties): Theme => {
         main: '#0F254C',
       },
       error: {
-        main: red.A700,
+        main: red.A400,
       },
     },
     typography: {
