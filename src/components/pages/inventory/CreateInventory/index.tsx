@@ -1,9 +1,6 @@
 /* eslint-disable no-redeclare */
 import {
   Box,
-  Button,
-  ButtonBaseTypeMap,
-  ButtonProps,
   CircularProgress,
   Divider,
   Grid,
@@ -22,14 +19,28 @@ import FormTextField from '@src/components/FormTextField'
 import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
 
 import {
-  adminAcquireInventory,
+  createInventory,
   CreateInventory as CreateInventoryPost,
 } from '@src/utils/api/inventoryApi'
-import { useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { Asset, searchAsset } from '@src/utils/api/assetApi'
 import { useSelector } from 'react-redux'
 import { userDataSelector } from '@src/redux/data/userSlice'
-import { CaesarWalletResponse, getWallet } from '@src/utils/api/walletApi'
+import {
+  getWalletById,
+  CaesarWalletResponse,
+  getWallet,
+  searchWallet,
+  SearchWalletParams,
+} from '@src/utils/api/walletApi'
+import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
+import { useRouter } from 'next/router'
+import { grey } from '@material-ui/core/colors'
+import useSWR from 'swr'
+import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import AsyncButton from '@src/components/AsyncButton'
+import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
+import { searchUser, UserResponse } from '@src/utils/api/userApi'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -42,34 +53,43 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function CreateInventory({
   modal,
   revalidateFunction,
+  caesarId,
 }: {
   modal?: () => void
   revalidateFunction?: () => void
+  caesarId?: string
 }) {
-  const classes = useStyles()
-  const [inventory, setInventory] = useState<CreateInventoryPost>({
-    asset: '',
-    // caesar: '',
-    quantity: 0,
+  const setButtonLoading = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      loading: typeof param !== 'boolean' ? true : param,
+    }))
+  }
+
+  const setButtonDisabled = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      disabled: typeof param !== 'boolean' ? true : param,
+    }))
+  }
+  const [inventory, setInventory] = useState<Partial<CreateInventoryPost>>({
+    asset: undefined,
+    caesar: caesarId || undefined,
+    quantity: undefined,
   })
 
-  const [assetChoices, setAssetChoices] = useState<Asset[] | undefined>()
   const [assetQuery, setAssetQuery] = useState('')
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>()
+  const {
+    data: assetChoices,
+    isValidating: assetChoicesLoading,
+    error,
+  } = useSWR([assetQuery, 'search-asset'], searchAsset)
+
   useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
+    if (error) {
+      dispatchError(error.message)
     }
-    timeoutRef.current = setTimeout(() => {
-      searchAsset(assetQuery)
-        .then((res) => {
-          setAssetChoices(res)
-        })
-        .catch((err) => {
-          console.error(err)
-        })
-    }, 500)
-  }, [assetQuery])
+  }, [error])
 
   const user = useSelector(userDataSelector)
 
@@ -88,9 +108,9 @@ export default function CreateInventory({
 
   const handleSubmit = () => {
     setButtonLoading()
-    adminAcquireInventory(inventory)
+    createInventory(inventory as Required<CreateInventoryPost>)
       .then((res) => {
-        dispatchSuccess('Inventory for ADMIN Added')
+        dispatchSuccess(`Created Inventory for ${res.caesar.description}`)
         if (revalidateFunction) {
           revalidateFunction()
         }
@@ -105,32 +125,22 @@ export default function CreateInventory({
       })
   }
 
-  const setButtonLoading = (param?: false) => {
-    setButtonProps((prevState) => ({
-      ...prevState,
-      loading: typeof param !== 'boolean' ? true : param,
-    }))
-  }
-
-  const setButtonDisabled = (param?: false) => {
-    setButtonProps((prevState) => ({
-      ...prevState,
-      disabled: typeof param !== 'boolean' ? true : param,
-    }))
-  }
-
   useEffect(() => {
-    if (!selectedAsset) {
+    if (!selectedAsset || !inventory.quantity || !inventory.caesar) {
       setButtonDisabled()
     } else {
       setButtonDisabled(false)
-
-      setInventory((prevState) => ({
-        ...prevState,
-        asset: selectedAsset.id,
-      }))
     }
+  }, [selectedAsset, inventory])
+
+  useEffect(() => {
+    setInventory((prevState) => ({
+      ...prevState,
+      asset: selectedAsset?.id || undefined,
+    }))
   }, [selectedAsset])
+
+  const { data: caesarLoaded } = useSWR(inventory.caesar || caesarId || null, getWalletById)
 
   return (
     <Paper>
@@ -138,10 +148,10 @@ export default function CreateInventory({
         <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography variant="h6" color="primary">
-              Add New Inventory to Admin
+              Add New Inventory
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Add Inventory Items to Admin to be sold to SUBD | DSP | RETAILER
+              Add Inventory Items to this account to be sold to SUBD | DSP | RETAILER
             </Typography>
           </Box>
           <Box>
@@ -165,69 +175,143 @@ export default function CreateInventory({
         </Box>
         <Box>
           <Grid container spacing={1}>
+            <Grid item xs={6}>
+              <Paper
+                style={{
+                  height: '100%',
+                }}
+                variant="outlined"
+              >
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                  height="100%"
+                  p={1}
+                >
+                  <Box>
+                    <FormLabel variant="body2">Search:</FormLabel>
+                    <FormTextField
+                      name="searchQuery"
+                      onChange={(e) => {
+                        setAssetQuery(e.target.value)
+                      }}
+                      placeholder="Search Assets"
+                    />
+                  </Box>
+
+                  <Paper
+                    style={{
+                      maxHeight: 257,
+                      flexGrow: 1,
+                      overflowY: 'auto',
+                      margin: `${theme.spacing(1)}px 0`,
+                    }}
+                    variant="outlined"
+                  >
+                    {assetChoices &&
+                      !assetChoicesLoading &&
+                      [...assetChoices].map((ea, index) => (
+                        <ListItem
+                          style={{
+                            overflow: 'hidden',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            ...(ea.id === selectedAsset?.id && {
+                              background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                            }),
+                          }}
+                          // eslint-disable-next-line react/no-array-index-key
+                          key={`${ea.id} ${index}`}
+                          button
+                          onClick={() => {
+                            setSelectedAsset(ea)
+                          }}
+                        >
+                          <Typography
+                            style={{
+                              fontWeight: 600,
+                            }}
+                            noWrap
+                            color="primary"
+                          >
+                            {ea.code}
+                          </Typography>
+                          <Typography variant="caption">{ea.name}</Typography>
+                        </ListItem>
+                      ))}
+                    {assetChoicesLoading && (
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        height="100%"
+                        justifyContent="center"
+                        alignItems="center"
+                      >
+                        <Box mb={2} />
+                        <CircularProgress size={48} thickness={4} />
+                      </Box>
+                    )}
+                  </Paper>
+
+                  <Box pb={1}>
+                    <FormLabel variant="body2">Caesar Account:</FormLabel>
+                    {/**
+                     * Only render if caesarId is present on router query and caesar
+                     * is loaded based on that caesarId
+                     *
+                     * or if there's no need for caesarId
+                     */}
+                    {((caesarLoaded && caesarId) || !caesarId) && (
+                      <SimpleAutoComplete<CaesarWalletResponse, SearchWalletParams>
+                        initialQuery={{
+                          page: 0,
+                          limit: 100,
+                          searchQuery: '',
+                        }}
+                        onChange={(e) => {
+                          setInventory((prevState) => ({
+                            ...prevState,
+                            caesar: e?.id ?? undefined,
+                          }))
+                        }}
+                        fetcher={(query) =>
+                          searchWallet(query)
+                            .then((res) => res.data)
+                            .catch((err) => {
+                              console.log('Caesar Account Search Error: ', err)
+                              return []
+                            })
+                        }
+                        querySetter={(initialQuery, inputValue) => ({
+                          ...initialQuery,
+                          searchQuery: inputValue,
+                        })}
+                        getOptionSelected={(arg1, arg2) =>
+                          arg1 && arg2 ? arg1.id === arg2.id : false
+                        }
+                        getOptionLabel={(caesar) => caesar?.description}
+                        defaultValue={caesarLoaded}
+                      />
+                    )}
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
             <Grid
               style={{
-                display: 'flex',
-                flexDirection: 'column',
+                flexGrow: 1,
               }}
               item
               xs={6}
             >
-              <Box>
-                <FormLabel variant="body2">Search:</FormLabel>
-                <FormTextField
-                  name="searchQuery"
-                  onChange={(e) => {
-                    setAssetQuery(e.target.value)
-                  }}
-                  placeholder="Search Assets"
-                />
-              </Box>
-              <Box my={1} />
-              <Box
+              <Paper
                 style={{
-                  flexGrow: 1,
+                  height: '100%',
                 }}
+                variant="outlined"
               >
-                <Paper
-                  style={{
-                    height: 335,
-                    overflowY: 'auto',
-                  }}
-                  variant="outlined"
-                >
-                  {assetChoices &&
-                    assetChoices.map((ea, index) => (
-                      <ListItem
-                        style={{
-                          overflow: 'hidden',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'flex-start',
-                        }}
-                        key={`${ea.id}`}
-                        button
-                        onClick={() => {
-                          setSelectedAsset(ea)
-                        }}
-                      >
-                        <Typography
-                          style={{
-                            fontWeight: 600,
-                          }}
-                          noWrap
-                          color="primary"
-                        >
-                          {ea.code}
-                        </Typography>
-                        <Typography variant="caption">{ea.name}</Typography>
-                      </ListItem>
-                    ))}
-                </Paper>
-              </Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Paper variant="outlined">
                 <Box height="100%" p={2}>
                   <Typography variant="body1" color="primary">
                     Selected Asset
@@ -287,34 +371,33 @@ export default function CreateInventory({
                         {renderNullOrSelect(selectedAsset?.srp_for_user)}
                       </FormLabel>
                     </Grid>
+                    <Grid item xs={12}>
+                      <Divider />
+                    </Grid>
                     <Grid item container xs={12}>
-                      <Grid item xs={12}>
-                        <FormLabel variant="body2">Quantity: </FormLabel>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FormTextField
-                          type="number"
-                          name="quantity"
-                          inputProps={{
-                            min: 1,
-                            step: 0.2,
-                            style: {
-                              paddingTop: 6,
-                              paddingBottom: 6,
-                            },
-                          }}
-                          style={{
-                            marginTop: 4,
-                          }}
-                          fullWidth
-                          onChange={(e) => {
-                            setInventory((prevState) => ({
-                              ...prevState,
-                              quantity: Number(e.target.value),
-                            }))
-                          }}
-                        />
-                      </Grid>
+                      <FormLabel variant="body2">Quantity: </FormLabel>
+                      <FormTextField
+                        type="number"
+                        name="quantity"
+                        inputProps={{
+                          min: 1,
+                          step: 0.2,
+                          // style: {
+                          //   paddingTop: 6,
+                          //   paddingBottom: 6,
+                          // },
+                        }}
+                        style={{
+                          marginTop: 4,
+                        }}
+                        fullWidth
+                        onChange={(e) => {
+                          setInventory((prevState) => ({
+                            ...prevState,
+                            quantity: Number(e.target.value),
+                          }))
+                        }}
+                      />
                     </Grid>
                   </Grid>
                 </Box>
@@ -341,35 +424,13 @@ export default function CreateInventory({
   )
 }
 
-const AsyncButton = ({ loading, disabled, ...restProps }: { loading?: boolean } & ButtonProps) => {
-  const theme = useTheme()
-  return (
-    <Button
-      color="primary"
-      variant="contained"
-      {...(loading && {
-        endIcon: (
-          <CircularProgress
-            style={{
-              height: 16,
-              width: 16,
-              color: theme.palette.getContrastText(theme.palette.primary.main),
-            }}
-            thickness={5}
-          />
-        ),
-      })}
-      disabled={loading || disabled}
-      {...restProps}
-    >
-      {restProps.children}
-    </Button>
-  )
-}
-
 function renderNullOrSelect(arg: string | number | undefined): string | number | JSX.Element {
   if (!arg) {
-    return <i>Select Asset First...</i>
+    return (
+      <Typography component="i" variant="caption" color="textSecondary">
+        Select Asset First...
+      </Typography>
+    )
   }
   return arg
 }
