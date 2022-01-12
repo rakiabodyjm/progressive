@@ -1,4 +1,12 @@
-import { Box, CircularProgress, Paper, PaperProps, Typography, useTheme } from '@material-ui/core'
+import {
+  Box,
+  CircularProgress,
+  Grid,
+  Paper,
+  PaperProps,
+  Typography,
+  useTheme,
+} from '@material-ui/core'
 import SubdistributorsPage from '@src/pages/subdistributor'
 import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
@@ -23,7 +31,7 @@ export default function RetailerSmallCard({
   const theme = useTheme()
 
   return (
-    <Paper {...restProps} variant="outlined" style={{ height: 134 }}>
+    <Paper {...restProps} variant="outlined">
       <Box {...(isValidating && { textAlign: 'center' })} p={2} pt={1}>
         {isValidating ? (
           <CircularProgress size={theme.typography.h3.fontSize} color="primary" />
@@ -35,15 +43,21 @@ export default function RetailerSmallCard({
             <Typography color="primary" variant="subtitle2">
               {data?.store_name}
             </Typography>
-            <div
-              style={{
-                marginBottom: 6,
-              }}
-            />
-            <Typography variant="h6">Subdistributor</Typography>
-            <Typography color="primary" variant="subtitle2">
-              {data?.subdistributor?.name || 'NONE'}
-            </Typography>
+            <Box mb={1} />
+            <Grid container>
+              <Grid item xs={6}>
+                <Typography variant="body1">Subdistributor</Typography>
+                <Typography color="primary" variant="caption">
+                  {data?.subdistributor?.name || 'NONE'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1">Attending DSP</Typography>
+                <Typography color="primary" variant="caption">
+                  {data?.dsp?.dsp_code || 'NONE'}
+                </Typography>
+              </Grid>
+            </Grid>
 
             {/* <Typography variant="h6">DSP: </Typography>
             <Typography
