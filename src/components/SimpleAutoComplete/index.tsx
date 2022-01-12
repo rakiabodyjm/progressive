@@ -18,16 +18,42 @@ export default function SimpleAutoComplete<T, U>({
   overrideTimeout,
   ...restProps
 }: {
+  /**
+   * What to do when value is Changed
+   */
   onChange: (arg: T) => void
+  /**
+   * if selection will be mutated
+   */
   mutateOptions?: (arg: T[]) => T[]
+  /**
+   * Initial query parameters passed into fetcher
+   */
   initialQuery: U
+  /**
+   * How query parameter for fetcher according to inputValue
+   */
   querySetter: (arg: U, inputValue: string) => U
+  /**
+   * Fetcher parameter responsible for populating data into autoComplete
+   */
   fetcher: (arg: U) => Promise<T[]>
+  /**
+   * default set value
+   */
   defaultValue?: T
+  /**
+   * Equality check for multiple values against selected value
+   */
   getOptionSelected: (arg: T, value: T) => boolean
+  /**
+   * Label to be rendered
+   */
   getOptionLabel: (option: T) => string
+  /**
+   * Override timeout milliseconds
+   */
   overrideTimeout?: number
-  // defaultOptions?: T[]
   inputProps?: TextFieldProps
 } & Omit<Partial<AutocompleteProps<T, undefined, undefined, undefined>>, 'onChange'>) {
   const [options, setOptions] = useState<T[]>([])
