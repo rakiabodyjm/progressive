@@ -6,11 +6,8 @@ import {
   Grid,
   Paper,
   PaperProps,
-  Tooltip,
-  Modal,
   Typography,
   useTheme,
-  Backdrop,
   Theme,
   FormGroup,
   FormControlLabel,
@@ -46,26 +43,29 @@ export default function WalletSmallCard({
     getWallet,
     {
       revalidateOnFocus: false,
+      refreshInterval: 30000,
+      dedupingInterval: 30000,
+      errorRetryInterval: 60000,
     }
   )
   const { mutate } = useSWRConfig()
-
-  const classes = useStyles()
 
   const dispatchError = useErrorNotification()
   const dispatchSuccess = useSuccessNotification()
   const [walletCreating, setWalletCreating] = useState<boolean>(false)
   const handleCreateWallet = () => {
     setWalletCreating(true)
-    setModalOpen(false)
+
     createWallet({ [accountType]: accountId } as Record<UserTypes, string>)
       .then((res) => {
         console.log('wallet created', res)
         dispatchSuccess(`Caesar Wallet Created`)
+        setModalOpen(false)
       })
       .catch((err: string[]) => {
-        console.log('error', err)
-        // err.forEach((ea) => dispatchError(ea))
+        err.forEach((ea) => {
+          dispatchError(ea)
+        })
       })
       .finally(() => {
         setWalletCreating(false)
@@ -158,8 +158,11 @@ export default function WalletSmallCard({
             >
               <Paper variant="outlined">
                 <Box p={2}>
-                  <Typography color="primary" variant="h6">
-                    Are You Sure?
+                  <Typography variant="h6">Create Caesar Wallet</Typography>
+                  <Typography variant="body2" color="primary">
+                    Agree to the terms to create and link Caesar Wallet to{' '}
+                    {`${accountType.toUpperCase()} `}
+                    Account
                   </Typography>
                   <Box my={2}>
                     <Divider />
@@ -174,7 +177,11 @@ export default function WalletSmallCard({
                           onChange={handleCheckbox}
                         />
                       }
-                      label="Yes, I want to create my Caesar Wallet"
+                      label={
+                        <Typography variant="body2">
+                          Yes, I want to create my Caesar Wallet
+                        </Typography>
+                      }
                     />
                     <FormControlLabel
                       control={
@@ -185,7 +192,11 @@ export default function WalletSmallCard({
                           onChange={handleCheckbox}
                         />
                       }
-                      label="Yes, I agree to REALM1000 and Caesar Coins Terms and Conditions"
+                      label={
+                        <Typography variant="body2">
+                          Yes, I agree to REALM1000 and Caesar Coins Terms and Conditions
+                        </Typography>
+                      }
                     />
                   </FormGroup>
                   <Box pb={2} pt={2}>
@@ -294,13 +305,13 @@ export default function WalletSmallCard({
             />
             <Grid container>
               <Grid item xs={6}>
-                <Typography variant="h6">Dollar: </Typography>
+                <Typography variant="body1">Dollar: </Typography>
                 <Typography
                   color="primary"
                   style={{
                     fontWeight: 700,
                   }}
-                  variant="subtitle2"
+                  variant="caption"
                 >
                   $0.00
                   {/* {data?.retailer?.length || 0} */}
@@ -308,13 +319,13 @@ export default function WalletSmallCard({
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="h6">Peso: </Typography>
+                <Typography variant="body1">Peso: </Typography>
                 <Typography
                   color="primary"
                   style={{
                     fontWeight: 700,
                   }}
-                  variant="subtitle2"
+                  variant="caption"
                 >
                   ₱0.00
                 </Typography>
