@@ -23,14 +23,14 @@ export default function SimpleMultipleAutoComplete<T, U>({
   initialQuery: U
   querySetter: (arg: U, inputValue: string) => U
   fetcher: (arg: U) => Promise<T[]>
-  defaultValue?: T
+  defaultValue?: T[]
   getOptionSelected: (arg: T, value: T) => boolean
   getOptionLabel: (option: T) => string
   tagLabel: (option: T) => string
   overrideTimeout?: number
 } & Omit<Partial<AutocompleteProps<T, true, undefined, undefined>>, 'onChange'>) {
   const [options, setOptions] = useState<T[]>([])
-  const [value, setValue] = useState<T[]>([])
+  const [value, setValue] = useState<T[]>(defaultValue || [])
   const [loading, setLoading] = useState<boolean>(false)
   const [query, setQuery] = useState(initialQuery)
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
@@ -79,7 +79,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
         // onChange(value as unknown as T)
       }}
       value={value}
-      //   defaultValue={defaultValue || undefined}
+      // defaultValue={defaultValue || undefined}
       getOptionSelected={getOptionSelected}
       getOptionLabel={getOptionLabel}
       renderTags={(tagValue, getTagProps) =>
