@@ -21,6 +21,6 @@ export interface Paginated<T> {
 }
 
 export interface PaginateFetchParameters {
-  page: number
-  limit: number
+  page?: number
+  limit?: number
 }
