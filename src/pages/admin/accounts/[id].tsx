@@ -242,10 +242,8 @@ export default function AdminAccountManage() {
               <Grid item xs={12} md={6}>
                 <AdminAccountSummaryCard admin={{ ...account.admin, user: account }} />
               </Grid>
-              <Grid container item xs={12} md={6} spacing={2}>
-                <Grid item xs={12} lg={6}>
-                  <WalletSmallCard accountId={account.admin.id} accountType="admin" />
-                </Grid>
+              <Grid item xs={12} md={6}>
+                <WalletSmallCard accountId={account.admin.id} accountType="admin" />
               </Grid>
             </Grid>
           </>
