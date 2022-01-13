@@ -60,7 +60,7 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
       if (!loginExtensionModalOpen) {
         setTriggerCheckExpiry(nanoid())
       }
-    }, 1000 * 10)
+    }, 1000 * 30)
 
     return () => {
       if (checkLoginExpiryRef.current) {
@@ -96,6 +96,8 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
         // Show relogin modal
         setLoginExtensionModalOpen(true)
       }
+    } else {
+      setLoginExtensionModalOpen(false)
     }
   }, [checkAuthExpired, isAuthenticated])
 
