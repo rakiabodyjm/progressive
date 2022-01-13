@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Paper, Typography } from '@material-ui/core'
+import { Box, Button, CircularProgress, Divider, Paper, Typography } from '@material-ui/core'
 import ModalWrapper from '@src/components/ModalWrapper'
 import ViewDspAccount from '@src/components/pages/dsp/ViewDSPAccount'
 import CreateRetailerAccount from '@src/components/pages/retailer/CreateRetailerAccount'
@@ -65,14 +65,27 @@ export default function AdminDspManage() {
               </Button>
             ))}
           </Box>
-          {modalsOpen.editDspModal && dsp && (
+          {modalsOpen.editDspModal && (
             <ModalWrapper
               open={modalsOpen.editDspModal}
               onClose={setModalOpen('editDspModal', false)}
               containerSize="sm"
             >
+              {dsp ? (
+                <EditDSPAccount modal={setModalOpen('editDspModal', false)} dsp={dsp} />
+              ) : (
+                <Paper
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    padding: 16,
+                  }}
+                  variant="outlined"
+                >
+                  <CircularProgress />
+                </Paper>
+              )}
               {/** Edit DSP Modal */}
-              <EditDSPAccount modal={setModalOpen('editDspModal', false)} dsp={dsp} />
             </ModalWrapper>
           )}
           {modalsOpen.addRetailerModal && dsp?.subdistributor.id && (
