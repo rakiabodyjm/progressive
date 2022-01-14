@@ -8,25 +8,40 @@ import {
   Paper,
   Tooltip,
   Typography,
+  Menu,
+  FormControlLabel,
+  Checkbox,
+  FormControl,
+  RadioGroup,
+  Radio,
 } from '@material-ui/core'
-import { AddCircleOutlined } from '@material-ui/icons'
+import { AddCircleOutlined, MoreVert } from '@material-ui/icons'
 import ModalWrapper from '@src/components/ModalWrapper'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import { userDataSelector } from '@src/redux/data/userSlice'
-import { Asset } from '@src/utils/api/assetApi'
-import { getAllInventory, Inventory } from '@src/utils/api/inventoryApi'
-import { CaesarWalletResponse } from '@src/utils/api/walletApi'
+import {
+  getAllInventory,
+  GetAllInventoryDto,
+  Inventory,
+  updateInventory,
+} from '@src/utils/api/inventoryApi'
+import { CaesarWalletResponse, getWallet, getWalletById } from '@src/utils/api/walletApi'
 import { PaginateFetchParameters, Paginated } from '@src/utils/types/PaginatedEntity'
-import { useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import dynamic from 'next/dynamic'
-import EditInventory from '@src/components/pages/inventory/EditInventory'
+import { useRouter } from 'next/router'
+import useSWR from 'swr'
+import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import FormLabel from '@src/components/FormLabel'
 
-const CreateInventory = dynamic(() => import(`@src/components/pages/inventory/CreateInventory`))
+const EditInventory = dynamic(() => import('@src/components/pages/inventory/EditInventory'))
+const CreateInventory = dynamic(() => import('@src/components/pages/inventory/CreateInventory'))
 
 export default function AdminInventoryManagement() {
   const user = useSelector(userDataSelector)
+  const router = useRouter()
 
   const [inventoryItems, setInventoryItems] = useState<Inventory[] | undefined>()
   const [inventoryPaginationParameters, setinventoryPaginationParameters] =
@@ -39,22 +54,42 @@ export default function AdminInventoryManagement() {
     Paginated<Inventory>['metadata'] | undefined
   >()
 
-  useEffect(() => {
-    fetchInventory()
-  }, [inventoryPaginationParameters])
-
-  function fetchInventory() {
-    getAllInventory(inventoryPaginationParameters)
+  const [moreOptionsOpen, setMoreOptionsOpen] = useState<boolean>(false)
+  const [inventoryOptions, setInventoryOptions] = useState<
+    Pick<GetAllInventoryDto, 'active' | 'admin'>
+  >({
+    active: undefined,
+    admin: undefined,
+  })
+  const fetchInventory = useCallback(() => {
+    getAllInventory({ ...inventoryPaginationParameters, ...inventoryOptions })
       .then((res) => {
-        setInventoryItems(res.data)
+        // setInventoryItems(res.data)
         setInventoryMetadata(res.metadata)
+        /**
+         * Inject ceasar first
+         */
+        return Promise.all(
+          res.data.map(async (ea) => ({
+            ...ea,
+            caesar: await getWalletById(ea.caesar.id),
+          }))
+        )
+      })
+      .then((res) => {
+        setInventoryItems(res)
       })
       .catch((err) => {
         console.error(err)
       })
-  }
+  }, [inventoryPaginationParameters, inventoryOptions])
+
+  useEffect(() => {
+    fetchInventory()
+  }, [fetchInventory])
 
   const [addInventoryModalOpen, setAddInventoryModalOpen] = useState<boolean>(false)
+
   // const [updateInventoryModalOpen, setUpdateInventoryModalOpen] = useState<boolean>(false)
   const [editInventory, setEditInventory] = useState<{
     open: boolean
@@ -64,10 +99,6 @@ export default function AdminInventoryManagement() {
     inventoryId: null,
   })
 
-  useEffect(() => {
-    console.log('editinventory', editInventory)
-  }, [editInventory])
-
   const setUpdateInventoryModalOpen = (arg: boolean) => {
     setEditInventory((prevState) => ({
       // ...prevState,
@@ -76,18 +107,126 @@ export default function AdminInventoryManagement() {
     }))
   }
   const updateInventoryModalOpen = useMemo(() => editInventory.open, [editInventory])
+
+  const isAdmin = useMemo(() => !!user?.admin_id, [user?.admin_id])
+
+  const { data: caesarWalletOfAdmin } = useSWR(
+    user?.admin_id ? ['admin' as UserTypesAndUser, user?.admin_id] : null,
+    (...parameter) => getWallet(...parameter)
+  )
+
+  const moreAnchorEl = useRef<HTMLElement | undefined>()
+
   return (
     <Container>
       <Paper variant="outlined">
         <Box p={2}>
-          {user?.admin_id && <RoleBadge uppercase>Admin</RoleBadge>}
-          <Typography noWrap color="textSecondary" variant="h6">
-            {user?.first_name}
-          </Typography>
-          <Typography variant="h4">Inventory Management</Typography>
-          <Typography variant="body2" color="primary">
-            Inventory this Admin owns to be sold to Subdistributor | DSP | Retailer
-          </Typography>
+          <Box display="flex" justifyContent="space-between">
+            <Box>
+              {user?.admin_id && <RoleBadge uppercase>Admin</RoleBadge>}
+              <Typography noWrap color="textSecondary" variant="h6">
+                {user?.first_name}
+              </Typography>
+              <Typography variant="h4">Inventory Management</Typography>
+              <Typography variant="body2" color="primary">
+                Inventory this Admin owns to be sold to Subdistributor | DSP | Retailer
+              </Typography>
+            </Box>
+            <Box>
+              <IconButton
+                onClick={() => {
+                  setMoreOptionsOpen(true)
+                }}
+                innerRef={moreAnchorEl}
+              >
+                <MoreVert />
+              </IconButton>
+              <Menu
+                anchorEl={moreAnchorEl.current}
+                open={moreOptionsOpen}
+                onClose={() => {
+                  setMoreOptionsOpen(false)
+                }}
+              >
+                <Box p={1}>
+                  <Typography variant="body1">Inventory View Options</Typography>
+                  <Box pt={1.5}>
+                    <Divider />
+                  </Box>
+                  <Box display="flex" flexDirection="column">
+                    <FormControlLabel
+                      // value="end"
+                      control={
+                        <Checkbox
+                          color="primary"
+                          onChange={(e, checked) => {
+                            setInventoryOptions((prevState) => ({
+                              ...prevState,
+                              admin: checked ? user?.admin_id : undefined,
+                            }))
+                          }}
+                          checked={!!inventoryOptions.admin}
+                        />
+                      }
+                      label={<Typography variant="body2">Show only Owned Inventory</Typography>}
+                      labelPlacement="end"
+                    />
+                    <Divider />
+                    <FormControl
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <FormLabel
+                        style={{
+                          margin: '8px 0',
+                        }}
+                      >
+                        <Typography variant="body1" color="textPrimary">
+                          Show Inventory:
+                        </Typography>
+                      </FormLabel>
+                      <RadioGroup
+                        onChange={(e: ChangeEvent<HTMLInputElement>, value) => {
+                          setInventoryOptions((prevState) => ({
+                            ...prevState,
+                            active: value === 'all' ? undefined : value === 'activeOnly',
+                          }))
+                        }}
+                      >
+                        <FormControlLabel
+                          label={<Typography variant="body2">All</Typography>}
+                          value="all"
+                          control={<Radio color="primary" />}
+                          checked={typeof inventoryOptions.active === 'undefined'}
+                        />
+                        <FormControlLabel
+                          label={<Typography variant="body2">Active Only</Typography>}
+                          value="activeOnly"
+                          control={<Radio color="primary" />}
+                          checked={
+                            typeof inventoryOptions !== 'undefined' &&
+                            inventoryOptions.active === true
+                          }
+                        />
+                        <FormControlLabel
+                          label={<Typography variant="body2">Inactive Only</Typography>}
+                          value="inactiveOnly"
+                          control={<Radio color="primary" />}
+                          checked={
+                            typeof inventoryOptions !== 'undefined' &&
+                            inventoryOptions.active === false
+                          }
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Box>
+                </Box>
+              </Menu>
+            </Box>
+          </Box>
+
           <Box display="flex" justifyContent="flex-end">
             <Tooltip
               arrow
@@ -135,6 +274,11 @@ export default function AdminInventoryManagement() {
                         inventoryId: inventory.id,
                       }))
                     }}
+                    formatRow={{
+                      caesar: 'Caesar Wallet Owner',
+                      asset: 'Asset Name',
+                      name: 'Inventory Name',
+                    }}
                   />
                 )}
               </Box>
@@ -155,6 +299,7 @@ export default function AdminInventoryManagement() {
             revalidateFunction={() => {
               fetchInventory()
             }}
+            caesarId={caesarWalletOfAdmin?.id}
           />
         </ModalWrapper>
         <ModalWrapper
@@ -172,6 +317,9 @@ export default function AdminInventoryManagement() {
               fetchInventory()
             }}
             inventoryId={editInventory.inventoryId!}
+            {...(isAdmin && {
+              isAdmin: true,
+            })}
           />
         </ModalWrapper>
       </Paper>
@@ -179,10 +327,12 @@ export default function AdminInventoryManagement() {
   )
 }
 
-const formatInventory = ({ id, asset, quantity, caesar }: Inventory) => ({
+const formatInventory = ({ id, asset, quantity, caesar, name }: Inventory) => ({
   id,
-  asset: asset.name,
+  account_type: caesar.account_type.toUpperCase(),
+  caesar: caesar.description,
   code: asset.code,
-  description: asset.description,
+  asset: asset.name,
+  name,
   quantity,
 })
