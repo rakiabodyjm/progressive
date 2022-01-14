@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-export default function RetailerAccountView() {
+export default function DSPRetailerAccountView() {
   const router = useRouter()
   const { query } = router
   const { id } = query
