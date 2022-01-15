@@ -1,4 +1,5 @@
 /* eslint-disable no-redeclare */
+import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios, { AxiosError } from 'axios'
@@ -16,6 +17,8 @@ export interface Asset {
   active: boolean
   deleted_at: Date
   updated_at: Date
+  created_at: Date
+  approval?: string
 }
 
 export interface CreateAssetDto {
@@ -27,6 +30,7 @@ export interface CreateAssetDto {
   srp_for_dsp: number
   srp_for_retailer: number
   srp_for_user: number
+  approval?: UserTypesAndUser[]
 }
 
 export interface GetAllAssetDto {
