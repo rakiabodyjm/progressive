@@ -3,6 +3,7 @@ import type { DspResponseType } from '@src/utils/api/dspApi'
 import type { MapIdResponseType } from '@src/utils/api/mapIdApi'
 import type { RetailerResponseType } from '@src/utils/api/retailerApi'
 import type { UserResponse } from '@src/utils/api/userApi'
+import type { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import axios, { AxiosError } from 'axios'
 import { Paginated } from '../types/PaginatedEntity'
 
@@ -27,6 +28,8 @@ export type SubdistributorResponseType = {
   area_id: MapIdResponseType
 
   zip_code: string
+
+  caesar_walelt: CaesarWalletResponse
 }
 
 export interface CreateSubdistributor {
