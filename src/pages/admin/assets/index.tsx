@@ -181,8 +181,8 @@ export default function AdminAssetManagement() {
                   {assets && (
                     <UsersTable
                       data={assets}
-                      limit={paginatedParams.limit}
-                      page={paginatedParams.page}
+                      limit={paginatedParams?.limit || 100}
+                      page={paginatedParams?.page || 0}
                       total={assetMetadata?.total || 0}
                       setLimit={(limit: number) => {
                         setPaginatedParams((prevState) => ({
