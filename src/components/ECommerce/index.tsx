@@ -29,8 +29,6 @@ import { CaesarWalletResponse, getWallet, getWalletById } from '@src/utils/api/w
 import RowView from '@src/components/ECommerce/RowView'
 import type { InventoryNumbers } from '@src/components/ECommerce/RowView'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
-import { getDsp } from '@src/utils/api/dspApi'
-import { getAllAdmin } from '@src/utils/api/adminApi'
 import CreatePurchase from '@src/components/pages/transactions/CreatePurchase'
 import ModalWrapper from '@src/components/ModalWrapper'
 import LoadingScreen from '@src/components/LoadingScreen'
