@@ -22,7 +22,6 @@ export type User = {
   subdistributor_id?: string
   retailer_id?: string
   dsp_id?: string
-
   email: string
   first_name: string
   last_name: string
