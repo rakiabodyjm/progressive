@@ -5,10 +5,10 @@ import { extractErrorFromResponse } from '@src/utils/api/common'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import type { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import jwtDecode from '@src/utils/lib/jwtDecode'
 import type { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios, { AxiosError } from 'axios'
-import { type } from 'os'
 
 export type LoginUserParams = {
   email: string
@@ -38,6 +38,7 @@ export type UserResponse = {
   subdistributor?: SubdistributorResponseType
   roles: UserTypes[]
   active: boolean
+  caesar_wallet: CaesarWalletResponse
 }
 
 export type CreateUser = {
