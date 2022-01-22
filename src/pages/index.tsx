@@ -20,6 +20,7 @@ import { getSubdistributor, SubdistributorResponseType } from '@src/utils/api/su
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import WalletSummaryCard from '@src/components/WalletSummaryCard'
+import ECommerce from '@src/components/ECommerce'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -143,7 +144,12 @@ export default function AccountDashboard() {
             margin: '16px 0px',
           }}
         />
+
         <Grid className={classes.gridContainer} spacing={2} container>
+          <Grid item xs={12}>
+            <ECommerce account={account} />
+          </Grid>
+
           <Grid item xs={12} md={6}>
             <Grid spacing={2} container>
               <Grid item xs={12}>
