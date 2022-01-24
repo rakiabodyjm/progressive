@@ -19,6 +19,7 @@ import { AppProps } from 'next/dist/shared/lib/router/router'
 import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
+const CashTransfer = dynamic(() => import(`@src/pages/cashtransfer`))
 const LoginExtensionModal = dynamic(() => import(`@src/components/LoginExtensionModal`))
 const ModalWrapper = dynamic(() => import(`@src/components/ModalWrapper`))
 
@@ -140,8 +141,9 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
               <Component {...pageProps} />
             </NavigationLayout>
           ) : (
-            <Login />
+            // <Login />
             // <Registration />
+            <CashTransfer />
           )}
           {loginExtensionModalOpen && isAuthenticated && (
             <ModalWrapper
