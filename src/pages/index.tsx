@@ -1,6 +1,6 @@
 /* eslint-disable no-redeclare */
 
-import { Box, Button, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, Button, Divider, Grid, Paper, Tab, Tabs, Theme, Typography } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import DSPSmallCard from '@src/components/DSPSmallCard'
 import RetailerSmallCard from '@src/components/RetailerSmallCard'
@@ -9,7 +9,7 @@ import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
 import WalletSmallCard from '@src/components/WalletSmallCard'
 import userApi, { UserResponse, getUser } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import SubdistributorAccountSummaryCard from '@src/components/SubdistributorAccountSummaryCard'
 import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
@@ -20,6 +20,12 @@ import { getSubdistributor, SubdistributorResponseType } from '@src/utils/api/su
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import WalletSummaryCard from '@src/components/WalletSummaryCard'
+import ECommerce from '@src/components/ECommerce'
+import RoleBadge from '@src/components/RoleBadge'
+import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { getWallet } from '@src/utils/api/walletApi'
+import { TabPanel } from '@material-ui/lab'
+import { getAllInventory, Inventory } from '@src/utils/api/inventoryApi'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -59,6 +65,63 @@ export default function AccountDashboard() {
       [key]: value,
     }))
   }
+  const [caesar, setCaesar] = useState<[UserTypesAndUser, string] | undefined>()
+  const [caesarTypes, setCaesarTypes] = useState<[UserTypesAndUser, string][]>([])
+  useEffect(() => {
+    if (user && user.roles && user?.roles?.length > 0) {
+      /**
+       * verify if caeasar exists for each
+       */
+      const getWallets = () =>
+        Promise.all(
+          [...user.roles]
+            /**
+             * disable users for now
+             */
+            .filter((ea) => ea !== 'user')
+            .map((role) =>
+              getWallet({
+                [role]: user[`${role}_id`],
+              })
+                .then((res) => [res.account_type, res.id] as [UserTypesAndUser, string])
+                .catch((err) => [role, null])
+            )
+        ).then((final) => final.filter((ea) => !!ea[1]) as [UserTypesAndUser, string][])
+
+      getWallets()
+        .then((res) => {
+          setCaesarTypes(res)
+        })
+        .catch((err) => {
+          console.log('No Caesars for', err)
+        })
+    }
+  }, [user])
+
+  useEffect(() => {
+    if (!caesar && caesarTypes.length > 0) {
+      const cacheGet: string | null = window.localStorage.getItem('default_caesar')
+      const cache: [UserTypesAndUser, string] | null = cacheGet ? JSON.parse(cacheGet) : null
+
+      if (cache) {
+        const [caeasrType, caesarId] = cache
+
+        if (caesarTypes.map(([_, accountId]) => accountId).includes(caesarId)) {
+          setCaesar(cache)
+
+          window.localStorage.setItem('default_caesar', JSON.stringify(caesarTypes[0]))
+        } else {
+          window.localStorage.removeItem('default_caesar')
+          setCaesar(caesarTypes[0])
+        }
+      } else {
+        setCaesar(caesarTypes[0])
+        window.localStorage.setItem('default_caesar', JSON.stringify(caesarTypes[0]))
+      }
+    } else if (caesar) {
+      window.localStorage.setItem('default_caesar', JSON.stringify(caesar))
+    }
+  }, [caesar, caesarTypes, user])
 
   useEffect(() => {
     if (user) {
@@ -91,8 +154,84 @@ export default function AccountDashboard() {
   }, [user])
 
   const classes = useStyles()
+
   return (
     <div className={classes.root}>
+      {
+        /**
+         * Currently being used caesar account
+         * (global state)
+         */
+        caesar && (
+          <>
+            <Paper>
+              <Box p={2}>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Typography variant="h4">Acquire Inventory</Typography>
+                    <Typography variant="body1" color="primary">
+                      Acquire inventory through Caesar Account Types
+                    </Typography>
+
+                    <Box my={2}>
+                      <Divider />
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    {caesarTypes && caesarTypes.length > 0 && caesar && (
+                      <>
+                        <Paper>
+                          <Box mt={1}>
+                            <Typography
+                              style={{
+                                fontWeight: 700,
+                              }}
+                              color="textSecondary"
+                              align="center"
+                              variant="body2"
+                            >
+                              ACQUIRE USING CAESAR ACCOUNT:
+                            </Typography>
+                            <Box my={1}>
+                              <Divider />
+                            </Box>
+                          </Box>
+
+                          <Tabs
+                            value={caesar[0]}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            onChange={(_, value) => {
+                              const newValue = caesarTypes.find((ea) => ea[0] === value)
+                              setCaesar(newValue)
+
+                              // setCaesar(value )
+                            }}
+                            centered
+                          >
+                            {caesarTypes.map(([caesarType]) => (
+                              <Tab
+                                key={caesarType}
+                                value={caesarType}
+                                label={caesarType?.toUpperCase()}
+                              />
+                            ))}
+                          </Tabs>
+                        </Paper>
+                        <Box my={2} />
+                        <ECommerce caesarBuyer={caesar} />
+                      </>
+                    )}
+                  </Grid>
+                </Grid>
+              </Box>
+            </Paper>
+            <Box my={2} />
+          </>
+        )
+      }
+
       <Paper
         style={{
           padding: 16,
@@ -143,6 +282,7 @@ export default function AccountDashboard() {
             margin: '16px 0px',
           }}
         />
+
         <Grid className={classes.gridContainer} spacing={2} container>
           <Grid item xs={12} md={6}>
             <Grid spacing={2} container>
@@ -177,20 +317,23 @@ export default function AccountDashboard() {
                     ...(account && {
                       user: account.id,
                     }),
-                    ...(account?.dsp && { dsp: account.dsp.id as string }),
+                    ...(account?.dsp && { dsp: account.dsp.id }),
                     ...(account?.subdistributor && {
-                      subdistributor: account.subdistributor.id as string,
+                      subdistributor: account.subdistributor.id,
+                    }),
+                    ...(account?.retailer && {
+                      retailer: account.retailer.id,
                     }),
                   }}
                 />
               </Grid>
               {account?.id && (
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard accountType="user" accountId={account.id} />
                 </Grid>
               )}
               {account?.subdistributor && (
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard
                     accountId={account.subdistributor.id}
                     accountType="subdistributor"
@@ -198,12 +341,12 @@ export default function AccountDashboard() {
                 </Grid>
               )}
               {account?.dsp && (
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
                 </Grid>
               )}
               {account?.retailer && (
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
                 </Grid>
               )}
@@ -217,17 +360,17 @@ export default function AccountDashboard() {
               <Grid item xs={12}>
                 <Grid container spacing={2}>
                   {account?.dsp && (
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12} sm={6} md={12} lg={6}>
                       <DSPSmallCard dspId={account.dsp.id} />
                     </Grid>
                   )}
                   {account?.subdistributor && (
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12} sm={6} md={12} lg={6}>
                       <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
                     </Grid>
                   )}
                   {account?.retailer && (
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12} sm={6} md={12} lg={6}>
                       <RetailerSmallCard retailerId={account.retailer.id} />
                     </Grid>
                   )}

@@ -1,8 +1,6 @@
 /* eslint-disable no-redeclare */
 import {
   Box,
-  Button,
-  ButtonProps,
   CircularProgress,
   Divider,
   Grid,
@@ -10,12 +8,11 @@ import {
   Paper,
   Theme,
   Typography,
-  useTheme,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
-import FormTextField from '@src/components/FormTextField'
+import FormTextField, { FormTextFieldProps } from '@src/components/FormTextField'
 import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
 
 import {
@@ -24,16 +21,27 @@ import {
   UpdateInventory,
   updateInventory,
 } from '@src/utils/api/inventoryApi'
-import { useEffect, useRef, useState } from 'react'
-import { Asset, searchAsset } from '@src/utils/api/assetApi'
-import { useSelector } from 'react-redux'
-import { userDataSelector } from '@src/redux/data/userSlice'
-import { CaesarWalletResponse, getWallet } from '@src/utils/api/walletApi'
+import {
+  useEffect,
+  useRef,
+  useState,
+  ChangeEvent,
+  useContext,
+  Dispatch,
+  SetStateAction,
+  createContext,
+  Suspense,
+} from 'react'
+import { Asset } from '@src/utils/api/assetApi'
+import { useRouter } from 'next/router'
+import { isNumberString } from 'class-validator'
+import AsyncButton from '@src/components/AsyncButton'
+import AssetDisplay from '@src/components/pages/inventory/EditInventory/AssetDisplay'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
-    '& > *': {
-      marginBottom: theme.spacing(1),
+    '& > .MuiPaper-outlined': {
+      height: '100%',
     },
   },
 }))
@@ -42,15 +50,27 @@ export default function EditInventory({
   inventoryId,
   modal,
   revalidateFunction,
+  isAdmin,
 }: {
   inventoryId: Inventory['id']
   modal?: () => void
   revalidateFunction?: () => void
+  isAdmin?: true
 }) {
-  const [inventory, setInventory] = useState<UpdateInventory>({
+  const classes = useStyles()
+  // const { query } = useRouter()
+  // const { isAdmin } = query
+  const [inventory, setInventory] = useState<Partial<UpdateInventory>>({
     // asset: '',
     // caesar: '',
     quantity: 0,
+    unit_price: 0,
+    description: '',
+    name: '',
+    srp_for_dsp: 0,
+    srp_for_retailer: 0,
+    srp_for_subd: 0,
+    srp_for_user: 0,
   })
 
   const [buttonProps, setButtonProps] = useState<{
@@ -68,9 +88,28 @@ export default function EditInventory({
     if (inventoryId) {
       getInventory(inventoryId)
         .then((res) => {
-          setSelectedAsset(res.asset)
+          const {
+            unit_price,
+            description,
+            name,
+            srp_for_dsp,
+            srp_for_retailer,
+            srp_for_subd,
+            srp_for_user,
+            quantity,
+            asset,
+            caesar,
+          } = res
+          setSelectedAsset(asset)
           setInventory({
-            quantity: res.quantity,
+            unit_price,
+            description,
+            name,
+            srp_for_dsp,
+            srp_for_retailer,
+            srp_for_subd,
+            srp_for_user,
+            quantity,
           })
         })
         .catch((err) => {
@@ -128,18 +167,25 @@ export default function EditInventory({
     }
   }, [selectedAsset])
 
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInventory((prevState) => ({
+      ...prevState,
+      [e.target.name]: isNumberString(e.target.value) ? Number(e.target.value) : e.target.value,
+    }))
+  }
   return (
     <Paper>
       <Box p={2}>
         <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography variant="h6" color="primary">
-              Edit Inventory of this Admin
+              Edit Inventory Item
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Only the quantity field can be edited
+              Modify Inventory Item of this Account
             </Typography>
           </Box>
+
           <Box>
             {modal && (
               <IconButton
@@ -155,159 +201,170 @@ export default function EditInventory({
             )}
           </Box>
         </Box>
-
         <Box my={2}>
           <Divider />
         </Box>
-        <Box>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Paper variant="outlined">
-                <Box height="100%" p={2}>
-                  <Typography variant="body1" color="primary">
-                    Asset
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    Modify Quantity of this selected Inventory
-                  </Typography>
+        {selectedAsset ? <AssetDisplay selectedAsset={selectedAsset} /> : <CircularProgress />}
+        <Box my={1}>
+          <Divider />
+        </Box>
 
-                  <Box my={1}>
-                    <Divider />
-                  </Box>
-
-                  <Grid container spacing={1}>
-                    <Grid item xs={12}>
-                      <FormLabel variant="body2">Name:</FormLabel>
-                      <FormLabel color="inherit" variant="caption">
-                        {renderNullOrSelect(selectedAsset?.name)}
-                      </FormLabel>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <FormLabel variant="body2">Description:</FormLabel>
-                      <FormLabel color="inherit" variant="caption">
-                        {renderNullOrSelect(
-                          selectedAsset?.description &&
-                            `${selectedAsset?.description.slice(0, 95)}...`
-                        )}
-                      </FormLabel>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <FormLabel variant="body2">Unit Price:</FormLabel>
-                      <FormLabel color="inherit" variant="caption">
-                        {renderNullOrSelect(selectedAsset?.unit_price)}
-                      </FormLabel>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <FormLabel variant="body2">SRP Subd:</FormLabel>
-                      <FormLabel color="inherit" variant="caption">
-                        {renderNullOrSelect(selectedAsset?.srp_for_subd)}
-                      </FormLabel>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <FormLabel variant="body2">SRP DSP:</FormLabel>
-                      <FormLabel color="inherit" variant="caption">
-                        {renderNullOrSelect(selectedAsset?.srp_for_dsp)}
-                      </FormLabel>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <FormLabel variant="body2">SRP Retailer:</FormLabel>
-                      <FormLabel color="inherit" variant="caption">
-                        {renderNullOrSelect(selectedAsset?.srp_for_retailer)}
-                      </FormLabel>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <FormLabel variant="body2">SRP User:</FormLabel>
-                      <FormLabel color="inherit" variant="caption">
-                        {renderNullOrSelect(selectedAsset?.srp_for_user)}
-                      </FormLabel>
-                    </Grid>
-                  </Grid>
-                </Box>
-                <Divider />
-                <Box p={2}>
-                  <FormLabel variant="body2">Quantity: </FormLabel>
-                  <FormTextField
-                    type="number"
-                    name="quantity"
-                    inputProps={{
-                      min: 1,
-                      step: 0.2,
-                      style: {
-                        paddingTop: 6,
-                        paddingBottom: 6,
-                      },
-                    }}
-                    style={{
-                      marginTop: 4,
-                    }}
-                    fullWidth
-                    onChange={(e) => {
-                      setInventory((prevState) => ({
-                        ...prevState,
-                        quantity: Number(e.target.value),
-                      }))
-                    }}
-                    value={inventory.quantity}
-                    // defaultValue={inventory.quantity}
-                  />
-                </Box>
-              </Paper>
-            </Grid>
-          </Grid>
-          <Box py={2}>
-            <Divider />
-          </Box>
-          <Box display="flex" justifyContent="flex-end">
-            <AsyncButton
-              onClick={() => {
-                handleSubmit()
+        <Paper variant="outlined">
+          <Box p={2}>
+            <Typography variant="body1" color="primary">
+              Inventory
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              Modify desired name shown to buyers and their pricing
+            </Typography>
+            <Box my={1}>
+              <Divider />
+            </Box>
+            <Grid
+              container
+              style={{
+                alignItems: 'stretch',
               }}
-              loading={buttonProps.loading}
-              disabled={buttonProps.disabled}
+              spacing={1}
             >
-              Confirm
-            </AsyncButton>
+              <Grid item xs={6} className={classes.formContainer}>
+                <Paper variant="outlined">
+                  <Box p={1}>
+                    <Grid container spacing={1}>
+                      {!!isAdmin && (
+                        <>
+                          <Grid container spacing={1}>
+                            <Grid item xs={7}>
+                              <FormLabel variant="body2">Quantity: </FormLabel>
+                              <NumberTextField
+                                onChange={onChange}
+                                name="quantity"
+                                value={inventory.quantity}
+                              />
+                            </Grid>
+                          </Grid>
+                          <Box py={1}>
+                            <Divider />
+                          </Box>
+                        </>
+                      )}
+                      <Grid container spacing={1}>
+                        <Grid item xs={6}>
+                          <FormLabel variant="body2">Unit Price: </FormLabel>
+                          <CustomTextField
+                            onChange={onChange}
+                            name="unit_price"
+                            value={inventory.unit_price}
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={1}>
+                        <Grid item xs={6}>
+                          <FormLabel variant="body2">SRP Subd: </FormLabel>
+                          <NumberTextField
+                            onChange={onChange}
+                            name="srp_for_subd"
+                            value={inventory.srp_for_subd}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <FormLabel variant="body2">SRP DSP: </FormLabel>
+                          <NumberTextField
+                            onChange={onChange}
+                            name="srp_for_dsp"
+                            value={inventory.srp_for_dsp}
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid container spacing={1}>
+                        <Grid item xs={6}>
+                          <FormLabel variant="body2">SRP Retailer: </FormLabel>
+                          <NumberTextField
+                            onChange={onChange}
+                            name="srp_for_retailer"
+                            value={inventory.srp_for_retailer}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <FormLabel variant="body2">SRP User: </FormLabel>
+                          <NumberTextField
+                            onChange={onChange}
+                            name="srp_for_user"
+                            value={inventory.srp_for_user}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Paper>
+              </Grid>
+
+              <Grid className={classes.formContainer} item xs={6}>
+                <Paper variant="outlined">
+                  <Box p={1}>
+                    <Grid item xs={12}>
+                      <FormLabel>Name: </FormLabel>
+                      <CustomTextField name="name" value={inventory.name} onChange={onChange} />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FormLabel>Description: </FormLabel>
+                      <CustomTextField
+                        multiline
+                        name="description"
+                        value={inventory.description}
+                        onChange={onChange}
+                        rows={5}
+                      />
+                    </Grid>
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
           </Box>
+        </Paper>
+        <Box py={2}>
+          <Divider />
+        </Box>
+        <Box display="flex" justifyContent="flex-end">
+          <AsyncButton
+            onClick={() => {
+              handleSubmit()
+            }}
+            loading={buttonProps.loading}
+            disabled={buttonProps.disabled}
+          >
+            Confirm
+          </AsyncButton>
         </Box>
       </Box>
     </Paper>
   )
 }
 
-const AsyncButton = ({
-  loading,
-  disabled,
-  ...restProps
-}: { disabled?: boolean; loading?: boolean } & ButtonProps) => {
-  const theme = useTheme()
-  return (
-    <Button
-      color="primary"
-      variant="contained"
-      {...(loading && {
-        endIcon: (
-          <CircularProgress
-            style={{
-              height: 16,
-              width: 16,
-              color: theme.palette.getContrastText(theme.palette.primary.main),
-            }}
-            thickness={5}
-          />
-        ),
-      })}
-      disabled={loading || disabled}
-      {...restProps}
-    >
-      {restProps.children}
-    </Button>
-  )
-}
+const NumberTextField = ({ ...restProps }: FormTextFieldProps<Partial<UpdateInventory>>) => (
+  <CustomTextField
+    type="number"
+    inputProps={{
+      min: 1,
+      step: 0.2,
+      style: {
+        paddingTop: 6,
+        paddingBottom: 6,
+      },
+    }}
+    fullWidth
+    {...restProps}
+  />
+)
 
-function renderNullOrSelect(arg: string | number | undefined): string | number | JSX.Element {
-  if (!arg) {
-    return <i>Select Asset First...</i>
-  }
-  return arg
-}
+const CustomTextField = ({ ...restProps }: FormTextFieldProps<Partial<UpdateInventory>>) => (
+  <FormTextField
+    inputProps={{
+      style: {
+        paddingTop: 6,
+        paddingBottom: 6,
+      },
+    }}
+    {...restProps}
+  />
+)

@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 const ModalWrapper = dynamic(() => import(`@components/ModalWrapper`))
-export default function DSPAccountView() {
+export default function SubdistributorDSPAccountView() {
   const router = useRouter()
   const { query } = router
   const { id } = query

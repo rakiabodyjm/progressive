@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   paper: {
-    padding: 10,
+    // padding: 10,
     borderRadius: 8,
   },
   inputContainer: {
@@ -64,9 +64,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     transform: 'translateY(45%)',
   },
-  formHeader: {
-    fontWeight: 600,
-  },
+
   buttonMargin: {
     marginTop: 10,
   },
@@ -132,8 +130,11 @@ export default function Registration() {
           <Paper className={classes.paperContainer}>
             <Typography
               variant="h4"
-              color="primary"
-              style={{ fontWeight: 600, textAlign: 'center' }}
+              // color="primary"
+              style={{
+                fontWeight: 600,
+              }}
+              // style={{ fontWeight: 600, textAlign: 'center' }}
             >
               Sign Up
             </Typography>
@@ -201,13 +202,14 @@ export default function Registration() {
                 <Form>
                   <Grid spacing={2} container className={classes.paper}>
                     <Grid item xs={3}>
-                      <Typography className={classes.formHeader} variant="h5">
+                      <Typography variant="h5" color="primary">
                         Personal
                       </Typography>
                     </Grid>
                     <Grid item xs={9}></Grid>
                     <Grid item xs={6}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="first_name"
                         as={TextField}
@@ -222,6 +224,7 @@ export default function Registration() {
                     </Grid>
                     <Grid item xs={6}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="last_name"
                         as={TextField}
@@ -236,6 +239,7 @@ export default function Registration() {
                     </Grid>
                     <Grid item xs={12}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="address1"
                         as={TextField}
@@ -250,6 +254,7 @@ export default function Registration() {
                     </Grid>
                     <Grid item xs={12}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="address2"
                         as={TextField}
@@ -261,13 +266,14 @@ export default function Registration() {
                       <Divider style={{ marginTop: 30, marginBottom: 16 }} />
                     </Grid>
                     <Grid item xs={3}>
-                      <Typography className={classes.formHeader} variant="h5">
+                      <Typography variant="h5" color="primary">
                         Account
                       </Typography>
                     </Grid>
                     <Grid item xs={9}></Grid>
                     <Grid item xs={6}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="username"
                         as={TextField}
@@ -282,6 +288,7 @@ export default function Registration() {
                     </Grid>
                     <Grid item xs={6}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="phone_number"
                         as={TextField}
@@ -296,6 +303,7 @@ export default function Registration() {
                     </Grid>
                     <Grid item xs={6}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="password"
                         as={TextField}
@@ -311,6 +319,7 @@ export default function Registration() {
                     </Grid>
                     <Grid item xs={6}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="confirm_password"
                         as={TextField}
@@ -326,6 +335,7 @@ export default function Registration() {
                     </Grid>
                     <Grid item xs={12}>
                       <Field
+                        size="small"
                         variant="outlined"
                         name="email"
                         as={TextField}
@@ -339,6 +349,10 @@ export default function Registration() {
                       </ErrorMessage>
                     </Grid>
                   </Grid>
+                  <Box my={2}>
+                    <Divider />
+                  </Box>
+
                   <Box
                     display="flex"
                     gridGap={8}
@@ -351,7 +365,7 @@ export default function Registration() {
                       color="primary"
                       disabled={isSubmitting}
                     >
-                      Sign up
+                      Register
                     </Button>
                   </Box>
                 </Form>

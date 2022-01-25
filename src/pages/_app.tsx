@@ -16,6 +16,7 @@ import { useRouter } from 'next/router'
 import useNotification from '@src/utils/hooks/useNotification'
 import { nanoid } from '@reduxjs/toolkit'
 import { AppProps } from 'next/dist/shared/lib/router/router'
+// import { getDefaultCaesar } from '@src/redux/data/currentCaesarSlice'
 import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
@@ -61,7 +62,7 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
       if (!loginExtensionModalOpen) {
         setTriggerCheckExpiry(nanoid())
       }
-    }, 1000 * 10)
+    }, 1000 * 30)
 
     return () => {
       if (checkLoginExpiryRef.current) {
@@ -86,8 +87,10 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
 
   useEffect(() => {
     // get user data
+
     if (user) {
       dispatch(getUser())
+      // dispatch(getDefaultCaesar())
     }
   }, [])
 
@@ -97,6 +100,8 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
         // Show relogin modal
         setLoginExtensionModalOpen(true)
       }
+    } else {
+      setLoginExtensionModalOpen(false)
     }
   }, [checkAuthExpired, isAuthenticated])
 

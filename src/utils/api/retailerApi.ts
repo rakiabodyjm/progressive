@@ -2,6 +2,7 @@ import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import type { UserResponse } from '@src/utils/api/userApi'
+import type { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import axios, { AxiosError } from 'axios'
 
 // Update MapId 09-28 11:03
@@ -14,6 +15,7 @@ export type RetailerResponseType = {
   subdistributor: SubdistributorResponseType
   dsp: DspResponseType
   user: UserResponse
+  caesar_wallet: CaesarWalletResponse
 }
 
 export interface CreateRetailer {

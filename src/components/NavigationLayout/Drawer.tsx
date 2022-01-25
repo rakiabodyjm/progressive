@@ -27,6 +27,7 @@ import {
   ExpandLess,
   ExpandMore,
   ListAlt,
+  AllInbox,
 } from '@material-ui/icons'
 import { logoutUser, User, userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -34,7 +35,7 @@ import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { useMemo, useState } from 'react'
+import { MouseEvent, useMemo, useState } from 'react'
 import RoleBadge from '@src/components/RoleBadge'
 
 const menuItems = [
@@ -116,9 +117,18 @@ const adminLowerMenuItems = [
 
   {
     title: 'Inventory',
-    icon: <ListAlt />,
+    icon: <AllInbox />,
     url: '/admin/inventory',
   },
+  {
+    title: 'Transactions',
+    icon: <ListAlt />,
+    url: '/admin/transactions',
+  },
+  /**
+   * caesar reload
+   * HERE
+   */
 ]
 
 const drawerWidth = 240
@@ -253,79 +263,94 @@ export default function DrawerComponent({
 
   const handleClick = () => setIsToggle(!isToggle)
 
-  const subdiDspWithRetailer = collapseSubdDspRetailers.map((items) => (
-    <Tooltip
-      disableHoverListener={open}
-      disableTouchListener={open}
-      title={<Typography variant="body1">{items.title}</Typography>}
-      placement="right"
-      arrow
-      key={items.id}
-    >
-      <ListItem
-        style={{
-          paddingTop: 5,
-          paddingBottom: 5,
-        }}
-        className={classes.nested}
-        button
-        key={items.id}
-        onClick={() => {
-          router.push(items.url)
-        }}
-      >
-        <ListItemIcon>{items.icon}</ListItemIcon>
-        <ListItemText>
-          <Typography
-            variant="body2"
+  const subdiDspWithRetailer = useMemo(
+    () =>
+      collapseSubdDspRetailers.map((items) => (
+        <Tooltip
+          disableHoverListener={open}
+          disableTouchListener={open}
+          title={<Typography variant="body1">{items.title}</Typography>}
+          placement="right"
+          arrow
+          key={items.id}
+        >
+          <ListItem
             style={{
-              // fontWeight: 600,
-              textTransform: 'capitalize',
+              paddingTop: 5,
+              paddingBottom: 5,
             }}
-          >
-            {items.title}
-          </Typography>
-        </ListItemText>
-      </ListItem>
-    </Tooltip>
-  ))
+            className={classes.nested}
+            button
+            key={items.id}
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+              e.preventDefault()
 
-  const mainMenu = mainMenuItems.map((menuItem) => (
-    <Tooltip
-      disableHoverListener={open}
-      disableTouchListener={open}
-      title={<Typography variant="body1">{menuItem.title}</Typography>}
-      placement="right"
-      arrow
-      key={menuItem.id}
-    >
-      <ListItem
-        style={{
-          paddingTop: 16,
-          paddingBottom: 16,
-        }}
-        className={classes.drawerItem}
-        button
-        key={menuItem.id}
-        onClick={() => {
-          router.push(menuItem.url)
-        }}
-      >
-        <ListItemIcon>{menuItem.icon}</ListItemIcon>
-        <ListItemText>
-          <Typography
-            variant="body1"
-            style={{
-              fontWeight: 600,
-              textTransform: 'capitalize',
+              router.push(items.url)
             }}
+            href={items.url}
+            component="a"
           >
-            {menuItem.title}
-          </Typography>
-        </ListItemText>
-      </ListItem>
-    </Tooltip>
-  ))
+            <ListItemIcon>{items.icon}</ListItemIcon>
+            <ListItemText>
+              <Typography
+                variant="body2"
+                style={{
+                  // fontWeight: 600,
+                  textTransform: 'capitalize',
+                }}
+              >
+                {items.title}
+              </Typography>
+            </ListItemText>
+          </ListItem>
+        </Tooltip>
+      )),
+    [classes.nested, open, router]
+  )
+
+  const mainMenu = useMemo(
+    () =>
+      mainMenuItems.map((menuItem) => (
+        <Tooltip
+          disableHoverListener={open}
+          disableTouchListener={open}
+          title={<Typography variant="body1">{menuItem.title}</Typography>}
+          placement="right"
+          arrow
+          key={menuItem.id}
+        >
+          <ListItem
+            style={{
+              paddingTop: 16,
+              paddingBottom: 16,
+            }}
+            className={classes.drawerItem}
+            button
+            key={menuItem.id}
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+              e.preventDefault()
+              router.push(menuItem.url)
+            }}
+            component="a"
+            href={menuItem.url}
+          >
+            <ListItemIcon>{menuItem.icon}</ListItemIcon>
+            <ListItemText>
+              <Typography
+                variant="body1"
+                style={{
+                  fontWeight: 600,
+                  textTransform: 'capitalize',
+                }}
+              >
+                {menuItem.title}
+              </Typography>
+            </ListItemText>
+          </ListItem>
+        </Tooltip>
+      )),
+    [classes.drawerItem, mainMenuItems, open, router]
+  )
 
   return (
     <Drawer
@@ -484,9 +509,12 @@ export default function DrawerComponent({
                 className={classes.drawerItem}
                 button
                 key={menuItem.title}
-                onClick={() => {
+                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                  e.preventDefault()
                   router.push(menuItem.url)
                 }}
+                href={menuItem.url}
+                component="a"
               >
                 <ListItemIcon>{menuItem.icon}</ListItemIcon>
                 <ListItemText>

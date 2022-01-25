@@ -1,6 +1,15 @@
 /* eslint-disable no-redeclare */
 
-import { Box, Button, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Grid,
+  Paper,
+  Theme,
+  Typography,
+} from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
 import { useRouter } from 'next/router'
@@ -10,8 +19,13 @@ import { getRetailer } from '@src/utils/api/retailerApi'
 import RoleBadge from '@src/components/RoleBadge'
 import useSWR from 'swr'
 import dynamic from 'next/dynamic'
-import EditRetailerAccount from '@src/components/pages/retailer/EditRetailerAccount'
 import LoadingScreen from '@src/components/LoadingScreen'
+
+const EditRetailerAccount = dynamic(
+  () => import(`@src/components/pages/retailer/EditRetailerAccount`)
+)
+
+const ModalWrapper = dynamic(() => import(`@components/ModalWrapper`))
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -29,8 +43,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
 }))
-const ModalWrapper = dynamic(() => import(`@components/ModalWrapper`))
-export default function RetailerAccountView() {
+
+export default function SubdistributorRetailerAccountView() {
   const router = useRouter()
   const { query } = router
   const { id } = query
@@ -90,7 +104,20 @@ export default function RetailerAccountView() {
             }}
             containerSize="sm"
           >
-            <EditRetailerAccount retailer={retailer} />
+            {retailer ? (
+              <EditRetailerAccount retailer={retailer} />
+            ) : (
+              <Paper
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  padding: 16,
+                }}
+                variant="outlined"
+              >
+                <CircularProgress />
+              </Paper>
+            )}
           </ModalWrapper>
         </Paper>
       </Box>
@@ -129,7 +156,20 @@ export default function RetailerAccountView() {
               <UserAccountSummaryCard account={retailer?.user} />
             </Grid>
             <Grid item xs={12} lg={6}>
-              <RetailerAccountSummaryCard retailer={retailer} />
+              {retailer ? (
+                <RetailerAccountSummaryCard retailer={retailer} />
+              ) : (
+                <Paper
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    padding: 16,
+                  }}
+                  variant="outlined"
+                >
+                  <CircularProgress />
+                </Paper>
+              )}
             </Grid>
           </Grid>
         </Grid>

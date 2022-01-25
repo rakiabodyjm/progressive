@@ -1,4 +1,14 @@
-import { Box, Button, Divider, Grid, IconButton, Paper, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  TextField,
+  Theme,
+  Typography,
+} from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
@@ -8,6 +18,8 @@ import validator from 'validator'
 import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
 
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { Autocomplete } from '@material-ui/lab'
+import { toCapsFirst } from '@src/utils/api/common'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -34,8 +46,14 @@ export default function CreateAsset({
     srp_for_subd: 0,
     srp_for_user: 0,
     unit_price: 0,
+    approval: undefined,
   })
 
+  /**
+   *
+   * Won't be handling 'approval'
+   * value from AutoComplete
+   */
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setAsset((prevState) => ({
       ...prevState,
@@ -45,6 +63,9 @@ export default function CreateAsset({
     }))
   }
 
+  useEffect(() => {
+    console.log('asset', asset)
+  }, [asset])
   const dispatchSuccess = useSuccessNotification()
   const dispatchError = useErrorNotification()
 
@@ -101,7 +122,9 @@ export default function CreateAsset({
       const errors = Object.entries(validatorObject).reduce(
         (acc, [key, value]) => ({
           ...acc,
-          [key as keyof CreateAssetDto]: value(asset[key as keyof CreateAssetDto]),
+          [key as keyof CreateAssetDto]: value(
+            asset[key as keyof Omit<CreateAssetDto, 'approval'>]
+          ),
         }),
         {} as ValidatorObjectType<CreateAssetDto>
       )
@@ -254,8 +277,38 @@ export default function CreateAsset({
                 placeholder="Product Description e.g. REALM1000 Load"
                 name="description"
                 multiline
-                minRows={8}
+                minRows={4.4}
                 errors={errors}
+              />
+            </Box>
+            <Box>
+              <FormLabel>Approval</FormLabel>
+              <Autocomplete
+                multiple
+                options={['dsp', 'subdistributor', 'retailer']}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    size="small"
+                    name="approval"
+                    InputProps={{
+                      ...params.InputProps,
+                    }}
+                  />
+                )}
+                renderOption={(option) => toCapsFirst(option)}
+                onChange={(event, value) => {
+                  const newValue = value.length > 0 ? value : undefined
+                  setAsset(
+                    (prevState) =>
+                      ({
+                        ...prevState,
+                        approval: newValue,
+                      } as CreateAssetDto)
+                  )
+                }}
+                value={asset.approval}
               />
             </Box>
           </Grid>
@@ -289,7 +342,7 @@ const numberKeys = [
 type ValidationResult = string[] | null
 type ValidatorFunction<T> = (value: T[keyof T]) => ValidationResult
 type ValidatorObjectType<T> = Record<keyof T, ValidatorFunction<T>>
-const validatorObject: ValidatorObjectType<CreateAssetDto> = {
+const validatorObject: ValidatorObjectType<Omit<CreateAssetDto, 'approval'>> = {
   code: (value) => {
     const errors = []
 

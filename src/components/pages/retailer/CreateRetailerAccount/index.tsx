@@ -180,6 +180,7 @@ export default function CreateRetailerAccount({
       handleChange('dsp', null)
     }
   }, [newRetailerAccount.subdistributor])
+
   return (
     <Paper variant="outlined">
       <Box
@@ -341,7 +342,7 @@ export default function CreateRetailerAccount({
                   />
                 )}
                 defaultValue={(autoLoadDsp as DspResponseType) || null}
-                disabled={autoLoadDsp ? true : undefined}
+                // disabled={autoLoadDsp ? true : undefined}
               />
             ) : (
               <CustomTextField

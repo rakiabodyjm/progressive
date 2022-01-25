@@ -1,4 +1,14 @@
-import { Box, Button, Divider, Grid, IconButton, Paper, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  TextField,
+  Theme,
+  Typography,
+} from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
@@ -8,6 +18,9 @@ import validator from 'validator'
 import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
 
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Autocomplete } from '@material-ui/lab'
+import { toCapsFirst } from '@src/utils/api/common'
+import { UserTypesAndUser } from '@src/pages/admin/accounts'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -31,6 +44,9 @@ export default function EditAsset({
 
   const [asset, setAsset] = useState<CreateAssetDto>({
     ...assetProps,
+    approval: assetProps?.approval
+      ? (JSON.parse(assetProps.approval) as UserTypesAndUser[])
+      : undefined,
   })
 
   const assetRef = useRef(assetProps)
@@ -112,7 +128,9 @@ export default function EditAsset({
       const errors = Object.entries(validatorObject).reduce(
         (acc, [key, value]) => ({
           ...acc,
-          [key as keyof CreateAssetDto]: value(asset[key as keyof CreateAssetDto]),
+          [key as keyof CreateAssetDto]: value(
+            asset[key as keyof Omit<CreateAssetDto, 'approval'>]
+          ),
         }),
         {} as ValidatorObjectType<CreateAssetDto>
       )
@@ -129,17 +147,16 @@ export default function EditAsset({
         resolve(null)
       }
     })
-
   return (
     <Paper>
       <Box p={2}>
         <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography variant="h6" color="primary">
-              Add New Asset
+              Edit Asset
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              Create New Asset to be consumed by Subdistributor, DSP, Retailer and User
+              Modify Asset to be consumed by Subdistributor, DSP, Retailer and User
             </Typography>
           </Box>
           <Box>
@@ -272,9 +289,37 @@ export default function EditAsset({
                 placeholder="Product Description e.g. REALM1000 Load"
                 name="description"
                 multiline
-                minRows={8}
+                minRows={4.4}
                 errors={errors}
                 defaultValue={asset.description}
+              />
+            </Box>
+            <Box>
+              <FormLabel>Approval</FormLabel>
+              <Autocomplete
+                multiple
+                options={['dsp', 'subdistributor', 'retailer']}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    size="small"
+                    name="approval"
+                    InputProps={{
+                      ...params.InputProps,
+                    }}
+                  />
+                )}
+                value={asset?.approval || undefined}
+                renderOption={(option) => toCapsFirst(option)}
+                onChange={(_, value) => {
+                  const newValue = value.length > 0 ? value : []
+                  console.log(newValue)
+                  setAsset((prevState) => ({
+                    ...prevState,
+                    approval: newValue as UserTypesAndUser[],
+                  }))
+                }}
               />
             </Box>
           </Grid>
@@ -308,7 +353,7 @@ const numberKeys = [
 type ValidationResult = string[] | null
 type ValidatorFunction<T> = (value: T[keyof T]) => ValidationResult
 type ValidatorObjectType<T> = Record<keyof T, ValidatorFunction<T>>
-const validatorObject: ValidatorObjectType<CreateAssetDto> = {
+const validatorObject: ValidatorObjectType<Omit<CreateAssetDto, 'approval'>> = {
   code: (value) => {
     const errors = []
 

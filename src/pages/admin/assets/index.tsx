@@ -24,7 +24,7 @@ import { Asset, getAssets, GetAllAssetDto } from '@src/utils/api/assetApi'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function AdminAssetManagement() {
   const [addAssetModalOpen, setAddAssetModalOpen] = useState<boolean>(false)
@@ -46,6 +46,7 @@ export default function AdminAssetManagement() {
   const [assetMetadata, setAssetMetadata] = useState<Paginated<Asset>['metadata'] | undefined>()
 
   const dispatchError = useErrorNotification()
+  const dispatch = useDispatch()
 
   const fetchAssets = useCallback(() => {
     getAssets({ ...paginatedParams, ...getAllAssetOptions })
@@ -57,7 +58,7 @@ export default function AdminAssetManagement() {
       .catch((err) => {
         dispatchError(err)
       })
-  }, [paginatedParams, getAllAssetOptions])
+  }, [paginatedParams, getAllAssetOptions, dispatchError])
 
   const moreAnchorEl = useRef<HTMLElement | undefined>()
   const [assetMoreOptionsOpen, setAssetMoreOptionsOpen] = useState<boolean>(false)
@@ -180,8 +181,8 @@ export default function AdminAssetManagement() {
                   {assets && (
                     <UsersTable
                       data={assets}
-                      limit={paginatedParams.limit}
-                      page={paginatedParams.page}
+                      limit={paginatedParams?.limit || 100}
+                      page={paginatedParams?.page || 0}
                       total={assetMetadata?.total || 0}
                       setLimit={(limit: number) => {
                         setPaginatedParams((prevState) => ({
@@ -201,29 +202,13 @@ export default function AdminAssetManagement() {
                         srp_for_retailer: 'SRP (Ret.)',
                         srp_for_user: 'SRP (User)',
                       }}
-                      hiddenFields={['id', 'deleted_at', 'active', 'updated_at']}
+                      hiddenFields={['id', 'deleted_at', 'active', 'updated_at', 'created_at']}
                       onRowClick={(e, asset) => {
                         if (!asset.deleted_at) {
                           setEditAssetModalOpen(objectSpread('asset', asset))
                           setEditAssetModalOpen(objectSpread('state', true))
                         }
                       }}
-                      // renderRow={(row, DefaultRender) => {
-                      //   if (row.deleted_at) {
-                      //     return (
-                      //       <TableRow>
-                      //         {Object.keys(row).map((ea) => (
-                      //           <TableCell>{row[ea] as string}</TableCell>
-                      //         ))}
-                      //       </TableRow>
-                      //     )
-                      //   }
-                      //   return (
-                      //     <>
-                      //       <DefaultRender />
-                      //     </>
-                      //   )
-                      // }}
                     />
                   )}
                 </Box>
