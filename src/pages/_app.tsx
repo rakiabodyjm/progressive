@@ -16,6 +16,7 @@ import { useRouter } from 'next/router'
 import useNotification from '@src/utils/hooks/useNotification'
 import { nanoid } from '@reduxjs/toolkit'
 import { AppProps } from 'next/dist/shared/lib/router/router'
+// import { getDefaultCaesar } from '@src/redux/data/currentCaesarSlice'
 import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
@@ -85,8 +86,10 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
 
   useEffect(() => {
     // get user data
+
     if (user) {
       dispatch(getUser())
+      // dispatch(getDefaultCaesar())
     }
   }, [])
 

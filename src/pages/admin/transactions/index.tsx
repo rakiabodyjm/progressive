@@ -1,11 +1,16 @@
-import { Box, Container, Divider, Paper, Typography } from '@material-ui/core'
+import { Box, Container, Divider, IconButton, Menu, Paper, Typography } from '@material-ui/core'
+import { MoreVert } from '@material-ui/icons'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import { userDataSelector } from '@src/redux/data/userSlice'
+import { TransactionResponse } from '@src/utils/api/transactionApi'
+import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 const AdminTransactionsPage = () => {
   const user = useSelector(userDataSelector)
+  const moreAnchorEl = useRef<HTMLElement | undefined>()
+
   return (
     <Container>
       <Paper>
@@ -21,7 +26,15 @@ const AdminTransactionsPage = () => {
                 Transactions of Subdistributor | DSP | Retailers
               </Typography>
             </Box>
-            <Box></Box>
+            <Box>
+              <IconButton onClick={() => {}} innerRef={moreAnchorEl}>
+                <MoreVert />
+              </IconButton>
+              <Menu anchorEl={moreAnchorEl.current} open={false}></Menu>
+            </Box>
+            {/* <Box>
+              <TransactionsTable />
+            </Box> */}
           </Box>
           <Box my={2}>
             <Divider />
@@ -39,10 +52,12 @@ const AdminTransactionsPage = () => {
   )
 }
 
-const TransactionsTable = ({ account }) => {
-    
-    return (
-        <UsersTable/>
-    )
+const TransactionsTable = () => {
+  const [transactions, setTransactions] = useState<TransactionResponse[] | undefined>()
+  return (
+    <Paper>
+      <Box p={2}></Box>
+    </Paper>
+  )
 }
 export default AdminTransactionsPage

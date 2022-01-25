@@ -45,8 +45,8 @@ export type GetAllInventoryDto = {
 export function getAllInventory(
   params: PaginateFetchParameters & GetAllInventoryDto
 ): Promise<Paginated<Inventory>>
-export function getAllInventory(...params: never): Promise<Inventory[]>
-export function getAllInventory(params: unknown) {
+export function getAllInventory(): Promise<Inventory[]>
+export function getAllInventory(params?: (PaginateFetchParameters & GetAllInventoryDto) | never) {
   return axios
     .get('/inventory', {
       params,
@@ -96,6 +96,27 @@ export function updateInventory(id: Inventory['id'], updateInventoryDto: Partial
       ...updateInventoryDto,
     })
     .then((res) => res.data as EntityWithMessage<Inventory>)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
+    })
+}
+
+export function getCommerce({
+  caesar,
+  page,
+  limit,
+}: {
+  caesar: string
+} & PaginateFetchParameters): Promise<Paginated<Inventory>> {
+  return axios
+    .get('/inventory/commerce', {
+      params: {
+        caesar,
+        page,
+        limit,
+      },
+    })
+    .then((res) => res.data)
     .catch((err) => {
       throw extractMultipleErrorFromResponse(err)
     })

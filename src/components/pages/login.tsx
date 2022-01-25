@@ -18,7 +18,7 @@ import Image from 'next/image'
 import { ChangeEvent, useState, FormEvent, useEffect, ChangeEventHandler } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
-import { AppDispatch, RootState } from '@src/redux/store'
+import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { makeStyles } from '@material-ui/styles'
 
@@ -72,7 +72,7 @@ export default function AdminLogin({ reloginFunction }: { reloginFunction?: () =
   const [buttonLoading, setButtonLoading] = useState<boolean>(false)
 
   const handleSubmit = (e: FormEvent) => {
-    e?.preventDefault()
+    e.preventDefault()
     setButtonLoading(true)
     dispatch(loginUserThunk(formValues))
       .unwrap()

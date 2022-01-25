@@ -20,12 +20,7 @@ import ModalWrapper from '@src/components/ModalWrapper'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import { userDataSelector } from '@src/redux/data/userSlice'
-import {
-  getAllInventory,
-  GetAllInventoryDto,
-  Inventory,
-  updateInventory,
-} from '@src/utils/api/inventoryApi'
+import { getAllInventory, GetAllInventoryDto, Inventory } from '@src/utils/api/inventoryApi'
 import { CaesarWalletResponse, getWallet, getWalletById } from '@src/utils/api/walletApi'
 import { PaginateFetchParameters, Paginated } from '@src/utils/types/PaginatedEntity'
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'

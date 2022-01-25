@@ -300,10 +300,13 @@ export default function CreateAsset({
                 renderOption={(option) => toCapsFirst(option)}
                 onChange={(event, value) => {
                   const newValue = value.length > 0 ? value : undefined
-                  setAsset((prevState) => ({
-                    ...prevState,
-                    approval: newValue,
-                  }))
+                  setAsset(
+                    (prevState) =>
+                      ({
+                        ...prevState,
+                        approval: newValue,
+                      } as CreateAssetDto)
+                  )
                 }}
                 value={asset.approval}
               />
