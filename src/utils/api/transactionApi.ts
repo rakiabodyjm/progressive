@@ -32,7 +32,13 @@ export interface TransactionResponse {
 
   seller_profit: number
 
+  pending_purchase_id: PendingTransactionResponse
+
   approved: boolean
+
+  created_at: Date
+
+  updated_at: Date
 }
 
 export interface PendingTransactionResponse {
@@ -100,23 +106,17 @@ export function createPurchase({
 
 type GetAllTransactionsByCaesar =
   | {
-      caesar: string
-      buyer: never
-      seller: never
+      caesar?: string
     }
   | {
       buyer?: string
       seller?: string
-      caesar: never
     }
 type GetAllTransactionsByInventory =
   | {
-      inventory: string
-      inventory_from?: never
-      inventory_to?: never
+      inventory?: string
     }
   | {
-      inventory?: never
       inventory_from?: string
       inventory_to?: string
     }
@@ -132,7 +132,7 @@ export function getAllTransactions(
   params: GetAllTransactionsByCaesar & GetAllTransactionsByInventory & PaginateFetchParameters
 ): Promise<Paginated<TransactionResponse>> {
   return axios
-    .get('/transactions', {
+    .get('/transaction', {
       params: {
         ...params,
       },
