@@ -20,7 +20,7 @@ import { AppProps } from 'next/dist/shared/lib/router/router'
 import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
-const CashTransfer = dynamic(() => import(`@src/pages/admin/cashtransfer`))
+const CashTransfer = dynamic(() => import(`@src/pages/admin/topup`))
 const LoginExtensionModal = dynamic(() => import(`@src/components/LoginExtensionModal`))
 const ModalWrapper = dynamic(() => import(`@src/components/ModalWrapper`))
 

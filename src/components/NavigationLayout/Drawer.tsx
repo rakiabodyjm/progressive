@@ -28,6 +28,7 @@ import {
   ExpandMore,
   ListAlt,
   AllInbox,
+  AccountBalanceWallet,
 } from '@material-ui/icons'
 import { logoutUser, User, userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -124,6 +125,11 @@ const adminLowerMenuItems = [
     title: 'Transactions',
     icon: <ListAlt />,
     url: '/admin/transactions',
+  },
+  {
+    title: 'Caesar Reload',
+    icon: <AccountBalanceWallet />,
+    url: '/admin/topup',
   },
   /**
    * caesar reload
