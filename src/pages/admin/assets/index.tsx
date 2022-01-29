@@ -196,13 +196,20 @@ export default function AdminAssetManagement() {
                           page,
                         }))
                       }}
-                      formatRow={{
+                      formatTitle={{
                         srp_for_subd: 'SRP (Subd)',
                         srp_for_dsp: 'SRP (DSP)',
                         srp_for_retailer: 'SRP (Ret.)',
                         srp_for_user: 'SRP (User)',
                       }}
-                      hiddenFields={['id', 'deleted_at', 'active', 'updated_at', 'created_at']}
+                      hiddenFields={[
+                        'id',
+                        'deleted_at',
+                        'active',
+                        'updated_at',
+                        'created_at',
+                        'whole_number_only',
+                      ]}
                       onRowClick={(e, asset) => {
                         if (!asset.deleted_at) {
                           setEditAssetModalOpen(objectSpread('asset', asset))
