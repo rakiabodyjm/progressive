@@ -19,29 +19,57 @@ export default memo(
     ...restProps
   }: { entities: Partial<Record<UserTypes, string>> } & PaperProps) {
     const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [ceasarAmount, setCeasarAmount] = useState<number>(0)
+    // const [ceasarAmount, setCeasarAmount] = useState<number>(0)
+    const [caesarCurrencies, setCaesarCurrencies] = useState({
+      caesar_coin: 0,
+      dollar: 0,
+      peso: 0,
+    })
     const theme = useTheme()
     const dispatchError = useErrorNotification()
     useEffect(() => {
       if (entities) {
-        Object.entries(entities).forEach(([key, id]) => {
-          getWallet({
-            [key]: id,
-          })
-            .then((res) => {
-              setCeasarAmount((prevState) => prevState + (res?.data?.ceasar_coin || 0))
+        Promise.all(
+          Object.entries(entities).map(([key, id]) =>
+            getWallet({
+              [key]: id,
             })
-            .catch((err: string[]) => {
-              console.log(`Error retrieving wallet for ${key}, wallet may not exist`, err)
+              .then(
+                (res) => res
+                // setCeasarAmount((prevState) => prevState + (res?.data?.caesar_coin || 0))
+              )
+              .catch((err: string[]) => {
+                console.log(`Error retrieving wallet for ${key}, wallet may not exist`, err)
+                return null
 
-              // err.forEach((each) => {
-              //   dispatchError(each)
-              // })
-            })
-            .finally(() => {
-              setIsLoading(false)
-            })
-        })
+                // err.forEach((each) => {
+                //   dispatchError(each)
+                // })
+              })
+          )
+        )
+          .then((res) => res.filter((ea) => !!ea))
+          .then((res) =>
+            res.reduce(
+              (acc, ea, array) => ({
+                ...acc,
+                caesar_coin: (ea?.data?.caesar_coin || 0) + acc.caesar_coin,
+                peso: (ea?.data?.peso || 0) + acc.peso,
+                dollar: (ea?.data?.dollar || 0) + acc.dollar,
+              }),
+              {
+                caesar_coin: 0,
+                peso: 0,
+                dollar: 0,
+              }
+            )
+          )
+          .then((res) => {
+            setCaesarCurrencies(res)
+          })
+          .finally(() => {
+            setIsLoading(false)
+          })
       }
     }, [entities])
     return (
@@ -71,7 +99,7 @@ export default memo(
                         marginRight: 8,
                       }}
                     >
-                      {ceasarAmount || 0}
+                      {caesarCurrencies.caesar_coin}
                     </span>
                     <Typography component="span" variant="body1" noWrap>
                       Caesar Coins
@@ -117,9 +145,7 @@ export default memo(
                     }}
                     variant="subtitle2"
                   >
-                    $0.00
-                    {/* {data?.retailer?.length || 0} */}
-                    {/* {data?} */}
+                    ${caesarCurrencies.dollar}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -131,7 +157,7 @@ export default memo(
                     }}
                     variant="subtitle2"
                   >
-                    ₱0.00
+                    ₱{caesarCurrencies.peso}
                   </Typography>
                 </Grid>
               </Grid>
