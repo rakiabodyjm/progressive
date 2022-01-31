@@ -1,37 +1,21 @@
 import {
   Box,
-  Button,
-  ButtonBase,
   CircularProgress,
   Grid,
   IconButton,
-  List,
-  makeStyles,
   Paper,
   TablePagination,
-  TextField,
-  Theme,
   Typography,
-  useTheme,
 } from '@material-ui/core'
 import { Apps, ListAlt } from '@material-ui/icons'
-import { setNotification, NotificationTypes } from '@src/redux/data/notificationSlice'
-import { userDataSelector } from '@src/redux/data/userSlice'
-import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
-import { ChangeEvent, ChangeEventHandler, useEffect, useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import useSWR from 'swr'
-import Image from 'next/image'
-import GridView from '@src/components/ECommerce/GridView'
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { getAllInventory, getCommerce, Inventory } from '@src/utils/api/inventoryApi'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import { CaesarWalletResponse, getWallet, getWalletById } from '@src/utils/api/walletApi'
 import RowView from '@src/components/ECommerce/RowView'
 import type { InventoryNumbers } from '@src/components/ECommerce/RowView'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import CreatePurchase from '@src/components/pages/transactions/CreatePurchase'
 import ModalWrapper from '@src/components/ModalWrapper'
-import LoadingScreen from '@src/components/LoadingScreen'
 getAllInventory()
 
 export default function ECommerce({
@@ -40,15 +24,12 @@ export default function ECommerce({
 }: {
   caesarBuyer: [UserTypesAndUser, string]
 }) {
+  const [valid, setValid] = useState(Date.now())
   const [account_type, caesar_id] = caesarBuyer
-  const user = useSelector(userDataSelector)
+
   const [view, setView] = useState({
     rowView: true,
     gridView: false,
-  })
-  const [paginationParameters, setPaginationParameters] = useState<PaginateFetchParameters>({
-    limit: 100,
-    page: 0,
   })
 
   const [paginateParams, setPaginateParams] = useState<PaginateFetchParameters>({
@@ -79,19 +60,25 @@ export default function ECommerce({
     }
   }, [account_type])
 
+  const caesar_idRef = useRef<typeof caesar_id | undefined>(caesar_id)
+  const [loading, setLoading] = useState<boolean>(false)
   useEffect(() => {
+    if (caesar_id !== caesar_idRef.current) {
+      setLoading(true)
+      caesar_idRef.current = caesar_id
+    }
     if (caesar_id) {
       getCommerce({
         ...paginateParams,
         caesar: caesar_id,
       }).then((res) => {
         setPaginatedInventory(res)
+        setLoading(false)
       })
     }
-  }, [paginateParams, caesar_id])
+  }, [paginateParams, caesar_id, valid])
 
   const [selectedInventory, setSelectedInventory] = useState<undefined | Inventory>()
-  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false)
   return (
     <div>
       <Paper
@@ -129,7 +116,7 @@ export default function ECommerce({
           </Grid>
           {/* {view.rowView && inventory && <RowView inventory={inventory} />} */}
           {/* {view.gridView && inventory && <GridView inventory={inventory} />} */}
-          {inventory && (
+          {inventory && !loading && (
             <RowView
               srpKey={srpKey}
               inventory={inventory}
@@ -138,6 +125,30 @@ export default function ECommerce({
                 // setPurchaseModalOpen(true)
               }}
             />
+          )}
+          {loading && (
+            <Box>
+              <Paper>
+                <Box p={4}>
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    flexDirection="column"
+                    alignItems="center"
+                  >
+                    <Typography
+                      style={{
+                        fontWeight: 600,
+                      }}
+                      variant="h5"
+                    >
+                      Loading
+                    </Typography>
+                    <CircularProgress size={40} thickness={4} />
+                  </Box>
+                </Box>
+              </Paper>
+            </Box>
           )}
           <TablePagination
             rowsPerPageOptions={[5, 10, 20, 50, 100]}
@@ -176,6 +187,9 @@ export default function ECommerce({
             srpKey={srpKey}
             modal={() => {
               setSelectedInventory(undefined)
+            }}
+            revalidateFunction={() => {
+              setValid(Date.now())
             }}
           />
         ) : (
