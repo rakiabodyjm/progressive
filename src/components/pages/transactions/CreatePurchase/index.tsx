@@ -47,6 +47,7 @@ export default function CreatePurchase({
         console.log(err)
       })
   }, [buyerCaesarId, valid])
+
   const [quantity, setQuantity] = useState<number>(0)
   const [amount, setAmount] = useState<number>(0)
   const [by, setBy] = useState<'quantity' | 'amount'>('quantity')
@@ -103,6 +104,9 @@ export default function CreatePurchase({
       .finally(() => {
         setLoading(false)
         setValid(Date.now())
+        if (revalidateFunction) {
+          revalidateFunction()
+        }
       })
   }
   return (
@@ -111,15 +115,11 @@ export default function CreatePurchase({
         <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography variant="h6">Purchase Inventory</Typography>
-            <Typography
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-              }}
-              variant="body2"
-              color="textSecondary"
-            >
-              Buy Item as Caesar:
+            <Box display="inline-flex" alignItems="center">
+              <Typography variant="body2" color="textSecondary">
+                Buy Item as Caesar:
+              </Typography>
+
               <Box component="span" marginLeft={0.5} />
               {buyerCaesar ? (
                 <Typography
@@ -137,10 +137,10 @@ export default function CreatePurchase({
                   style={{
                     fontSize: 'inherit',
                   }}
-                  size={24}
+                  size={18}
                 />
               )}
-            </Typography>
+            </Box>
           </Box>
           <Box>
             {modal && (
