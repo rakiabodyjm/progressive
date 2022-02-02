@@ -4,8 +4,9 @@ export default function RoleBadge({
   children,
   style,
   uppercase,
+  disablePopUp,
   ...props
-}: { uppercase?: boolean } & TypographyProps) {
+}: { uppercase?: boolean; disablePopUp?: true } & TypographyProps) {
   const theme: Theme = useTheme()
   return (
     <Tooltip
@@ -19,6 +20,9 @@ export default function RoleBadge({
       style={{
         cursor: 'pointer',
       }}
+      {...(disablePopUp && {
+        open: false,
+      })}
     >
       <Typography
         style={{
