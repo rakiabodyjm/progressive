@@ -11,11 +11,8 @@ import {
   Theme,
   Typography,
   BoxProps,
-  TableContainerTypeMap,
-  TableRowTypeMap,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { OverridableComponent } from '@material-ui/core/OverridableComponent'
 import { useTheme } from '@material-ui/styles'
 import { nanoid } from '@reduxjs/toolkit'
 import { formatKeyIntoReadables } from '@src/utils/api/common'
@@ -30,10 +27,9 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   page,
   limit,
   total,
-  formatRow,
+  formatTitle,
   renderCell,
-
-  renderRow,
+  // renderRow,
   ...restProps
 }: {
   data: T[]
@@ -44,13 +40,13 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   limit: number
   total: number
   setLimit: Dispatch<SetStateAction<number>> | ((arg: number) => void)
-  formatRow?: Partial<Record<keyof T, string>>
+  formatTitle?: Partial<Record<keyof T, string>>
   renderCell?: Partial<Record<keyof T, (value: T[keyof T]) => JSX.Element>>
   /**
    * Render row according to override
    * Must include cells
    */
-  renderRow?: (arg: T, DefaultRender: typeof TableRow) => JSX.Element
+  // renderRow?: (arg: T, DefaultRender: typeof TableRow) => JSX.Element
 } & BoxProps) {
   /**
    * get fields based off of one of the data items
@@ -82,8 +78,14 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
           <TableHead>
             <TableRow>
               {fields?.map((title) => (
-                <TableCell key={title}>
-                  {(formatRow && formatRow[title]) ?? formatKeyIntoReadables(title)}
+                <TableCell
+                  style={{
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                  key={title}
+                >
+                  {(formatTitle && formatTitle[title]) ?? formatKeyIntoReadables(title)}
                 </TableCell>
               ))}
             </TableRow>
@@ -110,64 +112,37 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
                 </TableRow>
               ))}
 
-            {data.map((row) =>
-              renderRow ? (
-                renderRow(row, ({ ...props }) => (
-                  <TableRow
-                    onClick={(e: MouseEvent<HTMLElement>) => {
-                      if (onRowClick) {
-                        onRowClick(e, row)
-                      }
-                    }}
-                    style={{
-                      cursor: 'pointer',
-                    }}
-                    key={(row?.id as string) || nanoid()}
-                    hover
-                    {...props}
-                  >
-                    {fields?.map((ea, index) => {
-                      const renderComponent = renderCell?.[ea] || undefined
-                      const value = row[ea]
-                      return (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <TableCell key={`${value}-${index}`}>
-                          {typeof value !== 'string'
-                            ? (renderComponent && renderComponent(value)) || value?.toString() || ''
-                            : value}
-                        </TableCell>
-                      )
-                    })}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow
-                  onClick={(e: MouseEvent<HTMLElement>) => {
-                    if (onRowClick) {
-                      onRowClick(e, row)
-                    }
-                  }}
-                  style={{
-                    cursor: 'pointer',
-                  }}
-                  key={(row?.id as string) || nanoid()}
-                  hover
-                >
-                  {fields?.map((ea, index) => {
-                    const renderComponent = renderCell?.[ea] || undefined
-                    const value = row[ea]
-                    return (
-                      // eslint-disable-next-line react/no-array-index-key
-                      <TableCell key={`${value}-${index}`}>
-                        {typeof value !== 'string'
+            {data.map((row) => (
+              <TableRow
+                onClick={(e: MouseEvent<HTMLElement>) => {
+                  if (onRowClick) {
+                    onRowClick(e, row)
+                  }
+                }}
+                style={{
+                  cursor: 'pointer',
+                }}
+                key={(row?.id as string) || nanoid()}
+                hover
+              >
+                {fields?.map((ea, index) => {
+                  const renderComponent = renderCell?.[ea] || undefined
+                  if (renderComponent) {
+                    console.log('caught one ', renderComponent)
+                  }
+                  const value = row[ea]
+                  return (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <TableCell key={`${value}-${index}`}>
+                      {renderComponent ? renderComponent(value) : value?.toString() || ''}
+                      {/* {typeof value !== 'string'
                           ? (renderComponent && renderComponent(value)) || value?.toString() || ''
-                          : value}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              )
-            )}
+                          : value} */}
+                    </TableCell>
+                  )
+                })}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
