@@ -140,8 +140,8 @@ const TransactionsTable = ({
   }, [caesar, paginationParams])
   const theme: Theme = useTheme()
   return (
-    <Paper>
-      <Box p={2}>
+    <>
+      <Box>
         {!loading && transactions && (
           <UsersTable<IntersectionTransaction>
             data={transactions.sort(
@@ -236,7 +236,7 @@ const TransactionsTable = ({
           color: ${theme.palette.error.main}
         }
       `}</style>
-    </Paper>
+    </>
   )
 }
 
