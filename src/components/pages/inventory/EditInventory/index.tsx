@@ -34,7 +34,7 @@ import {
 } from 'react'
 import { Asset } from '@src/utils/api/assetApi'
 import { useRouter } from 'next/router'
-// import { isNumberString } from 'class-validator'
+import { isNumberString } from 'class-validator'
 import AsyncButton from '@src/components/AsyncButton'
 import AssetDisplay from '@src/components/pages/inventory/EditInventory/AssetDisplay'
 
@@ -168,10 +168,10 @@ export default function EditInventory({
   }, [selectedAsset])
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    // setInventory((prevState) => ({
-    //   ...prevState,
-    //   [e.target.name]: isNumberString(e.target.value) ? Number(e.target.value) : e.target.value,
-    // }))
+    setInventory((prevState) => ({
+      ...prevState,
+      [e.target.name]: isNumberString(e.target.value) ? Number(e.target.value) : e.target.value,
+    }))
   }
   return (
     <Paper>
