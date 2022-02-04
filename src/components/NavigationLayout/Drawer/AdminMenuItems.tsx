@@ -35,7 +35,7 @@ export default function AdminMenuItems({ open }: { open: boolean }) {
   return (
     <List>
       {adminLowerMenuItems.map((adminItem) => (
-        <RenderListItem open={open} {...adminItem} />
+        <RenderListItem key={adminItem.url} open={open} {...adminItem} />
       ))}
     </List>
   )

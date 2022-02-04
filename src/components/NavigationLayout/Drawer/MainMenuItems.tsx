@@ -1,5 +1,6 @@
 import { Collapse, List } from '@material-ui/core'
 import { AccountTree, ContactPhone, Dashboard, PersonPinCircle } from '@material-ui/icons'
+import { nanoid } from '@reduxjs/toolkit'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 import RenderSubListItem from '@src/components/NavigationLayout/Drawer/RenderSubListItem'
 import { userDataSelector } from '@src/redux/data/userSlice'
@@ -120,9 +121,17 @@ export default function MainMenuItems({ open }: { open: boolean }) {
     <List>
       {mainMenuItems.map((each) => {
         if ((each as MultipleMainMenuItemType)?.subMenu) {
-          return <RenderSubListItem {...(each as MultipleMainMenuItemType)} open={open} />
+          return (
+            <RenderSubListItem key={nanoid()} {...(each as MultipleMainMenuItemType)} open={open} />
+          )
         }
-        return <RenderListItem open={open} {...(each as SingleMainMenuItemType)} />
+        return (
+          <RenderListItem
+            key={(each as SingleMainMenuItemType).url}
+            open={open}
+            {...(each as SingleMainMenuItemType)}
+          />
+        )
       })}
     </List>
   )
