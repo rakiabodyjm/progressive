@@ -135,7 +135,7 @@ export function topUpWallet({
    * caesarId of receiver
    *
    */
-  caesarId,
+  caesar,
   /**
    * amount can be negative
    */
@@ -145,14 +145,14 @@ export function topUpWallet({
    * caesarId of receiver
    *
    */
-  caesarId: string
+  caesar: string
   /**
    * amount can be negative
    */
   amount: number
 }) {
   return axios
-    .post('/caesar/topup')
+    .post('/caesar/topup', { caesar, amount })
     .then((res) => res.data as ExternalCeasar)
     .catch((err) => {
       throw extractMultipleErrorFromResponse(err)
