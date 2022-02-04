@@ -1,4 +1,14 @@
-import { Box, Grid, ListItem, makeStyles, Paper, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Grid,
+  ListItem,
+  makeStyles,
+  Paper,
+  Theme,
+  Typography,
+  useTheme,
+} from '@material-ui/core'
+import { grey } from '@material-ui/core/colors'
 import { LocalOffer } from '@material-ui/icons'
 import FormLabel from '@src/components/FormLabel'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
@@ -19,28 +29,52 @@ export default function RowView({
   srpKey: keyof InventoryNumbers
   onInventoryItemClick?: (inventoryClicked: Inventory) => void
 }) {
+  const theme: Theme = useTheme()
   return (
     <>
       <Grid container spacing={2}>
-        {inventory
-          ?.map((ea) => ({
-            ...ea,
-            srp: ea[srpKey] as number,
-          }))
-          .map((inventory) => (
-            <Grid
-              onClick={() => {
-                if (onInventoryItemClick) {
-                  onInventoryItemClick(inventory)
-                }
+        {inventory?.length > 0 &&
+          inventory
+            ?.map((ea) => ({
+              ...ea,
+              srp: ea[srpKey] as number,
+            }))
+            .map((inventory) => (
+              <Grid
+                onClick={() => {
+                  if (onInventoryItemClick) {
+                    onInventoryItemClick(inventory)
+                  }
+                }}
+                key={inventory.id}
+                item
+                xs={12}
+              >
+                <InventoryRow inventory={inventory} />
+              </Grid>
+            ))}
+        {inventory?.length === 0 && (
+          <Grid item xs={12}>
+            <Paper
+              variant="outlined"
+              style={{
+                padding: 32,
+                background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
               }}
-              key={inventory.id}
-              item
-              xs={12}
             >
-              <InventoryRow inventory={inventory} />
-            </Grid>
-          ))}
+              <Typography
+                variant="h6"
+                align="center"
+                style={{
+                  fontWeight: 600,
+                }}
+                color="primary"
+              >
+                No Inventory Found
+              </Typography>
+            </Paper>
+          </Grid>
+        )}
       </Grid>
     </>
   )

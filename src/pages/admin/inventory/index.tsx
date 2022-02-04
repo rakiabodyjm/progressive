@@ -269,7 +269,7 @@ export default function AdminInventoryManagement() {
                         inventoryId: inventory.id,
                       }))
                     }}
-                    formatRow={{
+                    formatTitle={{
                       caesar: 'Caesar Wallet Owner',
                       asset: 'Asset Name',
                       name: 'Inventory Name',

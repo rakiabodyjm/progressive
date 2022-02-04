@@ -47,8 +47,8 @@ function reduceRetailer(arg: RetailerResponseType): UpdateRetailer {
     e_bind_number: arg.e_bind_number,
     id_type: arg.id_type,
     id_number: arg.id_number,
-    subdistributor: arg.subdistributor.id,
-    dsp: arg.dsp.id,
+    subdistributor: arg?.subdistributor?.id || undefined,
+    dsp: arg?.dsp?.id || undefined,
   }
 }
 export default function EditRetailerAccount({
@@ -137,6 +137,7 @@ export default function EditRetailerAccount({
       }
       return acc
     }, {})
+    console.log(changes)
     const schemaChecker = {
       store_name: (value: string) =>
         validator.isLength(checkStore_name, { min: 4 }) || '*Store Name Required (4+ Letters)',
@@ -318,7 +319,7 @@ export default function EditRetailerAccount({
           <Grid item xs={12}>
             <TypographyLabel>Subdistributor DSP</TypographyLabel>
 
-            {retailer?.dsp && dspOptions?.length > 0 && retailer.subdistributor ? (
+            {dspOptions?.length > 0 && retailer.subdistributor ? (
               <Autocomplete<DspResponseType>
                 options={dspOptions}
                 getOptionLabel={(option) => `${option.dsp_code}`}

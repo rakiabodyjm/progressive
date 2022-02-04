@@ -4,7 +4,9 @@ import {
   Divider,
   Grid,
   IconButton,
+  MenuItem,
   Paper,
+  Select,
   TextField,
   Theme,
   Typography,
@@ -26,6 +28,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     '& > *': {
       marginBottom: theme.spacing(1),
+    },
+  },
+  select: {
+    '& .MuiOutlinedInput-input': {
+      padding: 8,
+      paddingRight: 32,
     },
   },
 }))
@@ -129,7 +137,7 @@ export default function EditAsset({
         (acc, [key, value]) => ({
           ...acc,
           [key as keyof CreateAssetDto]: value(
-            asset[key as keyof Omit<CreateAssetDto, 'approval'>]
+            asset[key as keyof Omit<CreateAssetDto, 'approval' | 'whole_number_only'>]
           ),
         }),
         {} as ValidatorObjectType<CreateAssetDto>
@@ -180,7 +188,7 @@ export default function EditAsset({
         </Box>
 
         <Grid spacing={2} container>
-          <Grid className={classes.formContainer} item xs={4}>
+          <Grid className={classes.formContainer} item xs={12} sm={4}>
             <Box>
               <FormLabel>Unit Price</FormLabel>
               <FormTextField
@@ -260,27 +268,36 @@ export default function EditAsset({
             </Box>
           </Grid>
 
-          <Grid className={classes.formContainer} item xs={8}>
-            <Box>
-              <FormLabel>Code</FormLabel>
-              <FormTextField
-                onChange={handleChange}
-                placeholder="e.g. R-1000 or R1000"
-                name="code"
-                errors={errors}
-                defaultValue={asset.code}
-              />
-            </Box>
-            <Box>
-              <FormLabel>Name</FormLabel>
-              <FormTextField
-                onChange={handleChange}
-                placeholder="Regular Load"
-                name="name"
-                errors={errors}
-                defaultValue={asset.name}
-              />
-            </Box>
+          <Grid className={classes.formContainer} item xs={12} sm={8}>
+            <Grid
+              style={{
+                marginBottom: 0,
+                marginTop: -8,
+              }}
+              container
+              spacing={2}
+            >
+              <Grid item xs={5}>
+                <FormLabel>Code</FormLabel>
+                <FormTextField
+                  onChange={handleChange}
+                  placeholder="e.g. R-1000 or R1000"
+                  name="code"
+                  errors={errors}
+                  defaultValue={asset.code}
+                />
+              </Grid>
+              <Grid item xs={7}>
+                <FormLabel>Name</FormLabel>
+                <FormTextField
+                  onChange={handleChange}
+                  placeholder="Regular Load"
+                  name="name"
+                  errors={errors}
+                  defaultValue={asset.name}
+                />
+              </Grid>
+            </Grid>
 
             <Box>
               <FormLabel>Description</FormLabel>
@@ -322,6 +339,40 @@ export default function EditAsset({
                 }}
               />
             </Box>
+            <Box>
+              <FormLabel>Whole Number Only</FormLabel>
+              <Select
+                onChange={(e) => {
+                  console.log(e)
+                  setAsset((prev) => ({
+                    ...prev,
+                    whole_number_only: e.target.value === 'true',
+                  }))
+                }}
+                className={classes.select}
+                // defaultValue={(asset.whole_number_only === true).toString()}
+                variant="outlined"
+                fullWidth
+                value={(asset.whole_number_only === true).toString()}
+              >
+                <MenuItem value="false">
+                  <Typography variant="body1">
+                    FALSE{' - '}
+                    <Typography component="span" color="textSecondary">
+                      ( e.g. 4.5 pcs will be 4.5pcs )
+                    </Typography>
+                  </Typography>
+                </MenuItem>
+                <MenuItem value="true">
+                  <Typography variant="body1">
+                    TRUE{' - '}
+                    <Typography component="span" color="textSecondary">
+                      ( e.g. 4.5 pcs will be 5pcs )
+                    </Typography>
+                  </Typography>
+                </MenuItem>
+              </Select>
+            </Box>
           </Grid>
         </Grid>
         <Box my={2}>
@@ -353,76 +404,77 @@ const numberKeys = [
 type ValidationResult = string[] | null
 type ValidatorFunction<T> = (value: T[keyof T]) => ValidationResult
 type ValidatorObjectType<T> = Record<keyof T, ValidatorFunction<T>>
-const validatorObject: ValidatorObjectType<Omit<CreateAssetDto, 'approval'>> = {
-  code: (value) => {
-    const errors = []
+const validatorObject: ValidatorObjectType<Omit<CreateAssetDto, 'approval' | 'whole_number_only'>> =
+  {
+    code: (value) => {
+      const errors = []
 
-    if (validator.isEmpty(value.toString())) {
-      errors.push('Should not be empty')
-    }
-    if (
-      !validator.isLength(value.toString(), {
-        min: 0,
-        max: 16,
-      })
-    ) {
-      errors.push('Should have characters at max 16 characters')
-    }
-    return returnErrors(errors)
-  },
-  description: (value) => {
-    const errors = []
-    if (validator.isEmpty(value.toString())) {
-      errors.push('Should not be empty')
-    }
-    if (
-      !validator.isLength(value.toString(), {
-        min: 0,
-        max: 255,
-      })
-    ) {
-      errors.push('Should have characters at min 0 and max 255 characters')
-    }
+      if (validator.isEmpty(value.toString())) {
+        errors.push('Should not be empty')
+      }
+      if (
+        !validator.isLength(value.toString(), {
+          min: 0,
+          max: 16,
+        })
+      ) {
+        errors.push('Should have characters at max 16 characters')
+      }
+      return returnErrors(errors)
+    },
+    description: (value) => {
+      const errors = []
+      if (validator.isEmpty(value.toString())) {
+        errors.push('Should not be empty')
+      }
+      if (
+        !validator.isLength(value.toString(), {
+          min: 0,
+          max: 255,
+        })
+      ) {
+        errors.push('Should have characters at min 0 and max 255 characters')
+      }
 
-    return returnErrors(errors)
-  },
-  name: (value) => {
-    const errors = []
-    if (validator.isEmpty(value.toString())) {
-      errors.push('Should not be empty')
-    }
-    if (
-      !validator.isLength(value.toString(), {
-        min: 0,
-        max: 26,
-      })
-    ) {
-      errors.push('Should have characters at min 0 and max 255 characters')
-    }
+      return returnErrors(errors)
+    },
+    name: (value) => {
+      const errors = []
+      if (validator.isEmpty(value.toString())) {
+        errors.push('Should not be empty')
+      }
+      if (
+        !validator.isLength(value.toString(), {
+          min: 0,
+          max: 26,
+        })
+      ) {
+        errors.push('Should have characters at min 0 and max 255 characters')
+      }
 
-    return returnErrors(errors)
-  },
-  ...numberKeys.reduce(
-    (acc, key) => ({
-      ...acc,
-      [key]: (value: number) => {
-        const errors = []
-        if (
-          validator.isEmpty(value.toString(), {
-            ignore_whitespace: true,
-          })
-        ) {
-          errors.push('Should not be empty')
-        }
-        if (value === 0) {
-          errors.push('Should be greater than 0')
-        }
-        return returnErrors(errors)
-      },
-    }),
-    {} as Record<typeof numberKeys[number], (arg: string | number) => string[] | null>
-  ),
-}
+      return returnErrors(errors)
+    },
+    ...numberKeys.reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: (value: number) => {
+          const errors = []
+          if (
+            validator.isEmpty(value.toString(), {
+              ignore_whitespace: true,
+            })
+          ) {
+            errors.push('Should not be empty')
+          }
+          if (value === 0) {
+            errors.push('Should be greater than 0')
+          }
+          return returnErrors(errors)
+        },
+      }),
+      {} as Record<typeof numberKeys[number], (arg: string | number) => string[] | null>
+    ),
+  }
 
 function returnErrors(params: string[]): string[] | null {
   return params.length > 0 ? params : null

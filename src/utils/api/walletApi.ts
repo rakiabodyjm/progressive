@@ -23,6 +23,10 @@ interface ExternalCeasar {
   role: UserRoles
 
   caesar_coin: number
+
+  peso: number
+
+  dollar: number
 }
 
 export interface CaesarWalletResponse {

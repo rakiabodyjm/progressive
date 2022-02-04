@@ -16,7 +16,7 @@ import { getDsp } from '@api/dspApi'
 import { useEffect, useState } from 'react'
 
 const injectDsp = async (params: RetailerResponseType) => {
-  const dsp = await getDsp(params.dsp.id)
+  const dsp = params?.dsp?.id ? await getDsp(params.dsp.id) : undefined
   return {
     ...params,
     dsp,

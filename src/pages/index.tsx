@@ -324,9 +324,17 @@ export default function AccountDashboard() {
                     ...(account?.retailer && {
                       retailer: account.retailer.id,
                     }),
+                    ...(account?.admin && {
+                      admin: account.admin.id,
+                    }),
                   }}
                 />
               </Grid>
+              {account?.admin && (
+                <Grid item xs={12} sm={6} md={12} lg={6}>
+                  <WalletSmallCard accountType="admin" accountId={account.admin.id} />
+                </Grid>
+              )}
               {account?.id && (
                 <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard accountType="user" accountId={account.id} />
