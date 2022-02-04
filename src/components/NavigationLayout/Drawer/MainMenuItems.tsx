@@ -99,11 +99,6 @@ export default function MainMenuItems({ open }: { open: boolean }) {
           icon: <Dashboard />,
           url: '/',
         },
-        {
-          title: 'Inventory',
-          icon: <Assignment />,
-          url: '/inventory',
-        },
       ]
 
       if (user.subdistributor_id && !user.dsp_id) {
