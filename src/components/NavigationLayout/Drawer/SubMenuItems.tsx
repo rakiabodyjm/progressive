@@ -1,17 +1,17 @@
 import { List } from '@material-ui/core'
-import { Assignment, Receipt } from '@material-ui/icons'
+import { AllInbox, ListAlt } from '@material-ui/icons'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 
 export default function SubMenuItems({ open }: { open: boolean }) {
   const subMenuItems = [
     {
       title: 'Inventory',
-      icon: <Assignment />,
+      icon: <AllInbox />,
       url: '/inventory',
     },
     {
       title: 'Transactions',
-      icon: <Receipt />,
+      icon: <ListAlt />,
       url: '/transactions',
     },
   ]
