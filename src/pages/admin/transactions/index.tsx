@@ -144,7 +144,11 @@ const TransactionsTable = ({
       <Box p={2}>
         {!loading && transactions && (
           <UsersTable<IntersectionTransaction>
-            data={transactions}
+            data={transactions.sort(
+              (a, b) =>
+                new Date(a.transaction_date as Date).getTime() +
+                new Date(b.transaction_date as Date).getTime()
+            )}
             page={paginationParams.page || 0}
             limit={paginationParams.limit || 100}
             total={transactionMetadata?.total || 0}
@@ -162,9 +166,11 @@ const TransactionsTable = ({
             }}
             renderCell={{
               transaction_date: (value: unknown) => (
-                <Typography>{`${new Date(value as string).toLocaleTimeString()} - ${new Date(
-                  value as string
-                ).toLocaleDateString()} `}</Typography>
+                <Typography>
+                  {`${new Date(value as string).toLocaleTimeString()} - ${new Date(
+                    value as string
+                  ).toLocaleDateString()} `}
+                </Typography>
               ),
               approved: (value) => (
                 <Box display="flex" alignItems="center" justifyContent="center">
