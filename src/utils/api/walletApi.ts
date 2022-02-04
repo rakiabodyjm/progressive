@@ -159,7 +159,10 @@ export function topUpWallet({
     })
 }
 
-export function getAllWallet(params: PaginateFetchParameters) {
+type GetAllWalletParams = PaginateFetchParameters & {
+  account_type?: UserTypesAndUser
+}
+export function getAllWallet(params: GetAllWalletParams) {
   return axios
     .get('/caesar', {
       params,
