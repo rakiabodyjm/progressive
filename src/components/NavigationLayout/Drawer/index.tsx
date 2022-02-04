@@ -43,6 +43,7 @@ import { nanoid } from '@reduxjs/toolkit'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 import MainMenuItems from '@src/components/NavigationLayout/Drawer/MainMenuItems'
 import AdminMenuItems from '@src/components/NavigationLayout/Drawer/AdminMenuItems'
+import SubMenuItems from './SubMenuItems'
 
 const drawerWidth = 240
 const useStyles = makeStyles((theme: Theme) => ({
@@ -210,6 +211,12 @@ export default function DrawerComponent({
        * Main Menu items
        */}
       <MainMenuItems open={open} />
+
+      <Divider />
+      {/**
+       * Sub Menu items (Inventory and Transactions)
+       */}
+      <SubMenuItems open={open} />
 
       <Divider />
       {/**
