@@ -12,8 +12,8 @@ export type RetailerResponseType = {
   store_name: string
   id_type: string
   id_number: string
-  subdistributor: SubdistributorResponseType
-  dsp: DspResponseType
+  subdistributor?: SubdistributorResponseType
+  dsp?: DspResponseType
   user: UserResponse
   caesar_wallet: CaesarWalletResponse
 }

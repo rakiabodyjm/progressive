@@ -11,6 +11,7 @@ import {
   useTheme,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
+import { nanoid } from '@reduxjs/toolkit'
 import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
@@ -47,20 +48,33 @@ export default function CreatePurchase({
         console.log(err)
       })
   }, [buyerCaesarId, valid])
+
   const [quantity, setQuantity] = useState<number>(0)
   const [amount, setAmount] = useState<number>(0)
   const [by, setBy] = useState<'quantity' | 'amount'>('quantity')
   const formattedInventory = useMemo(() => reduceInventory(inventory, srpKey), [inventory, srpKey])
 
-  const cCoinTotal = useMemo(
-    () => quantity * (Number(formattedInventory.price.split(' ')[0]) || 0),
-    [quantity, formattedInventory]
-  )
+  // const cCoinTotal = useMemo(
+  //   () => quantity * (Number(formattedInventory.price.split(' ')[0]) || 0),
+  //   [quantity, formattedInventory]
+  // )
 
-  const quantityTotal = useMemo(
-    () => Number(amount / Number(formattedInventory.price.split(' ')[0])),
-    [amount, formattedInventory]
-  )
+  /**
+   * Monitor changes in amount to accommodate quantity
+   */
+  useEffect(() => {
+    const quantity = Number(formattedInventory.price.split(' ')[0])
+    // setQuantity(Math.round(1000 * (amount / quantity - 1)) / 1000)
+    setQuantity(toFixed(amount / quantity, 2))
+  }, [formattedInventory, amount])
+
+  /**
+   * Monitor changes in quantity to accommodate amount
+   */
+  useEffect(() => {
+    const amount = quantity * Number(formattedInventory.price.split(' ')[0] || 0)
+    setAmount(amount)
+  }, [formattedInventory, quantity])
 
   const priceTexts = useMemo(() => {
     if (by === 'quantity') {
@@ -74,14 +88,17 @@ export default function CreatePurchase({
       subtitle: 'Number of Pieces',
     }
   }, [by])
-  const theme = useTheme()
 
   const successNotif = useSuccessNotification()
   const errorNotif = useErrorNotification()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
-    const quantitySubmit: number = by === 'quantity' ? quantity : quantityTotal
+    // let quantitySubmit: number = by === 'quantity' ? quantity
+    // quantitySubmit = Number(quantitySubmit.toFixed(2))
+    const quantitySubmit = quantity
+
+    console.log('by', by, quantitySubmit)
     setLoading(true)
     return createPurchase({
       inventoryId: inventory.id,
@@ -103,6 +120,9 @@ export default function CreatePurchase({
       .finally(() => {
         setLoading(false)
         setValid(Date.now())
+        if (revalidateFunction) {
+          revalidateFunction()
+        }
       })
   }
   return (
@@ -111,15 +131,11 @@ export default function CreatePurchase({
         <Box display="flex" justifyContent="space-between">
           <Box>
             <Typography variant="h6">Purchase Inventory</Typography>
-            <Typography
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-              }}
-              variant="body2"
-              color="textSecondary"
-            >
-              Buy Item as Caesar:
+            <Box display="inline-flex" alignItems="center">
+              <Typography variant="body2" color="textSecondary">
+                Buy Item as Caesar:
+              </Typography>
+
               <Box component="span" marginLeft={0.5} />
               {buyerCaesar ? (
                 <Typography
@@ -137,10 +153,10 @@ export default function CreatePurchase({
                   style={{
                     fontSize: 'inherit',
                   }}
-                  size={24}
+                  size={18}
                 />
               )}
-            </Typography>
+            </Box>
           </Box>
           <Box>
             {modal && (
@@ -176,7 +192,7 @@ export default function CreatePurchase({
                     <Divider />
                   </Box>
                   {Object.keys(formattedInventory).map((ea) => (
-                    <Box mb={1}>
+                    <Box key={nanoid()} mb={1}>
                       <FormLabel>{toCapsFirst(ea)} </FormLabel>
                       <Typography variant="body2">
                         {formattedInventory[ea as keyof ReturnType<typeof reduceInventory>]}
@@ -304,13 +320,7 @@ export default function CreatePurchase({
                       CCoins
                     </Typography>
                   )}
-                  {by === 'quantity'
-                    ? `${Number(
-                        quantity * (Number(formattedInventory.price.split(' ')[0]) || 0)
-                      ).toLocaleString()}`
-                    : `${Number(
-                        (amount / Number(formattedInventory.price.split(' ')[0])).toFixed(2)
-                      ).toLocaleString()}`}
+                  {by === 'quantity' ? `${toFixed(amount, 2)}` : `${toFixed(quantity, 2)}`}
                 </Typography>
                 <Typography variant="body2" component="i">
                   {priceTexts.subtitle}
@@ -357,7 +367,7 @@ export default function CreatePurchase({
                 <AsyncButton
                   loading={loading}
                   disabled={
-                    (buyerCaesar?.data?.caesar_coin || 0) < cCoinTotal ||
+                    (buyerCaesar?.data?.caesar_coin || 0) < amount ||
                     (by === 'amount' && amount === 0) ||
                     (by === 'quantity' && quantity === 0)
                   }
@@ -387,3 +397,5 @@ const reduceInventory = (inventory: Inventory, srpKey: keyof Inventory) => {
     description: description.slice(0, 250),
   }
 }
+
+const toFixed = (number: number, toFixedOptions: number) => Number(number.toFixed(toFixedOptions))

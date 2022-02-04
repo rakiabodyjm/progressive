@@ -15,10 +15,7 @@ import {
 } from '@material-ui/core'
 import { UserTypes } from '@src/redux/data/userSlice'
 import { toCapsFirst } from '@src/utils/api/common'
-import useNotification, {
-  useErrorNotification,
-  useSuccessNotification,
-} from '@src/utils/hooks/useNotification'
+import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
 import { useState } from 'react'
 
 import useSWR, { useSWRConfig } from 'swr'
@@ -27,11 +24,11 @@ import dynamic from 'next/dynamic'
 import { getWallet, CaesarWalletResponse, createWallet } from '../../utils/api/walletApi'
 import RoleBadge from '../RoleBadge'
 
-const useStyles = makeStyles((theme: Theme) => ({
-  cancelButton: {
-    color: theme.palette.error.main,
-  },
-}))
+// const useStyles = makeStyles((theme: Theme) => ({
+//   cancelButton: {
+//     color: theme.palette.error.main,
+//   },
+// }))
 const ModalWrapper = dynamic(() => import(`@components/ModalWrapper`))
 export default function WalletSmallCard({
   accountType,
@@ -259,7 +256,7 @@ export default function WalletSmallCard({
                       marginRight: 8,
                     }}
                   >
-                    {data.data?.ceasar_coin || 0}
+                    {data.data?.caesar_coin || 0}
                   </span>
                   <Typography component="span" variant="body1" noWrap>
                     Caesar Coins
@@ -313,7 +310,7 @@ export default function WalletSmallCard({
                   }}
                   variant="caption"
                 >
-                  $0.00
+                  ${data?.data?.dollar}
                   {/* {data?.retailer?.length || 0} */}
                   {/* {data?} */}
                 </Typography>
@@ -327,7 +324,7 @@ export default function WalletSmallCard({
                   }}
                   variant="caption"
                 >
-                  ₱0.00
+                  ₱{data?.data?.peso}
                 </Typography>
               </Grid>
             </Grid>

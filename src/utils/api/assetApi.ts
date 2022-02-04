@@ -19,6 +19,7 @@ export interface Asset {
   updated_at: Date
   created_at: Date
   approval?: string
+  whole_number_only: boolean
 }
 
 export interface CreateAssetDto {
@@ -31,6 +32,7 @@ export interface CreateAssetDto {
   srp_for_retailer: number
   srp_for_user: number
   approval?: UserTypesAndUser[]
+  whole_number_only: boolean
 }
 
 export interface GetAllAssetDto {
