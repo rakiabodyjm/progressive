@@ -309,22 +309,24 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
             </Menu>
           </Box>
         </Box>
-
-        <Box display="flex" justifyContent="flex-end">
-          <Tooltip
-            arrow
-            placement="left"
-            title={<Typography variant="subtitle2">Add new Asset</Typography>}
-          >
-            <IconButton
-              onClick={() => {
-                setAddInventoryModalOpen(true)
-              }}
+        {accountId === user?.admin_id && (
+          <Box display="flex" justifyContent="flex-end">
+            <Tooltip
+              arrow
+              placement="left"
+              title={<Typography variant="subtitle2">Add new Asset</Typography>}
             >
-              <AddCircleOutlined />
-            </IconButton>
-          </Tooltip>
-        </Box>
+              <IconButton
+                onClick={() => {
+                  setAddInventoryModalOpen(true)
+                }}
+              >
+                <AddCircleOutlined />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+
         <Box my={2}>
           <Divider />
         </Box>
@@ -438,41 +440,6 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
                 <UsersTable
                   data={inventoryItems
                     .filter((ea) => ea.caesar.retailer)
-                    .map((ea) => formatInventory(ea))}
-                  setPage={(page: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      page,
-                    }))
-                  }}
-                  setLimit={(limit: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      limit,
-                    }))
-                  }}
-                  page={inventoryMetadata?.page}
-                  limit={inventoryMetadata?.limit}
-                  total={inventoryMetadata?.total}
-                  hiddenFields={['id']}
-                  onRowClick={(e, inventory) => {
-                    setUpdateInventoryModalOpen(true)
-                    setEditInventory((prevState) => ({
-                      ...prevState,
-                      inventoryId: inventory.id,
-                    }))
-                  }}
-                  formatRow={{
-                    caesar: 'Caesar Wallet Owner',
-                    asset: 'Asset Name',
-                    name: 'Inventory Name',
-                  }}
-                />
-              )}
-              {inventoryItems && inventoryMetadata && accountId === user?.user_id && (
-                <UsersTable
-                  data={inventoryItems
-                    .filter((ea) => ea.caesar.user)
                     .map((ea) => formatInventory(ea))}
                   setPage={(page: number) => {
                     setinventoryPaginationParameters((prev) => ({

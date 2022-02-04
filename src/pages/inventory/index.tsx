@@ -52,11 +52,6 @@ export default function InventoryPage() {
             />
           </div>
         )}
-        {user?.user_id && (
-          <div>
-            <AccountInventoryManagement accountId={user?.user_id} />
-          </div>
-        )}
       </Paper>
     </div>
   )
