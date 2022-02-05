@@ -1,48 +1,32 @@
 import {
   Paper,
   Box,
-  useTheme,
   Theme,
   Typography,
   Divider,
   Grid,
-  TextField,
   Button,
+  Container,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
 } from '@material-ui/core'
 import {
   CaesarWalletResponse,
-  getWallet,
   searchWallet,
   SearchWalletParams,
   topUpWallet,
 } from '@src/utils/api/walletApi'
-import NumberFormat from 'react-number-format'
 import MoneyIcon from '@material-ui/icons/Payment'
-import Image from 'next/image'
 import { makeStyles } from '@material-ui/styles'
-import React, { useEffect, useState, ChangeEvent, MouseEvent } from 'react'
-import { userDataSelector } from '@src/redux/data/userSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import userApi, { getUser, searchUser, UserResponse } from '@src/utils/api/userApi'
-import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
+import React, { useState, MouseEvent } from 'react'
+import { useDispatch } from 'react-redux'
+import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import FormLabel from '@src/components/FormLabel'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    minHeight: 800,
-    height: '100vh',
-    '&:after': {
-      content: "''",
-      position: 'absolute',
-      width: '100%',
-      top: 0,
-      bottom: 0,
-      //   background: 'red',
-      zIndex: -1,
-    },
-  },
   paperContainer: {
     position: 'relative',
     margin: 'auto',
@@ -52,15 +36,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: 16,
     [theme.breakpoints.down('xs')]: {
       padding: 8,
-    },
-  },
-  paper: {
-    padding: 10,
-    borderRadius: 8,
-  },
-  inputContainer: {
-    '& input': {
-      fontSize: 16,
     },
   },
   formLabel: {
@@ -78,9 +53,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingLeft: 5,
     fontSize: 11,
   },
-  currencyFormat: {
-    textAlign: 'right',
-  },
 }))
 type CaesarReceiverInfo = {
   caesar: string
@@ -93,20 +65,10 @@ export default function CashTransfer() {
     amount: 0,
   })
 
-  const user = useSelector(userDataSelector)
   const classes = useStyles()
-  const theme: Theme = useTheme()
   const dispatch = useDispatch()
   const dispatchError = useErrorNotification()
-  const dispatchSuccess = useSuccessNotification()
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value)
-    setValues({
-      ...values,
-      [e.target.name]: e.target.value,
-    })
-  }
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     setValues({
@@ -116,18 +78,15 @@ export default function CashTransfer() {
   }
 
   const handleChangeAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const stringHolder: string = event.currentTarget.value.slice(2)
     setValues({
       ...values,
-      [event.currentTarget.name]: Number(stringHolder.replace(/(?!\w|\s)./g, '')),
+      [event.currentTarget.name]: Number(event.currentTarget.value.replace(/(?!\w|\s)./g, '')),
     })
-    console.log(stringHolder)
   }
 
   const handleSubmit = () => {
     topUpWallet(values)
       .then((res) => {
-        console.log(res)
         dispatch(
           setNotification({
             message: `Top Up Successful`,
@@ -140,7 +99,6 @@ export default function CashTransfer() {
           dispatchError(ea)
         })
       })
-    console.log(values)
     setValues({
       ...values,
       amount: 0,
@@ -148,139 +106,201 @@ export default function CashTransfer() {
   }
 
   return (
-    <div>
-      <Paper className={classes.root}>
-        <Grid spacing={1} container>
-          <Grid xs={12} item>
-            <Paper className={classes.paperContainer}>
-              <Typography
-                variant="h4"
-                color="primary"
-                style={{ fontWeight: 600, textAlign: 'center' }}
-              >
-                Caesar Coin Transfer
+    <Container>
+      <Paper variant="outlined">
+        <Box p={2}>
+          <Box display="flex" justifyContent="space-between">
+            <Box>
+              <Typography variant="h4">Cash Reload</Typography>
+              <Typography variant="body2" color="primary">
+                This section the admin can reload accounts with Caesar Coins
               </Typography>
-              <Divider style={{ marginTop: 16, marginBottom: 16 }} />
+            </Box>
+            <Box></Box>
+          </Box>
 
-              <Box
-                component="form"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                }}
-                p={2}
-              >
-                <Grid spacing={2} container>
-                  <Typography variant="h5" className={classes.formHeader}>
-                    Personal Details
-                  </Typography>
-                  <Grid item xs={12}>
-                    <FormLabel variant="body2">Send to</FormLabel>
-                    <SimpleAutoComplete<CaesarWalletResponse, SearchWalletParams>
-                      initialQuery={{
-                        page: 0,
-                        limit: 100,
-                        searchQuery: '',
-                      }}
-                      fetcher={(query) =>
-                        searchWallet(query)
-                          .then((res) => res.data)
-                          .catch((err) => {
-                            console.log('Caesar Account Search Error: ', err)
-                            return []
-                          })
-                      }
-                      onChange={(e) => {
-                        console.log(e)
-                        setValues((prevState) => ({
-                          ...prevState,
-                          caesar: e?.id ?? undefined,
-                        }))
-                      }}
-                      querySetter={(initialQuery, inputValue) => ({
-                        ...initialQuery,
-                        searchQuery: inputValue,
-                      })}
-                      getOptionSelected={(arg1, arg2) =>
-                        arg1 && arg2 ? arg1.id === arg2.id : false
-                      }
-                      getOptionLabel={(caesar) => caesar?.description}
-                    />
-
-                    {/* <Typography className={classes.formLabel}>Send to</Typography>
-
-                <TextField
-                  placeholder=""
-                  variant="outlined"
-                  name="caesarId"
-                  fullWidth
-                  size="small"
-                  onChange={handleChange}
-                /> */}
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography className={classes.formLabel}>Amount</Typography>
-
-                    <NumberFormat
-                      className={classes.currencyFormat}
-                      customInput={TextField}
-                      variant="outlined"
-                      fullWidth
-                      thousandSeparator
-                      value={values.amount}
-                      name="amount"
-                      onChange={handleChangeAmount}
-                      prefix="CC"
-                      inputProps={{
-                        min: 0,
-                        style: { textAlign: 'right', width: '100%', padding: 11 },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Button name="amount" variant="outlined" value="100" onClick={handleClick}>
-                      100
-                    </Button>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Button name="amount" variant="outlined" value="300" onClick={handleClick}>
-                      300
-                    </Button>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Button name="amount" variant="outlined" value="500" onClick={handleClick}>
-                      500
-                    </Button>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Button name="amount" variant="outlined" value="1000" onClick={handleClick}>
-                      1000
-                    </Button>
-                  </Grid>
-                </Grid>
+          <Box display="flex" justifyContent="flex-end"></Box>
+          <Box my={2}>
+            <Divider />
+          </Box>
+          <Grid container spacing={2}>
+            <Grid xs={12} item>
+              <Paper className={classes.paperContainer}>
                 <Box
-                  display="flex"
-                  gridGap={8}
-                  justifyContent="flex-end"
-                  className={classes.buttonMargin}
+                  component="form"
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                  }}
+                  p={2}
                 >
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      handleSubmit()
-                    }}
-                    color="primary"
-                    endIcon={<MoneyIcon />}
+                  <Grid spacing={2} container>
+                    <Typography variant="h5" className={classes.formHeader}>
+                      Personal Details
+                    </Typography>
+                    <Grid item xs={12}>
+                      <FormLabel variant="body2">Send to</FormLabel>
+                      <SimpleAutoComplete<CaesarWalletResponse, SearchWalletParams>
+                        initialQuery={{
+                          page: 0,
+                          limit: 100,
+                          searchQuery: '',
+                        }}
+                        fetcher={(query) =>
+                          searchWallet(query)
+                            .then((res) => res.data)
+                            .catch((err) => {
+                              console.log('Caesar Account Search Error: ', err)
+                              return []
+                            })
+                        }
+                        onChange={(e) => {
+                          setValues((prevState) => ({
+                            ...prevState,
+                            caesar: e?.id ?? undefined,
+                          }))
+                        }}
+                        querySetter={(initialQuery, inputValue) => ({
+                          ...initialQuery,
+                          searchQuery: inputValue,
+                        })}
+                        getOptionSelected={(arg1, arg2) =>
+                          arg1 && arg2 ? arg1.id === arg2.id : false
+                        }
+                        getOptionLabel={(caesar) => caesar?.description}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography className={classes.formLabel}>Amount</Typography>
+
+                      <FormControl fullWidth>
+                        <OutlinedInput
+                          name="amount"
+                          value={new Intl.NumberFormat('en-US', { style: 'decimal' }).format(
+                            values.amount
+                          )}
+                          onChange={handleChangeAmount}
+                          startAdornment={
+                            <InputAdornment position="start">
+                              <Typography className={classes.formLabel}>CCoins</Typography>
+                            </InputAdornment>
+                          }
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        name="amount"
+                        variant="outlined"
+                        value="20"
+                        fullWidth
+                        onClick={handleClick}
+                      >
+                        20
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        name="amount"
+                        variant="outlined"
+                        value="30"
+                        fullWidth
+                        onClick={handleClick}
+                      >
+                        30
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        name="amount"
+                        variant="outlined"
+                        value="50"
+                        fullWidth
+                        onClick={handleClick}
+                      >
+                        50
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        name="amount"
+                        variant="outlined"
+                        value="100"
+                        fullWidth
+                        onClick={handleClick}
+                      >
+                        100
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        name="amount"
+                        variant="outlined"
+                        value="200"
+                        fullWidth
+                        onClick={handleClick}
+                      >
+                        200
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        name="amount"
+                        variant="outlined"
+                        value="300"
+                        fullWidth
+                        onClick={handleClick}
+                      >
+                        300
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        name="amount"
+                        variant="outlined"
+                        value="500"
+                        fullWidth
+                        onClick={handleClick}
+                      >
+                        500
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        name="amount"
+                        variant="outlined"
+                        value="1000"
+                        fullWidth
+                        onClick={handleClick}
+                      >
+                        1000
+                      </Button>
+                    </Grid>
+                  </Grid>
+                  <Box
+                    display="flex"
+                    gridGap={8}
+                    justifyContent="flex-end"
+                    className={classes.buttonMargin}
                   >
-                    Send
-                  </Button>
+                    <Button
+                      variant="contained"
+                      type="submit"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        handleSubmit()
+                      }}
+                      color="primary"
+                      endIcon={<MoneyIcon />}
+                    >
+                      Send
+                    </Button>
+                  </Box>
                 </Box>
-              </Box>
-            </Paper>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+        </Box>
       </Paper>
-    </div>
+    </Container>
   )
 }
