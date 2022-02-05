@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
-import { userDataSelector } from '@src/redux/data/userSlice'
+import { User, userDataSelector } from '@src/redux/data/userSlice'
 import { getWallet } from '@src/utils/api/walletApi'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -22,7 +22,10 @@ import { useSelector } from 'react-redux'
 export default function CaesarTabs({
   onActiveCaesarChange,
 }: {
-  onActiveCaesarChange: (e: [UserTypesAndUser, string] | undefined) => void
+  onActiveCaesarChange: (
+    caesar: [UserTypesAndUser, string] | undefined,
+    account: [UserTypesAndUser, string]
+  ) => void
 }) {
   const user = useSelector(userDataSelector)
   const [caesarTypes, setCaesarTypes] = useState<[UserTypesAndUser, string][]>([])
@@ -55,7 +58,7 @@ export default function CaesarTabs({
           setCaesarTypes(res)
           if (res.length > 0) {
             setActiveCaesar(res[0])
-            onActiveCaesarChange(res[0])
+            onActiveCaesarChange(res[0], [res[0][0], user[`${res[0][0]}_id`] as string])
           }
         })
         .catch((err) => {
@@ -100,7 +103,9 @@ export default function CaesarTabs({
                   onChange={(_, value) => {
                     const result = caesarTypes.find((ea) => ea[0] === value)
                     setActiveCaesar(result)
-                    onActiveCaesarChange(result)
+                    if (result && user) {
+                      onActiveCaesarChange(result, [result[0], user[`${result[0]}_id`] as string])
+                    }
                   }}
                   value={activeCaesar[0]}
                   centered
