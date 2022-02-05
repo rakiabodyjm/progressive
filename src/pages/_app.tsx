@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { CssBaseline, useMediaQuery } from '@material-ui/core'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Head from 'next/head'
@@ -141,13 +142,21 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
         <CssBaseline />
         <SnackbarProvider maxSnack={10}>
           <Notification />
-          {isAuthenticated ? (
-            <NavigationLayout>
-              <Component {...pageProps} />
-            </NavigationLayout>
-          ) : (
-            <Login />
-          )}
+
+          {
+            isAuthenticated ? (
+              <NavigationLayout>
+                <Component {...pageProps} />
+              </NavigationLayout>
+            ) : router.pathname.split('/').includes('register') ? (
+              <Registration />
+            ) : (
+              <Login />
+            )
+
+            // <Registration />
+          }
+
           {loginExtensionModalOpen && isAuthenticated && (
             <ModalWrapper
               onClose={() => {
