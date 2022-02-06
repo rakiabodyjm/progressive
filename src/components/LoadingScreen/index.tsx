@@ -1,4 +1,13 @@
-import { Typography, CircularProgress, useTheme, Box, BoxProps } from '@material-ui/core'
+import {
+  Typography,
+  CircularProgress,
+  useTheme,
+  Box,
+  BoxProps,
+  CircularProgressProps,
+  TypographyProps,
+} from '@material-ui/core'
+import { grey } from '@material-ui/core/colors'
 import { Variant } from '@material-ui/core/styles/createTypography'
 import { CSSProperties } from 'react'
 
@@ -28,7 +37,10 @@ interface LoadingScreenTypes {
   loadedBy?: string
   hiddenText?: true
 }
-
+/**
+ * OLD
+ * Full Screen Loading Screen
+ */
 export default function LoadingScreen({
   thickness,
   color,
@@ -85,6 +97,47 @@ export default function LoadingScreen({
 LoadingScreen.defaultProps = {
   color: '',
   thickness: 4,
-  size: 72,
+  size: 32,
   variant: 'h3',
+}
+
+export function LoadingScreen2({
+  containerProps,
+  progressCircleProps,
+  textProps,
+}: {
+  containerProps?: BoxProps
+  progressCircleProps?: CircularProgressProps
+  textProps?: TypographyProps
+}) {
+  const theme = useTheme()
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      style={{
+        background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+        padding: 16,
+        height: '100%',
+        ...containerProps?.style,
+      }}
+      {...containerProps}
+    >
+      <Typography
+        style={{
+          marginBottom: 8,
+          ...textProps?.style,
+        }}
+        variant="h6"
+        {...textProps}
+      >
+        {textProps?.children || 'Loading'}
+      </Typography>
+
+      <CircularProgress {...progressCircleProps} />
+    </Box>
+  )
 }
