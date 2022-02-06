@@ -24,7 +24,7 @@ export default function CaesarTabs({
 }: {
   onActiveCaesarChange: (
     caesar: [UserTypesAndUser, string] | undefined,
-    account: [UserTypesAndUser, string]
+    account?: [UserTypesAndUser, string]
   ) => void
 }) {
   const user = useSelector(userDataSelector)
