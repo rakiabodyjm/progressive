@@ -138,6 +138,9 @@ export default function Registration() {
             >
               Sign Up
             </Typography>
+            <Typography color="primary" variant="body2">
+              Sign up and notify your Admin or Subdistributor
+            </Typography>
             <Divider style={{ marginTop: 16, marginBottom: 16 }} />
 
             <Formik
@@ -263,9 +266,7 @@ export default function Registration() {
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      <Divider style={{ marginTop: 30, marginBottom: 16 }} />
-                    </Grid>
+                    <Grid item xs={12}></Grid>
                     <Grid item xs={3}>
                       <Typography variant="h5" color="primary">
                         Account
