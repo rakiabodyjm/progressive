@@ -106,23 +106,6 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
     }
   }, [checkAuthExpired, isAuthenticated])
 
-  // useEffect(() => {
-  //   window.triggerExpiration = () => {
-  //     if (user) {
-  //       dispatch(
-  //         setUser({
-  //           ...user,
-  //           metadata: {
-  //             ...user.metadata,
-  //             exp: Date.now() / 1000,
-  //           },
-  //         })
-  //       )
-  //       dispatch(getUser())
-  //     }
-  //   }
-  // }, [dispatch, getUser, setUser])
-
   return (
     <>
       <Head>
