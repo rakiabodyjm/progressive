@@ -9,11 +9,11 @@ export default function SubMenuItems({ open }: { open: boolean }) {
       icon: <AllInbox />,
       url: '/inventory',
     },
-    // {
-    //   title: 'Transactions',
-    //   icon: <ListAlt />,
-    //   url: '/transactions',
-    // },
+    {
+      title: 'Transactions',
+      icon: <ListAlt />,
+      url: '/transaction',
+    },
   ]
   return (
     <List>
