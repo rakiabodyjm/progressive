@@ -31,15 +31,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     minHeight: 800,
     height: '100vh',
-    '&:after': {
-      content: "''",
-      position: 'absolute',
-      width: '100%',
-      top: 0,
-      bottom: 0,
-      //   background: 'red',
-      zIndex: -1,
-    },
+    // '&:after': {
+    //   content: "''",
+    //   position: 'absolute',
+    //   width: '100%',
+    //   top: 0,
+    //   bottom: 0,
+    //   //   background: 'red',
+    //   zIndex: -1,
+    // },
   },
   paperContainer: {
     position: 'relative',
@@ -151,11 +151,12 @@ export default function Registration() {
                   .required('Phone number required')
                   .matches(phoneRegExp, 'Phone Number is not valid'),
                 password: string()
-                  .required('Please Enter your password')
-                  .matches(
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
-                    'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character'
-                  ),
+                  .required('Password required')
+                  .min(8, 'Must be at least 8 characters long'),
+                // .matches(
+                //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
+                //   'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character'
+                // )
                 confirm_password: string().oneOf([ref('password')], 'Passwords does not match'),
               })}
               initialValues={initialValues}
