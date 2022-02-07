@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
-import { User, userDataSelector } from '@src/redux/data/userSlice'
+import { userDataSelector } from '@src/redux/data/userSlice'
 import { getWallet } from '@src/utils/api/walletApi'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -21,11 +21,13 @@ import { useSelector } from 'react-redux'
  */
 export default function CaesarTabs({
   onActiveCaesarChange,
+  renderTitle,
 }: {
   onActiveCaesarChange: (
     caesar: [UserTypesAndUser, string] | undefined,
     account?: [UserTypesAndUser, string]
   ) => void
+  renderTitle?: JSX.Element
 }) {
   const user = useSelector(userDataSelector)
   const [caesarTypes, setCaesarTypes] = useState<[UserTypesAndUser, string][]>([])
@@ -85,18 +87,23 @@ export default function CaesarTabs({
 
           {activeCaesar ? (
             <>
-              <Box p={1} pb={0}>
-                <Typography
-                  style={{
-                    fontWeight: 700,
-                  }}
-                  //   color="textSecondary"
-                  align="center"
-                  variant="body2"
-                  color="primary"
-                >
-                  Select Caesar Account
-                </Typography>
+              <Box p={2} pb={0}>
+                {renderTitle ? (
+                  <>{renderTitle}</>
+                ) : (
+                  <Typography
+                    style={{
+                      fontWeight: 700,
+                    }}
+                    //   color="textSecondary"
+                    align="center"
+                    variant="body2"
+                    color="primary"
+                  >
+                    Select Caesar Account
+                  </Typography>
+                )}
+
                 <Tabs
                   indicatorColor="primary"
                   textColor="primary"
