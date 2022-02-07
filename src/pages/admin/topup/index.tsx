@@ -13,30 +13,34 @@ import {
 } from '@material-ui/core'
 import {
   CaesarWalletResponse,
+  getAllWallet,
   searchWallet,
   SearchWalletParams,
   topUpWallet,
 } from '@src/utils/api/walletApi'
+import UsersTable from '@src/components/UsersTable'
 import MoneyIcon from '@material-ui/icons/Payment'
 import { makeStyles } from '@material-ui/styles'
-import React, { useState, MouseEvent } from 'react'
+import React, { useState, MouseEvent, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import FormLabel from '@src/components/FormLabel'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
+import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
+import { UserTypesAndUser } from '../accounts'
 
 const useStyles = makeStyles((theme: Theme) => ({
-  paperContainer: {
-    position: 'relative',
+  caesarReloadPaper: {
     margin: 'auto',
-    top: '15%',
-    transform: 'translateY(-14%)',
     maxWidth: 450,
     padding: 16,
     [theme.breakpoints.down('xs')]: {
       padding: 8,
     },
+  },
+  miniCaesarTable: {
+    padding: 16,
   },
   formLabel: {
     color: theme.palette.primary.main,
@@ -58,8 +62,33 @@ type CaesarReceiverInfo = {
   caesar: string
   amount: number
 }
+type GetAllWalletParams = PaginateFetchParameters & {
+  account_type?: UserTypesAndUser
+}
+type UsersMoney = {
+  caesar_coin: number
+  peso: number
+  dollar: number
+}
 
 export default function CashTransfer() {
+  const [metadata, setMetadata] = useState({
+    page: 0,
+    limit: 100,
+  })
+  const [walletData, setWalletData] = useState<CaesarWalletResponse[]>([])
+  const [getallWalletParams, setGetAllWalletParams] = useState<GetAllWalletParams>({
+    limit: 100,
+    page: 0,
+  })
+
+  useEffect(() => {
+    getAllWallet(getallWalletParams).then((res) => {
+      setWalletData(res.data)
+      setGetAllWalletParams(res.metadata)
+    })
+  }, [])
+
   const [values, setValues] = useState<CaesarReceiverInfo>({
     caesar: '',
     amount: 0,
@@ -125,7 +154,7 @@ export default function CashTransfer() {
           </Box>
           <Grid container spacing={2}>
             <Grid xs={12} item>
-              <Paper className={classes.paperContainer}>
+              <Paper className={classes.caesarReloadPaper}>
                 <Box
                   component="form"
                   onSubmit={(e) => {
@@ -297,6 +326,32 @@ export default function CashTransfer() {
                   </Box>
                 </Box>
               </Paper>
+              <Grid xs={12} item>
+                <Box className={classes.miniCaesarTable}>
+                  <Paper variant="outlined">
+                    {walletData && (
+                      <UsersTable
+                        data={formatWalletData(walletData)}
+                        limit={metadata.limit}
+                        page={metadata.page}
+                        total={walletData.length}
+                        setLimit={(limit: number) => {
+                          setMetadata((prevState) => ({
+                            ...prevState,
+                            limit,
+                          }))
+                        }}
+                        setPage={(page: number) => {
+                          setMetadata((prevState) => ({
+                            ...prevState,
+                            page,
+                          }))
+                        }}
+                      ></UsersTable>
+                    )}
+                  </Paper>
+                </Box>
+              </Grid>
             </Grid>
           </Grid>
         </Box>
@@ -304,3 +359,10 @@ export default function CashTransfer() {
     </Container>
   )
 }
+const formatWalletData = (param: CaesarWalletResponse[]) =>
+  param.map(({ description, data }) => ({
+    description,
+    caesar_coin: data?.caesar_coin,
+    peso: data?.peso,
+    dollar: data?.dollar,
+  }))
