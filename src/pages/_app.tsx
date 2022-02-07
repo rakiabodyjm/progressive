@@ -80,6 +80,7 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
       return false
     }
     return true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, triggerCheckExpiry])
 
   const colorScheme = useSelector(
@@ -91,7 +92,6 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
 
     if (user) {
       dispatch(getUser())
-      // dispatch(getDefaultCaesar())
     }
   }, [])
 
@@ -105,23 +105,6 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
       setLoginExtensionModalOpen(false)
     }
   }, [checkAuthExpired, isAuthenticated])
-
-  // useEffect(() => {
-  //   window.triggerExpiration = () => {
-  //     if (user) {
-  //       dispatch(
-  //         setUser({
-  //           ...user,
-  //           metadata: {
-  //             ...user.metadata,
-  //             exp: Date.now() / 1000,
-  //           },
-  //         })
-  //       )
-  //       dispatch(getUser())
-  //     }
-  //   }
-  // }, [dispatch, getUser, setUser])
 
   return (
     <>
@@ -144,7 +127,7 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
           <Notification />
 
           {
-            isAuthenticated ? (
+            isAuthenticated && !router.pathname.split('/').includes('register') ? (
               <NavigationLayout>
                 <Component {...pageProps} />
               </NavigationLayout>

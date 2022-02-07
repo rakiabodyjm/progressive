@@ -11,6 +11,7 @@ import {
   Theme,
   Typography,
   BoxProps,
+  PaperProps,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
@@ -29,6 +30,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   total,
   formatTitle,
   renderCell,
+  paperProps,
   // renderRow,
   ...restProps
 }: {
@@ -42,6 +44,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   setLimit: Dispatch<SetStateAction<number>> | ((arg: number) => void)
   formatTitle?: Partial<Record<keyof T, string>>
   renderCell?: Partial<Record<keyof T, (value: T[keyof T]) => JSX.Element>>
+  paperProps?: PaperProps
   /**
    * Render row according to override
    * Must include cells
@@ -69,8 +72,15 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
         component={(props) => (
           <Paper
             {...props}
-            style={{ background: theme.palette.type === 'dark' ? grey['800'] : grey['200'] }}
+            style={{
+              background: theme.palette.type === 'dark' ? grey['800'] : grey['200'],
+              /**
+               * Include styling from paperProps prop
+               */
+              ...(paperProps?.style && paperProps.style),
+            }}
             variant="outlined"
+            {...paperProps}
           />
         )}
       >

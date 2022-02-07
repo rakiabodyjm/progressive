@@ -12,7 +12,7 @@ export default function SubMenuItems({ open }: { open: boolean }) {
     {
       title: 'Transactions',
       icon: <ListAlt />,
-      url: '/transactions',
+      url: '/transaction',
     },
   ]
   return (
