@@ -41,6 +41,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     //   zIndex: -1,
     // },
   },
+  gridContainer: {
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+    },
+  },
   paperContainer: {
     position: 'relative',
     margin: 'auto',
@@ -204,14 +209,14 @@ export default function Registration() {
             >
               {({ isSubmitting }) => (
                 <Form>
-                  <Grid spacing={2} container className={classes.paper}>
-                    <Grid item xs={3}>
+                  <Grid spacing={2} container className={classes.gridContainer}>
+                    <Grid item xl={3} lg={3}>
                       <Typography variant="h5" color="primary">
                         Personal
                       </Typography>
                     </Grid>
-                    <Grid item xs={9}></Grid>
-                    <Grid item xs={6}>
+                    <Grid item xl={9} lg={9}></Grid>
+                    <Grid item xl={6} lg={6} xs={12}>
                       <Field
                         size="small"
                         variant="outlined"
@@ -226,7 +231,7 @@ export default function Registration() {
                         )}
                       </ErrorMessage>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xl={6} lg={6} xs={12}>
                       <Field
                         size="small"
                         variant="outlined"
@@ -267,13 +272,13 @@ export default function Registration() {
                       />
                     </Grid>
                     <Grid item xs={12}></Grid>
-                    <Grid item xs={3}>
+                    <Grid item xl={3} lg={3} xs={12}>
                       <Typography variant="h5" color="primary">
                         Account
                       </Typography>
                     </Grid>
                     <Grid item xs={9}></Grid>
-                    <Grid item xs={6}>
+                    <Grid item xl={6} lg={6} xs={12}>
                       <Field
                         size="small"
                         variant="outlined"
@@ -288,7 +293,7 @@ export default function Registration() {
                         )}
                       </ErrorMessage>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xl={6} lg={6} xs={12}>
                       <Field
                         size="small"
                         variant="outlined"
@@ -303,7 +308,7 @@ export default function Registration() {
                         )}
                       </ErrorMessage>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xl={6} lg={6} xs={12}>
                       <Field
                         size="small"
                         variant="outlined"
@@ -319,7 +324,7 @@ export default function Registration() {
                         )}
                       </ErrorMessage>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xl={6} lg={6} xs={12}>
                       <Field
                         size="small"
                         variant="outlined"
@@ -350,26 +355,26 @@ export default function Registration() {
                         )}
                       </ErrorMessage>
                     </Grid>
+                    <Grid item xl={8} lg={8} xs={12}></Grid>
+                    <Grid item xl={4} lg={4} xs={12}>
+                      <Box
+                        display="flex"
+                        gridGap={8}
+                        justifyContent="flex-end"
+                        className={classes.buttonMargin}
+                      >
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          type="submit"
+                          color="primary"
+                          disabled={isSubmitting}
+                        >
+                          Register
+                        </Button>
+                      </Box>
+                    </Grid>
                   </Grid>
-                  <Box my={2}>
-                    <Divider />
-                  </Box>
-
-                  <Box
-                    display="flex"
-                    gridGap={8}
-                    justifyContent="flex-end"
-                    className={classes.buttonMargin}
-                  >
-                    <Button
-                      variant="contained"
-                      type="submit"
-                      color="primary"
-                      disabled={isSubmitting}
-                    >
-                      Register
-                    </Button>
-                  </Box>
                 </Form>
               )}
             </Formik>
