@@ -24,10 +24,12 @@
     "start:pm2": "npm run build && pm2 delete all && pm2 start --env production"
   },
   "dependencies": {
+    "@date-io/date-fns": "1.x",
     "@googlemaps/js-api-loader": "^1.12.1",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
+    "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.4",
     "@reduxjs/toolkit": "^1.5.1",
     "@svgr/webpack": "^5.5.0",
@@ -38,6 +40,7 @@
     "cli-boxes": "^3.0.0",
     "clsx": "^1.1.1",
     "cross-env": "^7.0.3",
+    "date-fns": "^2.28.0",
     "deep-equal": "^2.0.5",
     "dotenv": "^10.0.0",
     "formik": "^2.2.9",
