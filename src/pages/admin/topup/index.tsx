@@ -18,6 +18,7 @@ import {
   SearchWalletParams,
   topUpWallet,
 } from '@src/utils/api/walletApi'
+import SearchCaesarTable from '@src/components/SearchCaesarTable'
 import UsersTable from '@src/components/UsersTable'
 import MoneyIcon from '@material-ui/icons/Payment'
 import { makeStyles } from '@material-ui/styles'
@@ -72,23 +73,6 @@ type UsersMoney = {
 }
 
 export default function CashTransfer() {
-  const [metadata, setMetadata] = useState({
-    page: 0,
-    limit: 100,
-  })
-  const [walletData, setWalletData] = useState<CaesarWalletResponse[]>([])
-  const [getallWalletParams, setGetAllWalletParams] = useState<GetAllWalletParams>({
-    limit: 100,
-    page: 0,
-  })
-
-  useEffect(() => {
-    getAllWallet(getallWalletParams).then((res) => {
-      setWalletData(res.data)
-      setGetAllWalletParams(res.metadata)
-    })
-  }, [])
-
   const [values, setValues] = useState<CaesarReceiverInfo>({
     caesar: '',
     amount: 0,
@@ -328,28 +312,7 @@ export default function CashTransfer() {
               </Paper>
               <Grid xs={12} item>
                 <Box className={classes.miniCaesarTable}>
-                  <Paper variant="outlined">
-                    {walletData && (
-                      <UsersTable
-                        data={formatWalletData(walletData)}
-                        limit={metadata.limit}
-                        page={metadata.page}
-                        total={walletData.length}
-                        setLimit={(limit: number) => {
-                          setMetadata((prevState) => ({
-                            ...prevState,
-                            limit,
-                          }))
-                        }}
-                        setPage={(page: number) => {
-                          setMetadata((prevState) => ({
-                            ...prevState,
-                            page,
-                          }))
-                        }}
-                      ></UsersTable>
-                    )}
-                  </Paper>
+                  <SearchCaesarTable />
                 </Box>
               </Grid>
             </Grid>
@@ -359,10 +322,3 @@ export default function CashTransfer() {
     </Container>
   )
 }
-const formatWalletData = (param: CaesarWalletResponse[]) =>
-  param.map(({ description, data }) => ({
-    description,
-    caesar_coin: data?.caesar_coin,
-    peso: data?.peso,
-    dollar: data?.dollar,
-  }))
