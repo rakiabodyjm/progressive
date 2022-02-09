@@ -47,7 +47,6 @@ export default function SearchCaesarTable() {
       searchWallet(searchCaesarQuery)
         .then((res) => {
           setCaesarData(res.data)
-          console.log(res)
         })
         .catch((err: string[]) => {
           err.forEach((ea) => {
