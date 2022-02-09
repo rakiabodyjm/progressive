@@ -125,9 +125,6 @@ export default function EditInventory({
     })
       .then((res) => {
         dispatchSuccess(res.message)
-        if (revalidateFunction) {
-          revalidateFunction()
-        }
       })
       .catch((err) => {
         err.forEach((ea: string) => {
@@ -135,6 +132,9 @@ export default function EditInventory({
         })
       })
       .finally(() => {
+        if (revalidateFunction) {
+          revalidateFunction()
+        }
         setButtonLoading(false)
       })
   }
@@ -205,9 +205,7 @@ export default function EditInventory({
           <Divider />
         </Box>
         {selectedAsset ? <AssetDisplay selectedAsset={selectedAsset} /> : <CircularProgress />}
-        <Box my={1}>
-          <Divider />
-        </Box>
+        <Box my={1}>{/* <Divider /> */}</Box>
 
         <Paper variant="outlined">
           <Box p={2}>
