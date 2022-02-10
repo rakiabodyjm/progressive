@@ -37,60 +37,62 @@ const AdminTransactionsPage = () => {
     }
   }, [refElementState, refElement])
   return (
-    <Container
-      style={{
-        height: '85vh',
-        minHeight: 480,
-      }}
-      maxWidth="lg"
-      disableGutters
-    >
-      <Paper
+    <>
+      <Container
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 16,
-          height: '100%',
-          minHeight: 400,
+          height: '85vh',
+          minHeight: 480,
         }}
+        maxWidth="lg"
+        disableGutters
       >
-        <Box display="flex" justifyContent="space-between">
-          <Box>
-            {user?.admin_id && <RoleBadge uppercase>Admin</RoleBadge>}
-            <Typography noWrap color="textSecondary" variant="h6">
-              {user?.first_name}
-            </Typography>
-            <Typography variant="h4">Transactions</Typography>
-            <Typography variant="body2" color="primary">
-              Transactions of Subdistributor | DSP | Retailers
-            </Typography>
-          </Box>
-          <Box>
-            <IconButton onClick={() => {}} innerRef={moreAnchorEl}>
-              <MoreVert />
-            </IconButton>
-            <Menu anchorEl={moreAnchorEl.current} open={false}></Menu>
-          </Box>
-        </Box>
-        <Box my={2}>
-          <Divider />
-        </Box>
-        <div
+        <Paper
           style={{
-            flexGrow: 1,
-            overflow: 'hidden',
-          }}
-          ref={(ref) => {
-            if (ref) {
-              const refElement = ref as HTMLDivElement
-              setRefElement(refElement)
-            }
+            display: 'flex',
+            flexDirection: 'column',
+            padding: 16,
+            height: '100%',
+            minHeight: 400,
           }}
         >
-          <TransactionsTable height={heightOfTransactionTable} as="admin" />
-        </div>
-      </Paper>
-    </Container>
+          <Box display="flex" justifyContent="space-between">
+            <Box>
+              {user?.admin_id && <RoleBadge uppercase>Admin</RoleBadge>}
+              <Typography noWrap color="textSecondary" variant="h6">
+                {user?.first_name}
+              </Typography>
+              <Typography variant="h4">Transactions</Typography>
+              <Typography variant="body2" color="primary">
+                Transactions of Subdistributor | DSP | Retailers
+              </Typography>
+            </Box>
+            <Box>
+              <IconButton onClick={() => {}} innerRef={moreAnchorEl}>
+                <MoreVert />
+              </IconButton>
+              <Menu anchorEl={moreAnchorEl.current} open={false}></Menu>
+            </Box>
+          </Box>
+          <Box my={2}>
+            <Divider />
+          </Box>
+          <div
+            style={{
+              flexGrow: 1,
+              overflow: 'hidden',
+            }}
+            ref={(ref) => {
+              if (ref) {
+                const refElement = ref as HTMLDivElement
+                setRefElement(refElement)
+              }
+            }}
+          >
+            <TransactionsTable height={heightOfTransactionTable} as="admin" />
+          </div>
+        </Paper>
+      </Container>
+    </>
   )
 }
 
