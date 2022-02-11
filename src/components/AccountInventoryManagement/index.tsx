@@ -116,6 +116,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
   )
 
   const moreAnchorEl = useRef<HTMLElement | undefined>()
+  const [adminOnly, setAdminOnly] = useState<boolean>(false)
 
   return (
     <Paper variant="outlined">
@@ -133,9 +134,6 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
               {user?.first_name}
             </Typography>
             <Typography variant="h4">Inventory Management</Typography>
-            <Typography variant="body2" color="primary">
-              Inventory this Account owns to be sold to Subdistributor | DSP | Retailer
-            </Typography>
           </Box>
           <Box>
             <IconButton
@@ -358,8 +356,9 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
                       ...prevState,
                       inventoryId: inventory.id,
                     }))
+                    setAdminOnly(true)
                   }}
-                  formatRow={{
+                  formatTitle={{
                     caesar: 'Caesar Wallet Owner',
                     asset: 'Asset Name',
                     name: 'Inventory Name',
@@ -393,8 +392,9 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
                       ...prevState,
                       inventoryId: inventory.id,
                     }))
+                    setAdminOnly(false)
                   }}
-                  formatRow={{
+                  formatTitle={{
                     caesar: 'Caesar Wallet Owner',
                     asset: 'Asset Name',
                     name: 'Inventory Name',
@@ -428,8 +428,9 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
                       ...prevState,
                       inventoryId: inventory.id,
                     }))
+                    setAdminOnly(false)
                   }}
-                  formatRow={{
+                  formatTitle={{
                     caesar: 'Caesar Wallet Owner',
                     asset: 'Asset Name',
                     name: 'Inventory Name',
@@ -463,8 +464,9 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
                       ...prevState,
                       inventoryId: inventory.id,
                     }))
+                    setAdminOnly(false)
                   }}
-                  formatRow={{
+                  formatTitle={{
                     caesar: 'Caesar Wallet Owner',
                     asset: 'Asset Name',
                     name: 'Inventory Name',
@@ -510,6 +512,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
           {...(isAdmin && {
             isAdmin: true,
           })}
+          adminOnly={adminOnly}
         />
       </ModalWrapper>
     </Paper>
