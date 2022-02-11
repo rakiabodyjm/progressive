@@ -72,19 +72,24 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
         component={(props) => (
           <Paper
             {...props}
-            style={{
-              background: theme.palette.type === 'dark' ? grey['800'] : grey['200'],
-              /**
-               * Include styling from paperProps prop
-               */
-              ...(paperProps?.style && paperProps.style),
-            }}
             variant="outlined"
-            {...paperProps}
+            {...(paperProps && {
+              ...paperProps,
+              ...(paperProps?.style && {
+                style: {
+                  background: theme.palette.type === 'dark' ? grey['800'] : grey['200'],
+                  ...paperProps.style,
+                },
+              }),
+            })}
           />
         )}
       >
-        <Table>
+        <Table
+          style={{
+            ...(!data || (data.length < 1 && { height: '100%' })),
+          }}
+        >
           <TableHead>
             <TableRow>
               {fields?.map((title) => (
