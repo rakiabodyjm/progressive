@@ -122,16 +122,24 @@ export function LoadingScreen2({
         background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
         padding: 16,
         height: '100%',
-        ...containerProps?.style,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        ...(containerProps?.style && {
+          ...containerProps.style,
+        }),
       }}
       {...containerProps}
     >
       <Typography
+        variant="h6"
+        color="textSecondary"
         style={{
           marginBottom: 8,
-          ...textProps?.style,
+          ...(textProps?.style && {
+            ...textProps.style,
+          }),
         }}
-        variant="h6"
         {...textProps}
       >
         {textProps?.children || 'Loading'}

@@ -368,6 +368,7 @@ export default function CreatePurchase({
                   loading={loading}
                   disabled={
                     (buyerCaesar?.data?.caesar_coin || 0) < amount ||
+                    inventory.quantity < quantity ||
                     (by === 'amount' && amount === 0) ||
                     (by === 'quantity' && quantity === 0)
                   }

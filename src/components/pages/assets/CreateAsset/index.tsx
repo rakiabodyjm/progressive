@@ -109,17 +109,16 @@ export default function CreateAsset({
       .then(() => {
         dispatchSuccess(`Asset created`)
       })
-      .then(() => {
-        if (revalidateFunction) {
-          revalidateFunction()
-        }
-      })
+      .then(() => {})
       .catch((err: string[]) => {
         err.forEach((ea) => {
           dispatchError(ea)
         })
       })
       .finally(() => {
+        if (revalidateFunction) {
+          revalidateFunction()
+        }
         setIsSubmitted(false)
       })
   }

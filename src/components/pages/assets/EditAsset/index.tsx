@@ -115,9 +115,6 @@ export default function EditAsset({
     updateAsset(assetProps.id, assetDiff)
       .then(() => {
         dispatchSuccess(`Asset Updated`)
-        if (revalidateFunction) {
-          revalidateFunction()
-        }
       })
       .catch((err: string[]) => {
         err.forEach((ea) => {
@@ -125,6 +122,9 @@ export default function EditAsset({
         })
       })
       .finally(() => {
+        if (revalidateFunction) {
+          revalidateFunction()
+        }
         setIsSubmitted(false)
       })
   }

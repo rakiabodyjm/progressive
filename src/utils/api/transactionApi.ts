@@ -65,6 +65,24 @@ export interface PendingTransactionResponse {
   deleted_at: Date
 }
 
+export const getSrpKey = (account_type: UserTypesAndUser) => {
+  switch (account_type) {
+    case 'dsp': {
+      return 'srp_for_dsp'
+    }
+    case 'retailer': {
+      return 'srp_for_retailer'
+    }
+    case 'subdistributor': {
+      return 'srp_for_subd'
+    }
+    case 'user': {
+      return 'srp_for_user'
+    }
+    default:
+      return 'unit_price'
+  }
+}
 export function createPurchase({
   inventoryId,
   buyerCaesarId,
