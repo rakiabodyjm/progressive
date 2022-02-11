@@ -16,6 +16,7 @@ import type { InventoryNumbers } from '@src/components/ECommerce/RowView'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import CreatePurchase from '@src/components/pages/transactions/CreatePurchase'
 import ModalWrapper from '@src/components/ModalWrapper'
+import GridView from './GridView'
 getAllInventory()
 
 export default function ECommerce({
@@ -84,7 +85,6 @@ export default function ECommerce({
       <Paper
         style={{
           height: 'max-content',
-          maxHeight: 720,
           overflowY: 'auto',
         }}
         variant="outlined"
@@ -116,8 +116,18 @@ export default function ECommerce({
           </Grid>
           {/* {view.rowView && inventory && <RowView inventory={inventory} />} */}
           {/* {view.gridView && inventory && <GridView inventory={inventory} />} */}
-          {inventory && !loading && (
+          {inventory && !loading && view.rowView && (
             <RowView
+              srpKey={srpKey}
+              inventory={inventory}
+              onInventoryItemClick={(inventory: Inventory) => {
+                setSelectedInventory(inventory)
+                // setPurchaseModalOpen(true)
+              }}
+            />
+          )}
+          {inventory && !loading && view.gridView && (
+            <GridView
               srpKey={srpKey}
               inventory={inventory}
               onInventoryItemClick={(inventory: Inventory) => {

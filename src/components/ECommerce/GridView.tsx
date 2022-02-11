@@ -1,39 +1,181 @@
-import { Box, Grid, Paper, Typography } from '@material-ui/core'
+import {
+  Box,
+  Grid,
+  ListItem,
+  makeStyles,
+  Paper,
+  Theme,
+  Typography,
+  useTheme,
+} from '@material-ui/core'
+import { grey } from '@material-ui/core/colors'
 import { LocalOffer } from '@material-ui/icons'
+import FormLabel from '@src/components/FormLabel'
+import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import Image from 'next/image'
 
-export default function GridView({ inventory }: { inventory: Inventory[] }) {
+export type InventoryNumbers = {
+  [P in keyof Inventory]: Inventory[P] extends number ? Inventory[P] : never
+}
+
+export default function GridView({
+  inventory,
+  srpKey,
+  onInventoryItemClick,
+}: //   account_type,
+{
+  inventory: Inventory[]
+  srpKey: keyof InventoryNumbers
+  onInventoryItemClick?: (inventoryClicked: Inventory) => void
+}) {
+  const theme: Theme = useTheme()
   return (
     <>
-      {inventory.map((inventory) => (
-        <Grid item xs={4} md={3} lg={2} key={inventory.id}>
-          <Paper variant="outlined">
-            <Box p={2}>
-              <Grid container justifyContent="center">
-                <Grid item xs={10}>
-                  <Image src="/apple-touch-icon.png" width={150} height={150} />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h6" noWrap>
-                    Title: {inventory.name}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" noWrap>
-                    Price: {inventory.unit_price}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" noWrap>
-                    Qty: {inventory.quantity}
-                  </Typography>
-                </Grid>
+      <Grid container spacing={2}>
+        {inventory?.length > 0 &&
+          inventory
+            ?.map((ea) => ({
+              ...ea,
+              srp: ea[srpKey] as number,
+            }))
+            .map((inventory) => (
+              <Grid
+                onClick={() => {
+                  if (onInventoryItemClick) {
+                    onInventoryItemClick(inventory)
+                  }
+                }}
+                key={inventory.id}
+                item
+                xs={6}
+                md={4}
+                lg={3}
+              >
+                <InventoryRow inventory={inventory} />
               </Grid>
-            </Box>
-          </Paper>
-        </Grid>
-      ))}
+            ))}
+        {inventory?.length === 0 && (
+          <Grid item xs={12}>
+            <Paper
+              variant="outlined"
+              style={{
+                padding: 32,
+                background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+              }}
+            >
+              <Typography
+                variant="h6"
+                align="center"
+                style={{
+                  fontWeight: 600,
+                }}
+                color="primary"
+              >
+                No Inventory Found
+              </Typography>
+            </Paper>
+          </Grid>
+        )}
+      </Grid>
     </>
+  )
+}
+const useStyles = makeStyles((theme: Theme) => ({
+  container: {
+    padding: 0,
+    '&:hover': {
+      '& $image': {
+        filter: 'none !important',
+      },
+    },
+  },
+  image: {
+    filter: 'grayscale(40%) !important',
+    maxWidth: `200px !important`,
+  },
+  rowGap: {
+    alignItems: 'center',
+
+    '& > *': {
+      marginBottom: 8,
+    },
+  },
+  imageContentContainer: {
+    alignItems: 'center',
+    padding: theme.spacing(1.5),
+  },
+  imageContainer: {
+    height: 90,
+  },
+  paperContainer: {
+    width: '100%',
+    overflow: 'hidden',
+    [theme.breakpoints.down('xs')]: {
+      maxWidth: 240,
+      margin: 'auto',
+    },
+  },
+  flexStart: {
+    alignSelf: 'flex-start',
+  },
+}))
+
+const InventoryRow = ({
+  inventory,
+}: {
+  inventory: Inventory & {
+    srp: number
+  }
+}) => {
+  const classes = useStyles()
+  return (
+    <Paper className={classes.paperContainer}>
+      <ListItem component="div" button className={classes.container}>
+        <Grid container className={classes.imageContentContainer}>
+          <Grid xs={12} item className={classes.imageContainer}>
+            <Box
+              style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <Image
+                objectFit="contain"
+                src="/assets/realm1000-logo-symbol.png"
+                layout="fill"
+                className={classes.image}
+              />
+            </Box>
+          </Grid>
+          <Grid className={classes.rowGap} item xs={12}>
+            <Box>
+              <FormLabel color="primary">Name:</FormLabel>
+              <Typography variant="body2">{inventory.name}</Typography>
+            </Box>
+            <Box>
+              <FormLabel>Seller:</FormLabel>
+              <Typography variant="body2" noWrap>
+                {inventory.caesar.description}
+              </Typography>
+            </Box>
+            <Box>
+              <FormLabel>Price:</FormLabel>
+              <Typography variant="body1">
+                <span
+                  style={{
+                    fontWeight: 700,
+                  }}
+                >
+                  {inventory.srp}
+                </span>{' '}
+                CCoins
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </ListItem>
+    </Paper>
   )
 }

@@ -1,9 +1,14 @@
 import { List } from '@material-ui/core'
-import { AllInbox, ListAlt } from '@material-ui/icons'
+import { AllInbox, ListAlt, LocalGroceryStore, Store } from '@material-ui/icons'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 
 export default function SubMenuItems({ open }: { open: boolean }) {
   const subMenuItems = [
+    {
+      title: 'E-Commerce',
+      icon: <LocalGroceryStore />,
+      url: '/ecommerce',
+    },
     {
       title: 'Inventory',
       icon: <AllInbox />,
@@ -17,8 +22,8 @@ export default function SubMenuItems({ open }: { open: boolean }) {
   ]
   return (
     <List>
-      {subMenuItems.map((adminItem) => (
-        <RenderListItem key={adminItem.url} open={open} {...adminItem} />
+      {subMenuItems.map((item) => (
+        <RenderListItem key={item.url} open={open} {...item} />
       ))}
     </List>
   )
