@@ -37,6 +37,7 @@ export default function SearchCaesarTable() {
   })
   const [caesarData, setCaesarData] = useState<CaesarWalletResponse[]>([])
   const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
+  const paperHeight = 400
   useEffect(() => {
     setIsLoading(true)
     if (!searchCaesarQuery) {
@@ -47,6 +48,7 @@ export default function SearchCaesarTable() {
       searchWallet(searchCaesarQuery)
         .then((res) => {
           setCaesarData(res.data)
+          setMetaData(res.metadata)
         })
         .catch((err: string[]) => {
           err.forEach((ea) => {
@@ -86,16 +88,21 @@ export default function SearchCaesarTable() {
               page={metadata.page}
               total={metadata.total}
               setLimit={(limit: number) => {
-                setCaesarData((prevState) => ({
+                setSearchCaesarQuery((prevState) => ({
                   ...prevState,
                   limit,
                 }))
               }}
               setPage={(page: number) => {
-                setCaesarData((prevState) => ({
+                setSearchCaesarQuery((prevState) => ({
                   ...prevState,
                   page,
                 }))
+              }}
+              paperProps={{
+                style: {
+                  ...(paperHeight && { height: paperHeight! - 50 }),
+                },
               }}
             />
           )}
