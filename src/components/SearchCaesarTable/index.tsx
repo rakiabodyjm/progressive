@@ -23,7 +23,7 @@ type CaesarMetadata = {
   total: number
 }
 
-export default function SearchCaesarTable() {
+export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked: boolean }) {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const dispatchError = useErrorNotification()
   const [searchCaesarQuery, setSearchCaesarQuery] = useState<SearchCaesarParams>({
@@ -59,7 +59,7 @@ export default function SearchCaesarTable() {
           setIsLoading(false)
         })
     }
-  }, [dispatchError, searchCaesarQuery])
+  }, [dispatchError, searchCaesarQuery, isButtonClicked])
 
   return (
     <Box>

@@ -81,6 +81,7 @@ export default function CashTransfer() {
   const classes = useStyles()
   const dispatch = useDispatch()
   const dispatchError = useErrorNotification()
+  const [buttonTrigged, setButtonTriggered] = useState<boolean>(false)
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -98,24 +99,33 @@ export default function CashTransfer() {
   }
 
   const handleSubmit = () => {
-    topUpWallet(values)
-      .then((res) => {
-        dispatch(
-          setNotification({
-            message: `Top Up Successful`,
-            type: NotificationTypes.SUCCESS,
-          })
-        )
-      })
-      .catch((err: string[]) => {
-        err.forEach((ea) => {
-          dispatchError(ea)
+    if (values.amount > 0) {
+      topUpWallet(values)
+        .then((res) => {
+          dispatch(
+            setNotification({
+              message: `Top Up Successful`,
+              type: NotificationTypes.SUCCESS,
+            })
+          )
         })
+        .catch((err: string[]) => {
+          err.forEach((ea) => {
+            dispatchError(ea)
+          })
+        })
+        .finally(() => {
+          if (buttonTrigged) {
+            setButtonTriggered(false)
+          } else {
+            setButtonTriggered(true)
+          }
+        })
+      setValues({
+        ...values,
+        amount: 0,
       })
-    setValues({
-      ...values,
-      amount: 0,
-    })
+    }
   }
 
   return (
@@ -312,7 +322,7 @@ export default function CashTransfer() {
               </Paper>
               <Grid xs={12} item>
                 <Box className={classes.miniCaesarTable}>
-                  <SearchCaesarTable />
+                  <SearchCaesarTable isButtonClicked={buttonTrigged} />
                 </Box>
               </Grid>
             </Grid>
