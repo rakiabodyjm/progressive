@@ -89,7 +89,8 @@ export default function CreateInventory({
     if (error) {
       dispatchError(error.message)
     }
-  }, [error])
+    console.log('inventory', inventory)
+  }, [error, inventory])
 
   const user = useSelector(userDataSelector)
 
@@ -111,9 +112,6 @@ export default function CreateInventory({
     createInventory(inventory as Required<CreateInventoryPost>)
       .then((res) => {
         dispatchSuccess(`Created Inventory for ${res.caesar.description}`)
-        if (revalidateFunction) {
-          revalidateFunction()
-        }
       })
       .catch((err: string[]) => {
         err.forEach((ea) => {
@@ -121,6 +119,9 @@ export default function CreateInventory({
         })
       })
       .finally(() => {
+        if (revalidateFunction) {
+          revalidateFunction()
+        }
         setButtonLoading(false)
       })
   }

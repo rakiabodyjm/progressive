@@ -120,22 +120,20 @@ const TransactionsTable = ({
           }}
           paperProps={{
             style: {
-              ...(height && { height: height! - 50 }),
+              ...(height && { height }),
             },
           }}
         />
       )}
 
       {loading && (
-        <Paper
-          style={{
-            height: '100%',
-            overflow: 'hidden',
+        <LoadingScreen2
+          containerProps={{
+            style: {
+              height,
+            },
           }}
-          variant="outlined"
-        >
-          <LoadingScreen2 />
-        </Paper>
+        />
       )}
     </>
   )

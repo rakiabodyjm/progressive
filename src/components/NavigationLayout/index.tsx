@@ -1,4 +1,5 @@
-import { makeStyles } from '@material-ui/core'
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+import { Box, ClickAwayListener, makeStyles } from '@material-ui/core'
 import Drawer from '@src/components/NavigationLayout/Drawer'
 import Nav from '@src/components/NavigationLayout/Nav'
 import { RootState } from '@src/redux/store'
@@ -53,6 +54,19 @@ export default function NavigationLayout({ children }: { children: JSX.Element }
         open={open}
       />
       <Nav open={open} handleDrawerOpen={handleDrawerOpen} />
+      {open && (
+        <Box
+          onClick={handleDrawerClose}
+          style={{
+            position: 'fixed',
+            content: '""',
+            height: '100%',
+            left: 0,
+            right: 0,
+            zIndex: 1,
+          }}
+        />
+      )}
       <main className={classes.content}>
         <div className={classes.toolbar} />
         {children}
