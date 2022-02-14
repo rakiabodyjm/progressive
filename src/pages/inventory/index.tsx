@@ -1,57 +1,51 @@
-import { Divider, Paper } from '@material-ui/core'
+import { Paper, Box, Typography, Divider, Grid } from '@material-ui/core'
 import AccountInventoryManagement from '@src/components/AccountInventoryManagement'
+import CaesarTabs from '@src/components/CaesarTabs'
 import { userDataSelector } from '@src/redux/data/userSlice'
+import { getWallet } from '@src/utils/api/walletApi'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { UserTypesAndUser } from '../admin/accounts'
 
-export default function InventoryPage() {
-  const user = useSelector(userDataSelector)
+export interface accountIdTypes {
+  role: string
+  role_id: string
+}
+
+export default function Inventory() {
+  const [accountId, setAccountId] = useState<accountIdTypes>({
+    role: '',
+    role_id: '',
+  })
+
   return (
     <div>
-      <Paper
-        style={{
-          padding: 16,
-        }}
-      >
-        {user?.admin_id && (
-          <div>
-            <AccountInventoryManagement accountId={user?.admin_id} />
-            <Divider
-              style={{
-                margin: '16px 0px',
-              }}
-            />
-          </div>
-        )}
-        {user?.subdistributor_id && (
-          <div>
-            <AccountInventoryManagement accountId={user?.subdistributor_id} />
-            <Divider
-              style={{
-                margin: '16px 0px',
-              }}
-            />
-          </div>
-        )}
-        {user?.dsp_id && (
-          <div>
-            <AccountInventoryManagement accountId={user?.dsp_id} />
-            <Divider
-              style={{
-                margin: '16px 0px',
-              }}
-            />
-          </div>
-        )}
-        {user?.retailer_id && (
-          <div>
-            <AccountInventoryManagement accountId={user?.retailer_id} />
-            <Divider
-              style={{
-                margin: '16px 0px',
-              }}
-            />
-          </div>
-        )}
+      <Paper>
+        <Box p={2}>
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography variant="h4">Inventory Table</Typography>
+              <Typography variant="body1" color="primary">
+                Inventory table through Caesar Account Types
+              </Typography>
+
+              <Box my={2}>
+                <Divider />
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <CaesarTabs
+                onActiveCaesarChange={(caesarActive, [roleAccountActive, roleIdAccountActive]) => {
+                  setAccountId({ role: roleAccountActive, role_id: roleIdAccountActive })
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Box my={2} />
+              <AccountInventoryManagement accountId={accountId.role_id} />
+            </Grid>
+          </Grid>
+        </Box>
       </Paper>
     </div>
   )

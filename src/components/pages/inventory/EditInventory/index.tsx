@@ -51,11 +51,13 @@ export default function EditInventory({
   modal,
   revalidateFunction,
   isAdmin,
+  adminOnly,
 }: {
   inventoryId: Inventory['id']
   modal?: () => void
   revalidateFunction?: () => void
   isAdmin?: true
+  adminOnly: boolean
 }) {
   const classes = useStyles()
   // const { query } = useRouter()
@@ -226,10 +228,10 @@ export default function EditInventory({
               spacing={1}
             >
               <Grid item xs={6} className={classes.formContainer}>
-                <Paper variant="outlined">
+                <Paper variant="outlined" style={{ height: 'max-content' }}>
                   <Box p={1}>
                     <Grid container spacing={1}>
-                      {!!isAdmin && (
+                      {!!isAdmin && adminOnly && (
                         <>
                           <Grid container spacing={1}>
                             <Grid item xs={7}>
