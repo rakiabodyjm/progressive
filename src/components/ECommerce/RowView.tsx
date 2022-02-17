@@ -31,7 +31,7 @@ export default function RowView({
 }) {
   const theme: Theme = useTheme()
   return (
-    <>
+    <Box style={{ maxHeight: 550, overflowY: 'auto', overflowX: 'hidden' }}>
       <Grid container spacing={2}>
         {inventory?.length > 0 &&
           inventory
@@ -76,7 +76,7 @@ export default function RowView({
           </Grid>
         )}
       </Grid>
-    </>
+    </Box>
   )
 }
 const useStyles = makeStyles((theme: Theme) => ({

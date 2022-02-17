@@ -12,9 +12,9 @@ export default function ECommercePage() {
         <Box p={2}>
           <Grid container>
             <Grid item xs={12}>
-              <Typography variant="h4">Inventory Table</Typography>
+              <Typography variant="h4">E-Commerce</Typography>
               <Typography variant="body1" color="primary">
-                Inventory table through Caesar Account Types
+                Buy Inventory Items using your Caesar Account
               </Typography>
 
               <Box my={2}>

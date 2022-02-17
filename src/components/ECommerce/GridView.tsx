@@ -31,7 +31,7 @@ export default function GridView({
 }) {
   const theme: Theme = useTheme()
   return (
-    <>
+    <Box style={{ maxHeight: 600, overflowY: 'auto', overflowX: 'hidden' }}>
       <Grid container spacing={2}>
         {inventory?.length > 0 &&
           inventory
@@ -78,7 +78,7 @@ export default function GridView({
           </Grid>
         )}
       </Grid>
-    </>
+    </Box>
   )
 }
 const useStyles = makeStyles((theme: Theme) => ({
@@ -103,14 +103,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   imageContentContainer: {
     alignItems: 'center',
-    padding: theme.spacing(1.5),
+    padding: theme.spacing(3),
   },
   imageContainer: {
     height: 90,
   },
   paperContainer: {
     width: '100%',
-    overflow: 'hidden',
+    overflow: 'auto',
     [theme.breakpoints.down('xs')]: {
       maxWidth: 240,
       margin: 'auto',
@@ -169,7 +169,7 @@ const InventoryRow = ({
                   }}
                 >
                   {inventory.srp}
-                </span>{' '}
+                </span>
                 CCoins
               </Typography>
             </Box>

@@ -90,28 +90,30 @@ export default function ECommerce({
         variant="outlined"
       >
         <Box p={2}>
-          <Grid spacing={2} container>
+          <Grid container>
             <Grid item xs={12}>
-              <Grid container justifyContent="flex-end" alignItems="center">
-                <Grid item>
-                  <IconButton
-                    onClick={() => {
-                      setView({ rowView: true, gridView: false })
-                    }}
-                  >
-                    <ListAlt color={view.rowView ? 'primary' : undefined} />
-                  </IconButton>
+              <Box pb={2}>
+                <Grid container justifyContent="flex-end" alignItems="center">
+                  <Grid item>
+                    <IconButton
+                      onClick={() => {
+                        setView({ rowView: true, gridView: false })
+                      }}
+                    >
+                      <ListAlt color={view.rowView ? 'primary' : undefined} />
+                    </IconButton>
+                  </Grid>
+                  <Grid item>
+                    <IconButton
+                      onClick={() => {
+                        setView({ rowView: false, gridView: true })
+                      }}
+                    >
+                      <Apps color={view.gridView ? 'primary' : undefined} />
+                    </IconButton>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <IconButton
-                    onClick={() => {
-                      setView({ rowView: false, gridView: true })
-                    }}
-                  >
-                    <Apps color={view.gridView ? 'primary' : undefined} />
-                  </IconButton>
-                </Grid>
-              </Grid>
+              </Box>
             </Grid>
           </Grid>
           {/* {view.rowView && inventory && <RowView inventory={inventory} />} */}
@@ -160,25 +162,27 @@ export default function ECommerce({
               </Paper>
             </Box>
           )}
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 20, 50, 100]}
-            count={inventoryMetadata?.total || 0}
-            rowsPerPage={inventoryMetadata?.limit || 5}
-            page={inventoryMetadata?.page || 0}
-            onPageChange={(_, page) => {
-              setPaginateParams((prev) => ({
-                ...prev,
-                page,
-              }))
-            }}
-            onRowsPerPageChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-              setPaginateParams((prev) => ({
-                ...prev,
-                limit: Number(e.target.value),
-              }))
-            }}
-            component="div"
-          />
+          <Box pt={2}>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 20, 50, 100]}
+              count={inventoryMetadata?.total || 0}
+              rowsPerPage={inventoryMetadata?.limit || 5}
+              page={inventoryMetadata?.page || 0}
+              onPageChange={(_, page) => {
+                setPaginateParams((prev) => ({
+                  ...prev,
+                  page,
+                }))
+              }}
+              onRowsPerPageChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                setPaginateParams((prev) => ({
+                  ...prev,
+                  limit: Number(e.target.value),
+                }))
+              }}
+              component="div"
+            />
+          </Box>
         </Box>
       </Paper>
 
