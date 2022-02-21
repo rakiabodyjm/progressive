@@ -82,6 +82,10 @@ const userAccountFieldsFull = (params: UserResponse) => [
     value: params.id,
   },
   {
+    key: 'Caesar Wallet ID',
+    value: params.caesar_wallet.id,
+  },
+  {
     key: 'Name',
     value: `${params.first_name} ${params.last_name}`,
   },
