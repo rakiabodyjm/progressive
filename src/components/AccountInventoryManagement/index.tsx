@@ -185,7 +185,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
                           onChange={(e, checked) => {
                             setInventoryOptions((prevState) => ({
                               ...prevState,
-                              user: checked ? accountId : undefined,
+                              subdistributor: checked ? accountId : undefined,
                             }))
                           }}
                           checked={!!inventoryOptions.subdistributor}
