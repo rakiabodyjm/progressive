@@ -59,7 +59,7 @@ const editableDspFields: (args: DspRegisterParams2) => EditDspAccountFormValues 
   subdistributor,
 })
 
-export default function CreateDSPAccount({
+export default function EditDSPAccount({
   modal: modalClose,
   dsp,
   ...restProps
