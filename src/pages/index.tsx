@@ -26,6 +26,7 @@ import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { getWallet } from '@src/utils/api/walletApi'
 import { TabPanel } from '@material-ui/lab'
 import { getAllInventory, Inventory } from '@src/utils/api/inventoryApi'
+import AccountSummaryCard from '@src/components/AccountSummaryCard'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -148,24 +149,24 @@ export default function AccountDashboard() {
           <Grid item xs={12} md={6}>
             <Grid spacing={2} container>
               <Grid item xs={12}>
-                {account && <UserAccountSummaryCard account={account} />}
+                {account && <AccountSummaryCard account={account} role={account.id} />}
               </Grid>
 
               {account?.subdistributor && (
                 <Grid item xs={12}>
                   {account && (
-                    <SubdistributorAccountSummaryCard subdistributor={account.subdistributor} />
+                    <AccountSummaryCard account={account} role={account.subdistributor.id} />
                   )}
                 </Grid>
               )}
               {account?.dsp && (
                 <Grid item xs={12}>
-                  {account && <DSPAccountSummaryCard dsp={account.dsp} />}
+                  {account && <AccountSummaryCard account={account} role={account.dsp.id} />}
                 </Grid>
               )}
               {account?.retailer && (
                 <Grid item xs={12}>
-                  {account && <RetailerAccountSummaryCard retailer={account.retailer} />}
+                  {account && <AccountSummaryCard account={account} role={account.retailer.id} />}
                 </Grid>
               )}
             </Grid>
