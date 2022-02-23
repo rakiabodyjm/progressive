@@ -94,7 +94,22 @@ export default function SubdistributorDSPAccountView() {
                     Edit DSP Account
                   </Button>
                 )}
+                <Button
+                  onClick={() => {
+                    router.push({
+                      pathname: '/transfer/subdistributor/dsp/[id]',
+                      query: {
+                        id: dsp?.id,
+                      },
+                    })
+                  }}
+                  variant="outlined"
+                  color="primary"
+                >
+                  Transfer Inventory
+                </Button>
               </Box>
+
               <ModalWrapper
                 open={modalOpen}
                 onClose={() => {

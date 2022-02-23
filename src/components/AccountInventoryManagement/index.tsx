@@ -34,7 +34,7 @@ import FormLabel from '@src/components/FormLabel'
 const EditInventory = dynamic(() => import('@src/components/pages/inventory/EditInventory'))
 const CreateInventory = dynamic(() => import('@src/components/pages/inventory/CreateInventory'))
 
-export default function AccountInventoryManagement({ accountId }: { accountId: any }) {
+export default function AccountInventoryManagement({ accountId }: { accountId: string }) {
   const user = useSelector(userDataSelector)
   const router = useRouter()
   const [acc, setAcc] = useState('dsp')
@@ -51,14 +51,30 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
 
   const [moreOptionsOpen, setMoreOptionsOpen] = useState<boolean>(false)
   const [inventoryOptions, setInventoryOptions] = useState<
-    Pick<GetAllInventoryDto, 'active' | 'admin'>
+    Pick<GetAllInventoryDto, 'active' | 'admin' | 'dsp' | 'subdistributor' | 'retailer'>
   >({
     active: undefined,
     admin: undefined,
+    dsp: undefined,
+    subdistributor: undefined,
+    retailer: undefined,
   })
-
+  useEffect(() => {
+    if (accountId === user?.admin_id) {
+      setInventoryOptions({ admin: accountId })
+    }
+    if (accountId === user?.dsp_id) {
+      setInventoryOptions({ dsp: accountId })
+    }
+    if (accountId === user?.subdistributor_id) {
+      setInventoryOptions({ subdistributor: accountId })
+    }
+    if (accountId === user?.retailer_id) {
+      setInventoryOptions({ retailer: accountId })
+    }
+  }, [accountId, user?.admin_id, user?.dsp_id, user?.retailer_id, user?.subdistributor_id])
   const fetchInventory = useCallback(() => {
-    getAllInventory({ ...inventoryPaginationParameters })
+    getAllInventory({ ...inventoryPaginationParameters, ...inventoryOptions })
       .then((res) => {
         // setInventoryItems(res.data)
         setInventoryMetadata(res.metadata)
@@ -78,7 +94,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
       .catch((err) => {
         console.error(err)
       })
-  }, [inventoryPaginationParameters])
+  }, [inventoryOptions, inventoryPaginationParameters])
 
   useEffect(() => {
     fetchInventory()
