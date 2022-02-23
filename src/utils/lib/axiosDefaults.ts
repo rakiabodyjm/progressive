@@ -11,7 +11,8 @@ export default function axiosDefaults() {
    */
   axios.interceptors.request.use(
     (config) => {
-      const token = window?.localStorage.getItem('token')
+      const token = process?.browser ? window?.localStorage.getItem('token') : null
+
       if (token) {
         return {
           ...config,
