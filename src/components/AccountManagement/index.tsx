@@ -30,10 +30,10 @@ import SubdistributorAccountSummaryCard from '../SubdistributorAccountSummaryCar
 import SubdistributorSmallCard from '../SubdistributorSmallCard'
 
 export default function AccountManagement({
-  accountRole,
+  accountAs,
   accountGet,
 }: {
-  accountRole: string | undefined
+  accountAs: string | undefined
   accountGet: string | undefined
 }) {
   const user = useSelector(userDataSelector)
@@ -91,14 +91,14 @@ export default function AccountManagement({
         <Grid container>
           <Grid item xs={12}>
             {account &&
-              accountRole === user?.subdistributor_id &&
+              accountAs === user?.subdistributor_id &&
               account.roles
                 .filter((role) => role === 'subdistributor')
                 .map((filtered) => (
                   <RoleBadge key={filtered.toString()}>{filtered.toUpperCase()}</RoleBadge>
                 ))}
             {account &&
-              accountRole === user?.dsp_id &&
+              accountAs === user?.dsp_id &&
               account.roles
                 .filter((role) => role === 'dsp')
                 .map((filtered) => (
@@ -156,7 +156,7 @@ export default function AccountManagement({
               }}
             />
           </Grid>
-          {account?.subdistributor && accountRole === user?.subdistributor_id && (
+          {account?.subdistributor && accountAs === user?.subdistributor_id && (
             <>
               <Box my={2}>
                 <Divider />
@@ -198,7 +198,7 @@ export default function AccountManagement({
               </Grid>
             </>
           )}
-          {account?.dsp && accountRole === user?.dsp_id && (
+          {account?.dsp && accountAs === user?.dsp_id && (
             <>
               <Box my={2}>
                 <Divider />
