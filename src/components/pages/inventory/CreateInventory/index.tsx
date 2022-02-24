@@ -176,7 +176,7 @@ export default function CreateInventory({
         </Box>
         <Box>
           <Grid container spacing={1}>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6} lg={6}>
               <Paper
                 style={{
                   height: '100%',
@@ -305,7 +305,9 @@ export default function CreateInventory({
                 flexGrow: 1,
               }}
               item
-              xs={6}
+              xs={12}
+              md={6}
+              lg={6}
             >
               <Paper
                 style={{
