@@ -145,7 +145,7 @@ export default memo(
                     }}
                     variant="subtitle2"
                   >
-                    ${caesarCurrencies.dollar}
+                    ${caesarCurrencies.dollar.toFixed(2)}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>

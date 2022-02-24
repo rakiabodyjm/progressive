@@ -310,7 +310,7 @@ export default function WalletSmallCard({
                   }}
                   variant="caption"
                 >
-                  ${data?.data?.dollar}
+                  ${data?.data?.dollar.toFixed(2)}
                   {/* {data?.retailer?.length || 0} */}
                   {/* {data?} */}
                 </Typography>
