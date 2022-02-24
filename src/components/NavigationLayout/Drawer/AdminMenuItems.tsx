@@ -22,16 +22,6 @@ export default function AdminMenuItems({ open }: { open: boolean }) {
     },
 
     {
-      title: 'Inventory',
-      icon: <AllInbox />,
-      url: '/admin/inventory',
-    },
-    {
-      title: 'Transactions',
-      icon: <ListAlt />,
-      url: '/admin/transactions',
-    },
-    {
       title: 'Cash Reload',
       icon: <AccountBalanceWallet />,
       url: '/admin/topup',
