@@ -1,23 +1,25 @@
-import { Paper, Box, Typography, Divider, Grid } from '@material-ui/core'
+import { Paper, Box, Typography, Divider, Grid, Theme, useTheme } from '@material-ui/core'
 import AccountInventoryManagement from '@src/components/AccountInventoryManagement'
 import CaesarTabs from '@src/components/CaesarTabs'
 import { userDataSelector } from '@src/redux/data/userSlice'
+
 import { getWallet } from '@src/utils/api/walletApi'
+import { grey } from '@material-ui/core/colors'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { UserTypesAndUser } from '../admin/accounts'
 
-export interface accountIdTypes {
-  role: string
-  role_id: string
+export interface AccountIdTypes {
+  role: string | undefined
+  role_id: string | undefined
 }
 
 export default function Inventory() {
-  const [accountId, setAccountId] = useState<accountIdTypes>({
-    role: '',
-    role_id: '',
+  const [accountId, setAccountId] = useState<AccountIdTypes>({
+    role: undefined,
+    role_id: undefined,
   })
-
+  const theme: Theme = useTheme()
   return (
     <div>
       <Paper>
@@ -35,14 +37,40 @@ export default function Inventory() {
             </Grid>
             <Grid item xs={12}>
               <CaesarTabs
-                onActiveCaesarChange={(caesarActive, [roleAccountActive, roleIdAccountActive]) => {
-                  setAccountId({ role: roleAccountActive, role_id: roleIdAccountActive })
+                onActiveCaesarChange={(caesarActive, accountActive) => {
+                  if (accountActive) {
+                    const [role, accountId] = accountActive
+                    setAccountId({ role, role_id: accountId })
+                  }
                 }}
               />
             </Grid>
             <Grid item xs={12}>
               <Box my={2} />
-              <AccountInventoryManagement accountId={accountId.role_id} />
+              {accountId.role_id ? (
+                <AccountInventoryManagement accountId={accountId.role_id} />
+              ) : (
+                <>
+                  <Paper
+                    style={{
+                      background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                    }}
+                  >
+                    <Box p={1}>
+                      <Typography
+                        style={{
+                          fontWeight: 700,
+                        }}
+                        color="textSecondary"
+                        align="center"
+                        variant="body2"
+                      >
+                        No Caesar Account Found
+                      </Typography>
+                    </Box>
+                  </Paper>
+                </>
+              )}
             </Grid>
           </Grid>
         </Box>

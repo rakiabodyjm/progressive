@@ -88,7 +88,7 @@ export default function AccountDashboard() {
           )
         })
     }
-  }, [user])
+  }, [dispatch, user])
 
   const classes = useStyles()
 
@@ -220,13 +220,16 @@ export default function AccountDashboard() {
                   <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
                 </Grid>
               )}
-              <Grid item xs={12}>
-                <Divider
-                  style={{
-                    margin: '1px 0px',
-                  }}
-                />
-              </Grid>
+              {account && (
+                <Grid item xs={12}>
+                  <Divider
+                    style={{
+                      margin: '1px 0px',
+                    }}
+                  />
+                </Grid>
+              )}
+
               <Grid item xs={12}>
                 <Grid container spacing={2}>
                   {account?.dsp && (
