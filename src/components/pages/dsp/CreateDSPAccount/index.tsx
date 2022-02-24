@@ -29,6 +29,7 @@ import { useDispatch } from 'react-redux'
 import { extractErrorFromResponse } from '@src/utils/api/common'
 import useNotification from '@src/utils/hooks/useNotification'
 import UserAutoComplete from '@src/components/UserAutoComplete'
+import AsyncButton from '@src/components/AsyncButton'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
@@ -99,8 +100,22 @@ export default function CreateDSPAccount({
 
   const dispatchNotif = useNotification()
   const dispatch = useDispatch()
+  const setButtonLoading = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      loading: typeof param !== 'boolean' ? true : param,
+    }))
+  }
 
+  const [buttonProps, setButtonProps] = useState<{
+    loading: boolean
+    disabled: boolean
+  }>({
+    loading: false,
+    disabled: true,
+  })
   const handleSubmit = () => {
+    setButtonLoading()
     // const checkAreaID = newDspAccount.area_id.length > 0
     // const checkSubdistributor = newDspAccount.subdistributor.length > 0
     const schemaChecker = {
@@ -150,17 +165,20 @@ export default function CreateDSPAccount({
       .catch((err: string[]) => {
         if (Array.isArray(err)) {
           err.forEach((ea) => {
-            dispatch({
-              type: NotificationTypes.ERROR,
+            dispatchNotif({
               message: ea,
+              type: NotificationTypes.ERROR,
             })
           })
         } else {
-          dispatch({
+          dispatchNotif({
+            message: err,
             type: NotificationTypes.ERROR,
-            message: extractErrorFromResponse(err),
           })
         }
+      })
+      .finally(() => {
+        setButtonLoading(false)
       })
   }
   const { entity: autoLoadSubdistributor, loading: autoLoadSubdistributorLoading } = useFetchEntity(
@@ -366,17 +384,15 @@ export default function CreateDSPAccount({
           </Grid>
         </Box>
         <Box display="flex" mt={2} gridGap={8} justifyContent="flex-end">
-          <Button
-            variant="contained"
-            type="submit"
-            onClick={(e) => {
-              e.preventDefault()
+          <AsyncButton
+            onClick={() => {
               handleSubmit()
             }}
-            color="primary"
+            loading={buttonProps.loading}
+            // disabled={buttonProps.disabled}
           >
             Confirm
-          </Button>
+          </AsyncButton>
         </Box>
       </Box>
     </Paper>

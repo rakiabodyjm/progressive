@@ -96,6 +96,20 @@ export default function SubdistributorRetailerAccountView() {
                 Edit Retailer Account
               </Button>
             )}
+            <Button
+              onClick={() => {
+                router.push({
+                  pathname: '/transfer/subdistributor/retailer/[id]',
+                  query: {
+                    id: retailer?.id,
+                  },
+                })
+              }}
+              variant="outlined"
+              color="primary"
+            >
+              Transfer Inventory
+            </Button>
           </Box>
           <ModalWrapper
             open={modalOpen}

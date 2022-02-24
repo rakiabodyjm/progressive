@@ -1,9 +1,8 @@
 /* eslint-disable no-redeclare */
 
-import { Box, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, Button, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
 import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
 import RoleBadge from '@src/components/RoleBadge'
 import useSWR from 'swr'
@@ -35,12 +34,43 @@ export default function DSPRetailerAccountView() {
   const { query } = router
   const { id } = query
   const theme: Theme = useTheme()
-  const [modalsOpen, setModalsOpen] = useState<boolean>(false)
   const { data: retailer, error } = useSWR([id], getRetailer)
-
   const classes = useStyles()
   return (
     <div className={classes.root}>
+      <Box
+        style={{
+          position: 'sticky',
+          top: theme.spacing(9),
+          zIndex: theme.zIndex.drawer,
+        }}
+        mb={2}
+      >
+        <Paper>
+          <Box
+            style={{
+              display: 'flex',
+              gap: 16,
+            }}
+            p={2}
+          >
+            <Button
+              onClick={() => {
+                router.push({
+                  pathname: '/transfer/dsp/retailer/[id]',
+                  query: {
+                    id: retailer?.id,
+                  },
+                })
+              }}
+              variant="outlined"
+              color="primary"
+            >
+              Transfer Inventory
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
       <Paper
         style={{
           padding: 16,

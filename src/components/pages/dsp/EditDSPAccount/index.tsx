@@ -30,6 +30,8 @@ import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComple
 import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { SubdistributorResponseType, searchSubdistributor } from '@src/utils/api/subdistributorApi'
+import AsyncButton from '@src/components/AsyncButton'
+import useNotification from '@src/utils/hooks/useNotification'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
@@ -57,7 +59,7 @@ const editableDspFields: (args: DspRegisterParams2) => EditDspAccountFormValues 
   subdistributor,
 })
 
-export default function CreateDSPAccount({
+export default function EditDSPAccount({
   modal: modalClose,
   dsp,
   ...restProps
@@ -127,6 +129,7 @@ export default function CreateDSPAccount({
   const [mapidLoading, setMapidLoading] = useState(false)
   const timeout = useRef<ReturnType<typeof setTimeout> | undefined>()
   const dispatch = useDispatch()
+  const dispatchNotif = useNotification()
   useEffect(() => {
     if (timeout.current) {
       clearTimeout(timeout.current)
@@ -151,8 +154,23 @@ export default function CreateDSPAccount({
       }
     }
   }, [mapidQuery])
+  const setButtonLoading = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      loading: typeof param !== 'boolean' ? true : param,
+    }))
+  }
+
+  const [buttonProps, setButtonProps] = useState<{
+    loading: boolean
+    disabled: boolean
+  }>({
+    loading: false,
+    disabled: true,
+  })
 
   const handleEdit = () => {
+    setButtonLoading()
     const schemaChecker = {
       dsp_code: (value: string) =>
         validator.isLength(formValues.dsp_code, { min: 4 }) || '*Atleast 4 letters DSP Code',
@@ -187,10 +205,15 @@ export default function CreateDSPAccount({
           }
         })
         .catch((err) => {
-          dispatch({
-            type: NotificationTypes.ERROR,
-            message: err.message,
-          })
+          dispatch(
+            setNotification({
+              type: NotificationTypes.ERROR,
+              message: err,
+            })
+          )
+        })
+        .finally(() => {
+          setButtonLoading(false)
         })
     }
   }
@@ -317,17 +340,15 @@ export default function CreateDSPAccount({
           </Grid>
         </Box>
         <Box mt={2} display="flex" gridGap={8} justifyContent="flex-end">
-          <Button
-            variant="contained"
-            type="submit"
-            onClick={(e) => {
-              e.preventDefault()
+          <AsyncButton
+            onClick={() => {
               handleEdit()
             }}
-            color="primary"
+            loading={buttonProps.loading}
+            // disabled={buttonProps.disabled}
           >
             Confirm
-          </Button>
+          </AsyncButton>
         </Box>
       </Box>
     </Paper>

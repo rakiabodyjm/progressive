@@ -29,7 +29,7 @@ export type SubdistributorResponseType = {
 
   zip_code: string
 
-  caesar_walelt: CaesarWalletResponse
+  caesar_wallet: CaesarWalletResponse
 }
 
 export interface CreateSubdistributor {

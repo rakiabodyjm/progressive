@@ -95,6 +95,7 @@ export default function RetailerAccountSummaryCard({
 
 const retailerFieldsFull = ({
   id,
+  caesar_wallet,
   e_bind_number,
   store_name,
   user,
@@ -104,6 +105,10 @@ const retailerFieldsFull = ({
   {
     key: 'Retailer ID',
     value: id,
+  },
+  {
+    key: 'Caesar Wallet ID',
+    value: caesar_wallet.id,
   },
   {
     key: 'E Bind Number',

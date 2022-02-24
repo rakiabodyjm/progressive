@@ -89,6 +89,7 @@ export default function DSPAccountSummaryCard({ dsp }: { dsp: DspResponseType })
 
 const dspFieldsFull = ({
   id,
+  caesar_wallet,
   user,
   dsp_code,
   e_bind_number,
@@ -98,6 +99,10 @@ const dspFieldsFull = ({
   {
     key: 'DSP ID',
     value: id,
+  },
+  {
+    key: 'Caesar Wallet ID',
+    value: caesar_wallet.id,
   },
   {
     key: 'E-Bind Number',

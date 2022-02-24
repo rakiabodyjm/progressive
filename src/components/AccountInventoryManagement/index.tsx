@@ -34,7 +34,7 @@ import FormLabel from '@src/components/FormLabel'
 const EditInventory = dynamic(() => import('@src/components/pages/inventory/EditInventory'))
 const CreateInventory = dynamic(() => import('@src/components/pages/inventory/CreateInventory'))
 
-export default function AccountInventoryManagement({ accountId }: { accountId: any }) {
+export default function AccountInventoryManagement({ accountId }: { accountId: string }) {
   const user = useSelector(userDataSelector)
   const router = useRouter()
   const [acc, setAcc] = useState('dsp')
@@ -51,16 +51,28 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
 
   const [moreOptionsOpen, setMoreOptionsOpen] = useState<boolean>(false)
   const [inventoryOptions, setInventoryOptions] = useState<
-    Pick<GetAllInventoryDto, 'active' | 'user' | 'admin' | 'subdistributor' | 'dsp' | 'retailer'>
+    Pick<GetAllInventoryDto, 'active' | 'admin' | 'dsp' | 'subdistributor' | 'retailer'>
   >({
     active: undefined,
-    user: undefined,
     admin: undefined,
-    subdistributor: undefined,
     dsp: undefined,
+    subdistributor: undefined,
     retailer: undefined,
   })
-
+  useEffect(() => {
+    if (accountId === user?.admin_id) {
+      setInventoryOptions({ admin: accountId })
+    }
+    if (accountId === user?.dsp_id) {
+      setInventoryOptions({ dsp: accountId })
+    }
+    if (accountId === user?.subdistributor_id) {
+      setInventoryOptions({ subdistributor: accountId })
+    }
+    if (accountId === user?.retailer_id) {
+      setInventoryOptions({ retailer: accountId })
+    }
+  }, [accountId, user?.admin_id, user?.dsp_id, user?.retailer_id, user?.subdistributor_id])
   const fetchInventory = useCallback(() => {
     getAllInventory({ ...inventoryPaginationParameters, ...inventoryOptions })
       .then((res) => {
@@ -82,7 +94,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
       .catch((err) => {
         console.error(err)
       })
-  }, [inventoryPaginationParameters, inventoryOptions])
+  }, [inventoryOptions, inventoryPaginationParameters])
 
   useEffect(() => {
     fetchInventory()
@@ -117,7 +129,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
 
   const moreAnchorEl = useRef<HTMLElement | undefined>()
   const [adminOnly, setAdminOnly] = useState<boolean>(false)
-
+  console.log(accountId)
   return (
     <Paper variant="outlined">
       <Box p={2}>
@@ -135,177 +147,103 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
             </Typography>
             <Typography variant="h4">Inventory Management</Typography>
           </Box>
-          <Box>
-            <IconButton
-              onClick={() => {
-                setMoreOptionsOpen(true)
-              }}
-              innerRef={moreAnchorEl}
-            >
-              <MoreVert />
-            </IconButton>
-            <Menu
-              anchorEl={moreAnchorEl.current}
-              open={moreOptionsOpen}
-              onClose={() => {
-                setMoreOptionsOpen(false)
-              }}
-            >
-              <Box p={1}>
-                <Typography variant="body1">Inventory View Options</Typography>
-                <Box pt={1.5}>
-                  <Divider />
-                </Box>
-                <Box display="flex" flexDirection="column">
-                  {accountId === user?.admin_id && (
-                    <FormControlLabel
-                      // value="end"
-                      control={
-                        <Checkbox
-                          color="primary"
-                          onChange={(e, checked) => {
-                            setInventoryOptions((prevState) => ({
-                              ...prevState,
-                              admin: checked ? accountId : undefined,
-                            }))
-                          }}
-                          checked={!!inventoryOptions.admin}
-                        />
-                      }
-                      label={<Typography variant="body2">Show only Owned Inventory</Typography>}
-                      labelPlacement="end"
-                    />
-                  )}
-                  {accountId === user?.subdistributor_id && (
-                    <FormControlLabel
-                      // value="end"
-                      control={
-                        <Checkbox
-                          color="primary"
-                          onChange={(e, checked) => {
-                            setInventoryOptions((prevState) => ({
-                              ...prevState,
-                              user: checked ? accountId : undefined,
-                            }))
-                          }}
-                          checked={!!inventoryOptions.subdistributor}
-                        />
-                      }
-                      label={<Typography variant="body2">Show only Owned Inventory</Typography>}
-                      labelPlacement="end"
-                    />
-                  )}
-                  {accountId === user?.dsp_id && (
-                    <FormControlLabel
-                      // value="end"
-                      control={
-                        <Checkbox
-                          color="primary"
-                          onChange={(e, checked) => {
-                            setInventoryOptions((prevState) => ({
-                              ...prevState,
-                              dsp: checked ? accountId : undefined,
-                            }))
-                          }}
-                          checked={!!inventoryOptions.dsp}
-                        />
-                      }
-                      label={<Typography variant="body2">Show only Owned Inventory</Typography>}
-                      labelPlacement="end"
-                    />
-                  )}
-                  {accountId === user?.retailer_id && (
-                    <FormControlLabel
-                      // value="end"
-                      control={
-                        <Checkbox
-                          color="primary"
-                          onChange={(e, checked) => {
-                            setInventoryOptions((prevState) => ({
-                              ...prevState,
-                              retailer: checked ? accountId : undefined,
-                            }))
-                          }}
-                          checked={!!inventoryOptions.retailer}
-                        />
-                      }
-                      label={<Typography variant="body2">Show only Owned Inventory</Typography>}
-                      labelPlacement="end"
-                    />
-                  )}
-                  {accountId === user?.user_id && (
-                    <FormControlLabel
-                      // value="end"
-                      control={
-                        <Checkbox
-                          color="primary"
-                          onChange={(e, checked) => {
-                            setInventoryOptions((prevState) => ({
-                              ...prevState,
-                              user: checked ? accountId : undefined,
-                            }))
-                          }}
-                          checked={!!inventoryOptions.user}
-                        />
-                      }
-                      label={<Typography variant="body2">Show only Owned Inventory</Typography>}
-                      labelPlacement="end"
-                    />
-                  )}
-                  <Divider />
-                  <FormControl
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <FormLabel
+          {accountId === user?.admin_id && (
+            <Box>
+              <IconButton
+                onClick={() => {
+                  setMoreOptionsOpen(true)
+                }}
+                innerRef={moreAnchorEl}
+              >
+                <MoreVert />
+              </IconButton>
+              <Menu
+                anchorEl={moreAnchorEl.current}
+                open={moreOptionsOpen}
+                onClose={() => {
+                  setMoreOptionsOpen(false)
+                }}
+              >
+                <Box p={1}>
+                  <Typography variant="body1">Inventory View Options</Typography>
+                  <Box pt={1.5}>
+                    <Divider />
+                  </Box>
+                  <Box display="flex" flexDirection="column">
+                    {accountId === user?.admin_id && (
+                      <FormControlLabel
+                        // value="end"
+                        control={
+                          <Checkbox
+                            color="primary"
+                            onChange={(e, checked) => {
+                              setInventoryOptions((prevState) => ({
+                                ...prevState,
+                                admin: checked ? accountId : undefined,
+                              }))
+                            }}
+                            checked={!!inventoryOptions.admin}
+                          />
+                        }
+                        label={<Typography variant="body2">Show only Owned Inventory</Typography>}
+                        labelPlacement="end"
+                      />
+                    )}
+                    <Divider />
+                    <FormControl
                       style={{
-                        margin: '8px 0',
+                        display: 'flex',
+                        flexDirection: 'column',
                       }}
                     >
-                      <Typography variant="body1" color="textPrimary">
-                        Show Inventory:
-                      </Typography>
-                    </FormLabel>
-                    <RadioGroup
-                      onChange={(e: ChangeEvent<HTMLInputElement>, value) => {
-                        setInventoryOptions((prevState) => ({
-                          ...prevState,
-                          active: value === 'all' ? undefined : value === 'activeOnly',
-                        }))
-                      }}
-                    >
-                      <FormControlLabel
-                        label={<Typography variant="body2">All</Typography>}
-                        value="all"
-                        control={<Radio color="primary" />}
-                        checked={typeof inventoryOptions.active === 'undefined'}
-                      />
-                      <FormControlLabel
-                        label={<Typography variant="body2">Active Only</Typography>}
-                        value="activeOnly"
-                        control={<Radio color="primary" />}
-                        checked={
-                          typeof inventoryOptions !== 'undefined' &&
-                          inventoryOptions.active === true
-                        }
-                      />
-                      <FormControlLabel
-                        label={<Typography variant="body2">Inactive Only</Typography>}
-                        value="inactiveOnly"
-                        control={<Radio color="primary" />}
-                        checked={
-                          typeof inventoryOptions !== 'undefined' &&
-                          inventoryOptions.active === false
-                        }
-                      />
-                    </RadioGroup>
-                  </FormControl>
+                      <FormLabel
+                        style={{
+                          margin: '8px 0',
+                        }}
+                      >
+                        <Typography variant="body1" color="textPrimary">
+                          Show Inventory:
+                        </Typography>
+                      </FormLabel>
+                      <RadioGroup
+                        onChange={(e: ChangeEvent<HTMLInputElement>, value) => {
+                          setInventoryOptions((prevState) => ({
+                            ...prevState,
+                            active: value === 'all' ? undefined : value === 'activeOnly',
+                          }))
+                        }}
+                      >
+                        <FormControlLabel
+                          label={<Typography variant="body2">All</Typography>}
+                          value="all"
+                          control={<Radio color="primary" />}
+                          checked={typeof inventoryOptions.active === 'undefined'}
+                        />
+                        <FormControlLabel
+                          label={<Typography variant="body2">Active Only</Typography>}
+                          value="activeOnly"
+                          control={<Radio color="primary" />}
+                          checked={
+                            typeof inventoryOptions !== 'undefined' &&
+                            inventoryOptions.active === true
+                          }
+                        />
+                        <FormControlLabel
+                          label={<Typography variant="body2">Inactive Only</Typography>}
+                          value="inactiveOnly"
+                          control={<Radio color="primary" />}
+                          checked={
+                            typeof inventoryOptions !== 'undefined' &&
+                            inventoryOptions.active === false
+                          }
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Box>
                 </Box>
-              </Box>
-            </Menu>
-          </Box>
+              </Menu>
+            </Box>
+          )}
         </Box>
         {accountId === user?.admin_id && (
           <Box display="flex" justifyContent="flex-end">
@@ -331,44 +269,86 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
         <Grid container spacing={2}>
           <Grid xs={12} item>
             <Box>
-              {inventoryItems && inventoryMetadata && accountId === user?.admin_id && (
-                <UsersTable
-                  data={inventoryItems.map((ea) => formatInventory(ea))}
-                  setPage={(page: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      page,
-                    }))
-                  }}
-                  setLimit={(limit: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      limit,
-                    }))
-                  }}
-                  page={inventoryMetadata?.page}
-                  limit={inventoryMetadata?.limit}
-                  total={inventoryMetadata?.total}
-                  hiddenFields={['id']}
-                  onRowClick={(e, inventory) => {
-                    setUpdateInventoryModalOpen(true)
-                    setEditInventory((prevState) => ({
-                      ...prevState,
-                      inventoryId: inventory.id,
-                    }))
-                    setAdminOnly(true)
-                  }}
-                  formatTitle={{
-                    caesar: 'Caesar Wallet Owner',
-                    asset: 'Asset Name',
-                    name: 'Inventory Name',
-                  }}
-                />
-              )}
+              {inventoryItems &&
+                inventoryMetadata &&
+                accountId === user?.admin_id &&
+                inventoryOptions.admin === undefined && (
+                  <UsersTable
+                    data={inventoryItems.map((ea) => formatInventory(ea))}
+                    setPage={(page: number) => {
+                      setinventoryPaginationParameters((prev) => ({
+                        ...prev,
+                        page,
+                      }))
+                    }}
+                    setLimit={(limit: number) => {
+                      setinventoryPaginationParameters((prev) => ({
+                        ...prev,
+                        limit,
+                      }))
+                    }}
+                    page={inventoryMetadata?.page}
+                    limit={inventoryMetadata?.limit}
+                    total={inventoryMetadata?.total}
+                    hiddenFields={['id']}
+                    onRowClick={(e, inventory) => {
+                      setUpdateInventoryModalOpen(true)
+                      setEditInventory((prevState) => ({
+                        ...prevState,
+                        inventoryId: inventory.id,
+                      }))
+                      setAdminOnly(true)
+                    }}
+                    formatTitle={{
+                      caesar: 'Caesar Wallet Owner',
+                      asset: 'Asset Name',
+                      name: 'Inventory Name',
+                    }}
+                  />
+                )}
+              {inventoryItems &&
+                inventoryMetadata &&
+                accountId === user?.admin_id &&
+                inventoryOptions.admin === accountId && (
+                  <UsersTable
+                    data={inventoryItems
+                      .filter((ea) => ea.caesar.admin?.id === accountId)
+                      .map((ea) => formatInventory(ea))}
+                    setPage={(page: number) => {
+                      setinventoryPaginationParameters((prev) => ({
+                        ...prev,
+                        page,
+                      }))
+                    }}
+                    setLimit={(limit: number) => {
+                      setinventoryPaginationParameters((prev) => ({
+                        ...prev,
+                        limit,
+                      }))
+                    }}
+                    page={inventoryMetadata?.page}
+                    limit={inventoryMetadata?.limit}
+                    total={inventoryMetadata?.total}
+                    hiddenFields={['id']}
+                    onRowClick={(e, inventory) => {
+                      setUpdateInventoryModalOpen(true)
+                      setEditInventory((prevState) => ({
+                        ...prevState,
+                        inventoryId: inventory.id,
+                      }))
+                      setAdminOnly(true)
+                    }}
+                    formatTitle={{
+                      caesar: 'Caesar Wallet Owner',
+                      asset: 'Asset Name',
+                      name: 'Inventory Name',
+                    }}
+                  />
+                )}
               {inventoryItems && inventoryMetadata && accountId === user?.subdistributor_id && (
                 <UsersTable
                   data={inventoryItems
-                    .filter((ea) => ea.caesar.subdistributor)
+                    .filter((ea) => ea.caesar.subdistributor?.id === accountId)
                     .map((ea) => formatInventory(ea))}
                   setPage={(page: number) => {
                     setinventoryPaginationParameters((prev) => ({
@@ -404,7 +384,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
               {inventoryItems && inventoryMetadata && accountId === user?.dsp_id && (
                 <UsersTable
                   data={inventoryItems
-                    .filter((ea) => ea.caesar.dsp)
+                    .filter((ea) => ea.caesar.dsp?.id === accountId)
                     .map((ea) => formatInventory(ea))}
                   setPage={(page: number) => {
                     setinventoryPaginationParameters((prev) => ({
@@ -440,7 +420,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: a
               {inventoryItems && inventoryMetadata && accountId === user?.retailer_id && (
                 <UsersTable
                   data={inventoryItems
-                    .filter((ea) => ea.caesar.retailer)
+                    .filter((ea) => ea.caesar.retailer?.id === accountId)
                     .map((ea) => formatInventory(ea))}
                   setPage={(page: number) => {
                     setinventoryPaginationParameters((prev) => ({
