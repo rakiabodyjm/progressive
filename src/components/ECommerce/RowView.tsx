@@ -14,6 +14,7 @@ import FormLabel from '@src/components/FormLabel'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import Image from 'next/image'
+import RoleBadge from '../RoleBadge'
 
 export type InventoryNumbers = {
   [P in keyof Inventory]: Inventory[P] extends number ? Inventory[P] : never
@@ -31,7 +32,7 @@ export default function RowView({
 }) {
   const theme: Theme = useTheme()
   return (
-    <Box style={{ maxHeight: 550, overflowY: 'auto', overflowX: 'hidden' }}>
+    <Box style={{ maxHeight: 530, overflowY: 'auto', overflowX: 'hidden' }}>
       <Grid container spacing={2}>
         {inventory?.length > 0 &&
           inventory
@@ -49,6 +50,7 @@ export default function RowView({
                 key={inventory.id}
                 item
                 xs={12}
+                lg={6}
               >
                 <InventoryRow inventory={inventory} />
               </Grid>
@@ -97,7 +99,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
 
     '& > *': {
-      marginBottom: 8,
+      marginBottom: 4,
     },
   },
   imageContentContainer: {
@@ -116,7 +118,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   flexStart: {
-    alignSelf: 'flex-start',
+    paddingTop: 11,
+    justifyContent: 'flex-end',
   },
 }))
 
@@ -149,21 +152,41 @@ const InventoryRow = ({
             </Box>
           </Grid>
 
-          <Grid className={classes.rowGap} item xs={12} sm={5}>
-            <Box>
-              <FormLabel color="primary">Name:</FormLabel>
-              <Typography variant="body2">{inventory.name}</Typography>
-            </Box>
-            <Box>
-              <FormLabel>Description:</FormLabel>
-              <Typography variant="body2">{inventory.description.slice(0, 250)}</Typography>
-            </Box>
-            <Box>
-              <FormLabel>Seller:</FormLabel>
-              <Typography variant="body2">{inventory.caesar.description}</Typography>
-            </Box>
+          <Grid className={classes.rowGap} item xs={12} sm={9}>
+            <Grid container>
+              <Grid className={classes.rowGap} item xs={8}>
+                <Typography variant="h6">{inventory.name}</Typography>
+
+                <Typography variant="body2">{inventory.caesar.description}</Typography>
+
+                <Typography variant="body1">
+                  <span style={{ fontWeight: 700 }}>{inventory.quantity}</span> quantity left
+                </Typography>
+              </Grid>
+              <Grid className={`${classes.rowGap} ${classes.flexStart}`} item>
+                <RoleBadge>{inventory.caesar.account_type.toUpperCase()} </RoleBadge>
+
+                <Typography variant="h6" style={{ paddingTop: 10 }}>
+                  <span
+                    style={{
+                      fontWeight: 700,
+                    }}
+                  >
+                    {inventory.srp}
+                  </span>{' '}
+                  CCoins
+                </Typography>
+              </Grid>
+
+              <Grid className={classes.rowGap} item xs={12}>
+                <Box>
+                  <FormLabel>Description:</FormLabel>
+                  <Typography variant="body2">{inventory.description.slice(0, 250)}</Typography>
+                </Box>
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid className={`${classes.rowGap} ${classes.flexStart}`} item xs={12} sm={4}>
+          {/* <Grid className={`${classes.rowGap}`} item xs={12} sm={9}>
             <Box>
               <FormLabel>Price:</FormLabel>
               <Typography variant="body1">
@@ -183,7 +206,7 @@ const InventoryRow = ({
                 <span style={{ fontWeight: 700 }}>{inventory.quantity}</span>
               </Typography>
             </Box>
-          </Grid>
+          </Grid> */}
         </Grid>
       </ListItem>
     </Paper>
