@@ -29,7 +29,7 @@ interface PendingTransactionResponse {
   deleted_at: Date
 }
 
-interface GetAllPendingTransactionsDto {
+export interface GetAllPendingTransactionsDto {
   caesar_buyer?: string
 
   caesar_seller?: string
