@@ -312,9 +312,7 @@ export default function AdminInventoryManagement() {
               fetchInventory()
             }}
             inventoryId={editInventory.inventoryId!}
-            {...(isAdmin && {
-              isAdmin: true,
-            })}
+            adminOnly={isAdmin}
           />
         </ModalWrapper>
       </Paper>
