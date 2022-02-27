@@ -97,6 +97,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   rowGap: {
     alignItems: 'center',
+    paddingLeft: 17,
 
     '& > *': {
       marginBottom: 8,
@@ -150,12 +151,22 @@ const InventoryRow = ({
               />
             </Box>
           </Grid>
-          <Grid className={`${classes.rowGap} ${classes.flexStart}`} item xs={12}>
-            <RoleBadge>{inventory.caesar.account_type.toUpperCase()} </RoleBadge>
+          <Grid className={`${classes.flexStart}`} item xs={12}>
+            <Grid container justifyContent="center">
+              <Grid item>
+                <RoleBadge>{inventory.caesar.account_type.toUpperCase()} </RoleBadge>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid className={classes.rowGap} item xs={12}>
             <Typography variant="body1" style={{ paddingTop: 10 }}>
-              {inventory.name}
+              <span
+                style={{
+                  fontWeight: 700,
+                }}
+              >
+                {inventory.name}
+              </span>
             </Typography>
           </Grid>
           <Grid className={classes.rowGap} item xs={12}>
@@ -164,7 +175,7 @@ const InventoryRow = ({
           <Grid className={classes.rowGap} item xs={6}>
             <Grid container>
               <Grid item xs={6}>
-                <Typography variant="h6">
+                <Typography variant="h6" color="primary">
                   <span
                     style={{
                       fontWeight: 700,
@@ -185,11 +196,6 @@ const InventoryRow = ({
                 </Typography>
               </Grid>
             </Grid>
-          </Grid>
-          <Grid className={classes.rowGap} item xs={12}>
-            <Typography variant="body1" style={{ paddingTop: 10 }}>
-              {inventory.name}
-            </Typography>
           </Grid>
         </Grid>
       </ListItem>
