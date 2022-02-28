@@ -30,6 +30,7 @@ import React, { ChangeEvent, useEffect, useState } from 'react'
 import validator from 'validator'
 import { useDispatch } from 'react-redux'
 import { extractErrorFromResponse } from '@src/utils/api/common'
+import AsyncButton from '@src/components/AsyncButton'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
@@ -127,8 +128,23 @@ export default function CreateRetailerAccount({
 
   const dispatch = useDispatch()
   const dispatchNotif = useNotification()
+  const setButtonLoading = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      loading: typeof param !== 'boolean' ? true : param,
+    }))
+  }
+
+  const [buttonProps, setButtonProps] = useState<{
+    loading: boolean
+    disabled: boolean
+  }>({
+    loading: false,
+    disabled: true,
+  })
 
   const handleSubmit = () => {
+    setButtonLoading()
     const schemaChecker = {
       store_name: (value: string) =>
         validator.isLength(checkStore_name, { min: 4 }) || '*Store Name Required (4+ Letters)',
@@ -172,6 +188,9 @@ export default function CreateRetailerAccount({
             message: extractErrorFromResponse(err),
           })
         }
+      })
+      .finally(() => {
+        setButtonLoading(false)
       })
   }
 
@@ -373,15 +392,16 @@ export default function CreateRetailerAccount({
           </Grid>
         </Grid>
         <Box display="flex" mt={2} justifyContent="flex-end">
-          <Button
+          <AsyncButton
+            disabled={!newRetailerAccount.user || buttonProps.loading}
             onClick={() => {
               handleSubmit()
             }}
-            color="primary"
-            variant="contained"
+            loading={buttonProps.loading}
+            // disabled={buttonProps.disabled}
           >
             Confirm
-          </Button>
+          </AsyncButton>
         </Box>
       </Box>
     </Paper>

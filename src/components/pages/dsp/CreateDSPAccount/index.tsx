@@ -144,20 +144,6 @@ export default function CreateDSPAccount({
           type: NotificationTypes.SUCCESS,
           message: `DSP Account Created`,
         })
-        setNewDspAccount({
-          area_id: [],
-          dsp_code: '',
-          e_bind_number: '',
-          subdistributor: '',
-          user: '',
-        })
-        setErrors({
-          area_id: '',
-          dsp_code: '',
-          e_bind_number: '',
-          subdistributor: '',
-          user: '',
-        })
         if (modalClose) {
           modalClose()
         }
@@ -385,6 +371,7 @@ export default function CreateDSPAccount({
         </Box>
         <Box display="flex" mt={2} gridGap={8} justifyContent="flex-end">
           <AsyncButton
+            disabled={!newDspAccount.user || buttonProps.loading}
             onClick={() => {
               handleSubmit()
             }}
