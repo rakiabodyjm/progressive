@@ -7,24 +7,20 @@ import {
   Typography,
   useTheme,
   TextField,
-  TextFieldProps,
-  CircularProgress,
-  Checkbox,
   Grid,
 } from '@material-ui/core'
+import router, { useRouter } from 'next/router'
 import { Form, Formik, Field, ErrorMessage } from 'formik'
 import companyLogo from '@public/assets/realm1000-logo.png'
 import { loginUserThunk, getUser } from '@src/redux/data/userSlice'
 import { createUser, CreateUser, LoginUserParams } from '@src/utils/api/userApi'
 import Image from 'next/image'
-import { ChangeEvent, useState, FormEvent, useEffect, ChangeEventHandler } from 'react'
+import { ChangeEvent, useState, FormEvent, ChangeEventHandler, ReactHTMLElement } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useRouter } from 'next/router'
 import { AppDispatch, RootState } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { makeStyles } from '@material-ui/styles'
 import { object, string, ref } from 'yup'
-import { red } from '@material-ui/core/colors'
 import { extractErrorFromResponse } from '@src/utils/api/common'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -92,11 +88,20 @@ const initialValues: CreateUser & { confirm_password: string } = {
 }
 
 export default function Registration() {
+  const router = useRouter()
+  const dispatchLogin = useDispatch<AppDispatch>()
   const classes = useStyles()
   const theme: Theme = useTheme()
   const dispatch = useDispatch()
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+  const [formValues, setFormValues] = useState<LoginUserParams>({
+    email: '',
+    password: '',
+    remember_me: true,
+  })
+
   return (
     <div>
       <div
@@ -170,6 +175,11 @@ export default function Registration() {
               initialValues={initialValues}
               onSubmit={(values) =>
                 new Promise<void>((res) => {
+                  setFormValues({
+                    email: values.email,
+                    password: values.password,
+                    remember_me: true,
+                  })
                   setTimeout(() => {
                     createUser(values)
                       .then((res) => {
@@ -181,6 +191,37 @@ export default function Registration() {
                               message,
                             })
                           )
+
+                          dispatchLogin(loginUserThunk(formValues))
+                            .unwrap()
+                            .then((res) => {
+                              if (res) {
+                                dispatch(
+                                  setNotification({
+                                    message: `Welcome ${res.first_name}`,
+                                    type: NotificationTypes.SUCCESS,
+                                  })
+                                )
+                              }
+                              return res
+                            })
+                            .then(() => {
+                              dispatch(getUser())
+                            })
+
+                            .catch((err) => {
+                              dispatch(
+                                setNotification({
+                                  message: err.response?.data?.message || err.message,
+                                  type: NotificationTypes.ERROR,
+                                })
+                              )
+                            })
+                            .finally(() => {})
+
+                          router.push({
+                            pathname: '/',
+                          })
                         }
                       })
                       .catch((err) => {
@@ -207,7 +248,7 @@ export default function Registration() {
                 })
               }
             >
-              {({ isSubmitting }) => (
+              {({ isSubmitting, values }) => (
                 <Form>
                   <Grid spacing={2} container className={classes.gridContainer}>
                     <Grid item xl={3} lg={3}>
@@ -369,6 +410,13 @@ export default function Registration() {
                           type="submit"
                           color="primary"
                           disabled={isSubmitting}
+                          onClick={(e) => {
+                            setFormValues({
+                              email: values.email,
+                              password: values.password,
+                              remember_me: true,
+                            })
+                          }}
                         >
                           Register
                         </Button>
