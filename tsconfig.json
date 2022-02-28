@@ -21,7 +21,6 @@
       "@api/*": ["./src/utils/api/*"],
       "@hooks/*": ["./src/utils/hooks/*"]
     },
-    "types": ["google.maps"],
     "incremental": true
   },
   "include": [

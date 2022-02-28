@@ -50,13 +50,12 @@ export default function EditInventory({
   inventoryId,
   modal,
   revalidateFunction,
-  isAdmin,
+  // isAdmin,
   adminOnly,
 }: {
   inventoryId: Inventory['id']
   modal?: () => void
   revalidateFunction?: () => void
-  isAdmin?: true
   adminOnly: boolean
 }) {
   const classes = useStyles()
@@ -231,7 +230,7 @@ export default function EditInventory({
                 <Paper variant="outlined" style={{ height: 'max-content' }}>
                   <Box p={1}>
                     <Grid container spacing={1}>
-                      {!!isAdmin && adminOnly && (
+                      {adminOnly && (
                         <>
                           <Grid container spacing={1}>
                             <Grid item xs={7}>

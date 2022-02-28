@@ -119,7 +119,8 @@ const formatRetailersForSubd = (param: RetailerResponseType[]) =>
     user: user.first_name,
     store_name,
     e_bind_number,
-    dsp: await getDsp(dsp.id).then((res) => res.user.first_name),
+    // dsp: await getDsp(dsp.id).then((res) => res.user.first_name),
+    dsp: dsp?.dsp_code,
   }))
 
 const formatRetailersForDsp = (param: RetailerResponseType[]) =>

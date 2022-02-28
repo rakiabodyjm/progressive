@@ -148,5 +148,5 @@ const formatRetailersForSubd = (param: RetailerResponseType[]) =>
     retailer_id: id,
     store_name,
     e_bind_number,
-    dsp: dsp.dsp_code,
+    dsp: dsp?.dsp_code,
   }))
