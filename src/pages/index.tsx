@@ -173,25 +173,28 @@ export default function AccountDashboard() {
           </Grid>
           <Grid item xs={12} md={6}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <WalletSummaryCard
-                  entities={{
-                    ...(account && {
-                      user: account.id,
-                    }),
-                    ...(account?.dsp && { dsp: account.dsp.id }),
-                    ...(account?.subdistributor && {
-                      subdistributor: account.subdistributor.id,
-                    }),
-                    ...(account?.retailer && {
-                      retailer: account.retailer.id,
-                    }),
-                    ...(account?.admin && {
-                      admin: account.admin.id,
-                    }),
-                  }}
-                />
-              </Grid>
+              {account && (
+                <Grid item xs={12}>
+                  <WalletSummaryCard
+                    entities={{
+                      ...(account && {
+                        user: account.id,
+                      }),
+                      ...(account?.dsp && { dsp: account.dsp.id }),
+                      ...(account?.subdistributor && {
+                        subdistributor: account.subdistributor.id,
+                      }),
+                      ...(account?.retailer && {
+                        retailer: account.retailer.id,
+                      }),
+                      ...(account?.admin && {
+                        admin: account.admin.id,
+                      }),
+                    }}
+                  />
+                </Grid>
+              )}
+
               {account?.admin && (
                 <Grid item xs={12} sm={6} md={12} lg={6}>
                   <WalletSmallCard accountType="admin" accountId={account.admin.id} />
