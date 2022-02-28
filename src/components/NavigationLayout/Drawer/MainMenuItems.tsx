@@ -17,7 +17,7 @@ const subdMenuItems = [
   {
     title: 'DSPs',
     icon: <PersonPinCircle />,
-    url: '/dsp',
+    url: '/subdistributor/dsp',
   },
   {
     title: 'Retailers',
@@ -58,7 +58,7 @@ const subdAndDspMenu: (SingleMainMenuItemType | MultipleMainMenuItemType)[] = [
   {
     title: 'DSPs',
     icon: <PersonPinCircle />,
-    url: '/dsp',
+    url: '/subdistributor/dsp',
   },
   {
     title: 'Retailers',
