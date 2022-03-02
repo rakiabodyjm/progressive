@@ -49,7 +49,8 @@ export default function GridView({
                 }}
                 key={inventory.id}
                 item
-                xs={6}
+                xs={12}
+                sm={6}
                 md={4}
                 lg={3}
               >
@@ -115,6 +116,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     overflow: 'auto',
     [theme.breakpoints.down('xs')]: {
       maxWidth: 240,
+      margin: 'auto',
     },
   },
   flexStart: {
