@@ -4,15 +4,33 @@ import UserAccountTypeSelector from '@src/components/UserAccountTypeSelector'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { userDataSelector } from '@src/redux/data/userSlice'
 
-import { useMemo, useState } from 'react'
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useFetchOrSearchAccounts, { Entities } from '@hooks/useFetchOrSearchAccounts'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import UsersTable from '@src/components/UsersTable'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import FormLabel from '@src/components/FormLabel'
+import FormTextField from '@src/components/FormTextField'
+import { IS_ISO31661_ALPHA_2 } from 'class-validator'
+import { DspResponseType } from '@src/utils/api/dspApi'
+import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
+import { RetailerResponseType } from '@src/utils/api/retailerApi'
+import { AdminResponseType } from '@src/utils/api/adminApi'
+import { UserResponse } from '@src/utils/api/userApi'
+import { useRouter } from 'next/router'
 
 type Entity = Entities[keyof Entities]
+
+type EntityTypesUnion =
+  | UserResponse
+  | DspResponseType
+  | RetailerResponseType
+  | SubdistributorResponseType
+  | AdminResponseType
+
 export default function AdminAccountsPage() {
+  const router = useRouter()
   const [accountType, setAccountType] = useState<UserTypesAndUser>('user')
   const user = useSelector(userDataSelector)
   const [searchQuery, setSearchQuery] = useState<string | undefined>()
@@ -36,6 +54,7 @@ export default function AdminAccountsPage() {
         return fetchData
       }
       fetchData = entities as Entity[]
+
       return {
         data: entities,
         metadata: {
@@ -48,6 +67,21 @@ export default function AdminAccountsPage() {
     }
     return undefined
   }, [entities])
+
+  const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
+
+  const formatSelector = useCallback(
+    // eslint-disable-next-line func-names
+    function (arg: Entities[typeof accountType][]) {
+      return arg.map((ea) => {
+        const functionToUse = formatter[accountType]
+        // @ts-ignore
+        return functionToUse(ea)
+        // formatter[accountType](ea as Entities[typeof accountType])
+      })
+    },
+    [accountType]
+  )
 
   return (
     <Container maxWidth="lg" disableGutters>
@@ -74,10 +108,33 @@ export default function AdminAccountsPage() {
               setAccountType(arg)
             }}
           />
+          <Paper
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+            }}
+          >
+            <Box mb={2}>
+              <Box p={2}>
+                <FormLabel>Search: </FormLabel>
+                <FormTextField
+                  name="search-retailer"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    if (timeoutRef.current) {
+                      clearTimeout(timeoutRef.current)
+                    }
+                    timeoutRef.current = setTimeout(() => {
+                      setSearchQuery(e.target.value)
+                    }, 1500)
+                  }}
+                />
+              </Box>
+            </Box>
+          </Paper>
 
           {paginationData && (
             <UsersTable
-              data={paginationData.data}
+              data={formatSelector(paginationData.data)}
               limit={paginationData.metadata.limit}
               page={paginationData.metadata.page}
               total={paginationData.metadata.total}
@@ -93,6 +150,7 @@ export default function AdminAccountsPage() {
                   page,
                 }))
               }}
+              hiddenFields={['user_id']}
             />
           )}
 
@@ -101,4 +159,72 @@ export default function AdminAccountsPage() {
       </Paper>
     </Container>
   )
+}
+const formatUsers = ({
+  id,
+  first_name,
+  last_name,
+  phone_number,
+  address1,
+  address2,
+  email,
+  username,
+  created_at,
+  updated_at,
+  roles,
+}: UserResponse) => ({
+  id,
+  user_id: id,
+  name: `${last_name}, ${first_name}`,
+  phone_number,
+  email,
+  address: address1,
+  accounts: (roles && roles.length > 0 && roles.join(', ').toUpperCase()) || '',
+})
+const formatDsp = ({ id, area_id, dsp_code, e_bind_number, user }: DspResponseType) => ({
+  id,
+  user: user ? `${user.last_name}, ${user.first_name}` : '',
+  user_id: user?.id,
+  area_id:
+    (area_id && Array.isArray(area_id) && area_id.map((ea) => ea.area_name).join(', ')) || '',
+  dsp_code,
+  e_bind_number,
+})
+
+const formatAdmin = ({ id, name, user }: AdminResponseType) => ({
+  id,
+  user_id: user?.id,
+  user: user ? `${user.last_name}, ${user.first_name}` : '',
+  name,
+})
+
+const formatRetailer = ({
+  id,
+  e_bind_number,
+  store_name,
+  subdistributor,
+  dsp,
+  user,
+}: RetailerResponseType) => ({
+  id,
+  user: user ? `${user.last_name}, ${user.first_name}` : '',
+  store_name,
+  e_bind_number,
+  subdistributor_name: subdistributor?.name,
+  dsp_name: dsp?.dsp_code || '',
+})
+
+const formatSubdistributor = ({ name, area_id, user }: SubdistributorResponseType) => ({
+  name,
+  user_id: user?.id,
+  user: user ? `${user.last_name}, ${user.first_name}` : '',
+  area_id: area_id?.area_name || '',
+})
+
+const formatter = {
+  admin: formatAdmin,
+  dsp: formatDsp,
+  retailer: formatRetailer,
+  subdistributor: formatSubdistributor,
+  user: formatUsers,
 }

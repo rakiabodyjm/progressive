@@ -92,7 +92,8 @@ export default function useFetchOrSearchAccounts<T extends 'search' | 'get-all'>
     isValidating: loading,
   } = useSWR<Entities[typeof accountType][] | Paginated<Entities[typeof accountType]>>(
     [accountType, parameterToUse],
-    ([accountType, ...params]) => functionToUse(...params)
+    (accountTypeUsed, ...parameters) => functionToUse(parameters)
   )
+
   return { data, error, loading }
 }
