@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import type { DspResponseType } from '@src/utils/api/dspApi'
 import type { MapIdResponseType } from '@src/utils/api/mapIdApi'
@@ -5,7 +6,7 @@ import type { RetailerResponseType } from '@src/utils/api/retailerApi'
 import type { UserResponse } from '@src/utils/api/userApi'
 import type { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import axios, { AxiosError } from 'axios'
-import { Paginated } from '../types/PaginatedEntity'
+import { PaginateFetchParameters, Paginated } from '../types/PaginatedEntity'
 
 // Update MapId 09-28 11:03
 export type SubdistributorResponseType = {
@@ -138,5 +139,20 @@ export function searchSubdistributor(arg: string) {
     .then((res) => res.data as SubdistributorResponseType[])
     .catch((err) => {
       throw new Error(extractErrorFromResponse(err))
+    })
+}
+
+export function getAllSubdistributor(): Promise<SubdistributorResponseType[]>
+export function getAllSubdistributor(
+  paginationParams: PaginateFetchParameters
+): Promise<Paginated<SubdistributorResponseType>>
+export function getAllSubdistributor(paginationParams?: unknown): unknown {
+  return axios
+    .get('/subdistributor', {
+      params: paginationParams,
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
     })
 }

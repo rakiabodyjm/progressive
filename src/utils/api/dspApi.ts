@@ -1,11 +1,12 @@
-import { extractErrorFromResponse } from '@src/utils/api/common'
+/* eslint-disable no-redeclare */
 import type { MapIdResponseType } from '@src/utils/api/mapIdApi'
 import type { RetailerResponseType } from '@src/utils/api/retailerApi'
 import type { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import type { UserResponse } from '@src/utils/api/userApi'
 import type { CaesarWalletResponse } from '@src/utils/api/walletApi'
-import { Paginated } from '@src/utils/types/PaginatedEntity'
+import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios, { AxiosError } from 'axios'
+import { extractMultipleErrorFromResponse, extractErrorFromResponse } from './common'
 
 // Update MapId 09-28 11:03
 export type DspResponseType = {
@@ -127,3 +128,18 @@ export const searchDsp = (
     .catch((err) => {
       throw new Error(extractErrorFromResponse(err))
     })
+
+export function getAllDsp(
+  paginateParams: PaginateFetchParameters
+): Promise<Paginated<DspResponseType>>
+export function getAllDsp(): Promise<DspResponseType[]>
+export function getAllDsp(paginateParams?: PaginateFetchParameters) {
+  return axios
+    .get('/dsp', {
+      params: paginateParams,
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
+    })
+}

@@ -1,9 +1,11 @@
+/* eslint-disable no-redeclare */
 import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import type { UserResponse } from '@src/utils/api/userApi'
 import type { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import axios, { AxiosError } from 'axios'
+import { PaginateFetchParameters, Paginated } from '../types/PaginatedEntity'
 
 // Update MapId 09-28 11:03
 export type RetailerResponseType = {
@@ -79,3 +81,18 @@ export const searchRetailer = (
     .catch((err) => {
       throw new Error(extractErrorFromResponse(err))
     })
+
+export function getAllRetailer(): Promise<RetailerResponseType[]>
+export function getAllRetailer(
+  paginationParams: PaginateFetchParameters
+): Promise<Paginated<RetailerResponseType>>
+export function getAllRetailer(paginationParams?: PaginateFetchParameters): unknown {
+  return axios
+    .get('/retailer', {
+      params: paginationParams,
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
+    })
+}
