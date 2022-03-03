@@ -227,7 +227,9 @@ export default function AccountSummaryCard({
                 width: '100%',
                 padding: 4,
               }}
-              onClick={() => setIsExpanded(true)}
+              onClick={() => {
+                setIsExpanded(true)
+              }}
             >
               <KeyboardArrowDown />
             </ButtonBase>
@@ -244,7 +246,7 @@ const adminFieldsExpanded = (admin: AdminResponseType) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: admin.caesar_wallet.id,
+    value: admin.caesar_wallet?.id,
   },
   {
     key: 'Name',
@@ -276,7 +278,7 @@ const subdistributorFieldsFull = (subdistributor: SubdistributorResponseType) =>
   },
   {
     key: 'Caesar Wallet ID',
-    value: subdistributor.caesar_wallet.id,
+    value: subdistributor.caesar_wallet?.id,
   },
   {
     key: 'Subdistributor',
@@ -329,7 +331,7 @@ const dspFieldsFull = (dsp: DspResponseType) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: dsp.caesar_wallet.id,
+    value: dsp.caesar_wallet?.id,
   },
   {
     key: 'E-Bind Number',
@@ -377,7 +379,7 @@ const retailerFieldsFull = (retailer: RetailerResponseType) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: retailer.caesar_wallet.id,
+    value: retailer.caesar_wallet?.id,
   },
   {
     key: 'E Bind Number',
@@ -426,7 +428,7 @@ const userAccountFieldsFull = (params: UserResponse) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: params.caesar_wallet.id,
+    value: params.caesar_wallet?.id,
   },
   {
     key: 'Name',

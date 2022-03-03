@@ -223,7 +223,7 @@ export default function AccountDashboard() {
                   <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
                 </Grid>
               )}
-              {account && (
+              {(account?.dsp || account?.subdistributor || account?.retailer) && (
                 <Grid item xs={12}>
                   <Divider
                     style={{
