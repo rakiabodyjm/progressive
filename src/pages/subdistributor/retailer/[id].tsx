@@ -80,7 +80,7 @@ export default function SubdistributorRetailerAccountView() {
             <Button
               onClick={() => {
                 router.push({
-                  pathname: '/profile/[id]',
+                  pathname: '/subdistributor/retailer/user/[id]',
                   query: {
                     id: retailer?.user.id,
                   },
