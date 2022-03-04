@@ -5,6 +5,7 @@ import axios, { AxiosResponse } from 'axios'
 
 export default function axiosDefaults() {
   axios.defaults.baseURL = process.env.NEXT_PUBLIC_BACKEND_URL
+  axios.defaults.withCredentials = true
 
   /**
    * have interceptor
