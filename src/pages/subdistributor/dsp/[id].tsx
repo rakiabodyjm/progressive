@@ -78,7 +78,7 @@ export default function SubdistributorDSPAccountView() {
                   onClick={() => {
                     console.log(dsp?.user.id)
                     router.push({
-                      pathname: '/profile/[id]',
+                      pathname: '/subdistributor/dsp/user/[id]',
                       query: {
                         id: dsp?.user.id,
                       },

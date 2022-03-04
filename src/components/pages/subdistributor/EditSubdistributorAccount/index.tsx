@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
+import AsyncButton from '@src/components/AsyncButton'
 import AestheticObjectFormRenderer from '@src/components/ObjectFormRendererV2'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { MapIdResponseType, searchMap } from '@src/utils/api/mapIdApi'
@@ -72,7 +73,20 @@ export default function EditSubdistributorAccount({
     page: 0,
     limit: 100,
   })
+  const setButtonLoading = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      loading: typeof param !== 'boolean' ? true : param,
+    }))
+  }
 
+  const [buttonProps, setButtonProps] = useState<{
+    loading: boolean
+    disabled: boolean
+  }>({
+    loading: false,
+    disabled: true,
+  })
   const changes = useMemo(() => {
     /**
      * Get changes based on formValuesRef
@@ -242,8 +256,9 @@ export default function EditSubdistributorAccount({
             justifyContent: 'flex-end',
           }}
         >
-          <Button
+          <AsyncButton
             onClick={() => {
+              setButtonLoading()
               // console.log('Changes', changes)
               if (subdistributor.id) {
                 updateSubdistributor(subdistributor.id, formatUpdateValues(changes))
@@ -254,6 +269,9 @@ export default function EditSubdistributorAccount({
                         message: 'Subdistributor Account Updated',
                       })
                     )
+                    if (modal) {
+                      modal()
+                    }
                   })
                   .catch((err) => {
                     dispatch(
@@ -263,14 +281,17 @@ export default function EditSubdistributorAccount({
                       })
                     )
                   })
+                  .finally(() => {
+                    setButtonLoading(false)
+                  })
               }
               // console.log(formValues)
             }}
-            color="primary"
-            variant="contained"
+            loading={buttonProps.loading}
+            // disabled={buttonProps.disabled}
           >
-            CONFIRM
-          </Button>
+            Confirm
+          </AsyncButton>
         </Box>
       </Box>
     </Paper>

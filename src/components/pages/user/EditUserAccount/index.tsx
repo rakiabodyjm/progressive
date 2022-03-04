@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import LoadingScreen from '@src/components/LoadingScreen'
 import { useRouter } from 'next/router'
+import AsyncButton from '@src/components/AsyncButton'
 
 const editableFields = ({
   id,
@@ -117,7 +118,22 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
     }))
   }
   const userID = String(userInfo?.id)
+  const setButtonLoading = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      loading: typeof param !== 'boolean' ? true : param,
+    }))
+  }
+
+  const [buttonProps, setButtonProps] = useState<{
+    loading: boolean
+    disabled: boolean
+  }>({
+    loading: false,
+    disabled: true,
+  })
   const handleSubmit = () => {
+    setButtonLoading()
     if (editFormValues?.password) {
       if (editFormValues.password === checkPassword) {
         userApi
@@ -132,6 +148,7 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
             )
             setEditMode(false)
             setEditFormValues(null)
+            setButtonLoading(false)
           })
           .catch((err) => {
             dispatch(
@@ -162,6 +179,7 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
           )
           setEditMode(false)
           setEditFormValues(null)
+          setButtonLoading(false)
         })
         .catch((err) => {
           dispatch(
@@ -640,9 +658,16 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
             </Button>
           </Box>
 
-          <Button onClick={handleSubmit} variant="contained" color="primary">
-            SAVE
-          </Button>
+          <AsyncButton
+            onClick={(e) => {
+              e.preventDefault()
+              handleSubmit()
+            }}
+            loading={buttonProps.loading}
+            // disabled={buttonProps.disabled}
+          >
+            Confirm
+          </AsyncButton>
         </Box>
       </Paper>
     </Box>

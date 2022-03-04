@@ -58,7 +58,7 @@ export default function DSPSearchTable({ subdistributorId }: { subdistributorId:
               }}
               onRowClick={(e, rowValue) => {
                 router.push({
-                  pathname: '/dsp/[id]',
+                  pathname: '/subdistributor/dsp/[id]',
                   query: {
                     id: rowValue.dsp_id,
                   },

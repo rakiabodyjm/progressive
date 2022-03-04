@@ -83,7 +83,7 @@ const userAccountFieldsFull = (params: UserResponse) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: params.caesar_wallet.id,
+    value: params.caesar_wallet?.id ? params.caesar_wallet?.id : 'No Caesar Wallet',
   },
   {
     key: 'Name',

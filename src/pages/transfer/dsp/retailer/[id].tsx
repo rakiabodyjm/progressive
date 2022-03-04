@@ -117,98 +117,89 @@ export default function TransferPageId() {
         <Box p={2}>
           <Grid container>
             <Grid item xs={12}>
-              <Typography variant="h4">Transfer Inventory</Typography>
-              <Typography variant="body1" color="primary">
-                Transfer Inventory to Selected Account
-              </Typography>
-
-              <Box my={2}>
-                <Divider />
-              </Box>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper variant="outlined">
-                <Box p={2}>
-                  <Box display="flex" justifyContent="space-between">
-                    <Box>
-                      <RoleBadge uppercase>DSP</RoleBadge>
-                      <Typography noWrap color="textSecondary" variant="h6">
-                        {user?.first_name}
-                      </Typography>
-                      <Typography variant="h4">Inventory Management</Typography>
-                    </Box>
+              <Box p={2}>
+                <Box display="flex" justifyContent="space-between">
+                  <Box>
+                    <RoleBadge uppercase>DSP</RoleBadge>
+                    <Typography noWrap color="textSecondary" variant="h6">
+                      {user?.first_name}
+                    </Typography>
+                    <Typography variant="h4">Transfer Inventory</Typography>
+                    <Typography variant="body1" color="primary">
+                      Transfer Inventory to Selected Account
+                    </Typography>
                   </Box>
-
-                  <Box my={2}>
-                    <Divider />
-                  </Box>
-                  <Grid container spacing={2}>
-                    <Grid xs={12} item>
-                      <Box>
-                        {inventoryItems && inventoryMetadata && user?.dsp_id && (
-                          <UsersTable
-                            data={inventoryItems
-                              .filter((ea) => ea.caesar.dsp?.id === user.dsp_id)
-                              .map((ea) => formatInventory(ea))}
-                            setPage={(page: number) => {
-                              setinventoryPaginationParameters((prev) => ({
-                                ...prev,
-                                page,
-                              }))
-                            }}
-                            setLimit={(limit: number) => {
-                              setinventoryPaginationParameters((prev) => ({
-                                ...prev,
-                                limit,
-                              }))
-                            }}
-                            page={inventoryMetadata?.page}
-                            limit={inventoryMetadata?.limit}
-                            total={inventoryMetadata?.total}
-                            hiddenFields={['id']}
-                            onRowClick={(e, inventory) => {
-                              setPurchaseInventoryModalOpen(true)
-                              setPurchaseInvnetory((prevState) => ({
-                                ...prevState,
-                                inventoryId: inventory.id,
-                              }))
-                              setInventoryId(inventory.id)
-                            }}
-                            formatTitle={{
-                              caesar: 'Caesar Wallet Owner',
-                              asset: 'Asset Name',
-                              name: 'Inventory Name',
-                            }}
-                          />
-                        )}
-                      </Box>
-                    </Grid>
-                  </Grid>
                 </Box>
-                <ModalWrapper
-                  open={purchaseInventoryModalOpen}
-                  containerSize="sm"
-                  onClose={() => {
-                    setPurchaseInventoryModalOpen(false)
-                  }}
-                >
-                  {inventory && retailer ? (
-                    <CreatePurchase
-                      buyerCaesarId={retailer.caesar_wallet.id}
-                      inventory={inventory}
-                      srpKey={srpKey}
-                      modal={() => {
-                        setPurchaseInventoryModalOpen(false)
-                      }}
-                      revalidateFunction={() => {
-                        setValid(Date.now())
-                      }}
-                    />
-                  ) : (
-                    <CircularProgress />
-                  )}
-                </ModalWrapper>
-              </Paper>
+
+                <Box my={2}>
+                  <Divider />
+                </Box>
+                <Grid container spacing={2}>
+                  <Grid xs={12} item>
+                    <Box>
+                      {inventoryItems && inventoryMetadata && user?.dsp_id && (
+                        <UsersTable
+                          data={inventoryItems
+                            .filter((ea) => ea.caesar.dsp?.id === user.dsp_id)
+                            .map((ea) => formatInventory(ea))}
+                          setPage={(page: number) => {
+                            setinventoryPaginationParameters((prev) => ({
+                              ...prev,
+                              page,
+                            }))
+                          }}
+                          setLimit={(limit: number) => {
+                            setinventoryPaginationParameters((prev) => ({
+                              ...prev,
+                              limit,
+                            }))
+                          }}
+                          page={inventoryMetadata?.page}
+                          limit={inventoryMetadata?.limit}
+                          total={inventoryMetadata?.total}
+                          hiddenFields={['id']}
+                          onRowClick={(e, inventory) => {
+                            setPurchaseInventoryModalOpen(true)
+                            setPurchaseInvnetory((prevState) => ({
+                              ...prevState,
+                              inventoryId: inventory.id,
+                            }))
+                            setInventoryId(inventory.id)
+                          }}
+                          formatTitle={{
+                            caesar: 'Caesar Wallet Owner',
+                            asset: 'Asset Name',
+                            name: 'Inventory Name',
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+              <ModalWrapper
+                open={purchaseInventoryModalOpen}
+                containerSize="sm"
+                onClose={() => {
+                  setPurchaseInventoryModalOpen(false)
+                }}
+              >
+                {inventory && retailer ? (
+                  <CreatePurchase
+                    buyerCaesarId={retailer.caesar_wallet.id}
+                    inventory={inventory}
+                    srpKey={srpKey}
+                    modal={() => {
+                      setPurchaseInventoryModalOpen(false)
+                    }}
+                    revalidateFunction={() => {
+                      setValid(Date.now())
+                    }}
+                  />
+                ) : (
+                  <CircularProgress />
+                )}
+              </ModalWrapper>
             </Grid>
           </Grid>
         </Box>
