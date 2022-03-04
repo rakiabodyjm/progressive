@@ -246,7 +246,7 @@ const adminFieldsExpanded = (admin: AdminResponseType) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: admin.caesar_wallet?.id,
+    value: admin.caesar_wallet?.id ? admin.caesar_wallet?.id : 'No Caesar Wallet',
   },
   {
     key: 'Name',
@@ -278,7 +278,7 @@ const subdistributorFieldsFull = (subdistributor: SubdistributorResponseType) =>
   },
   {
     key: 'Caesar Wallet ID',
-    value: subdistributor.caesar_wallet?.id,
+    value: subdistributor.caesar_wallet?.id ? subdistributor.caesar_wallet?.id : 'No Caesar Wallet',
   },
   {
     key: 'Subdistributor',
@@ -331,7 +331,7 @@ const dspFieldsFull = (dsp: DspResponseType) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: dsp.caesar_wallet?.id,
+    value: dsp.caesar_wallet?.id ? dsp.caesar_wallet?.id : 'No Caesar Wallet',
   },
   {
     key: 'E-Bind Number',
@@ -379,7 +379,7 @@ const retailerFieldsFull = (retailer: RetailerResponseType) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: retailer.caesar_wallet?.id,
+    value: retailer.caesar_wallet?.id ? retailer.caesar_wallet?.id : 'No Caesar Wallet',
   },
   {
     key: 'E Bind Number',
@@ -428,7 +428,7 @@ const userAccountFieldsFull = (params: UserResponse) => [
   },
   {
     key: 'Caesar Wallet ID',
-    value: params.caesar_wallet?.id,
+    value: params.caesar_wallet?.id ? params.caesar_wallet?.id : 'No Caesar Wallet',
   },
   {
     key: 'Name',

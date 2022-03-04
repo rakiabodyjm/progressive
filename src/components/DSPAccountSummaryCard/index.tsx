@@ -102,7 +102,7 @@ const dspFieldsFull = ({
   },
   {
     key: 'Caesar Wallet ID',
-    value: caesar_wallet.id,
+    value: caesar_wallet?.id ? caesar_wallet?.id : 'No Caesar Wallet',
   },
   {
     key: 'E-Bind Number',

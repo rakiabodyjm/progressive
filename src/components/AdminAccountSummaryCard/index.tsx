@@ -91,10 +91,13 @@ const adminFieldsExpanded = (admin: AdminResponseType) => [
     value: admin.id,
   },
   {
+    key: 'Caesar Wallet ID',
+    value: admin.caesar_wallet?.id ? admin.caesar_wallet?.id : 'No Caesar Wallet',
+  },
+  {
     key: 'Name',
     value: admin.name,
   },
-
   {
     key: 'User',
     // value: subdistributor.e_bind_number,
