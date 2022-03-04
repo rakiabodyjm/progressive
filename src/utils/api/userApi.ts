@@ -1,7 +1,8 @@
+/* eslint-disable no-redeclare */
 // import type { User, UserMetaData } from '@src/redux/data/userSlice'
 import type { User, UserMetaData, UserTypes } from '@src/redux/data/userSlice'
 import { AdminResponseType } from '@src/utils/api/adminApi'
-import { extractErrorFromResponse } from '@src/utils/api/common'
+import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
@@ -221,5 +222,18 @@ export function searchUser(userString: string) {
     .then((res) => res.data as UserResponse[])
     .catch((err) => {
       throw new Error(extractErrorFromResponse(err))
+    })
+}
+
+export function getAllUsers(): Promise<UserResponse[]>
+export function getAllUsers(params: PaginateFetchParameters): Promise<Paginated<UserResponse>>
+export function getAllUsers(params?: unknown): unknown {
+  return axios
+    .get('/user', {
+      params,
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
     })
 }
