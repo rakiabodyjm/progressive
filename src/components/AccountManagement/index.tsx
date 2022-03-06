@@ -32,9 +32,11 @@ import SubdistributorSmallCard from '../SubdistributorSmallCard'
 export default function AccountManagement({
   accountAs,
   accountGet,
+  accountRole,
 }: {
   accountAs: string | undefined
   accountGet: string | undefined
+  accountRole: string
 }) {
   const user = useSelector(userDataSelector)
   const [account, setAccount] = useState<UserResponse>()
@@ -114,17 +116,17 @@ export default function AccountManagement({
             >
               {user?.first_name}
             </Typography>
-            {accountGet === user?.dsp_id && (
+            {accountGet === user?.dsp_id && accountRole === 'dsp' && (
               <Typography display="inline" variant="h4">
                 DSP Management
               </Typography>
             )}
-            {accountGet === user?.retailer_id && (
+            {accountGet === user?.retailer_id && accountRole === 'retailer' && (
               <Typography display="inline" variant="h4">
                 Retailer Management
               </Typography>
             )}
-            {accountGet === user?.dsp_id && (
+            {accountGet === user?.dsp_id && accountRole === 'dsp' && (
               <Box mb={2} display="flex" justifyContent="flex-end">
                 <Tooltip
                   title={<Typography variant="subtitle2">Add DSP Account</Typography>}
@@ -137,7 +139,7 @@ export default function AccountManagement({
                 </Tooltip>
               </Box>
             )}
-            {accountGet === user?.retailer_id && (
+            {accountGet === user?.retailer_id && accountRole === 'retailer' && (
               <Box mb={2} display="flex" justifyContent="flex-end">
                 <Tooltip
                   title={<Typography variant="subtitle2">Add Retailer Account</Typography>}
@@ -172,7 +174,7 @@ export default function AccountManagement({
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>
-                  {accountGet === user?.dsp_id && (
+                  {accountGet === user?.dsp_id && accountRole === 'dsp' && (
                     <Paper variant="outlined">
                       <Box p={2}>
                         <Typography variant="h5">DSP Accounts</Typography>
@@ -183,7 +185,7 @@ export default function AccountManagement({
                       <DSPSearchTable subdistributorId={account.subdistributor.id} />
                     </Paper>
                   )}
-                  {accountGet === user?.retailer_id && (
+                  {accountGet === user?.retailer_id && accountRole === 'retailer' && (
                     <Paper variant="outlined">
                       <Box p={2}>
                         <Typography variant="h5">Retailer Accounts</Typography>
@@ -234,19 +236,22 @@ export default function AccountManagement({
           )}
         </Grid>
       </Paper>
-      {account?.dsp && addAccountModal.retailer && accountGet === user?.retailer_id && (
-        <ModalContainer
-          handleClose={setModalOpen('retailer', false)}
-          open={addAccountModal.retailer}
-        >
-          <CreateRetailerAccount
-            dspId={account.dsp?.id as string}
-            subdistributorId={account.dsp.subdistributor.id as string}
-            modal={setModalOpen('retailer', false)}
-          />
-        </ModalContainer>
-      )}
-      {account?.subdistributor && addAccountModal.dsp && (
+      {account?.dsp &&
+        addAccountModal.retailer &&
+        accountGet === user?.retailer_id &&
+        accountRole === 'retailer' && (
+          <ModalContainer
+            handleClose={setModalOpen('retailer', false)}
+            open={addAccountModal.retailer}
+          >
+            <CreateRetailerAccount
+              dspId={account.dsp?.id as string}
+              subdistributorId={account.dsp.subdistributor.id as string}
+              modal={setModalOpen('retailer', false)}
+            />
+          </ModalContainer>
+        )}
+      {account?.subdistributor && addAccountModal.dsp && accountRole === 'dsp' && (
         <ModalContainer handleClose={setModalOpen('dsp', false)} open={addAccountModal.dsp}>
           <CreateDSPAccount
             subdistributorId={account.subdistributor.id as string}

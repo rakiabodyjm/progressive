@@ -6,7 +6,11 @@ export default function DSPRetailersPage() {
   const user = useSelector(userDataSelector)
   return (
     <div>
-      <AccountManagement accountAs={user?.dsp_id} accountGet={user?.retailer_id} />
+      <AccountManagement
+        accountAs={user?.dsp_id}
+        accountGet={user?.retailer_id}
+        accountRole="retailer"
+      />
     </div>
   )
 }
