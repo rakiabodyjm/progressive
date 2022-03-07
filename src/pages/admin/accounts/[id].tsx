@@ -19,6 +19,7 @@ import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
 import { getSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import AdminAccountSummaryCard from '@src/components/AdminAccountSummaryCard'
+import AccountSummaryCard from '@src/components/AccountSummaryCard'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -219,7 +220,7 @@ export default function AdminAccountManage() {
         />
         <Grid spacing={2} container>
           <Grid item xs={12} md={6}>
-            {account && <UserAccountSummaryCard account={account} />}
+            {account && <AccountSummaryCard account={account} role={account.id} />}
           </Grid>
           <Grid item xs={12} md={6}>
             <Grid container spacing={2}>
@@ -256,7 +257,7 @@ export default function AdminAccountManage() {
 
             <Grid spacing={2} container>
               <Grid item xs={12} md={6}>
-                <SubdistributorAccountSummaryCard subdistributor={account.subdistributor} />
+                <AccountSummaryCard account={account} role={account.subdistributor.id} />
               </Grid>
               <Grid container item xs={12} md={6} spacing={2}>
                 <Grid item xs={12} lg={6}>
@@ -281,7 +282,7 @@ export default function AdminAccountManage() {
 
             <Grid spacing={2} container>
               <Grid item xs={12} md={6}>
-                <DSPAccountSummaryCard dsp={account.dsp} />
+                <AccountSummaryCard account={account} role={account.dsp.id} />
               </Grid>
 
               <Grid container item xs={12} md={6} spacing={2}>
@@ -304,7 +305,7 @@ export default function AdminAccountManage() {
 
             <Grid spacing={2} container>
               <Grid item xs={12} md={6}>
-                <RetailerAccountSummaryCard retailer={account.retailer} />
+                <AccountSummaryCard account={account} role={account.retailer.id} />
               </Grid>
               <Grid container item xs={12} md={6} spacing={2}>
                 <Grid item xs={12} lg={6}>

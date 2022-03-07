@@ -110,14 +110,17 @@ export function getWallet(
 }
 
 export type SearchWalletParams = {
-  searchQuery: string
+  searchQuery?: string
 } & PaginateFetchParameters
-export function searchWallet(searchParams: SearchWalletParams) {
-  const { searchQuery } = searchParams
+export function searchWallet({ searchQuery, ...searchParams }: SearchWalletParams) {
   return axios
     .get('/caesar/search', {
       params: {
         ...searchParams,
+        ...(searchQuery &&
+          searchQuery.length > 0 && {
+            searchQuery,
+          }),
       },
     })
     .then((res) => res.data as Paginated<CaesarWalletResponse>)

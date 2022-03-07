@@ -32,6 +32,7 @@ import useNotification from '@src/utils/hooks/useNotification'
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import validator from 'validator'
 import { useDispatch } from 'react-redux'
+import AsyncButton from '@src/components/AsyncButton'
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
     color: theme.palette.primary.main,
@@ -126,8 +127,23 @@ export default function EditRetailerAccount({
   const [dspSelected, setDspSelected] = useState<RetailerResponseType['dsp'] | undefined>(
     retailerProps.dsp
   )
+  const setButtonLoading = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      loading: typeof param !== 'boolean' ? true : param,
+    }))
+  }
+
+  const [buttonProps, setButtonProps] = useState<{
+    loading: boolean
+    disabled: boolean
+  }>({
+    loading: false,
+    disabled: true,
+  })
 
   const handleSubmit = useCallback(() => {
+    setButtonLoading()
     const changes = Object.entries(updateRetailerDefault.current).reduce((acc, [key, value]) => {
       if (retailer[key as keyof typeof updateRetailerDefault.current] !== value) {
         return {
@@ -178,6 +194,9 @@ export default function EditRetailerAccount({
             message: error,
           })
         })
+      })
+      .finally(() => {
+        setButtonLoading(false)
       })
   }, [modalClose, retailer, retailerProps.id])
 
@@ -356,9 +375,15 @@ export default function EditRetailerAccount({
         </Grid>
 
         <Box display="flex" mt={2} justifyContent="flex-end">
-          <Button onClick={handleSubmit} color="primary" variant="contained">
+          <AsyncButton
+            onClick={() => {
+              handleSubmit()
+            }}
+            loading={buttonProps.loading}
+            // disabled={buttonProps.disabled}
+          >
             Confirm
-          </Button>
+          </AsyncButton>
         </Box>
       </Box>
     </Paper>

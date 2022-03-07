@@ -1,6 +1,7 @@
 import {
   Box,
   CircularProgress,
+  Container,
   Grid,
   IconButton,
   Paper,
@@ -82,109 +83,117 @@ export default function ECommerce({
   const [selectedInventory, setSelectedInventory] = useState<undefined | Inventory>()
   return (
     <div>
-      <Paper
+      <Container
+        maxWidth="lg"
         style={{
-          height: 'max-content',
-          overflowY: 'auto',
+          padding: 0,
+          overflow: 'hidden',
         }}
-        variant="outlined"
       >
-        <Box p={2}>
-          <Grid container>
-            <Grid item xs={12}>
-              <Box pb={2}>
-                <Grid container justifyContent="flex-end" alignItems="center">
-                  <Grid item>
-                    <IconButton
-                      onClick={() => {
-                        setView({ rowView: true, gridView: false })
-                      }}
-                    >
-                      <ListAlt color={view.rowView ? 'primary' : undefined} />
-                    </IconButton>
+        <Paper
+          style={{
+            height: 'max-content',
+            overflowY: 'auto',
+          }}
+          variant="outlined"
+        >
+          <Box p={2}>
+            <Grid container>
+              <Grid item xs={12}>
+                <Box pb={2}>
+                  <Grid container justifyContent="flex-end" alignItems="center">
+                    <Grid item>
+                      <IconButton
+                        onClick={() => {
+                          setView({ rowView: true, gridView: false })
+                        }}
+                      >
+                        <ListAlt color={view.rowView ? 'primary' : undefined} />
+                      </IconButton>
+                    </Grid>
+                    <Grid item>
+                      <IconButton
+                        onClick={() => {
+                          setView({ rowView: false, gridView: true })
+                        }}
+                      >
+                        <Apps color={view.gridView ? 'primary' : undefined} />
+                      </IconButton>
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <IconButton
-                      onClick={() => {
-                        setView({ rowView: false, gridView: true })
-                      }}
-                    >
-                      <Apps color={view.gridView ? 'primary' : undefined} />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Grid>
-          </Grid>
-          {/* {view.rowView && inventory && <RowView inventory={inventory} />} */}
-          {/* {view.gridView && inventory && <GridView inventory={inventory} />} */}
-          {inventory && !loading && view.rowView && (
-            <RowView
-              srpKey={srpKey}
-              inventory={inventory}
-              onInventoryItemClick={(inventory: Inventory) => {
-                setSelectedInventory(inventory)
-                // setPurchaseModalOpen(true)
-              }}
-            />
-          )}
-          {inventory && !loading && view.gridView && (
-            <GridView
-              srpKey={srpKey}
-              inventory={inventory}
-              onInventoryItemClick={(inventory: Inventory) => {
-                setSelectedInventory(inventory)
-                // setPurchaseModalOpen(true)
-              }}
-            />
-          )}
-          {loading && (
-            <Box>
-              <Paper>
-                <Box p={4}>
-                  <Box
-                    display="flex"
-                    justifyContent="center"
-                    flexDirection="column"
-                    alignItems="center"
-                  >
-                    <Typography
-                      style={{
-                        fontWeight: 600,
-                      }}
-                      variant="h5"
-                    >
-                      Loading
-                    </Typography>
-                    <CircularProgress size={40} thickness={4} />
-                  </Box>
                 </Box>
-              </Paper>
+              </Grid>
+            </Grid>
+            {/* {view.rowView && inventory && <RowView inventory={inventory} />} */}
+            {/* {view.gridView && inventory && <GridView inventory={inventory} />} */}
+            {inventory && !loading && view.rowView && (
+              <RowView
+                srpKey={srpKey}
+                inventory={inventory}
+                onInventoryItemClick={(inventory: Inventory) => {
+                  setSelectedInventory(inventory)
+                  // setPurchaseModalOpen(true)
+                }}
+              />
+            )}
+            {inventory && !loading && view.gridView && (
+              <GridView
+                srpKey={srpKey}
+                inventory={inventory}
+                onInventoryItemClick={(inventory: Inventory) => {
+                  setSelectedInventory(inventory)
+                  // setPurchaseModalOpen(true)
+                }}
+              />
+            )}
+            {loading && (
+              <Box>
+                <Paper>
+                  <Box p={4}>
+                    <Box
+                      display="flex"
+                      justifyContent="center"
+                      flexDirection="column"
+                      alignItems="center"
+                    >
+                      <Typography
+                        style={{
+                          fontWeight: 600,
+                        }}
+                        variant="h5"
+                      >
+                        Loading
+                      </Typography>
+                      <CircularProgress size={40} thickness={4} />
+                    </Box>
+                  </Box>
+                </Paper>
+              </Box>
+            )}
+            <Box pt={2}>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 20, 50, 100]}
+                count={inventoryMetadata?.total || 0}
+                rowsPerPage={inventoryMetadata?.limit || 5}
+                page={inventoryMetadata?.page || 0}
+                onPageChange={(_, page) => {
+                  setPaginateParams((prev) => ({
+                    ...prev,
+                    page,
+                  }))
+                }}
+                onRowsPerPageChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  setPaginateParams((prev) => ({
+                    ...prev,
+                    limit: Number(e.target.value),
+                  }))
+                }}
+                component="div"
+              />
             </Box>
-          )}
-          <Box pt={2}>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 20, 50, 100]}
-              count={inventoryMetadata?.total || 0}
-              rowsPerPage={inventoryMetadata?.limit || 5}
-              page={inventoryMetadata?.page || 0}
-              onPageChange={(_, page) => {
-                setPaginateParams((prev) => ({
-                  ...prev,
-                  page,
-                }))
-              }}
-              onRowsPerPageChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-                setPaginateParams((prev) => ({
-                  ...prev,
-                  limit: Number(e.target.value),
-                }))
-              }}
-              component="div"
-            />
           </Box>
-        </Box>
-      </Paper>
+        </Paper>
+      </Container>
 
       <ModalWrapper
         containerSize="sm"

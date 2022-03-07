@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
+import AsyncButton from '@src/components/AsyncButton'
 import MapIdAutoComplete from '@src/components/MapIdAutoComplete'
 import AestheticObjectFormRenderer from '@src/components/ObjectFormRendererV2'
 import UserAutoComplete from '@src/components/UserAutoComplete'
@@ -105,6 +106,22 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
             message: `Subdistributor Account ${res.name} created`,
             type: NotificationTypes.SUCCESS,
           })
+          setSubdistributorFields({
+            e_bind_number: '',
+            // area_id: '',
+            id_number: '',
+            id_type: '',
+            zip_code: '',
+            name: '',
+          })
+          setErrors({
+            e_bind_number: null,
+            // area_id: '',
+            id_number: null,
+            id_type: null,
+            zip_code: null,
+            name: null,
+          })
         })
         .catch((err) => {
           // eslint-disable-next-line no-unused-expressions
@@ -122,6 +139,9 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
         })
         .finally(() => {
           setLoading(false)
+          if (modal) {
+            modal()
+          }
         })
     } else {
       if (!areaId) {
@@ -378,32 +398,16 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
         ></Box>
 
         <Box mt={2} display="flex" justifyContent="flex-end">
-          <Button
+          <AsyncButton
             disabled={!accountToLink || loading}
-            onClick={handleSubmit}
-            variant="contained"
-            color="primary"
-            style={{
-              overflow: 'hidden',
+            onClick={() => {
+              handleSubmit()
             }}
+            loading={loading}
+            // disabled={buttonProps.disabled}
           >
             Confirm
-            {loading && (
-              <Box
-                style={{
-                  background: theme.palette.primary.main,
-                  position: 'absolute',
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <CircularProgress color="inherit" style={{}} size={20} />
-              </Box>
-            )}
-          </Button>
+          </AsyncButton>
         </Box>
       </Box>
     </Paper>

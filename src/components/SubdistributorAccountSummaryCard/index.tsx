@@ -98,7 +98,7 @@ const subdistributorFieldsFull = (subdistributor: SubdistributorResponseType) =>
   },
   {
     key: 'Caesar Wallet ID',
-    value: subdistributor.caesar_wallet?.id,
+    value: subdistributor.caesar_wallet?.id ? subdistributor.caesar_wallet?.id : 'No Caesar Wallet',
   },
   {
     key: 'Subdistributor',

@@ -19,6 +19,8 @@ import { makeStyles } from '@material-ui/styles'
 import validator from 'validator'
 import useSWR from 'swr'
 import axios from 'axios'
+import AsyncButton from '@src/components/AsyncButton'
+import useNotification from '@src/utils/hooks/useNotification'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formLabel: {
@@ -52,6 +54,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
     confirm_password: '',
   })
   const classes = useStyles()
+  const dispatchNotif = useNotification()
   const dispatch = useDispatch()
   const [errors, setErrors] = useState<Record<keyof CreateUser, string | null>>({
     first_name: null,
@@ -66,8 +69,22 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
   const { data } = useSWR<CheckUsername | undefined>('/user/', (url: string) =>
     axios(url).then((r) => r.data)
   )
+  const setButtonLoading = (param?: false) => {
+    setButtonProps((prevState) => ({
+      ...prevState,
+      loading: typeof param !== 'boolean' ? true : param,
+    }))
+  }
 
+  const [buttonProps, setButtonProps] = useState<{
+    loading: boolean
+    disabled: boolean
+  }>({
+    loading: false,
+    disabled: true,
+  })
   const handleSubmit = () => {
+    setButtonLoading()
     const schemaChecker = {
       email: (value: string) => !validator.isEmail(value) && '*Email Address is not valid',
       phone_number: (value: string) => validator.isEmpty(value) && '*Phone number Required',
@@ -98,6 +115,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
       //     message: `Password Required`,
       //   })
       // )
+      setButtonLoading(false)
     } else if (user.password !== user.confirm_password) {
       dispatch(
         setNotification({
@@ -105,6 +123,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
           message: `Passwords do not match`,
         })
       )
+      setButtonLoading(false)
     } else {
       createUser(user)
         .then((res) => {
@@ -138,25 +157,22 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
               username: '',
               password: '',
             })
+            setButtonLoading(false)
           }
         })
-        .catch((err) => {
+        .catch((err: string[]) => {
           if (Array.isArray(err)) {
             err.forEach((ea) => {
-              dispatch(
-                setNotification({
-                  type: NotificationTypes.ERROR,
-                  message: ea,
-                })
-              )
+              dispatchNotif({
+                message: ea,
+                type: NotificationTypes.ERROR,
+              })
             })
           } else {
-            dispatch(
-              setNotification({
-                type: NotificationTypes.ERROR,
-                message: extractErrorFromResponse(err),
-              })
-            )
+            dispatchNotif({
+              message: err,
+              type: NotificationTypes.ERROR,
+            })
           }
         })
     }
@@ -433,6 +449,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
               type="password"
               variant="outlined"
               name="password"
+              placeholder="8-16 characters"
               fullWidth
               size="small"
               onChange={handleChange}
@@ -466,6 +483,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
               type="password"
               variant="outlined"
               name="confirm_password"
+              placeholder="8-16 characters"
               fullWidth
               size="small"
               onChange={handleChange}
@@ -474,7 +492,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
           </Grid>
         </Grid>
         <Box display="flex" gridGap={8} justifyContent="flex-end" className={classes.buttonMargin}>
-          <Button
+          {/* <Button
             variant="contained"
             type="submit"
             onClick={(e) => {
@@ -484,7 +502,14 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             color="primary"
           >
             Confirm
-          </Button>
+          </Button> */}
+          <AsyncButton
+            onClick={handleSubmit}
+            loading={buttonProps.loading}
+            // disabled={buttonProps.disabled}
+          >
+            Confirm
+          </AsyncButton>
         </Box>
       </Box>
     </Paper>

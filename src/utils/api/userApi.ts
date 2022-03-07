@@ -91,7 +91,16 @@ const userApi = {
    * Logs out user and removes token from localStorage
    */
   logoutUser() {
-    window?.localStorage?.removeItem('token')
+    axios
+      .post('/auth/logout')
+      .then((res) => {
+        console.log('res', res)
+        window?.localStorage?.removeItem('token')
+      })
+      .catch((err) => {
+        console.log('err', err)
+      })
+      .finally(() => {})
   },
   /**
    *
