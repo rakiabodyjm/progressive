@@ -1,9 +1,11 @@
 import { Tooltip, Typography, IconButton } from '@material-ui/core'
 import { AddCircleOutlined } from '@material-ui/icons'
+import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { useState } from 'react'
+import { mutate } from 'swr'
 import AddAccountModal from '..'
 
-export default function AddUserModal() {
+export default function AddUserModal({ mutateValue }: { mutateValue: () => void }) {
   const [addAccountModalOpen, setAddAccountModalOpen] = useState<boolean>(false)
   return (
     <>
@@ -23,7 +25,10 @@ export default function AddUserModal() {
       {addAccountModalOpen && (
         <AddAccountModal
           open={addAccountModalOpen}
-          handleClose={() => setAddAccountModalOpen(false)}
+          handleClose={() => {
+            setAddAccountModalOpen(false)
+            mutateValue()
+          }}
         />
       )}
     </>

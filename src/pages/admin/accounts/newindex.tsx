@@ -4,7 +4,7 @@ import UserAccountTypeSelector from '@src/components/UserAccountTypeSelector'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { userDataSelector } from '@src/redux/data/userSlice'
 
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useFetchOrSearchAccounts, { Entities } from '@hooks/useFetchOrSearchAccounts'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
@@ -19,6 +19,8 @@ import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { AdminResponseType } from '@src/utils/api/adminApi'
 import { UserResponse } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
+import AddUserModal from '@src/components/AddAccountModal/AddUserModal'
+import { useSWRConfig } from 'swr'
 
 type Entity = Entities[keyof Entities]
 
@@ -30,6 +32,7 @@ type EntityTypesUnion =
   | AdminResponseType
 
 export default function AdminAccountsPage() {
+  const { mutate } = useSWRConfig()
   const router = useRouter()
   const [accountType, setAccountType] = useState<UserTypesAndUser>('user')
   const user = useSelector(userDataSelector)
@@ -39,11 +42,18 @@ export default function AdminAccountsPage() {
     limit: 100,
   })
 
-  const { data: entities, loading } = useFetchOrSearchAccounts(accountType, {
+  const {
+    data: entities,
+    loading,
+    mutateKey,
+  } = useFetchOrSearchAccounts(accountType, {
     mode: searchQuery ? 'search' : 'get-all',
     paginateOptions: paginationParams,
     searchString: searchQuery,
   })
+  const mutateValue = useCallback(() => {
+    mutate(mutateKey)
+  }, [mutate, mutateKey])
 
   const paginationData = useMemo(() => {
     if (entities) {
@@ -58,15 +68,15 @@ export default function AdminAccountsPage() {
       return {
         data: entities,
         metadata: {
-          limit: 100,
-          page: 0,
+          limit: paginationParams.limit,
+          page: paginationParams.page,
           total: fetchData?.length || 0,
           total_page: 1,
         },
       } as Paginated<Entity>
     }
     return undefined
-  }, [entities])
+  }, [entities, paginationParams.limit, paginationParams.page])
 
   const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
 
@@ -101,6 +111,10 @@ export default function AdminAccountsPage() {
               Create Account Types or Link User Accounts to Subdistributor | DSP | Retailer
             </Typography>
           </Box>
+          <Box mb={2} display="flex" justifyContent="flex-end">
+            <AddUserModal mutateValue={mutateValue} />
+          </Box>
+
           <Box my={4} />
           <UserAccountTypeSelector
             activeUser={accountType}
@@ -151,6 +165,14 @@ export default function AdminAccountsPage() {
                 }))
               }}
               hiddenFields={['user_id']}
+              onRowClick={(e, rowValue) => {
+                router.push({
+                  pathname: '/admin/accounts/[id]',
+                  query: {
+                    id: rowValue.user_id,
+                  },
+                })
+              }}
             />
           )}
 
@@ -207,6 +229,7 @@ const formatRetailer = ({
   user,
 }: RetailerResponseType) => ({
   id,
+  user_id: user?.id,
   user: user ? `${user.last_name}, ${user.first_name}` : '',
   store_name,
   e_bind_number,
