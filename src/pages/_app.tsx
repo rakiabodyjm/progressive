@@ -18,6 +18,7 @@ import useNotification from '@src/utils/hooks/useNotification'
 import { nanoid } from '@reduxjs/toolkit'
 import { AppProps } from 'next/dist/shared/lib/router/router'
 // import { getDefaultCaesar } from '@src/redux/data/currentCaesarSlice'
+import RouteGuard from '@src/components/RouteGuard'
 import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
@@ -129,7 +130,8 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
           {
             isAuthenticated && !router.pathname.split('/').includes('register') ? (
               <NavigationLayout>
-                <Component {...pageProps} />
+                {/* <Component {...pageProps} /> */}
+                <RouteGuard Component={Component} pageProps={pageProps} />
               </NavigationLayout>
             ) : router.pathname.split('/').includes('register') ? (
               <Registration />
