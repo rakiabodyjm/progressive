@@ -5,21 +5,19 @@ import { makeStyles, useTheme } from '@material-ui/styles'
 import DSPSmallCard from '@src/components/DSPSmallCard'
 import RetailerSmallCard from '@src/components/RetailerSmallCard'
 import SubdistributorSmallCard from '@src/components/SubdistributorSmallCard'
-import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
 import WalletSmallCard from '@src/components/WalletSmallCard'
-import userApi, { UserResponse, getUser } from '@src/utils/api/userApi'
+import { UserResponse, getUser } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import SubdistributorAccountSummaryCard from '@src/components/SubdistributorAccountSummaryCard'
-import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
-import RetailerAccountSummaryCard from '@src/components/RetailerAccountSummaryCard'
 import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
 import { getSubdistributor, SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import AdminAccountSummaryCard from '@src/components/AdminAccountSummaryCard'
 import AccountSummaryCard from '@src/components/AccountSummaryCard'
+import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
+import { GetServerSideProps, GetStaticProps } from 'next'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -38,62 +36,50 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-export default function AdminAccountManage() {
+export default function AdminAccountManage({ id }: { id: string }) {
   const router = useRouter()
-  const { query } = router
-  const { id } = query
   const theme: Theme = useTheme()
-  const [account, setAccount] = useState<UserResponse>()
+  const [account, setAccount] = useState<UserResponse | undefined>()
   const dispatch = useDispatch()
 
-  const { loading: dspLoading, entity: dsp } = useFetchEntity('dsp', account?.dsp?.id)
-
-  const { loading: subdistributorLoading, entity: subdistributor } = useFetchEntity(
+  const { entity: dspFetch, loading: dspLoading } = useFetchEntity('dsp', id)
+  const { entity: subdistributorFetch, loading: subdistributorLoading } = useFetchEntity(
     'subdistributor',
-    account?.subdistributor?.id
+    id
   )
-  const { loading: retailerLoading, entity: retailer } = useFetchEntity(
-    'retailer',
-    account?.retailer?.id
-  )
-
-  useEffect(() => {
-    const record = {
-      retailer,
-      subdistributor,
-      dsp,
-    }
-
-    Object.keys(record).forEach((key) => {
-      const currentKey = key as keyof typeof record
-      if (account && account?.[currentKey] && record?.[currentKey]) {
-        setAccount((prevState) => ({
-          ...(prevState as UserResponse),
-          [currentKey]: record[currentKey],
-        }))
-      }
-    })
-  }, [retailer, dsp, subdistributor])
+  const { entity: retailerFetch, loading: retailerLoading } = useFetchEntity('retailer', id)
 
   useEffect(() => {
     if (id) {
-      getUser(id as string, {
-        cached: false,
-      })
-        .then((res) => {
-          setAccount(res)
+      getUser(id)
+        .then(async (res) => {
+          setAccount({
+            ...res,
+            ...(res?.subdistributor && {
+              subdistributor: await getSubdistributor(res.subdistributor.id),
+            }),
+            ...(res?.retailer && {
+              retailer: await getRetailer(res.retailer.id),
+            }),
+            ...(res?.dsp && {
+              dsp: await getDsp(res.dsp.id).then(async (dsp) => ({
+                ...dsp,
+              })),
+            }),
+          })
         })
         .catch((err) => {
-          const error = userApi.extractError(err)
-          dispatch(
-            setNotification({
-              type: NotificationTypes.ERROR,
-              message: error.toString(),
-            })
-          )
+          extractMultipleErrorFromResponse(err).forEach((message) => {
+            dispatch(
+              setNotification({
+                type: NotificationTypes.ERROR,
+                message,
+              })
+            )
+          })
         })
     }
-  }, [id])
+  }, [dspFetch, subdistributorFetch, retailerFetch, dispatch, id])
 
   const classes = useStyles()
   return (
@@ -319,19 +305,15 @@ export default function AdminAccountManage() {
           </>
         )}
       </Paper>
-
-      {/* <Box mt={8} />
-      {account?.subdistributor && (
-        <ViewSubdistributorAccount subdistributorId={account.subdistributor.id} />
-      )}
-      <Box mt={8} />
-      {account?.dsp && <ViewDspAccount dspId={account.dsp.id} />}
-
-      <Box mt={8} />
-      {account?.retailer && <ViewRetailerAccount retailerId={account.retailer.id} />} */}
     </div>
   )
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => ({
+  props: {
+    id: context.query.id,
+  },
+})
 
 type EntityTypes = 'subdistributor' | 'retailer' | 'dsp'
 function useFetchEntity<T extends EntityTypes = 'dsp'>(
@@ -346,7 +328,7 @@ function useFetchEntity<T extends EntityTypes = 'retailer'>(
   id: string | undefined
 ): {
   loading: boolean
-  entity: DspResponseType
+  entity: RetailerResponseType
 }
 function useFetchEntity<T extends EntityTypes = 'subdistributor'>(
   type: T,
@@ -361,19 +343,22 @@ function useFetchEntity(type: EntityTypes, id: any) {
   >()
   const [loading, setLoading] = useState<boolean>(false)
 
-  const fetcher = (argType: typeof type) => {
-    if (argType === 'dsp') {
-      return getDsp
+  const fetcher = useCallback((argType: typeof type) => {
+    switch (argType) {
+      case 'dsp': {
+        return getDsp
+      }
+      case 'subdistributor': {
+        return getSubdistributor
+      }
+      case 'retailer': {
+        return getRetailer
+      }
+      default: {
+        return getRetailer
+      }
     }
-    if (argType === 'subdistributor') {
-      return getSubdistributor
-    }
-    if (argType === 'retailer') {
-      return getRetailer
-    }
-
-    throw new Error('useFetch entity must have type DSP | Subdistributor')
-  }
+  }, [])
   useEffect(() => {
     if (type && id) {
       setLoading(true)
@@ -388,7 +373,7 @@ function useFetchEntity(type: EntityTypes, id: any) {
           setLoading(false)
         })
     }
-  }, [type, id])
+  }, [type, id, fetcher])
 
   return {
     loading,
