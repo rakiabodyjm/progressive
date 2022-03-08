@@ -21,7 +21,8 @@
     "dev:server": "cross-env NODE_ENV=development nodemon server.js",
     "start:server": "cross-env NODE_ENV=production node server.js",
     "start:build:server": "npm run build && npm run start:server",
-    "start:pm2": "npm run build && pm2 delete all && pm2 start --env production"
+    "pm2:prod": "yarn build && pm2 start --env production",
+    "pm2:dev": "pm2 start"
   },
   "dependencies": {
     "@date-io/date-fns": "1.x",
@@ -58,6 +59,7 @@
     "react-redux": "^7.2.4",
     "react-use": "^17.2.4",
     "reselect": "^4.0.0",
+    "sharp": "^0.30.2",
     "swr": "^1.0.1",
     "validator": "^13.6.0",
     "yup": "^0.32.11"
@@ -81,7 +83,6 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "jest": "^26.6.3",
     "prettier": "^2.3.0",
     "typescript": "^4.2.4"
   }
