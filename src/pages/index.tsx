@@ -27,6 +27,7 @@ import { getWallet } from '@src/utils/api/walletApi'
 import { TabPanel } from '@material-ui/lab'
 import { getAllInventory, Inventory } from '@src/utils/api/inventoryApi'
 import AccountSummaryCard from '@src/components/AccountSummaryCard'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -59,9 +60,10 @@ export default function AccountDashboard() {
   const theme: Theme = useTheme()
   const [account, setAccount] = useState<UserResponse>()
   const dispatch = useDispatch()
-
+  const [loading, setLoading] = useState<boolean>(false)
   useEffect(() => {
     if (user) {
+      setLoading(true)
       getUser(user.user_id as string, {
         cached: false,
       })
@@ -86,6 +88,9 @@ export default function AccountDashboard() {
               message: error.toString(),
             })
           )
+        })
+        .finally(() => {
+          setLoading(false)
         })
     }
   }, [dispatch, user])
@@ -145,116 +150,127 @@ export default function AccountDashboard() {
           }}
         />
 
-        <Grid className={classes.gridContainer} spacing={2} container>
-          <Grid item xs={12} md={6}>
-            <Grid spacing={2} container>
-              <Grid item xs={12}>
-                {account && <AccountSummaryCard account={account} role={account.id} />}
-              </Grid>
+        {loading ? (
+          <LoadingScreen2
+            containerProps={{
+              minHeight: 480,
+            }}
+            textProps={{
+              variant: 'h4',
+            }}
+          />
+        ) : (
+          <Grid className={classes.gridContainer} spacing={2} container>
+            <Grid item xs={12} md={6}>
+              <Grid spacing={2} container>
+                <Grid item xs={12}>
+                  {account && <AccountSummaryCard account={account} role={account.id} />}
+                </Grid>
 
-              {account?.subdistributor && (
-                <Grid item xs={12}>
-                  {account && (
-                    <AccountSummaryCard account={account} role={account.subdistributor.id} />
-                  )}
-                </Grid>
-              )}
-              {account?.dsp && (
-                <Grid item xs={12}>
-                  {account && <AccountSummaryCard account={account} role={account.dsp.id} />}
-                </Grid>
-              )}
-              {account?.retailer && (
-                <Grid item xs={12}>
-                  {account && <AccountSummaryCard account={account} role={account.retailer.id} />}
-                </Grid>
-              )}
-            </Grid>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Grid container spacing={2}>
-              {account && (
-                <Grid item xs={12}>
-                  <WalletSummaryCard
-                    entities={{
-                      ...(account && {
-                        user: account.id,
-                      }),
-                      ...(account?.dsp && { dsp: account.dsp.id }),
-                      ...(account?.subdistributor && {
-                        subdistributor: account.subdistributor.id,
-                      }),
-                      ...(account?.retailer && {
-                        retailer: account.retailer.id,
-                      }),
-                      ...(account?.admin && {
-                        admin: account.admin.id,
-                      }),
-                    }}
-                  />
-                </Grid>
-              )}
-
-              {account?.admin && (
-                <Grid item xs={12} sm={6} md={12} lg={6}>
-                  <WalletSmallCard accountType="admin" accountId={account.admin.id} />
-                </Grid>
-              )}
-              {account?.id && (
-                <Grid item xs={12} sm={6} md={12} lg={6}>
-                  <WalletSmallCard accountType="user" accountId={account.id} />
-                </Grid>
-              )}
-              {account?.subdistributor && (
-                <Grid item xs={12} sm={6} md={12} lg={6}>
-                  <WalletSmallCard
-                    accountId={account.subdistributor.id}
-                    accountType="subdistributor"
-                  />
-                </Grid>
-              )}
-              {account?.dsp && (
-                <Grid item xs={12} sm={6} md={12} lg={6}>
-                  <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
-                </Grid>
-              )}
-              {account?.retailer && (
-                <Grid item xs={12} sm={6} md={12} lg={6}>
-                  <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
-                </Grid>
-              )}
-              {(account?.dsp || account?.subdistributor || account?.retailer) && (
-                <Grid item xs={12}>
-                  <Divider
-                    style={{
-                      margin: '1px 0px',
-                    }}
-                  />
-                </Grid>
-              )}
-
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  {account?.dsp && (
-                    <Grid item xs={12} sm={6} md={12} lg={6}>
-                      <DSPSmallCard dspId={account.dsp.id} />
-                    </Grid>
-                  )}
-                  {account?.subdistributor && (
-                    <Grid item xs={12} sm={6} md={12} lg={6}>
-                      <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
-                    </Grid>
-                  )}
-                  {account?.retailer && (
-                    <Grid item xs={12} sm={6} md={12} lg={6}>
-                      <RetailerSmallCard retailerId={account.retailer.id} />
-                    </Grid>
-                  )}
-                </Grid>
+                {account?.subdistributor && (
+                  <Grid item xs={12}>
+                    {account && (
+                      <AccountSummaryCard account={account} role={account.subdistributor.id} />
+                    )}
+                  </Grid>
+                )}
+                {account?.dsp && (
+                  <Grid item xs={12}>
+                    {account && <AccountSummaryCard account={account} role={account.dsp.id} />}
+                  </Grid>
+                )}
+                {account?.retailer && (
+                  <Grid item xs={12}>
+                    {account && <AccountSummaryCard account={account} role={account.retailer.id} />}
+                  </Grid>
+                )}
               </Grid>
             </Grid>
+            <Grid item xs={12} md={6}>
+              <Grid container spacing={2}>
+                {account && (
+                  <Grid item xs={12}>
+                    <WalletSummaryCard
+                      entities={{
+                        ...(account && {
+                          user: account.id,
+                        }),
+                        ...(account?.dsp && { dsp: account.dsp.id }),
+                        ...(account?.subdistributor && {
+                          subdistributor: account.subdistributor.id,
+                        }),
+                        ...(account?.retailer && {
+                          retailer: account.retailer.id,
+                        }),
+                        ...(account?.admin && {
+                          admin: account.admin.id,
+                        }),
+                      }}
+                    />
+                  </Grid>
+                )}
+
+                {account?.admin && (
+                  <Grid item xs={12} sm={6} md={12} lg={6}>
+                    <WalletSmallCard accountType="admin" accountId={account.admin.id} />
+                  </Grid>
+                )}
+                {account?.id && (
+                  <Grid item xs={12} sm={6} md={12} lg={6}>
+                    <WalletSmallCard accountType="user" accountId={account.id} />
+                  </Grid>
+                )}
+                {account?.subdistributor && (
+                  <Grid item xs={12} sm={6} md={12} lg={6}>
+                    <WalletSmallCard
+                      accountId={account.subdistributor.id}
+                      accountType="subdistributor"
+                    />
+                  </Grid>
+                )}
+                {account?.dsp && (
+                  <Grid item xs={12} sm={6} md={12} lg={6}>
+                    <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
+                  </Grid>
+                )}
+                {account?.retailer && (
+                  <Grid item xs={12} sm={6} md={12} lg={6}>
+                    <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
+                  </Grid>
+                )}
+                {(account?.dsp || account?.subdistributor || account?.retailer) && (
+                  <Grid item xs={12}>
+                    <Divider
+                      style={{
+                        margin: '1px 0px',
+                      }}
+                    />
+                  </Grid>
+                )}
+
+                <Grid item xs={12}>
+                  <Grid container spacing={2}>
+                    {account?.dsp && (
+                      <Grid item xs={12} sm={6} md={12} lg={6}>
+                        <DSPSmallCard dspId={account.dsp.id} />
+                      </Grid>
+                    )}
+                    {account?.subdistributor && (
+                      <Grid item xs={12} sm={6} md={12} lg={6}>
+                        <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
+                      </Grid>
+                    )}
+                    {account?.retailer && (
+                      <Grid item xs={12} sm={6} md={12} lg={6}>
+                        <RetailerSmallCard retailerId={account.retailer.id} />
+                      </Grid>
+                    )}
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Paper>
     </div>
   )

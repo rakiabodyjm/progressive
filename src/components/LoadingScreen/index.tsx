@@ -10,6 +10,7 @@ import {
 import { grey } from '@material-ui/core/colors'
 import { Variant } from '@material-ui/core/styles/createTypography'
 import { CSSProperties } from 'react'
+import removeKeyFromObject from '../../utils/removeKeyFromObject'
 
 interface LoadingScreenTypes {
   thickness?: number
@@ -125,11 +126,9 @@ export function LoadingScreen2({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        ...(containerProps?.style && {
-          ...containerProps.style,
-        }),
+        ...(containerProps?.style && containerProps.style),
       }}
-      {...containerProps}
+      {...(containerProps && removeKeyFromObject(containerProps, ['style']))}
     >
       <Typography
         variant="h6"
@@ -140,7 +139,7 @@ export function LoadingScreen2({
             ...textProps.style,
           }),
         }}
-        {...textProps}
+        {...(textProps && removeKeyFromObject(textProps, ['style', 'children']))}
       >
         {textProps?.children || 'Loading'}
       </Typography>
