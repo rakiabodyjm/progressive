@@ -12,6 +12,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { AddCircleOutlined } from '@material-ui/icons'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import { setNotification, NotificationTypes } from '@src/redux/data/notificationSlice'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { getDsp } from '@src/utils/api/dspApi'
@@ -26,15 +27,16 @@ import CreateDSPAccount from '../pages/dsp/CreateDSPAccount'
 import CreateRetailerAccount from '../pages/retailer/CreateRetailerAccount'
 import RetailerSearchTable from '../RetailerSearchTable'
 import RoleBadge from '../RoleBadge'
-import SubdistributorAccountSummaryCard from '../SubdistributorAccountSummaryCard'
 import SubdistributorSmallCard from '../SubdistributorSmallCard'
 
 export default function AccountManagement({
   accountAs,
   accountGet,
+  accountRole,
 }: {
   accountAs: string | undefined
   accountGet: string | undefined
+  accountRole: string
 }) {
   const user = useSelector(userDataSelector)
   const [account, setAccount] = useState<UserResponse>()
@@ -48,9 +50,12 @@ export default function AccountManagement({
       [modal]: isOpen,
     }))
   }
+
+  const [loading, setLoading] = useState<boolean>(false)
   const dispatch = useDispatch()
   useEffect(() => {
     if (user) {
+      setLoading(true)
       getUser(user.user_id as string, {
         cached: false,
       })
@@ -62,7 +67,6 @@ export default function AccountManagement({
             res.subdistributor = await getSubdistributor(res.subdistributor.id)
           }
           setAccount(res)
-          console.log(res)
         })
 
         .catch((err) => {
@@ -74,8 +78,11 @@ export default function AccountManagement({
             })
           )
         })
+        .finally(() => {
+          setLoading(false)
+        })
     }
-  }, [dispatch, user])
+  }, [dispatch, user, accountGet])
 
   const [userRole, setUserRole] = useState<string>()
   useEffect(() => {
@@ -114,17 +121,17 @@ export default function AccountManagement({
             >
               {user?.first_name}
             </Typography>
-            {accountGet === user?.dsp_id && (
+            {accountGet === user?.dsp_id && accountRole === 'dsp' && (
               <Typography display="inline" variant="h4">
                 DSP Management
               </Typography>
             )}
-            {accountGet === user?.retailer_id && (
+            {accountGet === user?.retailer_id && accountRole === 'retailer' && (
               <Typography display="inline" variant="h4">
                 Retailer Management
               </Typography>
             )}
-            {accountGet === user?.dsp_id && (
+            {accountGet === user?.dsp_id && accountRole === 'dsp' && (
               <Box mb={2} display="flex" justifyContent="flex-end">
                 <Tooltip
                   title={<Typography variant="subtitle2">Add DSP Account</Typography>}
@@ -137,7 +144,7 @@ export default function AccountManagement({
                 </Tooltip>
               </Box>
             )}
-            {accountGet === user?.retailer_id && (
+            {accountGet === user?.retailer_id && accountRole === 'retailer' && (
               <Box mb={2} display="flex" justifyContent="flex-end">
                 <Tooltip
                   title={<Typography variant="subtitle2">Add Retailer Account</Typography>}
@@ -156,97 +163,111 @@ export default function AccountManagement({
               }}
             />
           </Grid>
-          {account?.subdistributor && accountAs === user?.subdistributor_id && (
+          {!loading ? (
             <>
-              <Box my={2}>
-                <Divider />
-              </Box>
-              <Grid spacing={2} container>
-                <Grid item xs={12} md={6}>
-                  <AccountSummaryCard account={account} role={account.subdistributor.id} />
-                </Grid>
+              {account?.subdistributor && accountAs === user?.subdistributor_id && (
+                <>
+                  <Box my={2}>
+                    <Divider />
+                  </Box>
+                  <Grid spacing={2} container>
+                    <Grid item xs={12} md={6}>
+                      <AccountSummaryCard account={account} role={account.subdistributor.id} />
+                    </Grid>
 
-                <Grid container item xs={12} md={6}>
-                  <Grid item xs={12} lg={6}>
-                    <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
+                    <Grid container item xs={12} md={6}>
+                      <Grid item xs={12} lg={6}>
+                        <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                      {accountGet === user?.dsp_id && accountRole === 'dsp' && (
+                        <Paper variant="outlined">
+                          <Box p={2}>
+                            <Typography variant="h5">DSP Accounts</Typography>
+                            <Typography variant="subtitle2" color="primary">
+                              DSP Accounts this Subdistributor services
+                            </Typography>
+                          </Box>
+                          <DSPSearchTable subdistributorId={account.subdistributor.id} />
+                        </Paper>
+                      )}
+                      {accountGet === user?.retailer_id && accountRole === 'retailer' && (
+                        <Paper variant="outlined">
+                          <Box p={2}>
+                            <Typography variant="h5">Retailer Accounts</Typography>
+                            <Typography variant="subtitle2" color="primary">
+                              Retailer Accounts this Subdistributor services
+                            </Typography>
+                          </Box>
+                          <RetailerSearchTable subdistributorId={account.subdistributor.id} />
+                        </Paper>
+                      )}
+                    </Grid>
                   </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                  {accountGet === user?.dsp_id && (
-                    <Paper variant="outlined">
-                      <Box p={2}>
-                        <Typography variant="h5">DSP Accounts</Typography>
-                        <Typography variant="subtitle2" color="primary">
-                          DSP Accounts this Subdistributor services
-                        </Typography>
-                      </Box>
-                      <DSPSearchTable subdistributorId={account.subdistributor.id} />
-                    </Paper>
-                  )}
-                  {accountGet === user?.retailer_id && (
-                    <Paper variant="outlined">
-                      <Box p={2}>
-                        <Typography variant="h5">Retailer Accounts</Typography>
-                        <Typography variant="subtitle2" color="primary">
-                          Retailer Accounts this Subdistributor services
-                        </Typography>
-                      </Box>
-                      <RetailerSearchTable subdistributorId={account.subdistributor.id} />
-                    </Paper>
-                  )}
-                </Grid>
-              </Grid>
-            </>
-          )}
-          {account?.dsp && accountAs === user?.dsp_id && (
-            <>
-              <Box my={2}>
-                <Divider />
-              </Box>
-              <Grid spacing={2} container>
-                <Grid item xs={12} md={6}>
-                  <AccountSummaryCard account={account} role={account.dsp.id} />
-                </Grid>
+                </>
+              )}
+              {account?.dsp && accountAs === user?.dsp_id && (
+                <>
+                  <Box my={2}>
+                    <Divider />
+                  </Box>
+                  <Grid spacing={2} container>
+                    <Grid item xs={12} md={6}>
+                      <AccountSummaryCard account={account} role={account.dsp.id} />
+                    </Grid>
 
-                <Grid container item xs={12} md={6}>
-                  <Grid item xs={12} lg={6}>
-                    <DSPSmallCard dspId={account.dsp.id} />
+                    <Grid container item xs={12} md={6}>
+                      <Grid item xs={12} lg={6}>
+                        <DSPSmallCard dspId={account.dsp.id} />
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Paper variant="outlined">
+                        <Box p={2}>
+                          <Typography variant="h5">Retailer Accounts</Typography>
+                          <Typography variant="subtitle2" color="primary">
+                            Retailer Accounts this DSP Services
+                          </Typography>
+                        </Box>
+                        <RetailerSearchTable
+                          dspId={account.dsp.id}
+                          subdistributorId={account.dsp.subdistributor.id}
+                          role={userRole}
+                        />
+                        {/* <RetailerTable dspId={account.dsp.id} /> */}
+                      </Paper>
+                    </Grid>
                   </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                  <Paper variant="outlined">
-                    <Box p={2}>
-                      <Typography variant="h5">Retailer Accounts</Typography>
-                      <Typography variant="subtitle2" color="primary">
-                        Retailer Accounts this DSP Services
-                      </Typography>
-                    </Box>
-                    <RetailerSearchTable
-                      dspId={account.dsp.id}
-                      subdistributorId={account.dsp.subdistributor.id}
-                      role={userRole}
-                    />
-                    {/* <RetailerTable dspId={account.dsp.id} /> */}
-                  </Paper>
-                </Grid>
-              </Grid>
+                </>
+              )}
             </>
+          ) : (
+            <LoadingScreen2
+              containerProps={{
+                minHeight: 480,
+                width: '100%',
+              }}
+            />
           )}
         </Grid>
       </Paper>
-      {account?.dsp && addAccountModal.retailer && accountGet === user?.retailer_id && (
-        <ModalContainer
-          handleClose={setModalOpen('retailer', false)}
-          open={addAccountModal.retailer}
-        >
-          <CreateRetailerAccount
-            dspId={account.dsp?.id as string}
-            subdistributorId={account.dsp.subdistributor.id as string}
-            modal={setModalOpen('retailer', false)}
-          />
-        </ModalContainer>
-      )}
-      {account?.subdistributor && addAccountModal.dsp && (
+      {account?.dsp &&
+        addAccountModal.retailer &&
+        accountGet === user?.retailer_id &&
+        accountRole === 'retailer' && (
+          <ModalContainer
+            handleClose={setModalOpen('retailer', false)}
+            open={addAccountModal.retailer}
+          >
+            <CreateRetailerAccount
+              dspId={account.dsp?.id as string}
+              subdistributorId={account.dsp.subdistributor.id as string}
+              modal={setModalOpen('retailer', false)}
+            />
+          </ModalContainer>
+        )}
+      {account?.subdistributor && addAccountModal.dsp && accountRole === 'dsp' && (
         <ModalContainer handleClose={setModalOpen('dsp', false)} open={addAccountModal.dsp}>
           <CreateDSPAccount
             subdistributorId={account.subdistributor.id as string}

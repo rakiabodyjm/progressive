@@ -30,6 +30,7 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import FormLabel from '@src/components/FormLabel'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 
 const EditInventory = dynamic(() => import('@src/components/pages/inventory/EditInventory'))
 const CreateInventory = dynamic(() => import('@src/components/pages/inventory/CreateInventory'))
@@ -38,6 +39,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
   const user = useSelector(userDataSelector)
   const router = useRouter()
   const [acc, setAcc] = useState('dsp')
+  const [loading, setLoading] = useState<boolean>(false)
   const [inventoryItems, setInventoryItems] = useState<Inventory[] | undefined>()
   const [inventoryPaginationParameters, setinventoryPaginationParameters] =
     useState<PaginateFetchParameters>({
@@ -74,6 +76,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
     }
   }, [accountId, user?.admin_id, user?.dsp_id, user?.retailer_id, user?.subdistributor_id])
   const fetchInventory = useCallback(() => {
+    setLoading(true)
     getAllInventory({ ...inventoryPaginationParameters, ...inventoryOptions })
       .then((res) => {
         // setInventoryItems(res.data)
@@ -93,6 +96,9 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
       })
       .catch((err) => {
         console.error(err)
+      })
+      .finally(() => {
+        setLoading(false)
       })
   }, [inventoryOptions, inventoryPaginationParameters])
 
@@ -250,7 +256,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
             <Tooltip
               arrow
               placement="left"
-              title={<Typography variant="subtitle2">Add new Asset</Typography>}
+              title={<Typography variant="subtitle2">Add New Inventory</Typography>}
             >
               <IconButton
                 onClick={() => {
@@ -268,51 +274,89 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
         </Box>
         <Grid container spacing={2}>
           <Grid xs={12} item>
-            <Box>
-              {inventoryItems &&
-                inventoryMetadata &&
-                accountId === user?.admin_id &&
-                inventoryOptions.admin === undefined && (
-                  <UsersTable
-                    data={inventoryItems.map((ea) => formatInventory(ea))}
-                    setPage={(page: number) => {
-                      setinventoryPaginationParameters((prev) => ({
-                        ...prev,
-                        page,
-                      }))
-                    }}
-                    setLimit={(limit: number) => {
-                      setinventoryPaginationParameters((prev) => ({
-                        ...prev,
-                        limit,
-                      }))
-                    }}
-                    page={inventoryMetadata?.page}
-                    limit={inventoryMetadata?.limit}
-                    total={inventoryMetadata?.total}
-                    hiddenFields={['id']}
-                    onRowClick={(e, inventory) => {
-                      setUpdateInventoryModalOpen(true)
-                      setEditInventory((prevState) => ({
-                        ...prevState,
-                        inventoryId: inventory.id,
-                      }))
-                      setAdminOnly(true)
-                    }}
-                    formatTitle={{
-                      caesar: 'Caesar Wallet Owner',
-                      asset: 'Asset Name',
-                      name: 'Inventory Name',
-                    }}
-                  />
-                )}
-              {inventoryItems &&
-                inventoryMetadata &&
-                accountId === user?.admin_id &&
-                inventoryOptions.admin === accountId && (
+            {!loading ? (
+              <Box>
+                {inventoryItems &&
+                  inventoryMetadata &&
+                  accountId === user?.admin_id &&
+                  inventoryOptions.admin === undefined && (
+                    <UsersTable
+                      data={inventoryItems.map((ea) => formatInventory(ea))}
+                      setPage={(page: number) => {
+                        setinventoryPaginationParameters((prev) => ({
+                          ...prev,
+                          page,
+                        }))
+                      }}
+                      setLimit={(limit: number) => {
+                        setinventoryPaginationParameters((prev) => ({
+                          ...prev,
+                          limit,
+                        }))
+                      }}
+                      page={inventoryMetadata?.page}
+                      limit={inventoryMetadata?.limit}
+                      total={inventoryMetadata?.total}
+                      hiddenFields={['id']}
+                      onRowClick={(e, inventory) => {
+                        setUpdateInventoryModalOpen(true)
+                        setEditInventory((prevState) => ({
+                          ...prevState,
+                          inventoryId: inventory.id,
+                        }))
+                        setAdminOnly(true)
+                      }}
+                      formatTitle={{
+                        caesar: 'Caesar Wallet Owner',
+                        asset: 'Asset Name',
+                        name: 'Inventory Name',
+                      }}
+                    />
+                  )}
+
+                {inventoryItems &&
+                  inventoryMetadata &&
+                  accountId === user?.admin_id &&
+                  inventoryOptions.admin === accountId && (
+                    <UsersTable
+                      data={inventoryItems
+                        .filter((ea) => ea.caesar.admin?.id === accountId)
+                        .map((ea) => formatInventory(ea))}
+                      setPage={(page: number) => {
+                        setinventoryPaginationParameters((prev) => ({
+                          ...prev,
+                          page,
+                        }))
+                      }}
+                      setLimit={(limit: number) => {
+                        setinventoryPaginationParameters((prev) => ({
+                          ...prev,
+                          limit,
+                        }))
+                      }}
+                      page={inventoryMetadata?.page}
+                      limit={inventoryMetadata?.limit}
+                      total={inventoryMetadata?.total}
+                      hiddenFields={['id']}
+                      onRowClick={(e, inventory) => {
+                        setUpdateInventoryModalOpen(true)
+                        setEditInventory((prevState) => ({
+                          ...prevState,
+                          inventoryId: inventory.id,
+                        }))
+                        setAdminOnly(true)
+                      }}
+                      formatTitle={{
+                        caesar: 'Caesar Wallet Owner',
+                        asset: 'Asset Name',
+                        name: 'Inventory Name',
+                      }}
+                    />
+                  )}
+                {inventoryItems && inventoryMetadata && accountId === user?.subdistributor_id && (
                   <UsersTable
                     data={inventoryItems
-                      .filter((ea) => ea.caesar.admin?.id === accountId)
+                      .filter((ea) => ea.caesar.subdistributor?.id === accountId)
                       .map((ea) => formatInventory(ea))}
                     setPage={(page: number) => {
                       setinventoryPaginationParameters((prev) => ({
@@ -336,7 +380,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
                         ...prevState,
                         inventoryId: inventory.id,
                       }))
-                      setAdminOnly(true)
+                      setAdminOnly(false)
                     }}
                     formatTitle={{
                       caesar: 'Caesar Wallet Owner',
@@ -345,115 +389,86 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
                     }}
                   />
                 )}
-              {inventoryItems && inventoryMetadata && accountId === user?.subdistributor_id && (
-                <UsersTable
-                  data={inventoryItems
-                    .filter((ea) => ea.caesar.subdistributor?.id === accountId)
-                    .map((ea) => formatInventory(ea))}
-                  setPage={(page: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      page,
-                    }))
-                  }}
-                  setLimit={(limit: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      limit,
-                    }))
-                  }}
-                  page={inventoryMetadata?.page}
-                  limit={inventoryMetadata?.limit}
-                  total={inventoryMetadata?.total}
-                  hiddenFields={['id']}
-                  onRowClick={(e, inventory) => {
-                    setUpdateInventoryModalOpen(true)
-                    setEditInventory((prevState) => ({
-                      ...prevState,
-                      inventoryId: inventory.id,
-                    }))
-                    setAdminOnly(false)
-                  }}
-                  formatTitle={{
-                    caesar: 'Caesar Wallet Owner',
-                    asset: 'Asset Name',
-                    name: 'Inventory Name',
-                  }}
-                />
-              )}
-              {inventoryItems && inventoryMetadata && accountId === user?.dsp_id && (
-                <UsersTable
-                  data={inventoryItems
-                    .filter((ea) => ea.caesar.dsp?.id === accountId)
-                    .map((ea) => formatInventory(ea))}
-                  setPage={(page: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      page,
-                    }))
-                  }}
-                  setLimit={(limit: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      limit,
-                    }))
-                  }}
-                  page={inventoryMetadata?.page}
-                  limit={inventoryMetadata?.limit}
-                  total={inventoryMetadata?.total}
-                  hiddenFields={['id']}
-                  onRowClick={(e, inventory) => {
-                    setUpdateInventoryModalOpen(true)
-                    setEditInventory((prevState) => ({
-                      ...prevState,
-                      inventoryId: inventory.id,
-                    }))
-                    setAdminOnly(false)
-                  }}
-                  formatTitle={{
-                    caesar: 'Caesar Wallet Owner',
-                    asset: 'Asset Name',
-                    name: 'Inventory Name',
-                  }}
-                />
-              )}
-              {inventoryItems && inventoryMetadata && accountId === user?.retailer_id && (
-                <UsersTable
-                  data={inventoryItems
-                    .filter((ea) => ea.caesar.retailer?.id === accountId)
-                    .map((ea) => formatInventory(ea))}
-                  setPage={(page: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      page,
-                    }))
-                  }}
-                  setLimit={(limit: number) => {
-                    setinventoryPaginationParameters((prev) => ({
-                      ...prev,
-                      limit,
-                    }))
-                  }}
-                  page={inventoryMetadata?.page}
-                  limit={inventoryMetadata?.limit}
-                  total={inventoryMetadata?.total}
-                  hiddenFields={['id']}
-                  onRowClick={(e, inventory) => {
-                    setUpdateInventoryModalOpen(true)
-                    setEditInventory((prevState) => ({
-                      ...prevState,
-                      inventoryId: inventory.id,
-                    }))
-                    setAdminOnly(false)
-                  }}
-                  formatTitle={{
-                    caesar: 'Caesar Wallet Owner',
-                    asset: 'Asset Name',
-                    name: 'Inventory Name',
-                  }}
-                />
-              )}
-            </Box>
+                {inventoryItems && inventoryMetadata && accountId === user?.dsp_id && (
+                  <UsersTable
+                    data={inventoryItems
+                      .filter((ea) => ea.caesar.dsp?.id === accountId)
+                      .map((ea) => formatInventory(ea))}
+                    setPage={(page: number) => {
+                      setinventoryPaginationParameters((prev) => ({
+                        ...prev,
+                        page,
+                      }))
+                    }}
+                    setLimit={(limit: number) => {
+                      setinventoryPaginationParameters((prev) => ({
+                        ...prev,
+                        limit,
+                      }))
+                    }}
+                    page={inventoryMetadata?.page}
+                    limit={inventoryMetadata?.limit}
+                    total={inventoryMetadata?.total}
+                    hiddenFields={['id']}
+                    onRowClick={(e, inventory) => {
+                      setUpdateInventoryModalOpen(true)
+                      setEditInventory((prevState) => ({
+                        ...prevState,
+                        inventoryId: inventory.id,
+                      }))
+                      setAdminOnly(false)
+                    }}
+                    formatTitle={{
+                      caesar: 'Caesar Wallet Owner',
+                      asset: 'Asset Name',
+                      name: 'Inventory Name',
+                    }}
+                  />
+                )}
+                {inventoryItems && inventoryMetadata && accountId === user?.retailer_id && (
+                  <UsersTable
+                    data={inventoryItems
+                      .filter((ea) => ea.caesar.retailer?.id === accountId)
+                      .map((ea) => formatInventory(ea))}
+                    setPage={(page: number) => {
+                      setinventoryPaginationParameters((prev) => ({
+                        ...prev,
+                        page,
+                      }))
+                    }}
+                    setLimit={(limit: number) => {
+                      setinventoryPaginationParameters((prev) => ({
+                        ...prev,
+                        limit,
+                      }))
+                    }}
+                    page={inventoryMetadata?.page}
+                    limit={inventoryMetadata?.limit}
+                    total={inventoryMetadata?.total}
+                    hiddenFields={['id']}
+                    onRowClick={(e, inventory) => {
+                      setUpdateInventoryModalOpen(true)
+                      setEditInventory((prevState) => ({
+                        ...prevState,
+                        inventoryId: inventory.id,
+                      }))
+                      setAdminOnly(false)
+                    }}
+                    formatTitle={{
+                      caesar: 'Caesar Wallet Owner',
+                      asset: 'Asset Name',
+                      name: 'Inventory Name',
+                    }}
+                  />
+                )}
+              </Box>
+            ) : (
+              <LoadingScreen2
+                textProps={{
+                  variant: 'h4',
+                }}
+              />
+            )}
           </Grid>
         </Grid>
       </Box>

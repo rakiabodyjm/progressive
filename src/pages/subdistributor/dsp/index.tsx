@@ -6,7 +6,11 @@ export default function SubdistributorDspPage() {
   const user = useSelector(userDataSelector)
   return (
     <div>
-      <AccountManagement accountAs={user?.subdistributor_id} accountGet={user?.dsp_id} />
+      <AccountManagement
+        accountAs={user?.subdistributor_id}
+        accountGet={user?.dsp_id}
+        accountRole="dsp"
+      />
     </div>
   )
 }

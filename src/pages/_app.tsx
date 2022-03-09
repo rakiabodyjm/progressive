@@ -18,6 +18,7 @@ import useNotification from '@src/utils/hooks/useNotification'
 import { nanoid } from '@reduxjs/toolkit'
 import { AppProps } from 'next/dist/shared/lib/router/router'
 // import { getDefaultCaesar } from '@src/redux/data/currentCaesarSlice'
+import RouteGuard from '@src/components/RouteGuard'
 import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
@@ -114,7 +115,6 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
       </Head>
-      {/* <Provider store={store}> */}
       <ThemeProvider
         theme={{
           ...theme({
@@ -126,19 +126,15 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
         <SnackbarProvider maxSnack={10}>
           <Notification />
 
-          {
-            isAuthenticated && !router.pathname.split('/').includes('register') ? (
-              <NavigationLayout>
-                <Component {...pageProps} />
-              </NavigationLayout>
-            ) : router.pathname.split('/').includes('register') ? (
-              <Registration />
-            ) : (
-              <Login />
-            )
-
-            // <Registration />
-          }
+          {isAuthenticated && !router.pathname.split('/').includes('register') ? (
+            <NavigationLayout>
+              <RouteGuard Component={Component} pageProps={pageProps} />
+            </NavigationLayout>
+          ) : router.pathname.split('/').includes('register') ? (
+            <Registration />
+          ) : (
+            <Login />
+          )}
 
           {loginExtensionModalOpen && isAuthenticated && (
             <ModalWrapper

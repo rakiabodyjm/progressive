@@ -3,6 +3,7 @@ import { DspResponseType, getAllDsp, searchDsp } from '@src/utils/api/dspApi'
 import { getAllUsers, searchUser, UserResponse } from '@src/utils/api/userApi'
 import { AdminResponseType, getAllAdmin, searchAdmin } from '@src/utils/api/adminApi'
 import useSWR from 'swr'
+import { useMemo } from 'react'
 import { PaginateFetchParameters, Paginated } from '../types/PaginatedEntity'
 import {
   SubdistributorResponseType,
@@ -86,13 +87,16 @@ export default function useFetchOrSearchAccounts<T extends 'search' | 'get-all'>
   const functionToUse =
     mode === 'search' ? containerToUse.searchAccounts : containerToUse.fetchAccounts
 
+  const mutateKey = useMemo(() => [accountType, parameterToUse], [parameterToUse, accountType])
+
   const {
     data,
     error,
     isValidating: loading,
   } = useSWR<Entities[typeof accountType][] | Paginated<Entities[typeof accountType]>>(
     [accountType, parameterToUse],
-    ([accountType, ...params]) => functionToUse(...params)
+    (accountTypeUsed, ...parameters) => functionToUse(parameters)
   )
-  return { data, error, loading }
+
+  return { data, error, loading, mutateKey }
 }

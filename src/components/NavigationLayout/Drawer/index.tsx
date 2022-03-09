@@ -216,7 +216,7 @@ export default function DrawerComponent({
       {/**
        * Sub Menu items (Inventory and Transactions)
        */}
-      <SubMenuItems open={open} />
+      {user?.roles.length !== 1 && <SubMenuItems open={open} />}
 
       <Divider />
       {/**

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import {
   Box,
   Container,
@@ -10,6 +11,7 @@ import {
   useTheme,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { getWallet } from '@src/utils/api/walletApi'
@@ -33,6 +35,7 @@ export default function CaesarTabs({
   const [caesarTypes, setCaesarTypes] = useState<[UserTypesAndUser, string][]>([])
   const [activeCaesar, setActiveCaesar] = useState<[UserTypesAndUser, string] | undefined>()
   const theme: Theme = useTheme()
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (user && user.roles && user?.roles?.length > 0) {
@@ -55,6 +58,7 @@ export default function CaesarTabs({
             )
         ).then((final) => final.filter((ea) => !!ea[1]) as [UserTypesAndUser, string][])
 
+      setLoading(true)
       getWallets()
         .then((res) => {
           setCaesarTypes(res)
@@ -66,6 +70,9 @@ export default function CaesarTabs({
         .catch((err) => {
           console.log('No Caesars for', err)
         })
+        .finally(() => {
+          setLoading(true)
+        })
     }
   }, [user])
 
@@ -73,18 +80,6 @@ export default function CaesarTabs({
     <>
       <Paper>
         <Box>
-          {/* {typeof tabTitle === 'string' ? (
-          ) : (
-            { tabTitle }
-          )}
-          {typeof tabSubTitle === 'string' ? (
-            <Typography variant="body2" color="primary">
-              {tabSubTitle}
-            </Typography>
-          ) : (
-            { tabSubTitle }
-          )} */}
-
           {activeCaesar ? (
             <>
               <Box p={2} pb={0}>
@@ -118,14 +113,20 @@ export default function CaesarTabs({
                   centered
                 >
                   {caesarTypes.map(([caesarType]) => (
-                    <Tab
-                      key={caesarType}
-                      value={caesarType}
-                      label={caesarType?.toUpperCase()}
-                    ></Tab>
+                    <Tab key={caesarType} value={caesarType} label={caesarType?.toUpperCase()} />
                   ))}
                 </Tabs>
               </Box>
+            </>
+          ) : loading ? (
+            <>
+              <Paper>
+                <LoadingScreen2
+                  textProps={{
+                    variant: 'h4',
+                  }}
+                />
+              </Paper>
             </>
           ) : (
             <>

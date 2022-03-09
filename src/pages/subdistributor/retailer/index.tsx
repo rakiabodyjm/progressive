@@ -6,7 +6,11 @@ export default function SubdistributorRetailersPage() {
   const user = useSelector(userDataSelector)
   return (
     <div>
-      <AccountManagement accountAs={user?.subdistributor_id} accountGet={user?.retailer_id} />
+      <AccountManagement
+        accountAs={user?.subdistributor_id}
+        accountGet={user?.retailer_id}
+        accountRole="retailer"
+      />
     </div>
   )
 }
