@@ -94,7 +94,6 @@ const userApi = {
     axios
       .post('/auth/logout')
       .then((res) => {
-        console.log('res', res)
         window?.localStorage?.removeItem('token')
       })
       .catch((err) => {
@@ -110,7 +109,11 @@ const userApi = {
    */
   getUser(id: string, params?: { cached: boolean }): Promise<UserResponse> {
     return axios
-      .get(`/user/${id}?cache=${!!params?.cached || false}`)
+      .get(`/user/${id}`, {
+        params: {
+          ...(params?.cached && { cached: true }),
+        },
+      })
       .then(({ data }: { data: UserResponse }) => data)
       .catch((err: AxiosError) => {
         throw err

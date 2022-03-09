@@ -144,10 +144,27 @@ const userSlice = createSlice({
     builder.addCase(
       loginUserThunk.fulfilled,
       (state, { payload }: { payload: User & UserMetaData }) => {
-        const { user_id, email, first_name, last_name, roles, iat, exp } = payload
+        console.log('payload', payload)
+        const {
+          user_id,
+          email,
+          first_name,
+          last_name,
+          roles,
+          iat,
+          exp,
+          subdistributor_id,
+          retailer_id,
+          admin_id,
+          dsp_id,
+        } = payload
         return {
           data: {
             user_id,
+            admin_id,
+            subdistributor_id,
+            retailer_id,
+            dsp_id,
             email,
             first_name,
             last_name,

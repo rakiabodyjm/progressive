@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@src/redux/store'
 import axiosDefaults from '@src/utils/lib/axiosDefaults'
@@ -21,11 +21,11 @@ export default function RouteGuard({
   const user = useSelector((state: RootState) => state.user)
   const [allowed, setAllowed] = useState(false)
 
-  useEffect(() => {
-    if (user) {
-      dispatch(getUser())
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (user) {
+  //     dispatch(getUser())
+  //   }
+  // }, [])
   const checkPath = useMemo(() => {
     if (router.pathname.match(/\/admin\/./)) {
       if (user?.data.admin_id) {
