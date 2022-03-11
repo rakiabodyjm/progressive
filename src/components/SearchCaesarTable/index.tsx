@@ -1,6 +1,7 @@
 import { Box, Paper } from '@material-ui/core'
 import {
   CaesarWalletResponse,
+  getAllWallet,
   getWallet,
   getWalletById,
   searchWallet,
@@ -9,12 +10,16 @@ import LoadingScreen from '@src/components/LoadingScreen'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import FormLabel from '../FormLabel'
 import FormTextField from '../FormTextField'
 import UsersTable from '../UsersTable'
 
 type SearchCaesarParams = PaginateFetchParameters & {
-  searchQuery: string
+  searchQuery: string | undefined
+}
+type GetAllWalletParams = PaginateFetchParameters & {
+  account_type?: UserTypesAndUser
 }
 type CaesarMetadata = {
   total_page: number
@@ -29,6 +34,11 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
   const [searchCaesarQuery, setSearchCaesarQuery] = useState<SearchCaesarParams>({
     searchQuery: '',
   })
+  const [getAllCaesarParams, setGetAllCaesarParams] = useState<GetAllWalletParams>({
+    page: 0,
+    limit: 100,
+  })
+
   const [metadata, setMetaData] = useState<CaesarMetadata>({
     total_page: 0,
     page: 0,
@@ -38,15 +48,15 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
   const [caesarData, setCaesarData] = useState<CaesarWalletResponse[]>([])
   const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
   const paperHeight = 400
+
   useEffect(() => {
     setIsLoading(true)
-    if (!searchCaesarQuery) {
-      setSearchCaesarQuery({
-        searchQuery: '',
-      })
-    } else {
-      searchWallet(searchCaesarQuery)
+    console.log('GET ALL CAESAR')
+    if (searchCaesarQuery.searchQuery === '') {
+      console.log(getAllCaesarParams)
+      getAllWallet(getAllCaesarParams)
         .then((res) => {
+          console.log(res)
           setCaesarData(res.data)
           setMetaData(res.metadata)
         })
@@ -58,8 +68,24 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
         .finally(() => {
           setIsLoading(false)
         })
+    } else {
+      console.log('SEARCH CAESAR')
+      searchWallet(searchCaesarQuery)
+        .then((res) => {
+          setCaesarData(res.data)
+          setMetaData(res.metadata)
+          console.log(res)
+        })
+        .catch((err: string[]) => {
+          err.forEach((ea) => {
+            dispatchError(ea)
+          })
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
     }
-  }, [dispatchError, searchCaesarQuery, isButtonClicked])
+  }, [searchCaesarQuery, dispatchError, isButtonClicked, getAllCaesarParams])
 
   return (
     <Box>
@@ -88,16 +114,30 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
               page={metadata.page}
               total={metadata.total}
               setLimit={(limit: number) => {
-                setSearchCaesarQuery((prevState) => ({
-                  ...prevState,
-                  limit,
-                }))
+                if (searchCaesarQuery.searchQuery === '') {
+                  setGetAllCaesarParams((prevState) => ({
+                    ...prevState,
+                    limit,
+                  }))
+                } else {
+                  setSearchCaesarQuery((prevState) => ({
+                    ...prevState,
+                    limit,
+                  }))
+                }
               }}
               setPage={(page: number) => {
-                setSearchCaesarQuery((prevState) => ({
-                  ...prevState,
-                  page,
-                }))
+                if (searchCaesarQuery.searchQuery === '') {
+                  setGetAllCaesarParams((prevState) => ({
+                    ...prevState,
+                    page,
+                  }))
+                } else {
+                  setSearchCaesarQuery((prevState) => ({
+                    ...prevState,
+                    page,
+                  }))
+                }
               }}
               paperProps={{
                 style: {
