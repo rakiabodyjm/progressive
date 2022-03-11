@@ -177,13 +177,13 @@ export default function CreateRetailerAccount({
       .catch((err: string[]) => {
         if (Array.isArray(err)) {
           err.forEach((ea) => {
-            dispatch({
+            dispatchNotif({
               type: NotificationTypes.ERROR,
               message: ea,
             })
           })
         } else {
-          dispatch({
+          dispatchNotif({
             type: NotificationTypes.ERROR,
             message: extractErrorFromResponse(err),
           })
@@ -393,7 +393,7 @@ export default function CreateRetailerAccount({
         </Grid>
         <Box display="flex" mt={2} justifyContent="flex-end">
           <AsyncButton
-            disabled={!newRetailerAccount.user || buttonProps.loading}
+            // disabled={!newRetailerAccount.user || buttonProps.loading}
             onClick={() => {
               handleSubmit()
             }}
