@@ -11,7 +11,6 @@ import {
 import { grey } from '@material-ui/core/colors'
 import { LocalOffer } from '@material-ui/icons'
 import FormLabel from '@src/components/FormLabel'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import Image from 'next/image'
 import RoleBadge from '../RoleBadge'
@@ -163,7 +162,7 @@ const InventoryRow = ({
                   <span style={{ fontWeight: 700 }}>{inventory.quantity}</span> quantity left
                 </Typography>
               </Grid>
-              <Grid className={`${classes.rowGap} ${classes.flexStart}`} item>
+              <Grid className={`${classes.rowGap} ${classes.flexStart}`} item xs={4}>
                 <RoleBadge>{inventory.caesar.account_type.toUpperCase()} </RoleBadge>
 
                 <Typography variant="h6" style={{ paddingTop: 10 }}>
