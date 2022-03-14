@@ -1,3 +1,4 @@
+import { UserTypesAndUser } from '@src/components/OldAdminAccountsPage'
 import { getAllRetailer, RetailerResponseType, searchRetailer } from '@src/utils/api/retailerApi'
 import { DspResponseType, getAllDsp, searchDsp } from '@src/utils/api/dspApi'
 import { getAllUsers, searchUser, UserResponse } from '@src/utils/api/userApi'
@@ -10,7 +11,6 @@ import {
   getAllSubdistributor,
   searchSubdistributor,
 } from '../api/subdistributorApi'
-import { UserTypesAndUser } from '../../pages/admin/accounts/index'
 
 /**
  * Record of types of entities to expect
