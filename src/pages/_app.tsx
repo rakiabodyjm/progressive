@@ -60,7 +60,6 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
       clearInterval(checkLoginExpiryRef.current)
     }
     checkLoginExpiryRef.current = setInterval(() => {
-      console.log('checking')
       if (!loginExtensionModalOpen) {
         setTriggerCheckExpiry(nanoid())
       }
