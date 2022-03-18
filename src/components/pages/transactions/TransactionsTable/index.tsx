@@ -85,7 +85,7 @@ const TransactionsTable = ({
   const theme: Theme = useTheme()
   return (
     <>
-      {!loading && transactions && (
+      {!loading && transactions ? (
         <UsersTable<IntersectionTransaction>
           data={transactions}
           page={paginationParams.page || 0}
@@ -124,9 +124,7 @@ const TransactionsTable = ({
             },
           }}
         />
-      )}
-
-      {loading && (
+      ) : (
         <LoadingScreen2
           containerProps={{
             style: {
