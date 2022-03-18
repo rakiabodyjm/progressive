@@ -1,34 +1,38 @@
 /* eslint-disable no-nested-ternary */
-import {
-  Box,
-  Container,
-  Divider,
-  Paper,
-  Tab,
-  Tabs,
-  Theme,
-  Typography,
-  useTheme,
-} from '@material-ui/core'
+import { Box, Paper, Tab, Tabs, Theme, Typography, useTheme } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
-import { UserTypes, userDataSelector } from '@src/redux/data/userSlice'
+import { UserTypes, userDataSelector, User } from '@src/redux/data/userSlice'
 import { getWallet } from '@src/utils/api/walletApi'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+
 /**
  *
  * Loads Available Caesar based on global user
  */
 export default function CaesarTabs({
   onActiveCaesarChange,
+  syncLoading,
   renderTitle,
 }: {
+  /**
+   * action to fire when Caesar Account is selected
+   */
   onActiveCaesarChange: (
     caesar: [UserTypes, string] | undefined,
     account?: [UserTypes, string]
   ) => void
+  /**
+   * Override Title instaed of default title
+   */
   renderTitle?: JSX.Element
+  // /**
+  //  * callback function to receive loading status
+  //  * used to let parent component know if
+  //  * caesar tabs is still loading
+  //  */
+  syncLoading?: (childParam: boolean) => void
 }) {
   const user = useSelector(userDataSelector)
   const [caesarTypes, setCaesarTypes] = useState<[UserTypes, string][]>([])
@@ -41,24 +45,9 @@ export default function CaesarTabs({
       /**
        * verify if caeasar exists for each
        */
-      const getWallets = () =>
-        Promise.all(
-          [...user.roles]
-            /**
-             * disable users for now
-             */
-            .filter((ea) => ea !== 'user')
-            .map((role) =>
-              getWallet({
-                [role]: user[`${role}_id`],
-              })
-                .then((res) => [res.account_type, res.id] as [UserTypes, string])
-                .catch((err) => [role, null])
-            )
-        ).then((final) => final.filter((ea) => !!ea[1]) as [UserTypes, string][])
 
       setLoading(true)
-      getWallets()
+      getWallets(user)
         .then((res) => {
           setCaesarTypes(res)
           if (res.length > 0) {
@@ -74,6 +63,12 @@ export default function CaesarTabs({
         })
     }
   }, [onActiveCaesarChange, user])
+
+  useEffect(() => {
+    if (syncLoading) {
+      syncLoading(loading)
+    }
+  }, [loading, syncLoading])
 
   return (
     <>
@@ -154,3 +149,26 @@ export default function CaesarTabs({
     </>
   )
 }
+
+// export const CaesarTabsContext = createContext<
+//   | {
+//       setCaesarLoading: (loadingParam: boolean) => void
+//     }
+//   | undefined
+// >(undefined)
+
+const getWallets = (user: User) =>
+  Promise.all(
+    [...user.roles]
+      /**
+       * disable users for now
+       */
+      .filter((ea) => ea !== 'user')
+      .map((role) =>
+        getWallet({
+          [role]: user[`${role}_id`],
+        })
+          .then((res) => [res.account_type, res.id] as [UserTypes, string])
+          .catch((err) => [role, null])
+      )
+  ).then((final) => final.filter((ea) => !!ea[1]) as [UserTypes, string][])
