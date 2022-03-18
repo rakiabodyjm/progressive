@@ -29,8 +29,6 @@ import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import RoleBadge from '@src/components/RoleBadge'
 
-export type UserTypesAndUser = UserTypes
-
 type EntityTypesUnion =
   | UserResponse
   | DspResponseType
@@ -41,7 +39,7 @@ type EntityTypesUnion =
 type EntityFormatter<T> = (
   entityFormatterArg: T
 ) => Partial<Record<keyof T, Partial<T> | any>> & { user_id: string }
-const userTypes: UserTypesAndUser[] = [...Object.values(UserRoles)].reverse() as UserTypesAndUser[]
+const userTypes: UserTypes[] = [...Object.values(UserRoles)].reverse() as UserTypes[]
 
 const formatUsers: EntityFormatter<UserResponse> = ({
   id,
@@ -164,7 +162,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 export default function AdminAccountsPage() {
-  const [activeUserType, setActiveUserType] = useState<UserTypesAndUser>('user')
+  const [activeUserType, setActiveUserType] = useState<UserTypes>('user')
   const classes = useStyles()
   const formatSelector = useCallback(
     // eslint-disable-next-line func-names
@@ -328,7 +326,7 @@ export default function AdminAccountsPage() {
 
             {/* <ButtonGroup disableElevation variant="outlined"> */}
             <Box className="user-type-button-group">
-              {userTypes.map((userType: UserTypesAndUser) => (
+              {userTypes.map((userType: UserTypes) => (
                 <Button
                   variant={activeUserType === userType ? 'contained' : 'outlined'}
                   key={userType}

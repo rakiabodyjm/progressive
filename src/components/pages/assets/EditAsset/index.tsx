@@ -22,7 +22,7 @@ import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/u
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Autocomplete } from '@material-ui/lab'
 import { toCapsFirst } from '@src/utils/api/common'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -52,9 +52,7 @@ export default function EditAsset({
 
   const [asset, setAsset] = useState<CreateAssetDto>({
     ...assetProps,
-    approval: assetProps?.approval
-      ? (JSON.parse(assetProps.approval) as UserTypesAndUser[])
-      : undefined,
+    approval: assetProps?.approval ? (JSON.parse(assetProps.approval) as UserTypes[]) : undefined,
   })
 
   const assetRef = useRef(assetProps)
@@ -334,7 +332,7 @@ export default function EditAsset({
                   console.log(newValue)
                   setAsset((prevState) => ({
                     ...prevState,
-                    approval: newValue as UserTypesAndUser[],
+                    approval: newValue as UserTypes[],
                   }))
                 }}
               />

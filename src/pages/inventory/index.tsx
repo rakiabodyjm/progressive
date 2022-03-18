@@ -7,7 +7,6 @@ import { getWallet } from '@src/utils/api/walletApi'
 import { grey } from '@material-ui/core/colors'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { UserTypesAndUser } from '../admin/accounts'
 
 export interface AccountIdTypes {
   role: string | undefined

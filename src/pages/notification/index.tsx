@@ -15,9 +15,9 @@ import NotificationPageTable from '@src/components/NotficationPageTable'
 import RoleBadge from '@src/components/RoleBadge'
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { userDataSelector } from '@src/redux/data/userSlice'
+import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import useGetCaesarOfUser from '@src/utils/hooks/useGetCaesarOfUser'
-import { UserTypesAndUser } from '../admin/accounts'
+
 const useStyles = makeStyles((theme: Theme) => ({
   paperContainer: {
     padding: 10,
@@ -30,11 +30,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-const disabledAccounts = ['admin', 'user'] as UserTypesAndUser[]
+const disabledAccounts = ['admin', 'user'] as UserTypes[]
 
 export default function NotificationPage() {
   const user = useSelector(userDataSelector)
-  const [activeCaesar, setActiveCaesar] = useState<[UserTypesAndUser, string] | undefined>()
+  const [activeCaesar, setActiveCaesar] = useState<[UserTypes, string] | undefined>()
   const { data, account } = useGetCaesarOfUser({ disabledAccounts })
 
   const classes = useStyles()

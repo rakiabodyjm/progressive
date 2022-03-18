@@ -29,7 +29,7 @@ import { NotificationTypes, setNotification } from '@src/redux/data/notification
 import FormLabel from '@src/components/FormLabel'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import { UserTypesAndUser } from '../accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
   caesarReloadPaper: {
@@ -64,7 +64,7 @@ type CaesarReceiverInfo = {
   amount: number
 }
 type GetAllWalletParams = PaginateFetchParameters & {
-  account_type?: UserTypesAndUser
+  account_type?: UserTypes
 }
 type UsersMoney = {
   caesar_coin: number

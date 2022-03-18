@@ -1,24 +1,23 @@
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
-import { userDataSelector } from '@src/redux/data/userSlice'
+import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { CaesarWalletResponse, getWallet } from '../api/walletApi'
 
 type ActiveCaesar = {
-  caesar: [UserTypesAndUser, string] | undefined
-  account?: [UserTypesAndUser, string]
+  caesar: [UserTypes, string] | undefined
+  account?: [UserTypes, string]
 }
 
 export default function useGetCaesarOfUser({
   disabledAccounts,
   pickUserType,
 }: {
-  disabledAccounts?: UserTypesAndUser[]
-  pickUserType?: UserTypesAndUser[]
+  disabledAccounts?: UserTypes[]
+  pickUserType?: UserTypes[]
 }) {
   const user = useSelector(userDataSelector)
-  const [data, setData] = useState<[UserTypesAndUser, string][]>([])
-  const [account, setAccount] = useState<[UserTypesAndUser, string]>()
+  const [data, setData] = useState<[UserTypes, string][]>([])
+  const [account, setAccount] = useState<[UserTypes, string]>()
 
   useEffect(() => {
     if (user && user.roles && user?.roles?.length > 0) {
@@ -44,14 +43,12 @@ export default function useGetCaesarOfUser({
                 [role]: user[`${role}_id`],
               })
                 .then(
-                  (res) =>
-                    [res.account_type, res.id] as [UserTypesAndUser, CaesarWalletResponse['id']]
+                  (res) => [res.account_type, res.id] as [UserTypes, CaesarWalletResponse['id']]
                 )
                 .catch((err) => [role, null])
             )
         ).then(
-          (final) =>
-            final.filter((ea) => !!ea[1]) as [UserTypesAndUser, CaesarWalletResponse['id']][]
+          (final) => final.filter((ea) => !!ea[1]) as [UserTypes, CaesarWalletResponse['id']][]
         )
       getWallets()
         .then((res) => {

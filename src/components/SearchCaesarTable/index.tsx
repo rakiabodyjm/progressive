@@ -10,7 +10,7 @@ import LoadingScreen from '@src/components/LoadingScreen'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import FormLabel from '../FormLabel'
 import FormTextField from '../FormTextField'
 import UsersTable from '../UsersTable'
@@ -19,7 +19,7 @@ type SearchCaesarParams = PaginateFetchParameters & {
   searchQuery: string | undefined
 }
 type GetAllWalletParams = PaginateFetchParameters & {
-  account_type?: UserTypesAndUser
+  account_type?: UserTypes
 }
 type CaesarMetadata = {
   total_page: number

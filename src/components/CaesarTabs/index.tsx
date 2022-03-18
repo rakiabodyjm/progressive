@@ -12,8 +12,7 @@ import {
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
-import { userDataSelector } from '@src/redux/data/userSlice'
+import { UserTypes, userDataSelector } from '@src/redux/data/userSlice'
 import { getWallet } from '@src/utils/api/walletApi'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -26,14 +25,14 @@ export default function CaesarTabs({
   renderTitle,
 }: {
   onActiveCaesarChange: (
-    caesar: [UserTypesAndUser, string] | undefined,
-    account?: [UserTypesAndUser, string]
+    caesar: [UserTypes, string] | undefined,
+    account?: [UserTypes, string]
   ) => void
   renderTitle?: JSX.Element
 }) {
   const user = useSelector(userDataSelector)
-  const [caesarTypes, setCaesarTypes] = useState<[UserTypesAndUser, string][]>([])
-  const [activeCaesar, setActiveCaesar] = useState<[UserTypesAndUser, string] | undefined>()
+  const [caesarTypes, setCaesarTypes] = useState<[UserTypes, string][]>([])
+  const [activeCaesar, setActiveCaesar] = useState<[UserTypes, string] | undefined>()
   const theme: Theme = useTheme()
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -53,10 +52,10 @@ export default function CaesarTabs({
               getWallet({
                 [role]: user[`${role}_id`],
               })
-                .then((res) => [res.account_type, res.id] as [UserTypesAndUser, string])
+                .then((res) => [res.account_type, res.id] as [UserTypes, string])
                 .catch((err) => [role, null])
             )
-        ).then((final) => final.filter((ea) => !!ea[1]) as [UserTypesAndUser, string][])
+        ).then((final) => final.filter((ea) => !!ea[1]) as [UserTypes, string][])
 
       setLoading(true)
       getWallets()

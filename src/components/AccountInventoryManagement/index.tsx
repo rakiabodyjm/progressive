@@ -19,7 +19,7 @@ import { AddCircleOutlined, MoreVert } from '@material-ui/icons'
 import ModalWrapper from '@src/components/ModalWrapper'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
-import { userDataSelector } from '@src/redux/data/userSlice'
+import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { getAllInventory, GetAllInventoryDto, Inventory } from '@src/utils/api/inventoryApi'
 import { CaesarWalletResponse, getWallet, getWalletById } from '@src/utils/api/walletApi'
 import { PaginateFetchParameters, Paginated } from '@src/utils/types/PaginatedEntity'
@@ -28,7 +28,6 @@ import { useSelector } from 'react-redux'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 
@@ -129,7 +128,7 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
   const isAdmin = useMemo(() => !!accountId, [accountId])
 
   const { data: caesarWalletOfAdmin } = useSWR(
-    accountId ? ['admin' as UserTypesAndUser, accountId] : null,
+    accountId ? ['admin' as UserTypes, accountId] : null,
     (...parameter) => getWallet(...parameter)
   )
 

@@ -20,7 +20,6 @@ import { UserResponse } from '@src/utils/api/userApi'
 import { useRouter } from 'next/router'
 import AddUserModal from '@src/components/AddAccountModal/AddUserModal'
 import { useSWRConfig } from 'swr'
-import { UserTypesAndUser } from '@src/components/OldAdminAccountsPage'
 import UserAccountTypeSelector from '@src/components/UserAccountTypeSelector'
 
 type Entity = Entities[keyof Entities]
@@ -35,7 +34,7 @@ type EntityTypesUnion =
 export default function AdminAccountsPage() {
   const { mutate } = useSWRConfig()
   const router = useRouter()
-  const [accountType, setAccountType] = useState<UserTypesAndUser>('user')
+  const [accountType, setAccountType] = useState<UserTypes>('user')
   const user = useSelector(userDataSelector)
   const [searchQuery, setSearchQuery] = useState<string | undefined>()
   const [paginationParams, setPaginationParams] = useState<PaginateFetchParameters>({

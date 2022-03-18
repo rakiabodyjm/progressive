@@ -1,4 +1,3 @@
-import type { UserTypesAndUser } from '@src/pages/admin/accounts'
 import type { UserRoles, UserTypes } from '@src/redux/data/userSlice'
 import { AdminResponseType } from '@src/utils/api/adminApi'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
@@ -79,12 +78,12 @@ export function getWalletById(id: string): Promise<CaesarWalletResponse> {
     })
 }
 
-export function getWallet(params: UserTypesAndUser, value: string): Promise<CaesarWalletResponse>
+export function getWallet(params: UserTypes, value: string): Promise<CaesarWalletResponse>
 // eslint-disable-next-line no-redeclare
 export function getWallet(params: Partial<Record<UserTypes, string>>): Promise<CaesarWalletResponse>
 // eslint-disable-next-line no-redeclare
 export function getWallet(
-  params: UserTypesAndUser | Partial<Record<UserTypes, string>>,
+  params: UserTypes | Partial<Record<UserTypes, string>>,
   value?: string
 ): Promise<CaesarWalletResponse> {
   if (typeof params === 'string') {
@@ -163,7 +162,7 @@ export function topUpWallet({
 }
 
 type GetAllWalletParams = PaginateFetchParameters & {
-  account_type?: UserTypesAndUser
+  account_type?: UserTypes
 }
 export function getAllWallet({ account_type, ...allParams }: GetAllWalletParams) {
   return axios

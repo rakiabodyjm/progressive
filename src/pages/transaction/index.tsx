@@ -7,7 +7,7 @@
 import { Box, Container, Divider, Paper, Theme, Typography, useTheme } from '@material-ui/core'
 import CaesarTabs from '@src/components/CaesarTabs'
 import RoleBadge from '@src/components/RoleBadge'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import { TransactionResponse } from '@src/utils/api/transactionApi'
 import { useState } from 'react'
 import TransactionsTable from '@src/components/pages/transactions/TransactionsTable'
@@ -18,7 +18,7 @@ import PendingTransactionsTable from '@src/components/pages/pending-transactions
 type ReducedTransactionResponse = ReturnType<typeof reduceForAccountType>
 export default function TransactionsPage() {
   const theme: Theme = useTheme()
-  const [activeCaesar, setActiveCaesar] = useState<[UserTypesAndUser, string] | undefined>()
+  const [activeCaesar, setActiveCaesar] = useState<[UserTypes, string] | undefined>()
 
   // const refElement = useRef<HTMLDivElement>(null)
   // const [refElement, setRefElement] = useState<HTMLDivElement | null>(null)

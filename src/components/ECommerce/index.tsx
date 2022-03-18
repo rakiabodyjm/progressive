@@ -14,7 +14,7 @@ import { getAllInventory, getCommerce, Inventory } from '@src/utils/api/inventor
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import RowView from '@src/components/ECommerce/RowView'
 import type { InventoryNumbers } from '@src/components/ECommerce/RowView'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import CreatePurchase from '@src/components/pages/transactions/CreatePurchase'
 import ModalWrapper from '@src/components/ModalWrapper'
 import GridView from './GridView'
@@ -24,7 +24,7 @@ export default function ECommerce({
   // account,
   caesarBuyer,
 }: {
-  caesarBuyer: [UserTypesAndUser, string]
+  caesarBuyer: [UserTypes, string]
 }) {
   const [valid, setValid] = useState(Date.now())
   const [account_type, caesar_id] = caesarBuyer
@@ -74,6 +74,7 @@ export default function ECommerce({
         ...paginateParams,
         caesar: caesar_id,
       }).then((res) => {
+        console.log(res)
         setPaginatedInventory(res)
         setLoading(false)
       })
