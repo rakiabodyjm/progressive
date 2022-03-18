@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { AddCircleOutlined, MoreVert } from '@material-ui/icons'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
 import CreateAsset from '@src/components/pages/assets/CreateAsset'
 import EditAsset from '@src/components/pages/assets/EditAsset'
@@ -46,9 +47,10 @@ export default function AdminAssetManagement() {
   const [assetMetadata, setAssetMetadata] = useState<Paginated<Asset>['metadata'] | undefined>()
 
   const dispatchError = useErrorNotification()
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState<boolean>(false)
 
   const fetchAssets = useCallback(() => {
+    setLoading(true)
     getAssets({ ...paginatedParams, ...getAllAssetOptions })
       .then((res) => {
         console.log('fetching')
@@ -58,10 +60,14 @@ export default function AdminAssetManagement() {
       .catch((err) => {
         dispatchError(err)
       })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [paginatedParams, getAllAssetOptions, dispatchError])
 
   const moreAnchorEl = useRef<HTMLElement | undefined>()
   const [assetMoreOptionsOpen, setAssetMoreOptionsOpen] = useState<boolean>(false)
+
   useEffect(() => {
     fetchAssets()
   }, [fetchAssets])
@@ -178,7 +184,7 @@ export default function AdminAssetManagement() {
             <Grid container spacing={2}>
               <Grid xs={12} item>
                 <Box>
-                  {assets && (
+                  {assets && !loading ? (
                     <UsersTable
                       data={assets}
                       limit={paginatedParams?.limit || 100}
@@ -217,6 +223,8 @@ export default function AdminAssetManagement() {
                         }
                       }}
                     />
+                  ) : (
+                    <LoadingScreen2 />
                   )}
                 </Box>
               </Grid>
