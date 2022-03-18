@@ -70,10 +70,10 @@ export default function CaesarTabs({
           console.log('No Caesars for', err)
         })
         .finally(() => {
-          setLoading(true)
+          setLoading(false)
         })
     }
-  }, [user])
+  }, [onActiveCaesarChange, user])
 
   return (
     <>
