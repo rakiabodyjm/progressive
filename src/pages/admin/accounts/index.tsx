@@ -32,6 +32,7 @@ type EntityTypesUnion =
   | AdminResponseType
 
 export default function AdminAccountsPage() {
+  const paperHeight = 400
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const [accountType, setAccountType] = useState<UserTypes>('user')
@@ -172,6 +173,11 @@ export default function AdminAccountsPage() {
                     id: rowValue.user_id,
                   },
                 })
+              }}
+              paperProps={{
+                style: {
+                  ...(paperHeight && { height: paperHeight! - 50 }),
+                },
               }}
             />
           )}
