@@ -7,8 +7,31 @@
     "url": "https://github.com/rakiabodyjm"
   },
   "contributors": [
-    "Jake Durante",
-    "Jerome Gapasin"
+    {
+      "name": "Jerome C. Gapasin",
+      "email": "gapasinjerome99@gmail.com",
+      "url": "https://github.com/bluerose29"
+    },
+    {
+      "name": "Jake Durante",
+      "email": "jakeezz15@gmail.com",
+      "url": "https://github.com/jakeezz15"
+    },
+    {
+      "name": "Reynard Visperas",
+      "email": "visperas30@gmail.com",
+      "url": "https://github.com/RCVisperas"
+    },
+    {
+      "name": "Michael Lucido",
+      "email": "mablucido@gmail.com",
+      "url": "https://github.com/mablucido1103"
+    },
+    {
+      "name": "Riza Jayne De Leon",
+      "email": "rizajdeleon@gmail.com",
+      "url": "https://github.com/rizadeleon"
+    }
   ],
   "version": "1.1.0-alpha",
   "private": true,
