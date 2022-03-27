@@ -4,7 +4,7 @@ import { grey } from '@material-ui/core/colors'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import { UserTypes, userDataSelector, User } from '@src/redux/data/userSlice'
 import { getWallet } from '@src/utils/api/walletApi'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 /**
@@ -27,11 +27,11 @@ export default function CaesarTabs({
    * Override Title instaed of default title
    */
   renderTitle?: JSX.Element
-  // /**
-  //  * callback function to receive loading status
-  //  * used to let parent component know if
-  //  * caesar tabs is still loading
-  //  */
+  /**
+   * callback function to receive loading status
+   * used to let parent component know if
+   * caesar tabs is still loading
+   */
   syncLoading?: (childParam: boolean) => void
 }) {
   const user = useSelector(userDataSelector)
@@ -39,7 +39,8 @@ export default function CaesarTabs({
   const [activeCaesar, setActiveCaesar] = useState<[UserTypes, string] | undefined>()
   const theme: Theme = useTheme()
   const [loading, setLoading] = useState<boolean>(false)
-
+  // const onActiveCaesarChange = useCallback(onActiveCaesarChangeProps, [onActiveCaesarChangeProps])
+  const onActiveCaesarChangeLocal = useCallback(onActiveCaesarChange, [])
   useEffect(() => {
     if (user && user.roles && user?.roles?.length > 0) {
       /**
@@ -52,7 +53,7 @@ export default function CaesarTabs({
           setCaesarTypes(res)
           if (res.length > 0) {
             setActiveCaesar(res[0])
-            onActiveCaesarChange(res[0], [res[0][0], user[`${res[0][0]}_id`] as string])
+            onActiveCaesarChangeLocal(res[0], [res[0][0], user[`${res[0][0]}_id`] as string])
           }
         })
         .catch((err) => {
@@ -62,7 +63,7 @@ export default function CaesarTabs({
           setLoading(false)
         })
     }
-  }, [onActiveCaesarChange, user])
+  }, [onActiveCaesarChangeLocal, user])
 
   useEffect(() => {
     if (syncLoading) {
