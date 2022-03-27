@@ -134,7 +134,6 @@ export default function AccountInventoryManagement({ accountId }: { accountId: s
 
   const moreAnchorEl = useRef<HTMLElement | undefined>()
   const [adminOnly, setAdminOnly] = useState<boolean>(false)
-  console.log(accountId)
   return (
     <Paper variant="outlined">
       <Box p={2}>
