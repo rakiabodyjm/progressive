@@ -58,6 +58,11 @@ const theme = (additionalProps: CustomThemeProperties): Theme => {
           padding: `4px 24px`,
         },
       },
+      MuiIconButton: {
+        root: {
+          padding: 8,
+        },
+      },
     },
   }
   return createTheme({
