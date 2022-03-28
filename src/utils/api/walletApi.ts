@@ -8,7 +8,7 @@ import type { UserResponse } from '@src/utils/api/userApi'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 
-interface ExternalCeasar {
+interface ExternalCaesar {
   wallet_id: string
 
   last_name: string
@@ -37,7 +37,7 @@ export interface CaesarWalletResponse {
 
   description: string
 
-  data?: ExternalCeasar
+  data: ExternalCaesar
 
   created_at: Date
 
@@ -56,7 +56,11 @@ export interface CaesarWalletResponse {
   account_id?: string
 }
 
-export function createWallet(param: Record<UserTypes, string>): Promise<CaesarWalletResponse> {
+export function createWallet(
+  param: Record<UserTypes, string> & {
+    password: string
+  }
+): Promise<CaesarWalletResponse> {
   return axios
     .post('/caesar', {
       ...param,
@@ -155,7 +159,7 @@ export function topUpWallet({
 }) {
   return axios
     .post('/caesar/topup', { caesar, amount })
-    .then((res) => res.data as ExternalCeasar)
+    .then((res) => res.data as ExternalCaesar)
     .catch((err) => {
       throw extractMultipleErrorFromResponse(err)
     })
