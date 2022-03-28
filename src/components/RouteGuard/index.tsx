@@ -62,6 +62,6 @@ export default function RouteGuard({
     return true
   }, [router.pathname, user])
 
-  console.log(checkPath)
+  // console.log(checkPath)
   return <>{checkPath ? <Component {...pageProps} /> : <Error statusCode={404} />}</>
 }
