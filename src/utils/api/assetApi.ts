@@ -100,3 +100,12 @@ export function searchAsset(
       throw extractErrorFromResponse(err)
     })
 }
+
+export function deleteAsset(id: string) {
+  return axios
+    .delete(`/asset/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
+    })
+}
