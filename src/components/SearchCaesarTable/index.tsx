@@ -6,10 +6,10 @@ import {
   getWalletById,
   searchWallet,
 } from '@src/utils/api/walletApi'
-import LoadingScreen from '@src/components/LoadingScreen'
+import LoadingScreen, { LoadingScreen2 } from '@src/components/LoadingScreen'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react'
 import { UserTypes } from '@src/redux/data/userSlice'
 import FormLabel from '../FormLabel'
 import FormTextField from '../FormTextField'
@@ -28,7 +28,15 @@ type CaesarMetadata = {
   total: number
 }
 
-export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked: boolean }) {
+export default function SearchCaesarTable({
+  buttonTrigger,
+  customWalletFormat,
+  onRowClick,
+}: {
+  buttonTrigger: number
+  customWalletFormat?: (parameter: Partial<CaesarWalletResponse>[]) => void
+  onRowClick?: (e: MouseEvent<HTMLElement>, values: unknown) => void
+}) {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const dispatchError = useErrorNotification()
   const [searchCaesarQuery, setSearchCaesarQuery] = useState<SearchCaesarParams>({
@@ -69,7 +77,6 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
           setIsLoading(false)
         })
     } else {
-      console.log('SEARCH CAESAR')
       searchWallet(searchCaesarQuery)
         .then((res) => {
           setCaesarData(res.data)
@@ -85,7 +92,7 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
           setIsLoading(false)
         })
     }
-  }, [searchCaesarQuery, dispatchError, isButtonClicked, getAllCaesarParams])
+  }, [searchCaesarQuery, dispatchError, buttonTrigger, getAllCaesarParams])
 
   return (
     <Box>
@@ -106,10 +113,13 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
             }}
           />
         </Box>
-        <Box p={2}>
+        <Box p={2} py={0}>
           {!isLoading && caesarData && (
             <UsersTable
-              data={formatWalletData(caesarData)}
+              data={
+                (customWalletFormat && customWalletFormat(caesarData)) ||
+                formatWalletData(caesarData)
+              }
               limit={metadata.limit}
               page={metadata.page}
               total={metadata.total}
@@ -144,13 +154,16 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
                   ...(paperHeight && { height: paperHeight! - 50 }),
                 },
               }}
+              {...(onRowClick && {
+                onRowClick,
+              })}
             />
           )}
           {isLoading && (
             <Paper variant="outlined">
-              <LoadingScreen
-                style={{
-                  height: 480,
+              <LoadingScreen2
+                containerProps={{
+                  minHeight: 400,
                 }}
               />
             </Paper>
