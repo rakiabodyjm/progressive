@@ -6,6 +6,7 @@ import { AxiosError } from 'axios'
 import type { RootState } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { createSelector } from 'reselect'
+// import { setOperator } from '@src/redux/data/isOperatorSlice'
 export enum UserRoles {
   ADMIN = 'admin',
   SUBDISTRIBUTOR = 'subdistributor',
@@ -91,6 +92,7 @@ export const getUser = createAsyncThunk(
         )
         throw new Error(error)
       })
+
       const user = reduceUser(userResponse)
       return {
         data: user,
