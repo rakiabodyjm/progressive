@@ -18,6 +18,7 @@ import AdminAccountSummaryCard from '@src/components/AdminAccountSummaryCard'
 import AccountSummaryCard from '@src/components/AccountSummaryCard'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { GetServerSideProps, GetStaticProps } from 'next'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},
@@ -127,7 +128,7 @@ export default function AdminAccountManage({ id }: { id: string }) {
                 variant="outlined"
                 color="primary"
               >
-                Manage Subdistibributor Account
+                Manage Subdistributor Account
               </Button>
             )}
             {account?.dsp && (
@@ -204,105 +205,119 @@ export default function AdminAccountManage({ id }: { id: string }) {
             margin: '16px 0px',
           }}
         />
-        <Grid spacing={2} container>
-          <Grid item xs={12} md={6}>
-            {account && <AccountSummaryCard account={account} role={account.id} />}
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Grid container spacing={2}>
-              {account?.id && (
-                <Grid item xs={12} lg={6}>
-                  <WalletSmallCard accountType="user" accountId={account?.id} />
-                </Grid>
-              )}
-            </Grid>
-          </Grid>
-        </Grid>
 
-        {account?.admin && (
+        {account ? (
           <>
-            <Box my={2}>
-              <Divider />
-            </Box>
-
             <Grid spacing={2} container>
               <Grid item xs={12} md={6}>
-                <AdminAccountSummaryCard admin={{ ...account.admin, user: account }} />
+                {account && <AccountSummaryCard account={account} role={account.id} />}
               </Grid>
               <Grid item xs={12} md={6}>
-                <WalletSmallCard accountId={account.admin.id} accountType="admin" />
-              </Grid>
-            </Grid>
-          </>
-        )}
-        {account?.subdistributor && (
-          <>
-            <Box my={2}>
-              <Divider />
-            </Box>
-
-            <Grid spacing={2} container>
-              <Grid item xs={12} md={6}>
-                <AccountSummaryCard account={account} role={account.subdistributor.id} />
-              </Grid>
-              <Grid container item xs={12} md={6} spacing={2}>
-                <Grid item xs={12} lg={6}>
-                  <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
-                </Grid>
-                <Grid item xs={12} lg={6}>
-                  <WalletSmallCard
-                    accountId={account.subdistributor.id}
-                    accountType="subdistributor"
-                  />
+                <Grid container spacing={2}>
+                  {account?.id && (
+                    <Grid item xs={12} lg={6}>
+                      <WalletSmallCard accountType="user" accountId={account?.id} />
+                    </Grid>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
+
+            {account?.admin && (
+              <>
+                <Box my={2}>
+                  <Divider />
+                </Box>
+
+                <Grid spacing={2} container>
+                  <Grid item xs={12} md={6}>
+                    <AdminAccountSummaryCard admin={{ ...account.admin, user: account }} />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <WalletSmallCard accountId={account.admin.id} accountType="admin" />
+                  </Grid>
+                </Grid>
+              </>
+            )}
+            {account?.subdistributor && (
+              <>
+                <Box my={2}>
+                  <Divider />
+                </Box>
+
+                <Grid spacing={2} container>
+                  <Grid item xs={12} md={6}>
+                    <AccountSummaryCard account={account} role={account.subdistributor.id} />
+                  </Grid>
+                  <Grid container item xs={12} md={6} spacing={2}>
+                    <Grid item xs={12} lg={6}>
+                      <SubdistributorSmallCard subdistributorId={account.subdistributor.id} />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                      <WalletSmallCard
+                        accountId={account.subdistributor.id}
+                        accountType="subdistributor"
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+
+            {account?.dsp && (
+              <>
+                <Box my={2}>
+                  <Divider />
+                </Box>
+
+                <Grid spacing={2} container>
+                  <Grid item xs={12} md={6}>
+                    <AccountSummaryCard account={account} role={account.dsp.id} />
+                  </Grid>
+
+                  <Grid container item xs={12} md={6} spacing={2}>
+                    <Grid item xs={12} lg={6}>
+                      <DSPSmallCard dspId={account.dsp.id} />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                      <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+
+            {account?.retailer && (
+              <>
+                <Box my={2}>
+                  <Divider />
+                </Box>
+
+                <Grid spacing={2} container>
+                  <Grid item xs={12} md={6}>
+                    <AccountSummaryCard account={account} role={account.retailer.id} />
+                  </Grid>
+                  <Grid container item xs={12} md={6} spacing={2}>
+                    <Grid item xs={12} lg={6}>
+                      <RetailerSmallCard retailerId={account.retailer.id} />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                      <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            )}
           </>
-        )}
-
-        {account?.dsp && (
-          <>
-            <Box my={2}>
-              <Divider />
-            </Box>
-
-            <Grid spacing={2} container>
-              <Grid item xs={12} md={6}>
-                <AccountSummaryCard account={account} role={account.dsp.id} />
-              </Grid>
-
-              <Grid container item xs={12} md={6} spacing={2}>
-                <Grid item xs={12} lg={6}>
-                  <DSPSmallCard dspId={account.dsp.id} />
-                </Grid>
-                <Grid item xs={12} lg={6}>
-                  <WalletSmallCard accountId={account.dsp.id} accountType="dsp" />
-                </Grid>
-              </Grid>
-            </Grid>
-          </>
-        )}
-
-        {account?.retailer && (
-          <>
-            <Box my={2}>
-              <Divider />
-            </Box>
-
-            <Grid spacing={2} container>
-              <Grid item xs={12} md={6}>
-                <AccountSummaryCard account={account} role={account.retailer.id} />
-              </Grid>
-              <Grid container item xs={12} md={6} spacing={2}>
-                <Grid item xs={12} lg={6}>
-                  <RetailerSmallCard retailerId={account.retailer.id} />
-                </Grid>
-                <Grid item xs={12} lg={6}>
-                  <WalletSmallCard accountId={account.retailer.id} accountType="retailer" />
-                </Grid>
-              </Grid>
-            </Grid>
-          </>
+        ) : (
+          <LoadingScreen2
+            containerProps={{
+              minHeight: 480,
+            }}
+            textProps={{
+              variant: 'h4',
+            }}
+          />
         )}
       </Paper>
     </div>
