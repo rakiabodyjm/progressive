@@ -13,13 +13,11 @@ import {
 } from '@material-ui/core'
 import {
   CaesarWalletResponse,
-  getAllWallet,
   searchWallet,
   SearchWalletParams,
   topUpWallet,
 } from '@src/utils/api/walletApi'
 import SearchCaesarTable from '@src/components/SearchCaesarTable'
-import UsersTable from '@src/components/UsersTable'
 import MoneyIcon from '@material-ui/icons/Payment'
 import { makeStyles } from '@material-ui/styles'
 import React, { useState, MouseEvent, useEffect } from 'react'
@@ -30,6 +28,7 @@ import FormLabel from '@src/components/FormLabel'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { UserTypes } from '@src/redux/data/userSlice'
+import AsyncButton from '@src/components/AsyncButton'
 
 const useStyles = makeStyles((theme: Theme) => ({
   caesarReloadPaper: {
@@ -81,7 +80,7 @@ export default function CashTransfer() {
   const classes = useStyles()
   const dispatch = useDispatch()
   const dispatchError = useErrorNotification()
-  const [buttonTrigged, setButtonTriggered] = useState<boolean>(false)
+  const [buttonTrigged, setButtonTriggered] = useState<number>(Date.now())
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -97,8 +96,11 @@ export default function CashTransfer() {
       [event.currentTarget.name]: Number(event.currentTarget.value.replace(/(?!\w|\s)./g, '')),
     })
   }
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false)
 
   const handleSubmit = () => {
+    // setButtonTriggered(true)
+    setButtonLoading(true)
     if (values.amount > 0) {
       topUpWallet(values)
         .then((res) => {
@@ -115,11 +117,8 @@ export default function CashTransfer() {
           })
         })
         .finally(() => {
-          if (buttonTrigged) {
-            setButtonTriggered(false)
-          } else {
-            setButtonTriggered(true)
-          }
+          setButtonTriggered(Date.now())
+          setButtonLoading(false)
         })
       setValues({
         ...values,
@@ -192,6 +191,7 @@ export default function CashTransfer() {
                         getOptionLabel={(caesar) => caesar?.description}
                       />
                     </Grid>
+
                     <Grid item xs={12}>
                       <Typography className={classes.formLabel}>Amount</Typography>
 
@@ -305,7 +305,7 @@ export default function CashTransfer() {
                     justifyContent="flex-end"
                     className={classes.buttonMargin}
                   >
-                    <Button
+                    <AsyncButton
                       variant="contained"
                       type="submit"
                       onClick={(e) => {
@@ -314,15 +314,17 @@ export default function CashTransfer() {
                       }}
                       color="primary"
                       endIcon={<MoneyIcon />}
+                      disabled={buttonLoading}
+                      loading={buttonLoading}
                     >
                       Send
-                    </Button>
+                    </AsyncButton>
                   </Box>
                 </Box>
               </Paper>
               <Grid xs={12} item>
                 <Box className={classes.miniCaesarTable}>
-                  <SearchCaesarTable isButtonClicked={buttonTrigged} />
+                  <SearchCaesarTable buttonTrigger={buttonTrigged} />
                 </Box>
               </Grid>
             </Grid>
