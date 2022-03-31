@@ -1,19 +1,7 @@
-import {
-  Box,
-  Container,
-  Divider,
-  makeStyles,
-  Paper,
-  Theme,
-  Typography,
-  useTheme,
-} from '@material-ui/core'
-import CaesarTabs from '@src/components/CaesarTabs'
-import useFetchPendingTransaction from '@src/pages/notification/useFetchPendingTransactions'
-import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import { Box, Container, Divider, makeStyles, Paper, Theme, Typography } from '@material-ui/core'
 import NotificationPageTable from '@src/components/NotficationPageTable'
 import RoleBadge from '@src/components/RoleBadge'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import useGetCaesarOfUser from '@src/utils/hooks/useGetCaesarOfUser'
