@@ -12,15 +12,17 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  TextField,
 } from '@material-ui/core'
 import { UserTypes } from '@src/redux/data/userSlice'
 import { toCapsFirst } from '@src/utils/api/common'
 import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
-import { useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 
 import useSWR, { useSWRConfig } from 'swr'
 import { makeStyles } from '@material-ui/styles'
 import dynamic from 'next/dynamic'
+import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
 import { getWallet, CaesarWalletResponse, createWallet } from '../../utils/api/walletApi'
 import RoleBadge from '../RoleBadge'
 
@@ -50,25 +52,7 @@ export default function WalletSmallCard({
   const dispatchError = useErrorNotification()
   const dispatchSuccess = useSuccessNotification()
   const [walletCreating, setWalletCreating] = useState<boolean>(false)
-  const handleCreateWallet = () => {
-    setWalletCreating(true)
 
-    createWallet({ [accountType]: accountId } as Record<UserTypes, string>)
-      .then((res) => {
-        console.log('wallet created', res)
-        dispatchSuccess(`Caesar Wallet Created`)
-        setModalOpen(false)
-      })
-      .catch((err: string[]) => {
-        err.forEach((ea) => {
-          dispatchError(ea)
-        })
-      })
-      .finally(() => {
-        setWalletCreating(false)
-        mutate([accountType, accountId, 'caesar-wallet'])
-      })
-  }
   const theme = useTheme()
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const handleModalOpen = () => {
@@ -79,6 +63,7 @@ export default function WalletSmallCard({
   }
   const [check, setCheck] = useState({ checkbox1: false, checkbox2: false })
   const { checkbox1, checkbox2 } = check
+
   const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCheck({
       ...check,
@@ -86,6 +71,59 @@ export default function WalletSmallCard({
     })
   }
   const checkAll = [checkbox1, checkbox2].filter((v) => v).length !== 2
+
+  const [createCaesarPassword, setCreateCaesarPassword] = useState<string>('')
+
+  const [passwordErrors, setPasswordErrors] = useState<undefined | string>()
+  const validatePassword = (password: string) =>
+    new Promise((res, rej) => {
+      if (password.length < 8) {
+        rej(new Error(`Password must be at least 8 characters`))
+      }
+      res(undefined)
+    })
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+  const handleCreateWallet = () => {
+    setWalletCreating(true)
+    setIsSubmitted(true)
+    validatePassword(createCaesarPassword)
+      .then(() => {
+        createWallet({ [accountType]: accountId, password: createCaesarPassword } as Record<
+          UserTypes,
+          string
+        > & { password: string })
+          .then((res) => {
+            console.log('wallet created', res)
+            dispatchSuccess(`Caesar Wallet Created`)
+            setModalOpen(false)
+          })
+          .catch((err: string[]) => {
+            err.forEach((ea) => {
+              dispatchError(ea)
+            })
+          })
+          .finally(() => {
+            setWalletCreating(false)
+            mutate([accountType, accountId, 'caesar-wallet'])
+          })
+      })
+      .catch((err) => {
+        setPasswordErrors(err.message)
+      })
+  }
+
+  useEffect(() => {
+    if (isSubmitted) {
+      validatePassword(createCaesarPassword)
+        .then((res) => {
+          setPasswordErrors(res as string)
+        })
+        .catch((err) => {
+          setPasswordErrors(err.message)
+        })
+        .finally(() => {})
+    }
+  }, [createCaesarPassword])
 
   if (!data) {
     return (
@@ -195,6 +233,32 @@ export default function WalletSmallCard({
                         </Typography>
                       }
                     />
+                    {!Object.values(check).some((ea) => ea === false) && (
+                      <Box>
+                        <Box py={2}>
+                          <Divider />
+                        </Box>
+
+                        <Typography color="primary" variant="body2">
+                          Caesar Coin Password
+                        </Typography>
+
+                        <Box pt={1}>
+                          <TextField
+                            variant="outlined"
+                            size="small"
+                            placeholder="Input Password"
+                            fullWidth
+                            onChange={(e) => {
+                              setCreateCaesarPassword(e.target.value)
+                            }}
+                            error={!!passwordErrors}
+                            helperText={passwordErrors}
+                            type="password"
+                          />
+                        </Box>
+                      </Box>
+                    )}
                   </FormGroup>
                   <Box pb={2} pt={2}>
                     <Divider />
