@@ -1,4 +1,6 @@
-import { Box, Container, Divider, Grid, Paper, Typography } from '@material-ui/core'
+import { Box, Container, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { grey } from '@material-ui/core/colors'
+import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
@@ -45,16 +47,18 @@ export default function ViewCaesarBankPage() {
     getWalletById(caesar!.id)
   )
 
+  const theme: Theme = useTheme()
   if (ceasarError || caesarBankError) {
     return <ErrorLoading />
   }
+
   return (
     <>
       <Container maxWidth="lg" disableGutters>
         <Paper variant="outlined">
           <Box p={2}>
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <Paper variant="outlined">
                   <Box p={2}>
                     {caesarBankData && caesarData ? (
@@ -81,6 +85,18 @@ export default function ViewCaesarBankPage() {
                         <Box my={2}>
                           <Divider />
                         </Box>
+                        <Box>
+                          <Paper
+                            style={{
+                              textAlign: 'center',
+                              background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                              paddingTop: 32,
+                              paddingBottom: 32,
+                            }}
+                          >
+                            <Typography>Not Available</Typography>
+                          </Paper>
+                        </Box>
                       </>
                     ) : (
                       <LoadingScreen2 />
@@ -88,18 +104,14 @@ export default function ViewCaesarBankPage() {
                   </Box>
                 </Paper>
               </Grid>
-              <Grid item xs={6}>
-                <Paper variant="outlined">
-                  <Box p={2}>
-                    {caesarBankData && caesar && caesarData ? (
-                      <>
-                        <CashTransferForm caesar={caesar} caesarBankData={caesarBankData} />
-                      </>
-                    ) : (
-                      <LoadingScreen2 />
-                    )}
-                  </Box>
-                </Paper>
+              <Grid item xs={12} md={6}>
+                {caesarBankData && caesar && caesarData ? (
+                  <>
+                    <CashTransferForm caesar={caesarData} caesarBankData={caesarBankData} />
+                  </>
+                ) : (
+                  <LoadingScreen2 />
+                )}
               </Grid>
             </Grid>
           </Box>
