@@ -124,10 +124,10 @@ export default function ViewCaesarPage() {
                   <Box p={1.5}>
                     <Box>
                       <Typography variant="h6" noWrap>
-                        Caesar Banks
+                        Accounts
                       </Typography>
                       <Typography color="primary" variant="body2">
-                        Banks that are linked to this Caesar Account
+                        Caesar Account and Banks that are linked to this Caesar Account
                       </Typography>
                       <Box textAlign="end">
                         <IconButton
@@ -149,6 +149,49 @@ export default function ViewCaesarPage() {
                         gap: 4,
                       }}
                     >
+                      <ListItem
+                        style={{
+                          border: theme.palette.divider,
+                          borderWidth: 1,
+                          borderStyle: 'solid',
+                          borderRadius: 4,
+                        }}
+                        button
+                        onClick={() => {
+                          // router.push(`/cash-transfer/caesar/${id}`)
+                        }}
+                      >
+                        <Grid
+                          container
+                          spacing={1}
+                          style={{
+                            padding: 8,
+                          }}
+                        >
+                          <Grid item xs={8}>
+                            <Typography
+                              variant="body1"
+                              style={{
+                                fontWeight: 700,
+                              }}
+                              color="primary"
+                            >
+                              {/* {caesar?.description} */}
+                              Caesar Account
+                            </Typography>
+                            <Typography variant="body2">{caesar?.description || ''}</Typography>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Typography>
+                              <FormLabel>Balance</FormLabel>
+
+                              <Typography variant="body1">
+                                ₱ {caesar?.cash_transfer_balance.toFixed(2)}
+                              </Typography>
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </ListItem>
                       {caesarBanks && caesarBanks?.length > 0 ? (
                         caesarBanks.map(({ id, bank, description, balance }) => (
                           <ListItem
@@ -203,7 +246,7 @@ export default function ViewCaesarPage() {
                           variant="outlined"
                         >
                           <Typography variant="body1" color="textSecondary">
-                            No Caesar Banks Found
+                            No Banks linked Found
                           </Typography>
                         </Paper>
                         // <LoadingScreen2 />
