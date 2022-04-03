@@ -54,6 +54,8 @@ export interface CaesarWalletResponse {
   admin?: AdminResponseType
 
   account_id?: string
+
+  cash_transfer_balance: number
 }
 
 export function createWallet(
@@ -177,6 +179,19 @@ export function getAllWallet({ account_type, ...allParams }: GetAllWalletParams)
           account_type.length > 0 && {
             account_type,
           }),
+      },
+    })
+    .then((res) => res.data as Paginated<CaesarWalletResponse>)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
+    })
+}
+
+export function searchWalletV2(searchQuery: { searchQuery?: string } & PaginateFetchParameters) {
+  return axios
+    .get('/caesar/search-v2', {
+      params: {
+        ...searchQuery,
       },
     })
     .then((res) => res.data as Paginated<CaesarWalletResponse>)
