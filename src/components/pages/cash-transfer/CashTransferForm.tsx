@@ -1,12 +1,4 @@
-import {
-  Box,
-  Divider,
-  Paper,
-  TextareaAutosize,
-  TextField,
-  Typography,
-  useTheme,
-} from '@material-ui/core'
+import { Box, Divider, Paper, Typography } from '@material-ui/core'
 import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'

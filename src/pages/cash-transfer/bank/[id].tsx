@@ -1,15 +1,16 @@
-import { Box, Container, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, Button, Container, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import CreateNewTransactionModal from '@src/components/pages/cash-transfer/CreateNewTransactionModal'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
+import { MonetizationOn } from '@material-ui/icons'
 import useSWR from 'swr'
-import CashTransferForm from '../../../components/pages/cash-transfer/CashTransferForm'
 
 /**
  *
@@ -105,13 +106,37 @@ export default function ViewCaesarBankPage() {
                 </Paper>
               </Grid>
               <Grid item xs={12} md={6}>
-                {caesarBankData && caesar && caesarData ? (
+                <Button
+                  style={{
+                    padding: `8px 24px`,
+                  }}
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={() => {
+                    console.log('hello world')
+                  }}
+                >
+                  <Typography
+                    style={{
+                      fontWeight: 700,
+                    }}
+                    variant="body1"
+                  >
+                    NEW TRANSACTION
+                  </Typography>
+                  <Box ml={1} />
+                  <MonetizationOn />
+                  {/* </Typography> */}
+                </Button>
+                {/* <CreateNewTransactionModal /> */}
+                {/* {caesarBankData && caesar && caesarData ? (
                   <>
                     <CashTransferForm caesar={caesarData} caesarBankData={caesarBankData} />
                   </>
                 ) : (
                   <LoadingScreen2 />
-                )}
+                )} */}
               </Grid>
             </Grid>
           </Box>
