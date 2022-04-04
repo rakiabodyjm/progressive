@@ -175,6 +175,9 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
             })
           }
         })
+        .finally(() => {
+          setButtonLoading(false)
+        })
     }
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
