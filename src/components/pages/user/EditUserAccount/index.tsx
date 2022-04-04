@@ -158,6 +158,9 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
               })
             )
           })
+          .finally(() => {
+            setButtonLoading(false)
+          })
       } else {
         dispatch(
           setNotification({
@@ -179,7 +182,6 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
           )
           setEditMode(false)
           setEditFormValues(null)
-          setButtonLoading(false)
         })
         .catch((err) => {
           dispatch(
@@ -188,6 +190,9 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
               message: userApi.extractError(err),
             })
           )
+        })
+        .finally(() => {
+          setButtonLoading(false)
         })
     }
   }
