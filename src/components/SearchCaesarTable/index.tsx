@@ -59,12 +59,10 @@ export default function SearchCaesarTable({
 
   useEffect(() => {
     setIsLoading(true)
-    console.log('GET ALL CAESAR')
     if (searchCaesarQuery.searchQuery === '') {
       console.log(getAllCaesarParams)
       getAllWallet(getAllCaesarParams)
         .then((res) => {
-          console.log(res)
           setCaesarData(res.data)
           setMetaData(res.metadata)
         })
