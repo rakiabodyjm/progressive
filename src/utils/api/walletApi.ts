@@ -5,6 +5,7 @@ import type { DspResponseType } from '@src/utils/api/dspApi'
 import type { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import type { UserResponse } from '@src/utils/api/userApi'
+import type { CaesarBank, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 
@@ -56,6 +57,8 @@ export interface CaesarWalletResponse {
   account_id?: string
 
   cash_transfer_balance: number
+
+  bank_accounts: CaesarBank[]
 }
 
 export function createWallet(
