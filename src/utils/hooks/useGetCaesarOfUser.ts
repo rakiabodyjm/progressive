@@ -7,6 +7,7 @@ type ActiveCaesar = {
   caesar: [UserTypes, string] | undefined
   account?: [UserTypes, string]
 }
+type TelcoUsers = 'user' | 'admin' | 'subdistributor' | 'dsp' | 'retailer'
 
 export default function useGetCaesarOfUser(options?: {
   disabledAccounts?: UserTypes[]
@@ -27,20 +28,21 @@ export default function useGetCaesarOfUser(options?: {
       const getWallets = () =>
         Promise.all(
           [...user.roles]
+            .filter((ea) => !['ct-operator', 'ct-admin'].includes(ea))
             /**
              * disable users for now
              */
             .filter((ea) =>
               // eslint-disable-next-line no-nested-ternary
               disabledAccounts
-                ? !disabledAccounts.includes(ea)
+                ? !disabledAccounts.includes(ea as TelcoUsers)
                 : pickUserType
-                ? pickUserType.includes(ea)
+                ? pickUserType.includes(ea as TelcoUsers)
                 : true
             )
             .map((role) =>
               getWallet({
-                [role]: user[`${role}_id`],
+                [role]: user[`${role as TelcoUsers}_id`],
               })
                 .then(
                   (res) => [res.account_type, res.id] as [UserTypes, CaesarWalletResponse['id']]
