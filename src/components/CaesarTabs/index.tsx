@@ -157,6 +157,7 @@ export default function CaesarTabs({
 //     }
 //   | undefined
 // >(undefined)
+type TelcoUsers = 'admin' | 'subdistributor' | 'dsp' | 'retailer'
 
 const getWallets = (user: User) =>
   Promise.all(
@@ -164,10 +165,10 @@ const getWallets = (user: User) =>
       /**
        * disable users for now
        */
-      .filter((ea) => ea !== 'user')
+      .filter((ea) => ea !== 'user' && ea !== 'ct-operator' && ea !== 'ct-admin')
       .map((role) =>
         getWallet({
-          [role]: user[`${role}_id`],
+          [role]: user[`${role as TelcoUsers}_id`],
         })
           .then((res) => [res.account_type, res.id] as [UserTypes, string])
           .catch((err) => [role, null])
