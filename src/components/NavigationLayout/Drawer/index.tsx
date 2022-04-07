@@ -1,46 +1,28 @@
 import {
   Divider,
   IconButton,
-  List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Theme,
   Typography,
   Box,
-  Collapse,
   Tooltip,
-  SvgIconTypeMap,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import Drawer from '@material-ui/core/Drawer'
+import { AccountCircle, ChevronLeft, ChevronRight, ExitToApp } from '@material-ui/icons'
 import {
-  AccountCircle,
-  ChevronLeft,
-  ChevronRight,
-  Dashboard,
-  PersonPinCircle,
-  ContactPhone,
-  ExitToApp,
-  AccountTree,
-  PeopleAlt,
-  CardGiftcard,
-  ExpandLess,
-  ExpandMore,
-  ListAlt,
-  AllInbox,
-} from '@material-ui/icons'
-import { logoutUser, User, userDataSelector, UserTypes } from '@src/redux/data/userSlice'
+  logoutUser,
+  User,
+  userDataSelector,
+  UserTypesWithCashTransfer,
+} from '@src/redux/data/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch } from '@src/redux/store'
-import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { MouseEvent, useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import RoleBadge from '@src/components/RoleBadge'
-import { OverridableComponent } from '@material-ui/core/OverridableComponent'
-import { nanoid } from '@reduxjs/toolkit'
-import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 import MainMenuItems from '@src/components/NavigationLayout/Drawer/MainMenuItems'
 import AdminMenuItems from '@src/components/NavigationLayout/Drawer/AdminMenuItems'
 import SubMenuItems from './SubMenuItems'
@@ -114,7 +96,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 type DrawerComponentProps = {
   open: boolean
   handleDrawerClose: () => void
-  roles: UserTypes[]
+  roles: UserTypesWithCashTransfer[]
   userName: User['first_name']
 }
 export default function DrawerComponent({
