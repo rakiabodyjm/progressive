@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import { RootState } from '@src/redux/store'
 import { getWallet } from '@src/utils/api/walletApi'
+type TelcoUsers = 'admin' | 'subdistributor' | 'dsp' | 'retailer' | 'user'
 
 interface ActiveCaesarAccountState {
   caesar_id: string
-  account_type: Omit<UserTypesAndUser, 'admin'>
+  account_type: Omit<TelcoUsers, 'admin'>
 }
 
 export const getDefaultCaesar = createAsyncThunk('caesar/getDefaultCaesar', async (_, thunkApi) => {
@@ -23,7 +24,7 @@ export const getDefaultCaesar = createAsyncThunk('caesar/getDefaultCaesar', asyn
     if (userdata && userdata.roles) {
       const result = await new Promise((resolve, reject) => {
         userdata.roles.map(async (key) => {
-          const accountId = userdata[`${key}_id`]!
+          const accountId = userdata[`${key as TelcoUsers}_id`]!
           console.log('querying ', key)
           getWallet({
             [key]: accountId,
