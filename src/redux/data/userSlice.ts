@@ -17,6 +17,8 @@ export enum UserRoles {
 // export type UserTypes = 'admin' | 'dsp' | 'retailer' | 'subdistributor' | 'user'
 export type UserTypes = `${UserRoles}`
 
+export type UserTypesWithCashTransfer = UserTypes | 'ct-operator' | 'ct-admin'
+
 export type User = {
   user_id: string
   admin_id?: string
@@ -26,7 +28,7 @@ export type User = {
   email: string
   first_name: string
   last_name: string
-  roles: UserTypes[] | []
+  roles: UserTypesWithCashTransfer[] | []
 }
 export type UserMetaData = {
   iat: number
