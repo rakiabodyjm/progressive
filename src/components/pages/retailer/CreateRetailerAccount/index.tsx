@@ -342,7 +342,7 @@ export default function CreateRetailerAccount({
           <Grid item xs={12}>
             <TypographyLabel>Subdistributor DSP</TypographyLabel>
 
-            {newRetailerAccount.subdistributor && dspOptions ? (
+            {newRetailerAccount.subdistributor && dspOptions.length > 0 ? (
               <Autocomplete<DspResponseType>
                 options={dspOptions}
                 getOptionLabel={(option) =>
