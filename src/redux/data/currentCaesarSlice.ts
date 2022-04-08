@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { UserTypes } from '@src/redux/data/userSlice'
 import { RootState } from '@src/redux/store'
 import { getWallet } from '@src/utils/api/walletApi'
 type TelcoUsers = 'admin' | 'subdistributor' | 'dsp' | 'retailer' | 'user'
