@@ -20,25 +20,53 @@ export type TransferType = {
   description?: string
 }
 
-export type Deposit = {
-  name: 'DEPOSIT'
-} & TransferType
-export type Withdraw = {
-  name: 'WITHDRAW'
-}
-
-export type Transfer = {
-  name: 'TRANSFER'
-}
-
 export enum CashTransferAs {
   DEPOSIT = 'DEPOSIT',
   TRANSFER = 'TRANSFER',
   WITHDRAW = 'WITHDRAW',
   LOAN = 'LOAN',
-  LOAN_PAYMENT = 'LOAN PAYMENT',
-  INTEREST = 'INTEREST',
-  BANK_FEES = 'BANK FEES',
+  'LOAN PAYMENT' = 'LOAN PAYMENT',
+  // INTEREST = 'INTEREST',
+  // 'BANK FEES' = 'BANK FEES',
 }
 
-export type TransferTypes<T extends Deposit | Withdraw | Transfer> = TransferType & T
+// export type TransferTypes<T extends Deposit | Withdraw | Transfer> = TransferType & T
+
+export type TransferTypes = 'transfer' | 'withdraw' | 'deposit'
+
+export type CashTransferResponse = {
+  id: string
+
+  transfer_type: TransferType
+
+  amount: number
+
+  as: CashTransferAs
+
+  created_at: Date
+
+  updated_at: Date
+
+  deleted_at: Date
+
+  description: string
+
+  caesar_bank_to: CaesarBank
+
+  caesar_bank_from: CaesarBank
+
+  to: CaesarWalletResponse
+
+  from: CaesarWalletResponse
+
+  bank_charge: number
+
+  interest: number
+
+  remaining_balance_from: number
+
+  remaining_balance_to: number
+
+  // interest_amount: number
+  total_amount: number
+}
