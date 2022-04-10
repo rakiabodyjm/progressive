@@ -1,5 +1,5 @@
 import { List } from '@material-ui/core'
-import { AllInbox, ListAlt, LocalGroceryStore, Store } from '@material-ui/icons'
+import { AccountBalance, AllInbox, ListAlt, LocalGroceryStore, Store } from '@material-ui/icons'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 
 export default function SubMenuItems({ open }: { open: boolean }) {
@@ -18,6 +18,11 @@ export default function SubMenuItems({ open }: { open: boolean }) {
       title: 'Transactions',
       icon: <ListAlt />,
       url: '/transaction',
+    },
+    {
+      title: 'Cash Transfer',
+      icon: <AccountBalance />,
+      url: '/cash-transfer',
     },
   ]
   return (
