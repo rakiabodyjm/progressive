@@ -52,7 +52,9 @@ export default function AdminAccountManage({ id }: { id: string }) {
 
   useEffect(() => {
     if (id) {
-      getUser(id)
+      getUser(id, {
+        cached: false,
+      })
         .then(async (res) => {
           setAccount({
             ...res,
@@ -83,6 +85,7 @@ export default function AdminAccountManage({ id }: { id: string }) {
   }, [dspFetch, subdistributorFetch, retailerFetch, dispatch, id])
 
   const classes = useStyles()
+
   return (
     <div className={classes.root}>
       <Box
