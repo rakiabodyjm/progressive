@@ -119,7 +119,7 @@ export default function ViewCaesarPage() {
 
           <Box>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} md={6}>
                 <Paper>
                   <Box p={1.5}>
                     <Box>
@@ -155,10 +155,11 @@ export default function ViewCaesarPage() {
                           borderWidth: 1,
                           borderStyle: 'solid',
                           borderRadius: 4,
+                          padding: 8,
                         }}
                         button
                         onClick={() => {
-                          // router.push(`/cash-transfer/caesar/${id}`)
+                          router.push(`/cash-transfer/caesar/${id}`)
                         }}
                       >
                         <Grid
@@ -182,12 +183,13 @@ export default function ViewCaesarPage() {
                             <Typography variant="body2">{caesar?.description || ''}</Typography>
                           </Grid>
                           <Grid item xs={4}>
-                            <Typography>
-                              <FormLabel>Balance</FormLabel>
+                            <FormLabel>Total Loan/Balance: </FormLabel>
 
-                              <Typography variant="body1">
-                                ₱ {caesar?.cash_transfer_balance.toFixed(2)}
-                              </Typography>
+                            <Typography variant="body1">
+                              ₱{' '}
+                              {new Intl.NumberFormat('en-PH', {
+                                currency: 'PHP',
+                              }).format(caesar?.cash_transfer_balance || 0)}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -201,6 +203,7 @@ export default function ViewCaesarPage() {
                               borderWidth: 1,
                               borderStyle: 'solid',
                               borderRadius: 4,
+                              padding: 8,
                             }}
                             button
                             onClick={() => {
@@ -227,10 +230,13 @@ export default function ViewCaesarPage() {
                                 <Typography variant="body2">{description || ''}</Typography>
                               </Grid>
                               <Grid item xs={4}>
-                                <Typography>
-                                  <FormLabel>Balance</FormLabel>
+                                <FormLabel>Balance: </FormLabel>
 
-                                  <Typography variant="body1">₱ {balance.toFixed(2)}</Typography>
+                                <Typography variant="body1">
+                                  ₱{' '}
+                                  {new Intl.NumberFormat('en-PH', {
+                                    currency: 'PHP',
+                                  }).format(balance || 0)}
                                 </Typography>
                               </Grid>
                             </Grid>
@@ -269,7 +275,7 @@ export default function ViewCaesarPage() {
           <Box p={2}>
             <Box display="flex" justifyContent="space-between">
               <Box>
-                <Typography variant="h6">Add New Caesar Bank</Typography>
+                <Typography variant="h6">Add New Bank</Typography>
                 <Typography variant="body2" color="textSecondary">
                   Add a Bank to Link to this Caesar
                 </Typography>
