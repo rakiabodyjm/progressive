@@ -11,20 +11,27 @@ import {
 } from '@material-ui/core'
 import { CloseOutlined } from '@material-ui/icons'
 import ModalWrapper from '@src/components/ModalWrapper'
+import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
+import { TransferTypes } from '@src/utils/types/CashTransferTypes'
 import { useMemo } from 'react'
 
-type TransferTypes = 'cash-transfer' | 'withdraw' | 'deposit'
 const CreateNewTransactionModal = ({
   open,
   onClose,
-  disabledKeys,
+  disabledKeysProps,
   onSelect,
 }: {
   open: boolean
   onClose: () => void
-  disabledKeys?: TransferTypes[]
+  disabledKeysProps?: TransferTypes[]
   onSelect?: (param: TransferTypes) => void
 }) => {
+  const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
+  const disabledKeys = useMemo(
+    () => [...(disabledKeysProps || []), ...(isEligible ? [] : ['withdraw', 'deposit'])],
+    [disabledKeysProps, isEligible]
+  )
+
   const theme = useTheme()
   const transactionTypes = useMemo<
     {
@@ -36,21 +43,21 @@ const CreateNewTransactionModal = ({
     () =>
       [
         {
-          id: 'cash-transfer' as TransferTypes,
+          id: 'transfer' as TransferTypes,
           title: 'Cash Transfer',
           description: 'Recording Bank to Bank Transactions',
         },
         {
           id: 'withdraw' as TransferTypes,
-          title: 'Loan',
-          description: 'Bank to Account or Person Transaction',
+          title: 'Withdraw',
+          description: 'Recording Bank to Person Transaction',
         },
         {
           id: 'deposit' as TransferTypes,
           title: 'Deposit',
-          description: 'Recording Account or Person to Bank Transactions',
+          description: 'Recording Person to Bank Transactions',
         },
-      ].filter((ea) => (disabledKeys ? disabledKeys.includes(ea.id as TransferTypes) : true)),
+      ].filter((ea) => (disabledKeys ? !disabledKeys.includes(ea.id as TransferTypes) : true)),
     []
   )
   return (
@@ -115,7 +122,14 @@ const CreateNewTransactionModal = ({
                     >
                       {ea.title}
                     </Typography>
-                    <Typography variant="body2">{ea.description}</Typography>
+                    <Typography
+                      variant="body2"
+                      style={{
+                        fontWeight: 400,
+                      }}
+                    >
+                      {ea.description}
+                    </Typography>
                   </Grid>
                 </Grid>
               </ListItem>
