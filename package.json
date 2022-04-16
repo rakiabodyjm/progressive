@@ -81,6 +81,7 @@
     "react-redux": "^7.2.4",
     "react-use": "^17.2.4",
     "reselect": "^4.0.0",
+    "sharp": "^0.30.4",
     "swr": "^1.0.1",
     "validator": "^13.6.0",
     "yup": "^0.32.11"
