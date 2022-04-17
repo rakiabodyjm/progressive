@@ -3,8 +3,6 @@ import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
 import FormTextField from '@src/components/FormTextField'
-import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
-import FeesTransaction from '@src/components/pages/cash-transfer/FeesTransactionForm'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
@@ -24,7 +22,7 @@ const DepositTypeTransaction = ({
   caesar_bank_to?: CaesarBank
   from?: CaesarWalletResponse
 }) => {
-  const [withDrawForm, setWithDrawForm] = useState<{
+  const [depositForm, setDepositForm] = useState<{
     amount?: number
     caesar_bank_to?: CaesarBank
     from?: CaesarWalletResponse
@@ -42,16 +40,16 @@ const DepositTypeTransaction = ({
   const submitFunction = () =>
     axios
       .post('/cash-transfer/deposit', {
-        ...withDrawForm,
-        caesar_bank_to: withDrawForm.caesar_bank_to?.id,
-        from: withDrawForm.from?.id,
+        ...depositForm,
+        caesar_bank_to: depositForm.caesar_bank_to?.id,
+        from: depositForm.from?.id,
       })
       .then((res) => res)
       .catch((err) => {
         throw extractMultipleErrorFromResponse(err)
       })
       .finally(() => {
-        mutate(`/caesar/${withDrawForm?.from?.id}`, null, true)
+        mutate(`/caesar/${depositForm?.from?.id}`, null, true)
       })
   const { error, loading, response, submit } = useSubmitFormData({
     submitFunction,
@@ -91,12 +89,12 @@ const DepositTypeTransaction = ({
         <FormLabel>From Person</FormLabel>
         <ToCaesarAutoComplete
           onChange={(caesar) => {
-            setWithDrawForm((prev) => ({
+            setDepositForm((prev) => ({
               ...prev,
               from: caesar,
             }))
           }}
-          defaultValue={withDrawForm.from}
+          defaultValue={depositForm.from}
           disabled={!!from}
         />
 
@@ -105,12 +103,12 @@ const DepositTypeTransaction = ({
         <FormLabel>To Bank Account</FormLabel>
         <ToCaesarBankAutoComplete
           onChange={(caesarBank) => {
-            setWithDrawForm((prev) => ({
+            setDepositForm((prev) => ({
               ...prev,
               caesar_bank_from: caesarBank,
             }))
           }}
-          value={withDrawForm.caesar_bank_to}
+          value={depositForm.caesar_bank_to}
           disabled={!!caesar_bank_to}
         />
 
@@ -118,7 +116,7 @@ const DepositTypeTransaction = ({
           <Box my={2}>
             <FeesTransaction
               onChange={(bank_fees) => {
-                setWithDrawForm((prev) => ({
+                setDepositForm((prev) => ({
                   ...prev,
                   bank_fee: bank_fees,
                 }))
@@ -135,7 +133,7 @@ const DepositTypeTransaction = ({
           name="description"
           rows={3}
           onChange={(e) => {
-            setWithDrawForm((prev) => ({
+            setDepositForm((prev) => ({
               ...prev,
               description: e.target.value,
             }))
@@ -146,12 +144,12 @@ const DepositTypeTransaction = ({
         <FormLabel>Amount</FormLabel>
         <FormNumberField
           onChange={(value) => {
-            setWithDrawForm((prev) => ({
+            setDepositForm((prev) => ({
               ...prev,
               amount: value,
             }))
           }}
-          value={withDrawForm.amount}
+          value={depositForm.amount}
         />
 
         {/* <Box my={2} />
@@ -159,7 +157,7 @@ const DepositTypeTransaction = ({
         <AsDropDown
           // disabledKeys={['']}
           onChange={(e) => {
-            setWithDrawForm((prev) => ({
+            setDepositForm((prev) => ({
               ...prev,
               as: e.target.value,
             }))
