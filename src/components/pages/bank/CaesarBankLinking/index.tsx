@@ -10,20 +10,18 @@ import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import useNotification from '@src/utils/hooks/useNotification'
+import { Bank } from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { MouseEvent, useCallback, useState } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import useSubmitFormData from '@hooks/useSubmitFormData'
 
-type BankResponse = {
-  id: number
-  name: string
-  description: string
-}
+import SimpleAutoComplete from '@components/SimpleAutoComplete'
+import useSWR, { useSWRConfig } from 'swr'
 
 export default function CaesarBankLinking() {
   const [addBankModal, setAddBankModal] = useState<boolean>(false)
-  const [editBankModal, setEditBankModal] = useState<BankResponse | undefined>()
+  const [editBankModal, setEditBankModal] = useState<Bank | undefined>()
 
   const handleClose = useCallback(() => {
     if (addBankModal) {
@@ -91,27 +89,33 @@ export default function CaesarBankLinking() {
 const BanksTable = ({
   onRowClick,
 }: {
-  onRowClick?: (e: MouseEvent<HTMLElement>, data: BankResponse) => void
+  onRowClick?: (e: MouseEvent<HTMLElement>, data: Bank) => void
 }) => {
   const [paginateOptions, setPaginateOptions] = useState<PaginateFetchParameters>({
     page: 0,
     limit: 100,
   })
 
-  const { data, isValidating, error, mutate } = useSWR<
-    Paginated<{
-      id: number
-      name: string
-      description: string
-    }>
-  >('/cash-transfer/bank', (url) =>
-    axios
-      .get(url, {
-        params: {
-          ...paginateOptions,
-        },
-      })
-      .then((res) => res.data)
+  const { data, isValidating, error, mutate } = useSWR<Paginated<Bank>>(
+    '/cash-transfer/bank',
+    (url) =>
+      axios
+        .get(url, {
+          params: {
+            ...paginateOptions,
+          },
+        })
+        .then((res) => ({
+          metadata: res.data.metadata,
+          data: res.data.data.map((bank: Bank) =>
+            Object.entries(bank)
+              .filter(([key]) => !['created_at', 'deleted_at', 'updated_at'].includes(key))
+              .reduce(
+                (acc, [bankColumn, bankValue]) => ({ ...acc, [bankColumn]: bankValue }),
+                {} as Bank
+              )
+          ),
+        }))
   )
   const handleTableControls = (param: 'page' | 'limit') => (value: number) => {
     setPaginateOptions((prevState) => ({
@@ -149,8 +153,8 @@ const CreateOrUpdateBank = ({
   bankUpdateValues,
 }: // mutateFn,
 {
-  bankUpdateValues?: BankResponse
-  // mutateFn?: KeyedMutator<Paginated<BankResponse>>
+  bankUpdateValues?: Bank
+  // mutateFn?: KeyedMutator<Paginated<Bank>>
 }) => {
   const { mutate } = useSWRConfig()
   const theme: Theme = useTheme()
@@ -167,7 +171,7 @@ const CreateOrUpdateBank = ({
     const fetchFn = () => {
       if (bankUpdateValues) {
         return axios
-          .patch<BankResponse>(`cash-transfer/bank/${bankUpdateValues.id}`, formValues)
+          .patch<Bank>(`cash-transfer/bank/${bankUpdateValues.id}`, formValues)
           .then((res) => {
             dispatchNotif({
               type: NotificationTypes.SUCCESS,
@@ -199,27 +203,45 @@ const CreateOrUpdateBank = ({
       })
   }, [bankUpdateValues, dispatchNotif, formValues, mutate])
 
-  const handleDelete = useCallback(() => {
-    axios
-      .delete(`/cash-transfer/bank/${bankUpdateValues?.id}`)
-      .then((res) => {
-        dispatchNotif({
-          type: NotificationTypes.SUCCESS,
-          message: `Bank Deleted`,
-        })
-      })
-      .catch((err) => {
-        extractMultipleErrorFromResponse(err).forEach((msg) => {
+  const handleDelete = useCallback(
+    () =>
+      axios
+        .delete(
+          `/cash-transfer/bank/${bankUpdateValues?.id}?replacement_bank=${handleReplacementBankDeleteValue?.id}`
+        )
+        .then((res) => {
           dispatchNotif({
-            type: NotificationTypes.ERROR,
-            message: msg,
+            type: NotificationTypes.SUCCESS,
+            message: `Bank Deleted`,
           })
         })
-      })
-      .finally(() => {
-        mutate('/cash-transfer/bank', null, true)
-      })
-  }, [bankUpdateValues, dispatchNotif, mutate])
+        .catch((err) => {
+          extractMultipleErrorFromResponse(err).forEach((msg) => {
+            dispatchNotif({
+              type: NotificationTypes.ERROR,
+              message: msg,
+            })
+          })
+        })
+        .finally(() => {
+          mutate('/cash-transfer/bank', null, true)
+        }),
+    [bankUpdateValues, dispatchNotif, mutate]
+  )
+
+  const [handleDeleteModal, setHandleDeleteModal] = useState<boolean>(false)
+  const [handleReplacementBankDeleteValue, setHandleReplacementBankDeleteValue] = useState<
+    undefined | Bank
+  >()
+
+  const {
+    error,
+    loading: udpateLoading,
+    response,
+    submit,
+  } = useSubmitFormData({
+    submitFunction: handleDelete,
+  })
 
   return (
     <>
@@ -239,7 +261,9 @@ const CreateOrUpdateBank = ({
             style={{
               background: theme.palette.error.main,
             }}
-            onClick={handleDelete}
+            onClick={() => {
+              setHandleDeleteModal(true)
+            }}
           >
             Delete
           </AsyncButton>
@@ -247,6 +271,52 @@ const CreateOrUpdateBank = ({
         <AsyncButton onClick={handleSubmit} loading={loading}>
           Submit
         </AsyncButton>
+
+        {handleDeleteModal && (
+          <ModalWrapper
+            open={handleDeleteModal}
+            onClose={() => {
+              setHandleDeleteModal(false)
+            }}
+            containerSize="xs"
+          >
+            <Paper>
+              <Box p={2}>
+                <Typography variant="body2">Input Replacement Bank</Typography>
+                <SimpleAutoComplete
+                  fetcher={() =>
+                    axios
+                      .get('/cash-transfer/bank')
+                      .then(
+                        (res) =>
+                          res.data.data.filter(
+                            (ea: Bank) => bankUpdateValues?.id! !== ea.id
+                          ) as Bank[]
+                      )
+                  }
+                  getOptionLabel={(option) => option.name}
+                  onChange={(val) => {
+                    setHandleReplacementBankDeleteValue(val)
+                  }}
+                  initialQuery={undefined as undefined | string}
+                  querySetter={(arg, inputValue) => inputValue}
+                  getOptionSelected={(opt1, opt2) => opt1.id === opt2.id}
+                />
+                <Box my={2}>
+                  <Divider />
+                </Box>
+                <AsyncButton
+                  fullWidth
+                  onClick={submit}
+                  loading={udpateLoading}
+                  disabled={udpateLoading || !handleReplacementBankDeleteValue}
+                >
+                  Submit
+                </AsyncButton>
+              </Box>
+            </Paper>
+          </ModalWrapper>
+        )}
       </Box>
     </>
   )
