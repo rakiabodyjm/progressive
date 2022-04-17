@@ -3,7 +3,6 @@
 import { Box, ListItem, Paper, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
-import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import { formatIntoCurrency } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
@@ -21,9 +20,11 @@ import useSWR from 'swr'
 export default function CashTransferList({
   caesarId,
   caesarBankId,
+  loanId,
 }: {
   caesarId?: CaesarWalletResponse['id']
   caesarBankId?: CaesarBank['id']
+  loanId?: CashTransferResponse['id']
 }) {
   const [queryParameters, setQueryParameters] = useState<{
     page: number
@@ -36,15 +37,14 @@ export default function CashTransferList({
     data: cashTransfers,
     isValidating: loadingCashTransfers,
     error: errorCashTransfers,
-  } = useSWR(caesarId || caesarBankId ? ['/cash-transfer', queryParameters] : null, (url, params) =>
+  } = useSWR(caesarId || caesarBankId || loanId ? '/cash-transfer' : null, (url) =>
     axios
       .get(url, {
         params: {
-          ...params,
           caesar: caesarId,
           caesar_bank: caesarBankId,
-          //   caesar_bank_from: caesarBankId,
-          //   caesar_bank_to: caesarBankId,
+          loan: loanId,
+          ...queryParameters,
         },
       })
       .then((res) => res.data as Paginated<CashTransferResponse>)
