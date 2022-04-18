@@ -16,6 +16,7 @@ import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
 import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useCallback, useEffect, useState } from 'react'
+import { useSWRConfig } from 'swr'
 
 const TransferTypeTransaction = ({
   caesar_bank_from,
@@ -47,6 +48,8 @@ const TransferTypeTransaction = ({
   const [loading, setLoading] = useState<boolean>(false)
   const dispatchNotif = useNotification()
 
+  const { mutate } = useSWRConfig()
+
   const submitAsLoan = useCallback(
     () =>
       axios
@@ -59,6 +62,9 @@ const TransferTypeTransaction = ({
         .then((res) => res.data)
         .catch((err) => {
           throw extractMultipleErrorFromResponse(err)
+        })
+        .finally(() => {
+          mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
         }),
     [transferForm]
   )
@@ -109,6 +115,7 @@ const TransferTypeTransaction = ({
       })
       .finally(() => {
         setLoading(false)
+        mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
       })
   }, [transferForm, dispatchNotif, submit])
 
