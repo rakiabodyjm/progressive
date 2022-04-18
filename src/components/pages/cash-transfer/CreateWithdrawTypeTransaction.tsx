@@ -15,6 +15,7 @@ import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useSWRConfig } from 'swr'
 
 const WithDrawTypeTransaction = ({
   caesar_bank_from,
@@ -38,6 +39,7 @@ const WithDrawTypeTransaction = ({
     bank_fee: undefined,
     as: CashTransferAs.WITHDRAW,
   })
+  const { mutate } = useSWRConfig()
 
   const submitter = () =>
     axios
@@ -49,6 +51,9 @@ const WithDrawTypeTransaction = ({
       .then((res) => res.data)
       .catch((err) => {
         throw extractMultipleErrorFromResponse(err)
+      })
+      .finally(() => {
+        mutate(`/caesar/${withDrawForm?.caesar_bank_from?.caesar?.id}`, null, true)
       })
 
   const { error, loading, response, submit } = useSubmitFormData({
