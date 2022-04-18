@@ -2,13 +2,21 @@ import { Box, Typography } from '@material-ui/core'
 import SimpleAutoComplete, { SimpleAutoCompleteProps } from '@src/components/SimpleAutoComplete'
 import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
+import type { CaesarWalletResponse } from '@api/walletApi'
 
-const searchCaesarBank = (searchString?: string) =>
+const searchCaesarBank = (
+  searchString?: string,
+  additionalParams?: {
+    ceasar?: CaesarWalletResponse['id']
+    bank?: CaesarBank['id']
+  }
+) =>
   axios
     .get(`/cash-transfer/caesar-bank`, {
       ...(searchString && {
         params: {
           search: searchString,
+          ...additionalParams,
         },
       }),
     })
@@ -17,10 +25,14 @@ const searchCaesarBank = (searchString?: string) =>
 const ToCaesarBankAutoComplete = ({
   filter,
   onChange,
+  additionalParams,
   ...restProps
 }: {
   filter?: (param: CaesarBank[]) => CaesarBank[]
   onChange: (arg: CaesarBank) => void
+  additionalParams?: {
+    ceasar: CaesarWalletResponse['id']
+  }
 } & Partial<SimpleAutoCompleteProps<CaesarBank, string | undefined>>) => (
   <SimpleAutoComplete<CaesarBank, string | undefined>
     initialQuery={undefined}
