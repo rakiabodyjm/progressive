@@ -31,6 +31,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   formatTitle,
   renderCell,
   paperProps,
+  hidePagination,
   // renderRow,
   ...restProps
 }: {
@@ -45,6 +46,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   formatTitle?: Partial<Record<keyof T, string>>
   renderCell?: Partial<Record<keyof T, (value: T[keyof T]) => JSX.Element>>
   paperProps?: PaperProps
+  hidePagination?: true
   /**
    * Render row according to override
    * Must include cells
@@ -161,19 +163,21 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[50, 100, 250, 500]}
-        count={total}
-        rowsPerPage={limit}
-        page={page}
-        onPageChange={(_, page) => {
-          setPage(page)
-        }}
-        onRowsPerPageChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-          setLimit(Number(e.target.value))
-        }}
-        component="div"
-      />
+      {!hidePagination && (
+        <TablePagination
+          rowsPerPageOptions={[50, 100, 250, 500]}
+          count={total}
+          rowsPerPage={limit}
+          page={page}
+          onPageChange={(_, page) => {
+            setPage(page)
+          }}
+          onRowsPerPageChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            setLimit(Number(e.target.value))
+          }}
+          component="div"
+        />
+      )}
     </Box>
   )
 }
