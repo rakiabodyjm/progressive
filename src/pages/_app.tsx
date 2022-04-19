@@ -14,7 +14,6 @@ import { getUser, logoutUser } from '@src/redux/data/userSlice'
 import { ThemeProvider } from '@material-ui/styles'
 import { ColorSchemeTypes, setColorScheme } from '@src/redux/data/colorSchemeSlice'
 import { useRouter } from 'next/router'
-import useNotification from '@src/utils/hooks/useNotification'
 import { nanoid } from '@reduxjs/toolkit'
 import { AppProps } from 'next/dist/shared/lib/router/router'
 // import { getDefaultCaesar } from '@src/redux/data/currentCaesarSlice'
@@ -22,7 +21,6 @@ import RouteGuard from '@src/components/RouteGuard'
 import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
-const CashTransfer = dynamic(() => import(`@src/pages/admin/topup`))
 const LoginExtensionModal = dynamic(() => import(`@src/components/LoginExtensionModal`))
 const ModalWrapper = dynamic(() => import(`@src/components/ModalWrapper`))
 
@@ -124,12 +122,11 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
         <CssBaseline />
         <SnackbarProvider maxSnack={10}>
           <Notification />
-
-          {isAuthenticated && !router.pathname.split('/').includes('register') ? (
+          {isAuthenticated ? (
             <NavigationLayout>
               <RouteGuard Component={Component} pageProps={pageProps} />
             </NavigationLayout>
-          ) : router.pathname.split('/').includes('register') ? (
+          ) : /\/register\/*/.test(router.pathname) ? (
             <Registration />
           ) : (
             <Login />
