@@ -4,6 +4,7 @@ import {
   Divider,
   Grid,
   Paper,
+  TablePagination,
   TextField,
   Typography,
   useTheme,
@@ -15,7 +16,6 @@ import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import CaesarBankLinking from '@src/components/pages/bank/CaesarBankLinking'
 import RoleBadge from '@src/components/RoleBadge'
-import SearchCaesarTable from '@src/components/SearchCaesarTable'
 import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
@@ -32,7 +32,7 @@ import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
@@ -55,7 +55,7 @@ export default function CaesarIndexPage() {
     (param: keyof typeof query) => (value: typeof query[keyof typeof query]) => {
       setQuery((prev) => ({
         ...prev,
-        param: value,
+        [param]: value,
       }))
     },
     []
@@ -77,7 +77,7 @@ export default function CaesarIndexPage() {
     () =>
       searchWalletV2(query).then(async (res) => ({
         metadata: res.metadata,
-        data: await formatter(res.data),
+        data: formatter(res.data),
       })),
     [query, formatter]
   )
@@ -104,6 +104,7 @@ export default function CaesarIndexPage() {
     }
   }, [user])
   const theme = useTheme()
+
   if (error) {
     return <ErrorLoading />
   }
@@ -185,52 +186,31 @@ export default function CaesarIndexPage() {
                               },
                             })
                           }}
+                          hidePagination
                         />
                       </div>
                     ))}
 
-                  {/* <UsersTable
-                    data={caesars}
-                    limit={query.limit!}
-                    page={query.page!}
-                    setLimit={setQueryState('limit')}
-                    setPage={setQueryState('page')}
-                    total={ceasarMetaData?.total || 0}
-                    hiddenFields={['id']}
-                    onRowClick={(e, data) => {
-                      const id = (data as { id: string })?.id
-                      router.push({
-                        pathname: '/cash-transfer/[id]',
-                        query: {
-                          id,
-                        },
-                      })
+                  <TablePagination
+                    rowsPerPageOptions={[50, 100, 250, 500]}
+                    count={ceasarMetaData?.total || 0}
+                    rowsPerPage={query?.limit || 0}
+                    page={query?.page || 0}
+                    onPageChange={(_, page) => {
+                      // setPage(page)
+                      setQueryState('page')(page)
                     }}
-                  /> */}
+                    onRowsPerPageChange={(
+                      e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                    ) => {
+                      setQueryState('limit')(Number(e.target.value))
+                    }}
+                    component="div"
+                  />
                 </Box>
               )}
             </Box>
           </Paper>
-          {/* <SearchCaesarTable
-            buttonTrigger={caesarButtonTrigger}
-            customWalletFormat={(param: Partial<CaesarWalletResponse>[]) =>
-              param.map(({ id, description, account_type, ceasar_id, data }) => ({
-                id,
-                description,
-                account_type,
-                // caesar_coin: data?.caesar_coin,
-              }))
-            }
-            onRowClick={(e, data) => {
-              const id = (data as { id: string })?.id
-              router.push({
-                pathname: '/cash-transfer/[id]',
-                query: {
-                  id,
-                },
-              })
-            }}
-          /> */}
         </Box>
       </Paper>
 
