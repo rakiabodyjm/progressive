@@ -4,6 +4,9 @@ export type Bank = {
   id: number
   name: string
   description: string
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date
 }
 
 export type CaesarBank = {
@@ -12,6 +15,10 @@ export type CaesarBank = {
   bank: Bank
   description: string
   balance: number
+
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date
 }
 
 export type TransferType = {
