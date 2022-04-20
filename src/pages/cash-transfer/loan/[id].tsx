@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable react/no-unescaped-entities */
 import {
   Box,
   Button,
@@ -6,8 +8,10 @@ import {
   Grid,
   Grow,
   IconButton,
+  Link,
   Paper,
   Theme,
+  Tooltip,
   Typography,
 } from '@material-ui/core'
 import { CloseOutlined, MonetizationOn } from '@material-ui/icons'
@@ -15,13 +19,16 @@ import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import CashTransferList from '@src/components/pages/cash-transfer/CashTransferList'
+import LoanPaymentTypeTransaction from '@src/components/pages/cash-transfer/CreateLoanPaymentTypeTransaction'
 import RoleBadge from '@src/components/RoleBadge'
 import { formatIntoCurrency, formatIntoReadableDate } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
+import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 export default function ViewLoanPage() {
@@ -34,7 +41,10 @@ export default function ViewLoanPage() {
     isValidating: cashTransferLoading,
     error: cashTransferError,
   } = useSWR(id ? `/cash-transfer/${id}` : undefined, (url) =>
-    axios.get(url).then((res) => res.data as CashTransferResponse)
+    axios
+      .get(url)
+      .then((res) => res.data as CashTransferResponse)
+      .then(async (res) => fetchCashTransferWithCompleteCaesar(res))
   )
 
   const {
@@ -52,10 +62,11 @@ export default function ViewLoanPage() {
     data: loanPayments,
     isValidating: loanPaymentsLoading,
     error: loanPaymentsError,
-  } = useSWR<CashTransferResponse[]>(
-    cashTransferData?.id && id ? `/cash-transfer/${id}?loan=${cashTransferData?.id}` : undefined,
-    (url) => axios.get(url).then((res) => res.data)
+  } = useSWR(
+    cashTransferData?.id && id ? `/cash-transfer?loan=${cashTransferData?.id}` : undefined,
+    (url) => axios.get(url).then((res) => res.data as Paginated<CashTransferResponse>)
   )
+
   useEffect(() => {
     if (cashTransferError) {
       console.log(cashTransferError)
@@ -67,8 +78,8 @@ export default function ViewLoanPage() {
 
   const paidAmount = useMemo(
     () =>
-      loanPayments && loanPayments.length > 0
-        ? loanPayments.reduce((acc, ea) => acc + ea.total_amount, 0)
+      loanPayments && loanPayments?.data.length > 0
+        ? loanPayments?.data.reduce((acc, ea) => acc + ea.total_amount, 0)
         : 0,
     [loanPayments]
   )
@@ -141,7 +152,7 @@ export default function ViewLoanPage() {
                     <Typography variant="h6">
                       {formatIntoCurrency(cashTransferData?.amount || 0)}
                     </Typography>
-                    {cashTransferData?.bank_charge && (
+                    {!!cashTransferData?.bank_charge && (
                       <>
                         <Typography
                           style={{
@@ -195,88 +206,114 @@ export default function ViewLoanPage() {
                         </Typography>
                       </>
                     )}
+                    <Box my={2} />
                     {cashTransferData?.total_amount && (
-                      <>
+                      <Box textAlign="right">
                         <Typography
                           style={{
                             marginBottom: -8,
                             display: 'block',
                           }}
-                          variant="caption"
+                          variant="body2"
                           color="primary"
                         >
                           Loan Payable:
                         </Typography>
-                        <Typography variant="h6">
-                          {formatIntoCurrency(cashTransferData.total_amount)}
+                        <Typography
+                          style={{
+                            fontWeight: 600,
+                          }}
+                          variant="h4"
+                        >
+                          {formatIntoCurrency(cashTransferData.total_amount - paidAmount)}
                           {/* {formatIntoCurrency(cashTransferData?.bank_charge)} */}
                         </Typography>
-                      </>
+                      </Box>
+                    )}
+                  </Box>
+                </Paper>
+                <Box my={2} />
+                <Paper variant="outlined">
+                  <Box p={2}>
+                    <Typography variant="h6">Payments Made</Typography>
+                    <Box my={2} />
+                    <FormLabel>Total: </FormLabel>
+                    <Typography variant="body1">{formatIntoCurrency(paidAmount)}</Typography>
+                    <Box my={2}>
+                      <Divider />
+                    </Box>
+                    {cashTransferLoading && !id ? (
+                      <LoadingScreen2 />
+                    ) : (
+                      <CashTransferList loanId={id as string} />
                     )}
                   </Box>
                 </Paper>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Paper>
-                  <Box p={2}>
-                    {!openRecordPayment && (
-                      <Button
-                        style={{
-                          padding: `8px 24px`,
-                          // display: transactionModal.transactionSelected ? 'none' : undefined,
-                        }}
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        onClick={() => {
-                          setOpenRecordPayment((prev) => true)
-                        }}
-                      >
-                        <Typography
-                          style={{
-                            fontWeight: 700,
-                          }}
-                          variant="body1"
-                        >
-                          RECORD PAYMENT
-                        </Typography>
-                        <Box ml={1} />
-                        <MonetizationOn />
-                      </Button>
-                    )}
-
-                    {openRecordPayment}
-                    <Grow
+                {/* <Paper> */}
+                <Box>
+                  {!openRecordPayment && (
+                    <Button
                       style={{
-                        display: openRecordPayment ? undefined : 'none',
+                        padding: `8px 24px`,
+                        // display: transactionModal.transactionSelected ? 'none' : undefined,
                       }}
-                      // unmountOnExit
-                      in={openRecordPayment && cashTransferData && true}
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={() => {
+                        setOpenRecordPayment((prev) => true)
+                      }}
                     >
-                      <Box position="relative">
-                        <Box
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            width: '100%',
-                          }}
-                          textAlign="end"
-                        >
-                          <IconButton
-                            onClick={() => {
-                              setOpenRecordPayment(false)
-                            }}
-                          >
-                            <CloseOutlined />
-                          </IconButton>
-                        </Box>
-                        <CreateLoanPayment cash_transfer={cashTransferData!} />
-                      </Box>
-                    </Grow>
-                  </Box>
-                </Paper>
+                      <Typography
+                        style={{
+                          fontWeight: 700,
+                        }}
+                        variant="body1"
+                      >
+                        RECORD PAYMENT
+                      </Typography>
+                      <Box ml={1} />
+                      <MonetizationOn />
+                    </Button>
+                  )}
 
-                <pre>{JSON.stringify(cashTransferData, null, 2)}</pre>
+                  <Grow
+                    style={{
+                      display: openRecordPayment ? undefined : 'none',
+                    }}
+                    // unmountOnExit
+                    in={openRecordPayment && cashTransferData && true}
+                  >
+                    <Paper variant="outlined">
+                      <Box p={2}>
+                        <Box position="relative">
+                          <Box
+                            style={{
+                              position: 'absolute',
+                              top: 0,
+                              width: '100%',
+                            }}
+                            textAlign="end"
+                          >
+                            <IconButton
+                              onClick={() => {
+                                setOpenRecordPayment(false)
+                              }}
+                            >
+                              <CloseOutlined />
+                            </IconButton>
+                          </Box>
+                          {cashTransferData && openRecordPayment && (
+                            <LoanPaymentTypeTransaction cash_transfer={cashTransferData!} />
+                          )}
+                        </Box>
+                      </Box>
+                    </Paper>
+                  </Grow>
+                </Box>
+                {/* </Paper> */}
               </Grid>
             </Grid>
           </Box>
@@ -286,30 +323,27 @@ export default function ViewLoanPage() {
   )
 }
 
-const CreateLoanPayment = ({
-  cash_transfer,
-}: {
-  // /**
-  //  *caeasr account of the debtor
-  //  */
-  // caesar: CaesarWalletResponse['id']
-  cash_transfer: CashTransferResponse
-}) => {
-  const [formValues, setFormValues] = useState({
-    caesar_bank_from: undefined,
-  })
-  return (
-    <>
-      <Box>
-        <Typography variant="h4">Loan Payment</Typography>
-        <Typography variant="body2" color="textSecondary">
-          Record payment to this Loan
-        </Typography>
-        <Box my={2}>
-          <Divider />
-        </Box>
-        <FormLabel>From Caesar's Bank Account</FormLabel>
-      </Box>
-    </>
-  )
+const fetchCashTransferWithCompleteCaesar = async (cashTransferProps: CashTransferResponse) => {
+  const [from, to] = await axios.all([
+    axios
+      .get(`/caesar/${cashTransferProps?.from?.id || cashTransferProps.caesar_bank_from.caesar.id}`)
+      .then((res) => res.data),
+    axios
+      .get(`/caesar/${cashTransferProps?.to?.id || cashTransferProps.caesar_bank_to}`)
+      .then((res) => res.data),
+  ])
+
+  return {
+    ...cashTransferProps,
+    caesar_bank_from: {
+      ...cashTransferProps.caesar_bank_from,
+      caesar: from,
+    },
+    caesar_bank_to: {
+      ...cashTransferProps.caesar_bank_to,
+      caesar: to,
+    },
+    from,
+    to,
+  } as CashTransferResponse
 }
