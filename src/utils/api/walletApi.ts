@@ -59,6 +59,8 @@ export interface CaesarWalletResponse {
   cash_transfer_balance: number
 
   bank_accounts: CaesarBank[]
+
+  has_loan: boolean
 }
 
 export function createWallet(
