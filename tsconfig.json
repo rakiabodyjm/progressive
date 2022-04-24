@@ -19,7 +19,8 @@
       "@public/*": ["./public/*"],
       "@components/*": ["./src/components/*"],
       "@api/*": ["./src/utils/api/*"],
-      "@hooks/*": ["./src/utils/hooks/*"]
+      "@hooks/*": ["./src/utils/hooks/*"],
+      "@utils/*": ["./src/utils/*"]
     },
     "incremental": true
   },
