@@ -10,11 +10,12 @@ export type Bank = {
 }
 
 export type CaesarBank = {
-  id: number
+  id: string
   caesar: CaesarWalletResponse
   bank: Bank
   description: string
   balance: number
+  account_number: string
 
   created_at: Date
   updated_at: Date
