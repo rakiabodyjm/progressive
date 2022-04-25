@@ -54,6 +54,7 @@ const WithDrawTypeTransaction = ({
       })
       .finally(() => {
         mutate(`/caesar/${withDrawForm?.caesar_bank_from?.caesar?.id}`, null, true)
+        mutate(`/cash-transfer/caesar-bank/${withDrawForm?.caesar_bank_from?.id}`, null, true)
       })
 
   const { error, loading, response, submit } = useSubmitFormData({
@@ -157,10 +158,10 @@ const WithDrawTypeTransaction = ({
           }}
           value={withDrawForm.amount}
         />
-
+        {/* 
         <Box my={2} />
         <FormLabel>Type</FormLabel>
-        {/* <AsDropDown
+        <AsDropDown
           onChange={(e) => {
             setWithDrawForm((prev) => ({
               ...prev,
