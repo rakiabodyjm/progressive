@@ -2,6 +2,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
   Divider,
   Grid,
@@ -9,6 +10,7 @@ import {
   List,
   Paper,
   Theme,
+  Tooltip,
   Typography,
 } from '@material-ui/core'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
@@ -18,8 +20,15 @@ import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { useMemo, useState } from 'react'
-import { CloseOutlined, ErrorOutline, MonetizationOn } from '@material-ui/icons'
+import { useMemo, useRef, useState } from 'react'
+import {
+  Close,
+  CloseOutlined,
+  Edit,
+  ErrorOutline,
+  MonetizationOn,
+  MoreVert,
+} from '@material-ui/icons'
 import useSWR from 'swr'
 import CashTransferForm from '@src/components/pages/cash-transfer/CashTransferForm'
 import { useSelector } from 'react-redux'
@@ -28,6 +37,9 @@ import RoleBadge from '@src/components/RoleBadge'
 import { useTheme } from '@material-ui/styles'
 import CashTransferList from '@src/components/pages/cash-transfer/CashTransferList'
 import { formatIntoCurrency } from '@src/utils/api/common'
+import { PopUpMenu } from '@src/components/PopUpMenu'
+import ModalWrapper from '@components/ModalWrapper'
+import CreateOrUpdateCaesarBank from '@components/pages/cash-transfer/CreateOrUpdateCaesarBank'
 
 /**
  *
@@ -85,6 +97,16 @@ export default function ViewCaesarBankPage() {
 
   const { transactionSelected } = transactionModal
   const theme: Theme = useTheme()
+
+  const [editMenu, setEditMenu] = useState<{
+    modal: HTMLButtonElement | undefined
+    editMode: boolean
+  }>({
+    modal: undefined,
+    editMode: false,
+  })
+
+  const editAnchorElement = useRef<HTMLButtonElement | undefined>()
 
   if (ceasarError || caesarBankError) {
     return <ErrorLoading />
@@ -148,16 +170,71 @@ export default function ViewCaesarBankPage() {
                   <Box p={2}>
                     {caesarBankData && caesarData ? (
                       <>
-                        <RoleBadge disablePopUp variant="body1" color="primary">
-                          {caesarData.description}
-                        </RoleBadge>
-                        <Typography variant="h4">
-                          <Typography color="primary" component="span" variant="h4">
-                            {caesarBankData.bank.name}
-                          </Typography>{' '}
-                          Transactions
-                        </Typography>
-                        <Typography variant="body2">{caesarBankData.description}</Typography>
+                        <Box display="flex" justifyContent="space-between">
+                          <Box>
+                            <RoleBadge disablePopUp variant="body1" color="primary">
+                              {caesarData.description}
+                            </RoleBadge>
+                            <Typography variant="h4">
+                              <Typography color="primary" component="span" variant="h4">
+                                {caesarBankData.bank.name}
+                              </Typography>{' '}
+                              Transactions
+                            </Typography>
+                            <Typography variant="body2">{caesarBankData.description}</Typography>
+                          </Box>
+                          <Box>
+                            <Tooltip
+                              arrow
+                              placement="left"
+                              title={<Typography variant="body1">Edit Account</Typography>}
+                            >
+                              <IconButton
+                                onClick={(e) => {
+                                  setEditMenu((prev) => ({
+                                    ...prev,
+                                    modal: editAnchorElement.current,
+                                  }))
+                                }}
+                                innerRef={editAnchorElement}
+                              >
+                                <MoreVert />
+                              </IconButton>
+                            </Tooltip>
+                            <PopUpMenu
+                              menuItems={[
+                                {
+                                  text: 'Edit',
+                                  Component: <Edit />,
+                                  action: () => {
+                                    setEditMenu((prev) => ({
+                                      ...prev,
+                                      editMode: true,
+                                    }))
+                                    // setEditMode((prevState) => !prevState)
+                                    // setEditPopUpMenuOpen(false)
+                                  },
+                                },
+                              ]}
+                              open={!!editMenu.modal}
+                              // anchorEl={(editMenu?.modal as HTMLButtonElement) | undefined}
+                              anchorEl={editAnchorElement.current}
+                              onClose={() => {
+                                setEditMenu((prev) => ({
+                                  ...prev,
+                                  modal: undefined,
+                                }))
+                                // setEditPopUpMenuOpen((prevState) => !prevState)
+                              }}
+                              autoFocus
+                              transformOrigin={{
+                                horizontal: 'right',
+                                vertical: 'top',
+                              }}
+                            />
+                          </Box>
+                        </Box>
+
                         <Typography
                           style={{
                             marginTop: 16,
@@ -284,6 +361,19 @@ export default function ViewCaesarBankPage() {
                  *
                  * New Transaction Modal
                  */}
+                {editMenu.editMode && (
+                  <EditCaesarBankModal
+                    open={editMenu.editMode}
+                    onClose={() => {
+                      setEditMenu((prev) => ({
+                        ...prev,
+                        editMode: false,
+                      }))
+                    }}
+                    caesarBankId={id as string}
+                  />
+                )}
+
                 <CreateNewTransactionModal
                   open={transactionModal.transactionModalOpen}
                   onClose={() => {
@@ -313,6 +403,70 @@ export default function ViewCaesarBankPage() {
   )
 }
 
+const EditCaesarBankModal = ({
+  open,
+  onClose,
+  caesarBankId,
+}: {
+  open: boolean
+  onClose: () => void
+  caesarBankId: CaesarBank['id']
+}) => {
+  const {
+    data: caesarBank,
+    error,
+    isValidating: loading,
+    mutate,
+  } = useSWR<CaesarBank>(`/cash-transfer/caesar-bank/${caesarBankId}`, (url) =>
+    axios.get(url).then((res) => res.data)
+  )
+
+  return (
+    <ModalWrapper onClose={onClose} open={open} containerSize="xs">
+      <Paper
+        style={{
+          padding: 16,
+        }}
+      >
+        {loading && caesarBank ? (
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+              <Box>
+                <Typography variant="h6">Update Bank Account</Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Update this Caesar's Bank Account
+                </Typography>
+              </Box>
+
+              <IconButton onClick={onClose}>
+                <Close />
+              </IconButton>
+            </Box>
+            <Box my={2}>
+              <Divider />
+            </Box>
+
+            <CreateOrUpdateCaesarBank
+              caesar={caesarBank!.caesar.id}
+              mutate={mutate}
+              updateValues={{
+                account_number: caesarBank?.account_number,
+                bank: caesarBank?.bank.id,
+                caesar: caesarBank?.caesar.id,
+                description: caesarBank?.description,
+              }}
+              updateValueId={caesarBankId}
+            />
+          </>
+        )}
+      </Paper>
+    </ModalWrapper>
+  )
+}
 // type CreateTransaction = {
 // caesar_bank_to:  CaesarBank
 
