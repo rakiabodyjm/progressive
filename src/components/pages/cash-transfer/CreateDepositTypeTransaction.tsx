@@ -50,6 +50,7 @@ const DepositTypeTransaction = ({
       })
       .finally(() => {
         mutate(`/caesar/${depositForm?.from?.id}`, null, true)
+        mutate(`/cash-transfer/caesar-bank/${caesar_bank_to?.id}`, null, true)
       })
   const { error, loading, response, submit } = useSubmitFormData({
     submitFunction,
@@ -95,7 +96,6 @@ const DepositTypeTransaction = ({
             }))
           }}
           defaultValue={depositForm.from}
-          disabled={!!from}
         />
 
         <Box my={2} />
@@ -108,7 +108,7 @@ const DepositTypeTransaction = ({
               caesar_bank_from: caesarBank,
             }))
           }}
-          value={depositForm.caesar_bank_to}
+          defaultValue={depositForm.caesar_bank_to}
           disabled={!!caesar_bank_to}
         />
 
