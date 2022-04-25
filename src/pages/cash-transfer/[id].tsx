@@ -13,19 +13,17 @@ import {
 import { grey } from '@material-ui/core/colors'
 import { AddCircleOutlined, CloseOutlined } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
-import AsyncButton from '@src/components/AsyncButton'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
-import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
+import CreateOrUpdateCaesarBank from '@src/components/pages/cash-transfer/CreateOrUpdateCaesarBank'
 import RoleBadge from '@src/components/RoleBadge'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { getUser } from '@src/utils/api/userApi'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
-import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
 import { Bank, CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
@@ -33,13 +31,7 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import useSWR, { KeyedMutator } from 'swr'
-
-type CreateCaesarBank = {
-  caesar: string
-  bank: number
-  description?: string
-}
+import useSWR from 'swr'
 
 const caesarFetcher = (id: string) => () => getWalletById(id)
 
@@ -195,7 +187,7 @@ export default function ViewCaesarPage() {
                         </Grid>
                       </ListItem>
                       {caesarBanks && caesarBanks?.length > 0 ? (
-                        caesarBanks.map(({ id, bank, description, balance }) => (
+                        caesarBanks.map(({ id, bank, description, balance, account_number }) => (
                           <ListItem
                             key={id}
                             style={{
@@ -227,6 +219,18 @@ export default function ViewCaesarPage() {
                                 >
                                   {bank.name}
                                 </Typography>
+                                {account_number && (
+                                  <>
+                                    <Typography
+                                      variant="caption"
+                                      color="textSecondary"
+                                      component="span"
+                                    >
+                                      {account_number}
+                                    </Typography>
+                                  </>
+                                )}
+
                                 <Typography variant="body2">{description || ''}</Typography>
                               </Grid>
                               <Grid item xs={4}>
@@ -275,7 +279,7 @@ export default function ViewCaesarPage() {
           <Box p={2}>
             <Box display="flex" justifyContent="space-between">
               <Box>
-                <Typography variant="h6">Add New Bank</Typography>
+                <Typography variant="h6">Add New Bank Account</Typography>
                 <Typography variant="body2" color="textSecondary">
                   Add a Bank to Link to this Caesar
                 </Typography>
@@ -289,7 +293,7 @@ export default function ViewCaesarPage() {
             <Box my={2}>
               <Divider />
             </Box>
-            <AddCaesarBank mutate={mutateCaesarBanks} caesar={id as string} />
+            <CreateOrUpdateCaesarBank mutate={mutateCaesarBanks} caesar={id as string} />
           </Box>
         </Paper>
       </ModalWrapper>
@@ -297,116 +301,6 @@ export default function ViewCaesarPage() {
   )
 }
 
-const AddCaesarBank = ({
-  caesar,
-  mutate,
-}: {
-  caesar: string
-  mutate: KeyedMutator<Paginated<CaesarBank>>
-}) => {
-  const [formValues, setFormValues] = useState<Partial<Omit<CreateCaesarBank, 'id'>>>({
-    bank: undefined,
-    caesar,
-    description: undefined,
-  })
-
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const dispatchSuccess = useSuccessNotification()
-  const dispatchError = useErrorNotification()
-
-  const handleSubmit = () => {
-    setIsSubmitting(true)
-    axios
-      .post('/cash-transfer/caesar-bank', {
-        ...formValues,
-      })
-      .then((res) => {
-        dispatchSuccess(`Caesar Bank Created`)
-      })
-      .catch((err) => {
-        extractMultipleErrorFromResponse(err).forEach((ea) => {
-          dispatchError(ea)
-        })
-      })
-      .finally(() => {
-        setIsSubmitting(false)
-        mutate()
-      })
-  }
-
-  return (
-    <>
-      <FormLabel>Caesar</FormLabel>
-      <FormTextField
-        name="caesar"
-        onChange={(e) => {
-          setFormValues((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-          }))
-        }}
-        value={caesar}
-        disabled
-      />
-      <Box my={1} />
-
-      <FormLabel>Bank</FormLabel>
-      <SimpleAutoComplete<
-        Bank,
-        {
-          page: number
-          limit: number
-          search: string
-        }
-      >
-        initialQuery={{ limit: 100, page: 0, search: '' }}
-        fetcher={(q) =>
-          axios
-            .get('/cash-transfer/bank', {
-              params: {
-                ...q,
-              },
-            })
-            .then((res) => res.data.data)
-        }
-        querySetter={(arg, inputValue) => ({
-          ...arg,
-          search: inputValue,
-        })}
-        getOptionLabel={(option) =>
-          `${option.name}  ${option?.description && ` - ${option?.description}`}`
-        }
-        onChange={(value) => {
-          setFormValues((prev) => ({
-            ...prev,
-            bank: value?.id || undefined,
-          }))
-        }}
-        getOptionSelected={(val1, val2) => val1.id === val2.id}
-        // defaultValue={}
-      />
-      <Box my={1} />
-      <FormLabel>Description</FormLabel>
-      <FormTextField
-        name="description"
-        onChange={(e) => {
-          setFormValues((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-          }))
-        }}
-      />
-      <Box my={2}>
-        <Divider />
-      </Box>
-      <Box display="flex" justifyContent="flex-end">
-        <AsyncButton onClick={handleSubmit} disabled={isSubmitting} loading={isSubmitting}>
-          Submit
-        </AsyncButton>
-      </Box>
-    </>
-  )
-}
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   const getWallet = await getWalletById(context?.params?.id as string)
 
