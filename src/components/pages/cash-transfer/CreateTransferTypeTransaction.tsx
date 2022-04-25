@@ -65,6 +65,12 @@ const TransferTypeTransaction = ({
         })
         .finally(() => {
           mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
+          if (caesar_bank_from?.id) {
+            mutate(`/cash-transfer/caesar-bank/${caesar_bank_from.id}`, null, true)
+          }
+          if (caesar_bank_to?.id) {
+            mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
+          }
         }),
     [transferForm]
   )
