@@ -7,7 +7,10 @@ import FormTextField from '@src/components/FormTextField'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import FeesTransaction from '@src/components/pages/cash-transfer/FeesTransactionForm'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
-import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
+import ToCaesarBankAutoComplete, {
+  searchCaesarBank,
+} from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
+import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
@@ -34,14 +37,16 @@ const TransferTypeTransaction = ({
     bank_fee?: number
     caesar_bank_to?: CaesarBank
     to?: CaesarWalletResponse
+    message?: string
   }>({
     amount: undefined,
     caesar_bank_from,
     caesar_bank_to,
     description: undefined,
-    as: undefined,
+    as: CashTransferAs.TRANSFER,
     bank_fee: undefined,
     to: undefined,
+    message: undefined,
   })
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
@@ -72,7 +77,7 @@ const TransferTypeTransaction = ({
             mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
           }
         }),
-    [transferForm]
+    [transferForm, caesar_bank_from?.caesar?.id, caesar_bank_from?.id, caesar_bank_to?.id, mutate]
   )
   const {
     error,
@@ -84,7 +89,8 @@ const TransferTypeTransaction = ({
   })
 
   const handleSubmit = useCallback(() => {
-    const { caesar_bank_from, amount, as, description, bank_fee, to, caesar_bank_to } = transferForm
+    const { caesar_bank_from, amount, as, description, bank_fee, to, caesar_bank_to, message } =
+      transferForm
     const formValues = {
       amount,
       caesar_bank_from: caesar_bank_from?.id,
@@ -93,6 +99,7 @@ const TransferTypeTransaction = ({
       as,
       description,
       bank_fee,
+      message,
     }
 
     setLoading(true)
@@ -123,7 +130,7 @@ const TransferTypeTransaction = ({
         setLoading(false)
         mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
       })
-  }, [transferForm, dispatchNotif, submit])
+  }, [transferForm, dispatchNotif, submit, mutate])
 
   useEffect(() => {
     setLoading(loanLoading)
@@ -186,7 +193,6 @@ const TransferTypeTransaction = ({
         ) : (
           <>
             <FormLabel>To Another Bank Account</FormLabel>
-
             <ToCaesarBankAutoComplete
               onChange={(caesarBank: CaesarBank) => {
                 setTransferForm((prev) => ({
@@ -195,13 +201,15 @@ const TransferTypeTransaction = ({
                   to: undefined,
                 }))
               }}
-              filter={(args) =>
-                args.filter((ea) =>
+              filter={(args) => {
+                const retunrObject = args.filter((ea) =>
                   transferForm.caesar_bank_from?.id
                     ? transferForm.caesar_bank_from.id !== ea.id
                     : ea
                 )
-              }
+
+                return retunrObject
+              }}
               defaultValue={transferForm?.caesar_bank_to || undefined}
               disabled={!!caesar_bank_to}
             />
@@ -261,11 +269,26 @@ const TransferTypeTransaction = ({
         <FormTextField
           multiline
           name="description"
-          rows={3}
+          rows={2}
           onChange={(e) => {
             setTransferForm((prev) => ({
               ...prev,
               description: e.target.value,
+            }))
+          }}
+        />
+
+        <Box my={2} />
+
+        <FormLabel>Message To Receiver</FormLabel>
+        <FormTextField
+          multiline
+          name="message"
+          rows={3}
+          onChange={(e) => {
+            setTransferForm((prev) => ({
+              ...prev,
+              message: e.target.value,
             }))
           }}
         />
@@ -281,10 +304,9 @@ const TransferTypeTransaction = ({
           }}
           value={transferForm.amount}
         />
-
         <Box my={2} />
 
-        <FormLabel>Transaction Type:</FormLabel>
+        {/* <FormLabel>Transaction Type:</FormLabel>
         <AsDropDown
           disabledKeys={['WITHDRAW', 'DEPOSIT', 'LOAN PAYMENT']}
           onChange={(e) => {
@@ -293,7 +315,7 @@ const TransferTypeTransaction = ({
               as: e.target.value as CashTransferAs,
             }))
           }}
-        />
+        /> */}
 
         {/* <Box my={2} />
         {transferForm?.as === CashTransferAs['LOAN PAYMENT'] && <>
