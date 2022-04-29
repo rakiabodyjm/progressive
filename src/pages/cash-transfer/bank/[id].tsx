@@ -17,7 +17,7 @@ import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import CreateNewTransactionModal from '@src/components/pages/cash-transfer/CreateNewTransactionModal'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
-import { CaesarBank } from '@src/utils/types/CashTransferTypes'
+import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useMemo, useRef, useState } from 'react'
@@ -87,7 +87,7 @@ export default function ViewCaesarBankPage() {
 
   const [transactionModal, setTransactionModal] = useState<{
     transactionModalOpen: boolean
-    transactionSelected?: 'withdraw' | 'transfer' | 'deposit'
+    transactionSelected?: CashTransferAs
   }>({
     transactionModalOpen: false,
     transactionSelected: undefined,
@@ -322,15 +322,18 @@ export default function ViewCaesarBankPage() {
                     </Box>
                     {transactionSelected && (
                       <CashTransferForm
-                        {...(transactionSelected === 'transfer' && {
+                        {...(transactionSelected === CashTransferAs.TRANSFER && {
                           caesar_bank_from: caesarBankData,
                         })}
-                        {...(transactionSelected === 'withdraw' && {
+                        {...(transactionSelected === CashTransferAs.WITHDRAW && {
                           caesar_bank_from: caesarBankData,
                         })}
-                        {...(transactionSelected === 'deposit' && {
+                        {...(transactionSelected === CashTransferAs.DEPOSIT && {
                           caesar_bank_to: caesarBankData,
                           from: caesar,
+                        })}
+                        {...(transactionSelected === CashTransferAs.LOAN && {
+                          caesar_bank_from: caesarBankData,
                         })}
                         transactionType={transactionSelected}
                       />
