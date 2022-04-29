@@ -33,7 +33,9 @@ export enum CashTransferAs {
   TRANSFER = 'TRANSFER',
   WITHDRAW = 'WITHDRAW',
   LOAN = 'LOAN',
+  LOAN_PAYMENT = 'LOAN PAYMENT',
   'LOAN PAYMENT' = 'LOAN PAYMENT',
+
   // INTEREST = 'INTEREST',
   // 'BANK FEES' = 'BANK FEES',
 }
