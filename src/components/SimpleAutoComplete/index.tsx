@@ -35,7 +35,11 @@ export type SimpleAutoCompleteProps<T, U> = {
    */
   getOptionSelected: (arg: T, value: T) => boolean
   /**
+   * !!! IMPORTANT:
+   *
+   * this contributes to accuracy of search
    * Label to be rendered
+   *
    */
   getOptionLabel: (option: T) => string
   /**
@@ -90,7 +94,8 @@ export default function SimpleAutoComplete<T, U>({
           setLoading(false)
         })
     }, overrideTimeout || 500)
-  }, [query])
+  }, [query, dispatch, fetcher, mutateOptions, overrideTimeout])
+
   return (
     <Autocomplete
       options={options}
