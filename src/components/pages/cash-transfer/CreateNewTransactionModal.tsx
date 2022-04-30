@@ -12,7 +12,7 @@ import {
 import { CloseOutlined } from '@material-ui/icons'
 import ModalWrapper from '@src/components/ModalWrapper'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
-import { TransferTypes } from '@src/utils/types/CashTransferTypes'
+import { CashTransferAs, TransferTypes } from '@src/utils/types/CashTransferTypes'
 import { useMemo } from 'react'
 
 const CreateNewTransactionModal = ({
@@ -24,7 +24,7 @@ const CreateNewTransactionModal = ({
   open: boolean
   onClose: () => void
   disabledKeysProps?: TransferTypes[]
-  onSelect?: (param: TransferTypes) => void
+  onSelect?: (param: CashTransferAs) => void
 }) => {
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
   const disabledKeys = useMemo(
@@ -35,7 +35,7 @@ const CreateNewTransactionModal = ({
   const theme = useTheme()
   const transactionTypes = useMemo<
     {
-      id: TransferTypes
+      id: CashTransferAs
       title: string
       description: string
     }[]
@@ -43,22 +43,32 @@ const CreateNewTransactionModal = ({
     () =>
       [
         {
-          id: 'transfer' as TransferTypes,
+          id: CashTransferAs.TRANSFER,
           title: 'Cash Transfer',
           description: 'Recording Bank to Bank Transactions',
         },
         {
-          id: 'withdraw' as TransferTypes,
+          id: CashTransferAs.WITHDRAW,
           title: 'Withdraw',
           description: 'Recording Bank to Person Transaction',
         },
         {
-          id: 'deposit' as TransferTypes,
+          id: CashTransferAs.DEPOSIT,
           title: 'Deposit',
           description: 'Recording Person to Bank Transactions',
         },
-      ].filter((ea) => (disabledKeys ? !disabledKeys.includes(ea.id as TransferTypes) : true)),
-    []
+        {
+          id: CashTransferAs.LOAN,
+          title: 'Loan',
+          description: 'Recording Loan Transactions',
+        },
+        // {
+        //   id: CashTransferAs.LOAN_PAYMENT,
+        //   title: 'Loan Payment',
+        //   description: 'Record Loan Payment Transactions',
+        // },
+      ].filter((ea) => (disabledKeys ? !disabledKeys.includes(ea.id as CashTransferAs) : true)),
+    [disabledKeys]
   )
   return (
     <ModalWrapper containerSize="xs" open={open} onClose={onClose}>
