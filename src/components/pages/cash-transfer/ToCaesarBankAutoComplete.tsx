@@ -4,7 +4,7 @@ import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import type { CaesarWalletResponse } from '@api/walletApi'
 
-const searchCaesarBank = (
+export const searchCaesarBank = (
   searchString?: string,
   additionalParams?: {
     ceasar?: CaesarWalletResponse['id']
@@ -37,13 +37,22 @@ const ToCaesarBankAutoComplete = ({
   <SimpleAutoComplete<CaesarBank, string | undefined>
     initialQuery={undefined}
     fetcher={(params) => searchCaesarBank(params).then((res) => (filter ? filter(res) : res))}
-    getOptionLabel={(option) => `${option.description} - ${option.caesar.description}`}
+    getOptionLabel={(option) =>
+      `${option.description} - ${option.caesar?.description} ${
+        option?.account_number && `- ${option.account_number}`
+      }`
+    }
     renderOption={(option) => (
       <Box display="flex" flexDirection="column">
         <Typography display="block" variant="body2">{`${option.description}`}</Typography>
         <Typography variant="caption" color="primary">
           {option.caesar.description}{' '}
         </Typography>
+        {option?.account_number && (
+          <Typography variant="caption" color="textSecondary">
+            {option?.account_number.slice(0, 26)}
+          </Typography>
+        )}
       </Box>
     )}
     getOptionSelected={(val1, val2) => val1.id === val2.id}
