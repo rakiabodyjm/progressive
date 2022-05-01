@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import {
   Box,
   Container,
@@ -42,7 +43,7 @@ export default function CaesarIndexPage() {
   //   console.log('usegetcaesarofuser', loading, account, data)
   // }, [account, data, loading])
 
-  const [caesarButtonTrigger, setCaesarButtonTrigger] = useState(Date.now())
+  // const [caesarButtonTrigger, setCaesarButtonTrigger] = useState(Date.now())
   const router = useRouter()
 
   // const searchQuery = useState<undefined | string>('')
@@ -135,80 +136,130 @@ export default function CaesarIndexPage() {
                   timeoutRef.current = setTimeout(() => {
                     setQuery((prev) => ({
                       ...prev,
-                      searchQuery: e.target.value?.length > 0 ? e.target.value : undefined,
+                      // searchQuery: e.target.value?.length > 0 ? e.target.value : undefined,
+                      searchQuery: e.target.value,
                     }))
                   }, 500)
                 }}
               />
-              {!caesars || isValidating ? (
-                <LoadingScreen2 />
-              ) : (
-                <Box mt={1}>
-                  {Object.entries(
-                    caesars.reduce((acc, ea) => {
-                      let accum = { ...acc }
-                      if (!accum[ea.account_type]) {
-                        accum = {
-                          ...accum,
-                          [ea.account_type]: [],
-                        }
-                      }
-                      accum[ea.account_type] = [...accum[ea.account_type], ea]
-                      return accum
-                    }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
-                  )
-                    .sort(([key1], [key2]) => key1.localeCompare(key2))
-                    .map(([accountType, caesarValues]) => (
-                      <div key={accountType}>
-                        <Box
-                          style={{
-                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
-                          }}
-                          p={2}
-                          mt={2}
-                        >
-                          <RoleBadge uppercase>{accountType}</RoleBadge>
-                        </Box>
-                        <UsersTable
-                          data={caesarValues}
-                          limit={query.limit!}
-                          page={query.page!}
-                          setLimit={setQueryState('limit')}
-                          setPage={setQueryState('page')}
-                          total={ceasarMetaData?.total || 0}
-                          hiddenFields={['id']}
-                          onRowClick={(e, data) => {
-                            const id = (data as { id: string })?.id
-                            router.push({
-                              pathname: '/cash-transfer/[id]',
-                              query: {
-                                id,
-                              },
-                            })
-                          }}
-                          hidePagination
-                        />
-                      </div>
-                    ))}
-
-                  <TablePagination
-                    rowsPerPageOptions={[50, 100, 250, 500]}
-                    count={ceasarMetaData?.total || 0}
-                    rowsPerPage={query?.limit || 0}
-                    page={query?.page || 0}
-                    onPageChange={(_, page) => {
-                      // setPage(page)
-                      setQueryState('page')(page)
+              <Box mt={1}>
+                {caesars?.length === 0 && !isValidating && (
+                  <Paper
+                    style={{
+                      minHeight: 120,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                      flexDirection: 'column',
                     }}
-                    onRowsPerPageChange={(
-                      e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-                    ) => {
-                      setQueryState('limit')(Number(e.target.value))
+                  >
+                    <Typography variant="body2">No Account Matched the Search</Typography>
+                    <Typography variant="caption" color="primary">
+                      Try Searching for a different keyword
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      Caesar Account's First Name, Last Name, Phone Number
+                    </Typography>
+                  </Paper>
+                )}
+                {isValidating ? (
+                  <LoadingScreen2
+                    containerProps={{
+                      style: {
+                        borderRadius: 4,
+                      },
                     }}
-                    component="div"
                   />
-                </Box>
-              )}
+                ) : (
+                  caesars &&
+                  caesars.length > 0 && (
+                    <>
+                      <Box
+                        style={{
+                          height: 640,
+                          overflowY: 'auto',
+                        }}
+                      >
+                        {Object.entries(
+                          caesars.reduce((acc, ea) => {
+                            let accum = { ...acc }
+                            if (!accum[ea.account_type]) {
+                              accum = {
+                                ...accum,
+                                [ea.account_type]: [],
+                              }
+                            }
+                            accum[ea.account_type] = [...accum[ea.account_type], ea]
+                            return accum
+                          }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
+                        )
+                          .sort(([key1], [key2]) => key1.localeCompare(key2))
+                          .map(([accountType, caesarValues]) => (
+                            <Box
+                              style={{
+                                position: 'sticky',
+                                top: 0,
+                              }}
+                              key={accountType}
+                            >
+                              <Box
+                                style={{
+                                  background:
+                                    theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                                  borderTopLeftRadius: 4,
+                                  borderTopRightRadius: 4,
+                                }}
+                                p={2}
+                                mt={2}
+                              >
+                                <RoleBadge disablePopUp uppercase>
+                                  {accountType}
+                                </RoleBadge>
+                              </Box>
+                              <UsersTable
+                                data={caesarValues}
+                                limit={query.limit!}
+                                page={query.page!}
+                                setLimit={setQueryState('limit')}
+                                setPage={setQueryState('page')}
+                                total={ceasarMetaData?.total || 0}
+                                hiddenFields={['id', 'account_type']}
+                                onRowClick={(e, data) => {
+                                  const id = (data as { id: string })?.id
+                                  router.push({
+                                    pathname: '/cash-transfer/[id]',
+                                    query: {
+                                      id,
+                                    },
+                                  })
+                                }}
+                                hidePagination
+                              />
+                            </Box>
+                          ))}
+                      </Box>
+
+                      <TablePagination
+                        rowsPerPageOptions={[50, 100, 250, 500]}
+                        count={ceasarMetaData?.total || 0}
+                        rowsPerPage={query?.limit || 0}
+                        page={query?.page || 0}
+                        onPageChange={(_, page) => {
+                          // setPage(page)
+                          setQueryState('page')(page)
+                        }}
+                        onRowsPerPageChange={(
+                          e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                        ) => {
+                          setQueryState('limit')(Number(e.target.value))
+                        }}
+                        component="div"
+                      />
+                    </>
+                  )
+                )}
+              </Box>
             </Box>
           </Paper>
         </Box>
