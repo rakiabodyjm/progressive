@@ -48,7 +48,7 @@ const TransferTypeTransaction = ({
     to: undefined,
     message: undefined,
   })
-
+  const [resetValue, setResetValue] = useState<number>()
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const dispatchNotif = useNotification()
@@ -117,6 +117,17 @@ const TransferTypeTransaction = ({
           type: NotificationTypes.SUCCESS,
           message: `Cash Transfer Success`,
         })
+        setTransferForm({
+          amount: 0,
+          caesar_bank_from: transferForm.caesar_bank_from,
+          caesar_bank_to: undefined,
+          description: '',
+          as: CashTransferAs.TRANSFER,
+          bank_fee: undefined,
+          to: undefined,
+          message: '',
+        })
+        setResetValue(Date.now())
       })
       .catch((err) => {
         extractMultipleErrorFromResponse(err).forEach((ea) => {
@@ -188,6 +199,8 @@ const TransferTypeTransaction = ({
                 }))
               }}
               filter={(res) => res.filter((ea) => ea.id !== caesar_bank_from?.caesar.id)}
+              value={transferForm.to}
+              key={transferForm.amount}
             />
           </>
         ) : (
@@ -212,6 +225,8 @@ const TransferTypeTransaction = ({
               }}
               defaultValue={transferForm?.caesar_bank_to || undefined}
               disabled={!!caesar_bank_to}
+              value={transferForm.caesar_bank_to}
+              key={transferForm.amount}
             />
           </>
         )}
@@ -253,6 +268,8 @@ const TransferTypeTransaction = ({
         {transferForm?.caesar_bank_from && (
           <Box my={2}>
             <FeesTransaction
+              triggerReset={resetValue}
+              newValue={transferForm.bank_fee}
               onChange={(bank_fee: number | undefined) => {
                 setTransferForm((prev) => ({
                   ...prev,
@@ -276,6 +293,7 @@ const TransferTypeTransaction = ({
               description: e.target.value,
             }))
           }}
+          value={transferForm.description}
         />
 
         <Box my={2} />
@@ -291,6 +309,7 @@ const TransferTypeTransaction = ({
               message: e.target.value,
             }))
           }}
+          value={transferForm.message}
         />
 
         <Box my={2} />

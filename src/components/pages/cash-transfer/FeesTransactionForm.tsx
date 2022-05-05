@@ -6,9 +6,13 @@ import FormNumberField from '@src/components/FormNumberField'
 import FormLabel from '@src/components/FormLabel'
 
 const FeesTransaction = ({
+  triggerReset,
+  newValue,
   caesar_bank,
   onChange,
 }: {
+  newValue: number | undefined
+  triggerReset?: number
   caesar_bank: CaesarBank
   onChange: (bank_fee: number | undefined) => void
 }) => {
@@ -28,6 +32,14 @@ const FeesTransaction = ({
       onChange(undefined)
     }
   }, [visible])
+
+  useEffect(() => {
+    setVisible(false)
+    setFeesForm({
+      value: newValue,
+    })
+  }, [triggerReset])
+
   return (
     <Box>
       <Chip

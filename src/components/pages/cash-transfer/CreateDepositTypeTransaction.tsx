@@ -49,6 +49,13 @@ const DepositTypeTransaction = ({
         throw extractMultipleErrorFromResponse(err)
       })
       .finally(() => {
+        setDepositForm({
+          amount: 0,
+          caesar_bank_to,
+          from,
+          description: '',
+          as: CashTransferAs.DEPOSIT,
+        })
         mutate(`/caesar/${depositForm?.from?.id}`, null, true)
         mutate(`/cash-transfer/caesar-bank/${caesar_bank_to?.id}`, null, true)
       })
@@ -138,6 +145,7 @@ const DepositTypeTransaction = ({
               description: e.target.value,
             }))
           }}
+          value={depositForm.description}
         />
 
         <Box my={2} />

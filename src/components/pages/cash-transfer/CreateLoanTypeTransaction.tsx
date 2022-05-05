@@ -46,6 +46,7 @@ const LoanTypeTransaction = ({
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const [resetValue, setResetValue] = useState<number>()
   const dispatchNotif = useNotification()
 
   const { mutate } = useSWRConfig()
@@ -118,6 +119,16 @@ const LoanTypeTransaction = ({
         type: NotificationTypes.SUCCESS,
         message: `Loan Created`,
       })
+      setTransferForm({
+        amount: 0,
+        caesar_bank_from,
+        caesar_bank_to: undefined,
+        description: '',
+        as: CashTransferAs.LOAN,
+        bank_fee: undefined,
+        to: undefined,
+      })
+      setResetValue(Date.now())
     }
   }, [error, response, dispatchNotif])
 
@@ -156,6 +167,8 @@ const LoanTypeTransaction = ({
                 }))
               }}
               filter={(res) => res.filter((ea) => ea.id !== caesar_bank_from?.caesar.id)}
+              value={transferForm.to}
+              key={resetValue}
             />
           </>
         ) : (
@@ -179,6 +192,8 @@ const LoanTypeTransaction = ({
               }
               defaultValue={transferForm?.caesar_bank_to || undefined}
               disabled={!!caesar_bank_to}
+              value={transferForm.caesar_bank_to}
+              key={resetValue}
             />
           </>
         )}
@@ -220,6 +235,8 @@ const LoanTypeTransaction = ({
         {transferForm?.caesar_bank_from && (
           <Box my={2}>
             <FeesTransaction
+              triggerReset={resetValue}
+              newValue={transferForm.bank_fee}
               onChange={(bank_fee: number | undefined) => {
                 setTransferForm((prev) => ({
                   ...prev,
@@ -243,6 +260,7 @@ const LoanTypeTransaction = ({
               description: e.target.value,
             }))
           }}
+          value={transferForm.description}
         />
 
         <Box my={2} />
