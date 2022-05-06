@@ -53,6 +53,15 @@ const WithDrawTypeTransaction = ({
         throw extractMultipleErrorFromResponse(err)
       })
       .finally(() => {
+        setWithDrawForm({
+          amount: 0,
+          caesar_bank_from,
+          to,
+          description: '',
+          bank_fee: undefined,
+          as: CashTransferAs.WITHDRAW,
+        })
+        setResetValue(Date.now())
         mutate(`/caesar/${withDrawForm?.caesar_bank_from?.caesar?.id}`, null, true)
         mutate(`/cash-transfer/caesar-bank/${withDrawForm?.caesar_bank_from?.id}`, null, true)
       })
@@ -82,6 +91,8 @@ const WithDrawTypeTransaction = ({
       )
     }
   }, [error, dispatch, response])
+
+  const [resetValue, setResetValue] = useState<number>()
 
   return (
     <>
@@ -118,11 +129,14 @@ const WithDrawTypeTransaction = ({
           }}
           value={withDrawForm.to}
           disabled={!!to}
+          key={withDrawForm.amount}
         />
 
         <Box my={2}></Box>
         {withDrawForm.caesar_bank_from && (
           <FeesTransaction
+            triggerReset={resetValue}
+            newValue={withDrawForm.bank_fee}
             caesar_bank={withDrawForm.caesar_bank_from}
             onChange={(bank_fee) => {
               setWithDrawForm((prev) => ({
@@ -145,6 +159,7 @@ const WithDrawTypeTransaction = ({
               description: e.target.value,
             }))
           }}
+          value={withDrawForm.description}
         />
 
         <Box my={2} />
