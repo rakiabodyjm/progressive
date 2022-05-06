@@ -53,6 +53,7 @@ const LoanPaymentTypeTransaction = ({
   )
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
+  const [resetValue, setResetValue] = useState<number>()
 
   const [fromCaesarEnabled, setFromCaesarEnabled] = useState<boolean>(false)
   const { mutate } = useSWRConfig()
@@ -85,6 +86,15 @@ const LoanPaymentTypeTransaction = ({
         type: NotificationTypes.SUCCESS,
         message: `Loan Payment successfully posted`,
       })
+      _setFormValues({
+        id: cash_transfer?.id,
+        caesar_bank_from: cash_transfer?.caesar_bank_to,
+        from: cash_transfer?.caesar_bank_to.caesar,
+        caesar_bank_to: undefined,
+        to: undefined,
+        amount: 0,
+      })
+      setResetValue(Date.now())
     }
   }, [error, dispatchNotif, response])
 
@@ -183,6 +193,8 @@ const LoanPaymentTypeTransaction = ({
                 setFormValues('to', toCaesar)
               }}
               defaultValue={formValues.to}
+              key={resetValue}
+              value={formValues.to}
             />
           </>
         ) : (
@@ -193,6 +205,8 @@ const LoanPaymentTypeTransaction = ({
                 setFormValues('caesar_bank_to', cbFrom)
               }}
               defaultValue={formValues.caesar_bank_to}
+              value={formValues.caesar_bank_to}
+              key={resetValue}
             />
           </>
         )}
