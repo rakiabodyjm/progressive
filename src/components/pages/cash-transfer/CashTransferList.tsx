@@ -4,7 +4,7 @@ import { Box, ListItem, Paper, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
-import { formatIntoCurrency } from '@src/utils/api/common'
+import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import {
   CaesarBank,
@@ -37,20 +37,29 @@ export default function CashTransferList({
     data: cashTransfers,
     isValidating: loadingCashTransfers,
     error: errorCashTransfers,
-  } = useSWR(caesarId || caesarBankId || loanId ? '/cash-transfer' : null, (url) =>
-    axios
-      .get(url, {
-        params: {
+  } = useSWR(
+    caesarId || caesarBankId || loanId
+      ? `cash-transfer?${objectToURLQuery({
+          ...queryParameters,
           caesar: caesarId,
           caesar_bank: caesarBankId,
           loan: loanId,
-          ...queryParameters,
-        },
-      })
-      .then((res) => res.data as Paginated<CashTransferResponse>)
-      .catch((err) => {
-        console.log('failed loading cash-transfers', err)
-      })
+        })}`
+      : null,
+    (url) =>
+      axios
+        .get(url, {
+          // params: {
+          //   caesar: caesarId,
+          //   caesar_bank: caesarBankId,
+          //   loan: loanId,
+          //   ...queryParameters,
+          // },
+        })
+        .then((res) => res.data as Paginated<CashTransferResponse>)
+        .catch((err) => {
+          console.log('failed loading cash-transfers', err)
+        })
   )
 
   const isSender = useCallback(
