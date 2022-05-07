@@ -73,3 +73,20 @@ export const formatIntoCurrency = (arg: number) =>
 
 export const formatIntoReadableDate = (arg: Date | number) =>
   `${new Date(arg).toLocaleTimeString()} ${new Date(arg).toDateString()}`
+
+/**
+ * object is filtered if key and value is undefined or null
+ */
+export const objectToURLQuery = (object: Record<string, string | number | undefined>) => {
+  const objectFiltered = Object.entries(object)
+    .filter(([key, value]) => !(object[key] === undefined || object[key] === null))
+    .reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: value,
+      }),
+      {} as typeof object
+    )
+
+  return new URLSearchParams({ ...objectFiltered } as Record<string, string>).toString()
+}
