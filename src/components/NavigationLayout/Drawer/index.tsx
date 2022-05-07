@@ -25,6 +25,7 @@ import { useCallback, useState } from 'react'
 import RoleBadge from '@src/components/RoleBadge'
 import MainMenuItems from '@src/components/NavigationLayout/Drawer/MainMenuItems'
 import AdminMenuItems from '@src/components/NavigationLayout/Drawer/AdminMenuItems'
+import { useIsMobile } from '@src/utils/hooks/useWidth'
 import SubMenuItems from './SubMenuItems'
 
 const drawerWidth = 240
@@ -50,13 +51,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   drawerClose: {
     transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
+      easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: 'hidden',
     width: theme.spacing(7) + 1,
     [theme.breakpoints.up('sm')]: {
       width: theme.spacing(9) + 1,
+    },
+    [theme.breakpoints.down('xs')]: {
+      width: 48,
     },
   },
   toolbar: {
@@ -90,6 +94,14 @@ const useStyles = makeStyles((theme: Theme) => ({
       // color: 'var(--primary-dark)',
     },
   },
+  customMobilePadding: {
+    [theme.breakpoints.down('xs')]: {
+      '& .list-item': {
+        paddingLeft: 8,
+        paddingRight: 8,
+      },
+    },
+  },
   iconSize: {},
 }))
 
@@ -114,12 +126,15 @@ export default function DrawerComponent({
     setIsToggle((prev) => !prev)
   }, [setIsToggle])
 
+  const isMobile = useIsMobile()
+
   return (
     <Drawer
       variant="permanent"
       className={clsx(classes.drawer, {
         [classes.drawerOpen]: open,
         [classes.drawerClose]: !open,
+        [classes.customMobilePadding]: true,
       })}
       classes={{
         paper: clsx({
