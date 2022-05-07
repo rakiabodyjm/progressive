@@ -62,7 +62,7 @@ export default function RenderListItem({
           paddingBottom: 16,
           ...props.style,
         }}
-        className={`${classes?.drawerItem} ${props.className}`}
+        className={`${classes?.drawerItem} ${props.className} list-item`}
         button
         onClick={(e: MouseEvent<HTMLAnchorElement>) => {
           e.preventDefault()
