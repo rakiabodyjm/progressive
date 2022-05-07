@@ -70,6 +70,7 @@ const TransferTypeTransaction = ({
         })
         .finally(() => {
           mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
+
           if (caesar_bank_from?.id) {
             mutate(`/cash-transfer/caesar-bank/${caesar_bank_from.id}`, null, true)
           }
@@ -79,6 +80,7 @@ const TransferTypeTransaction = ({
         }),
     [transferForm, caesar_bank_from?.caesar?.id, caesar_bank_from?.id, caesar_bank_to?.id, mutate]
   )
+
   const {
     error,
     loading: loanLoading,
@@ -139,6 +141,12 @@ const TransferTypeTransaction = ({
       })
       .finally(() => {
         setLoading(false)
+        if (caesar_bank_from?.id) {
+          mutate(`/cash-transfer/caesar-bank/${caesar_bank_from.id}`, null, true)
+        }
+        if (caesar_bank_to?.id) {
+          mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
+        }
         mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
       })
   }, [transferForm, dispatchNotif, submit, mutate])
