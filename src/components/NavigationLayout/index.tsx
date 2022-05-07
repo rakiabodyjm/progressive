@@ -3,7 +3,7 @@ import { Box, Container, makeStyles } from '@material-ui/core'
 import Drawer from '@src/components/NavigationLayout/Drawer'
 import Nav from '@src/components/NavigationLayout/Nav'
 import { RootState } from '@src/redux/store'
-import useWidth from '@src/utils/hooks/useWidth'
+import useWidth, { useIsMobile } from '@src/utils/hooks/useWidth'
 import { useMemo, useState } from 'react'
 
 import { useSelector } from 'react-redux'
@@ -14,6 +14,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
     [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(2),
+    },
+    [theme.breakpoints.down('xs')]: {
+      padding: 1,
     },
     minHeight: '90vh',
   },
@@ -40,6 +43,8 @@ export default function NavigationLayout({ children }: { children: JSX.Element }
   const userSelect = useSelector((state: RootState) => state.user)
   const user = useMemo(() => userSelect?.data || null, [userSelect])
 
+  const isMobile = useIsMobile()
+
   return (
     <div
       style={{
@@ -54,7 +59,7 @@ export default function NavigationLayout({ children }: { children: JSX.Element }
         open={open}
       />
       <Nav open={open} handleDrawerOpen={handleDrawerOpen} />
-      {open && (
+      {open && isMobile && (
         <Box
           onClick={handleDrawerClose}
           style={{
