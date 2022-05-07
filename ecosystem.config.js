@@ -1,20 +1,15 @@
 module.exports = {
   apps: [
     {
-      name: 'REALM1000 ALPHA FRONTEND',
+      name: 'REALM1000 Telco Frontend',
       script: './server.js',
       exec_mode: 'cluster',
       instances: 2,
-      autorestart: false,
-      env_production: {
-        NODE_ENV: 'production',
-        BACKEND_HOSTNAME: `api.caesarcoin.ph`,
-        NEXT_PUBLIC_BACKEND_URL: `https://api.caesarcoin.ph`,
-      },
+      autorestart: true,
       env: {
-        NODE_ENV: 'development',
-        BACKEND_HOSTNAME: `api.caesarcoin.ph`,
-        NEXT_PUBLIC_BACKEND_URL: `https://api.caesarcoin.ph`,
+        NODE_ENV: 'production',
+        BACKEND_HOSTNAME: 'telco.ap.ngrok.io/api',
+        NEXT_PUBLIC_BACKEND_URL: 'https://telco.ap.ngrok.io/api',
       },
     },
   ],
