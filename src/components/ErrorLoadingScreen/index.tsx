@@ -1,6 +1,7 @@
 import { Box, Divider, makeStyles, Typography, useTheme } from '@material-ui/core'
 import Head from 'next/head'
 import ErrorIcon from '@material-ui/icons/Error'
+import { ErrorOutline } from '@material-ui/icons'
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
@@ -47,7 +48,7 @@ const ErrorLoading = ({ message }: { message?: string }) => {
                 justifyContent="center"
                 flexDirection="column"
               >
-                <ErrorIcon
+                <ErrorOutline
                   style={{
                     color: theme.palette.primary.main,
                     fontSize: 64,
@@ -55,22 +56,21 @@ const ErrorLoading = ({ message }: { message?: string }) => {
                 />
                 <Typography
                   style={{
-                    fontWeight: 700,
                     display: 'inline',
                     marginLeft: 8,
                   }}
-                  variant="h3"
+                  variant="h4"
                 >
                   {/* Transaction {type.charAt(0).toUpperCase() + type.slice(1)} */}
                   An Error has Occured
                 </Typography>
-                <Divider
+                {/* <Divider
                   variant="fullWidth"
                   style={{
                     margin: theme.spacing(2),
                     width: '100%',
                   }}
-                />
+                /> */}
                 <Typography variant="body1">{message}</Typography>
               </Box>
             </Box>

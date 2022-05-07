@@ -1,4 +1,4 @@
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import { PendingTransactionResponse } from '@src/utils/api/transactionApi'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
@@ -12,7 +12,7 @@ export default function useFetchPendingTransaction({
   action,
   paginationParams,
 }: {
-  as?: UserTypesAndUser | undefined
+  as?: UserTypes | undefined
   caesar?: string
   action?: string
   paginationParams?: PaginateFetchParameters

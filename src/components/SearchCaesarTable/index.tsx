@@ -1,20 +1,25 @@
 import { Box, Paper } from '@material-ui/core'
 import {
   CaesarWalletResponse,
+  getAllWallet,
   getWallet,
   getWalletById,
   searchWallet,
 } from '@src/utils/api/walletApi'
-import LoadingScreen from '@src/components/LoadingScreen'
+import LoadingScreen, { LoadingScreen2 } from '@src/components/LoadingScreen'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react'
+import { UserTypes } from '@src/redux/data/userSlice'
 import FormLabel from '../FormLabel'
 import FormTextField from '../FormTextField'
 import UsersTable from '../UsersTable'
 
 type SearchCaesarParams = PaginateFetchParameters & {
-  searchQuery: string
+  searchQuery: string | undefined
+}
+type GetAllWalletParams = PaginateFetchParameters & {
+  account_type?: UserTypes
 }
 type CaesarMetadata = {
   total_page: number
@@ -23,12 +28,25 @@ type CaesarMetadata = {
   total: number
 }
 
-export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked: boolean }) {
+export default function SearchCaesarTable({
+  buttonTrigger,
+  customWalletFormat,
+  onRowClick,
+}: {
+  buttonTrigger: number
+  customWalletFormat?: (parameter: Partial<CaesarWalletResponse>[]) => void
+  onRowClick?: (e: MouseEvent<HTMLElement>, values: unknown) => void
+}) {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const dispatchError = useErrorNotification()
   const [searchCaesarQuery, setSearchCaesarQuery] = useState<SearchCaesarParams>({
     searchQuery: '',
   })
+  const [getAllCaesarParams, setGetAllCaesarParams] = useState<GetAllWalletParams>({
+    page: 0,
+    limit: 100,
+  })
+
   const [metadata, setMetaData] = useState<CaesarMetadata>({
     total_page: 0,
     page: 0,
@@ -38,14 +56,12 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
   const [caesarData, setCaesarData] = useState<CaesarWalletResponse[]>([])
   const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
   const paperHeight = 400
+
   useEffect(() => {
     setIsLoading(true)
-    if (!searchCaesarQuery) {
-      setSearchCaesarQuery({
-        searchQuery: '',
-      })
-    } else {
-      searchWallet(searchCaesarQuery)
+    if (searchCaesarQuery.searchQuery === '') {
+      console.log(getAllCaesarParams)
+      getAllWallet(getAllCaesarParams)
         .then((res) => {
           setCaesarData(res.data)
           setMetaData(res.metadata)
@@ -58,8 +74,23 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
         .finally(() => {
           setIsLoading(false)
         })
+    } else {
+      searchWallet(searchCaesarQuery)
+        .then((res) => {
+          setCaesarData(res.data)
+          setMetaData(res.metadata)
+          console.log(res)
+        })
+        .catch((err: string[]) => {
+          err.forEach((ea) => {
+            dispatchError(ea)
+          })
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
     }
-  }, [dispatchError, searchCaesarQuery, isButtonClicked])
+  }, [searchCaesarQuery, dispatchError, buttonTrigger, getAllCaesarParams])
 
   return (
     <Box>
@@ -80,37 +111,57 @@ export default function SearchCaesarTable({ isButtonClicked }: { isButtonClicked
             }}
           />
         </Box>
-        <Box p={2}>
+        <Box p={2} py={0}>
           {!isLoading && caesarData && (
             <UsersTable
-              data={formatWalletData(caesarData)}
+              data={
+                (customWalletFormat && customWalletFormat(caesarData)) ||
+                formatWalletData(caesarData)
+              }
               limit={metadata.limit}
               page={metadata.page}
               total={metadata.total}
               setLimit={(limit: number) => {
-                setSearchCaesarQuery((prevState) => ({
-                  ...prevState,
-                  limit,
-                }))
+                if (searchCaesarQuery.searchQuery === '') {
+                  setGetAllCaesarParams((prevState) => ({
+                    ...prevState,
+                    limit,
+                  }))
+                } else {
+                  setSearchCaesarQuery((prevState) => ({
+                    ...prevState,
+                    limit,
+                  }))
+                }
               }}
               setPage={(page: number) => {
-                setSearchCaesarQuery((prevState) => ({
-                  ...prevState,
-                  page,
-                }))
+                if (searchCaesarQuery.searchQuery === '') {
+                  setGetAllCaesarParams((prevState) => ({
+                    ...prevState,
+                    page,
+                  }))
+                } else {
+                  setSearchCaesarQuery((prevState) => ({
+                    ...prevState,
+                    page,
+                  }))
+                }
               }}
               paperProps={{
                 style: {
                   ...(paperHeight && { height: paperHeight! - 50 }),
                 },
               }}
+              {...(onRowClick && {
+                onRowClick,
+              })}
             />
           )}
           {isLoading && (
             <Paper variant="outlined">
-              <LoadingScreen
-                style={{
-                  height: 480,
+              <LoadingScreen2
+                containerProps={{
+                  minHeight: 400,
                 }}
               />
             </Paper>

@@ -1,3 +1,4 @@
+import { UserTypes } from '@src/redux/data/userSlice'
 import { getAllRetailer, RetailerResponseType, searchRetailer } from '@src/utils/api/retailerApi'
 import { DspResponseType, getAllDsp, searchDsp } from '@src/utils/api/dspApi'
 import { getAllUsers, searchUser, UserResponse } from '@src/utils/api/userApi'
@@ -10,12 +11,11 @@ import {
   getAllSubdistributor,
   searchSubdistributor,
 } from '../api/subdistributorApi'
-import { UserTypesAndUser } from '../../pages/admin/accounts/index'
 
 /**
  * Record of types of entities to expect
  */
-export interface Entities extends Record<UserTypesAndUser, unknown> {
+export interface Entities extends Record<UserTypes, unknown> {
   admin: AdminResponseType
   user: UserResponse
   dsp: DspResponseType
@@ -50,7 +50,7 @@ export default function useFetchOrSearchAccounts<T extends 'search' | 'get-all'>
   }
 ) {
   const container: Record<
-    UserTypesAndUser,
+    UserTypes,
     {
       searchAccounts: EntityFetcher<typeof accountType>
       fetchAccounts: EntityPaginatedFetcher<typeof accountType>

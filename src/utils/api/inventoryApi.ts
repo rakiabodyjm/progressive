@@ -1,5 +1,5 @@
 /* eslint-disable no-redeclare */
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import { Asset } from '@src/utils/api/assetApi'
 import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
@@ -40,7 +40,7 @@ export type UpdateInventory = {
 
 export type GetAllInventoryDto = {
   active?: boolean
-} & Partial<Record<UserTypesAndUser, string>>
+} & Partial<Record<UserTypes, string>>
 
 export function getAllInventory(
   params: PaginateFetchParameters & GetAllInventoryDto

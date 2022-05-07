@@ -4,7 +4,7 @@ import PendingTransactionsApprovalModal from '@src/components/pages/pending-tran
 import PendingTransactionsRoleSelector from '@src/components/pages/pending-transactions/PendingTransactionsTable/PendingTransactionsRoleSelector'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import { getAllPendingTransactions } from '@src/utils/api/pendingTransactionApi'
 import { PendingTransactionResponse } from '@src/utils/api/transactionApi'
@@ -18,7 +18,7 @@ export default function PendingTransactionsTable({
   caesar,
   height,
 }: {
-  as?: UserTypesAndUser
+  as?: UserTypes
   caesar?: string
   height?: number
 }) {

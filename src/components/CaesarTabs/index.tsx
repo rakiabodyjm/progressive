@@ -1,80 +1,75 @@
 /* eslint-disable no-nested-ternary */
-import {
-  Box,
-  Container,
-  Divider,
-  Paper,
-  Tab,
-  Tabs,
-  Theme,
-  Typography,
-  useTheme,
-} from '@material-ui/core'
+import { Box, Paper, Tab, Tabs, Theme, Typography, useTheme } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
-import { userDataSelector } from '@src/redux/data/userSlice'
+import { UserTypes, userDataSelector, User } from '@src/redux/data/userSlice'
 import { getWallet } from '@src/utils/api/walletApi'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+
 /**
  *
  * Loads Available Caesar based on global user
  */
 export default function CaesarTabs({
   onActiveCaesarChange,
+  syncLoading,
   renderTitle,
 }: {
+  /**
+   * action to fire when Caesar Account is selected
+   */
   onActiveCaesarChange: (
-    caesar: [UserTypesAndUser, string] | undefined,
-    account?: [UserTypesAndUser, string]
+    caesar: [UserTypes, string] | undefined,
+    account?: [UserTypes, string]
   ) => void
+  /**
+   * Override Title instaed of default title
+   */
   renderTitle?: JSX.Element
+  /**
+   * callback function to receive loading status
+   * used to let parent component know if
+   * caesar tabs is still loading
+   */
+  syncLoading?: (childParam: boolean) => void
 }) {
   const user = useSelector(userDataSelector)
-  const [caesarTypes, setCaesarTypes] = useState<[UserTypesAndUser, string][]>([])
-  const [activeCaesar, setActiveCaesar] = useState<[UserTypesAndUser, string] | undefined>()
+  const [caesarTypes, setCaesarTypes] = useState<[UserTypes, string][]>([])
+  const [activeCaesar, setActiveCaesar] = useState<[UserTypes, string] | undefined>()
   const theme: Theme = useTheme()
   const [loading, setLoading] = useState<boolean>(false)
-
+  // const onActiveCaesarChange = useCallback(onActiveCaesarChangeProps, [onActiveCaesarChangeProps])
+  const onActiveCaesarChangeLocal = useCallback(onActiveCaesarChange, [])
   useEffect(() => {
     if (user && user.roles && user?.roles?.length > 0) {
       /**
        * verify if caeasar exists for each
        */
-      const getWallets = () =>
-        Promise.all(
-          [...user.roles]
-            /**
-             * disable users for now
-             */
-            .filter((ea) => ea !== 'user')
-            .map((role) =>
-              getWallet({
-                [role]: user[`${role}_id`],
-              })
-                .then((res) => [res.account_type, res.id] as [UserTypesAndUser, string])
-                .catch((err) => [role, null])
-            )
-        ).then((final) => final.filter((ea) => !!ea[1]) as [UserTypesAndUser, string][])
 
       setLoading(true)
-      getWallets()
+      getWallets(user)
         .then((res) => {
           setCaesarTypes(res)
           if (res.length > 0) {
             setActiveCaesar(res[0])
-            onActiveCaesarChange(res[0], [res[0][0], user[`${res[0][0]}_id`] as string])
+            onActiveCaesarChangeLocal(res[0], [res[0][0], user[`${res[0][0]}_id`] as string])
           }
         })
         .catch((err) => {
           console.log('No Caesars for', err)
         })
         .finally(() => {
-          setLoading(true)
+          setLoading(false)
         })
     }
-  }, [user])
+  }, [onActiveCaesarChangeLocal, user])
+
+  useEffect(() => {
+    if (syncLoading) {
+      syncLoading(loading)
+    }
+  }, [loading, syncLoading])
 
   return (
     <>
@@ -155,3 +150,27 @@ export default function CaesarTabs({
     </>
   )
 }
+
+// export const CaesarTabsContext = createContext<
+//   | {
+//       setCaesarLoading: (loadingParam: boolean) => void
+//     }
+//   | undefined
+// >(undefined)
+type TelcoUsers = 'admin' | 'subdistributor' | 'dsp' | 'retailer'
+
+const getWallets = (user: User) =>
+  Promise.all(
+    [...user.roles]
+      /**
+       * disable users for now
+       */
+      .filter((ea) => ea !== 'user' && ea !== 'ct-operator' && ea !== 'ct-admin')
+      .map((role) =>
+        getWallet({
+          [role]: user[`${role as TelcoUsers}_id`],
+        })
+          .then((res) => [res.account_type, res.id] as [UserTypes, string])
+          .catch((err) => [role, null])
+      )
+  ).then((final) => final.filter((ea) => !!ea[1]) as [UserTypes, string][])

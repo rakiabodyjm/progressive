@@ -6,6 +6,7 @@ import { AxiosError } from 'axios'
 import type { RootState } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { createSelector } from 'reselect'
+// import { setOperator } from '@src/redux/data/isOperatorSlice'
 export enum UserRoles {
   ADMIN = 'admin',
   SUBDISTRIBUTOR = 'subdistributor',
@@ -16,6 +17,8 @@ export enum UserRoles {
 // export type UserTypes = 'admin' | 'dsp' | 'retailer' | 'subdistributor' | 'user'
 export type UserTypes = `${UserRoles}`
 
+export type UserTypesWithCashTransfer = UserTypes | 'ct-operator' | 'ct-admin'
+
 export type User = {
   user_id: string
   admin_id?: string
@@ -25,7 +28,7 @@ export type User = {
   email: string
   first_name: string
   last_name: string
-  roles: UserTypes[] | []
+  roles: UserTypesWithCashTransfer[] | []
 }
 export type UserMetaData = {
   iat: number
@@ -34,6 +37,7 @@ export type UserMetaData = {
 export type UserState = {
   data: User
   metadata: UserMetaData
+  loading: boolean
 }
 
 function reduceUser(response: UserResponse): UserState['data'] {
@@ -91,10 +95,12 @@ export const getUser = createAsyncThunk(
         )
         throw new Error(error)
       })
+
       const user = reduceUser(userResponse)
       return {
         data: user,
         metadata: { ...userState?.metadata },
+        loading: false,
       }
     }
     thunkApi.dispatch(
@@ -123,6 +129,7 @@ if (process.browser && window?.localStorage.getItem('token')) {
       iat,
       exp,
     },
+    loading: false,
   }
 
   /**
@@ -174,9 +181,15 @@ const userSlice = createSlice({
             iat,
             exp,
           },
+          loading: false,
         }
       }
     )
+
+    builder.addCase(getUser.pending, (state, action) =>
+      state ? { ...state, loading: true } : null
+    )
+
     builder.addCase(
       getUser.fulfilled,
       (state, action: { payload: UserState }): UserState => action.payload

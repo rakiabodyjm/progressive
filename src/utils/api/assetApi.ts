@@ -1,5 +1,5 @@
 /* eslint-disable no-redeclare */
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios, { AxiosError } from 'axios'
@@ -31,7 +31,7 @@ export interface CreateAssetDto {
   srp_for_dsp: number
   srp_for_retailer: number
   srp_for_user: number
-  approval?: UserTypesAndUser[]
+  approval?: UserTypes[]
   whole_number_only: boolean
 }
 
@@ -98,5 +98,14 @@ export function searchAsset(
     .then((res) => res.data)
     .catch((err) => {
       throw extractErrorFromResponse(err)
+    })
+}
+
+export function deleteAsset(id: string) {
+  return axios
+    .delete(`/asset/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      throw extractMultipleErrorFromResponse(err)
     })
 }

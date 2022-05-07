@@ -64,3 +64,12 @@ export const toCapsFirst = (toCapitalParam: string): string =>
     .split('_')
     .map((ea) => ea.charAt(0).toUpperCase() + ea.slice(1))
     .join(' ')
+
+export const formatIntoCurrency = (arg: number) =>
+  new Intl.NumberFormat('en-PH', {
+    currency: 'PHP',
+    style: 'currency',
+  }).format(arg)
+
+export const formatIntoReadableDate = (arg: Date | number) =>
+  `${new Date(arg).toLocaleTimeString()} ${new Date(arg).toDateString()}`

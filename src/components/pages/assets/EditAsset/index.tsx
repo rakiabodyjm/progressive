@@ -10,19 +10,32 @@ import {
   TextField,
   Theme,
   Typography,
+  useTheme,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import FormTextFieldComponent, { FormTextFieldProps } from '@src/components/FormTextField'
-import { Asset, createAsset, CreateAssetDto, updateAsset } from '@src/utils/api/assetApi'
+import {
+  Asset,
+  createAsset,
+  CreateAssetDto,
+  deleteAsset,
+  updateAsset,
+} from '@src/utils/api/assetApi'
 import validator from 'validator'
-import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
+import useNotification, {
+  useErrorNotification,
+  useSuccessNotification,
+} from '@src/utils/hooks/useNotification'
 
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Autocomplete } from '@material-ui/lab'
 import { toCapsFirst } from '@src/utils/api/common'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
+import AsyncButton from '@src/components/AsyncButton'
+import ModalWrapper from '@src/components/ModalWrapper'
+import { NotificationTypes } from '@src/redux/data/notificationSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -52,9 +65,7 @@ export default function EditAsset({
 
   const [asset, setAsset] = useState<CreateAssetDto>({
     ...assetProps,
-    approval: assetProps?.approval
-      ? (JSON.parse(assetProps.approval) as UserTypesAndUser[])
-      : undefined,
+    approval: assetProps?.approval ? (JSON.parse(assetProps.approval) as UserTypes[]) : undefined,
   })
 
   const assetRef = useRef(assetProps)
@@ -155,6 +166,8 @@ export default function EditAsset({
         resolve(null)
       }
     })
+
+  // const theme: Theme = useTheme()
   return (
     <Paper>
       <Box p={2}>
@@ -334,7 +347,7 @@ export default function EditAsset({
                   console.log(newValue)
                   setAsset((prevState) => ({
                     ...prevState,
-                    approval: newValue as UserTypesAndUser[],
+                    approval: newValue as UserTypes[],
                   }))
                 }}
               />
@@ -378,7 +391,12 @@ export default function EditAsset({
         <Box my={2}>
           <Divider />
         </Box>
-        <Box display="flex" justifyContent="flex-end">
+        <Box display="flex" justifyContent="space-between">
+          <DeleteButton
+            assetId={assetProps.id}
+            revalidateFunction={revalidateFunction!}
+            modal={modal}
+          />
           <Button
             {...(isSubmitted && { disabled: true })}
             onClick={handleSubmit}
@@ -498,6 +516,102 @@ function FormTextField({
           {errors[name]}
         </Typography>
       )}
+    </>
+  )
+}
+
+function DeleteButton({
+  revalidateFunction,
+  assetId,
+  modal,
+}: {
+  revalidateFunction: () => void
+  assetId: string
+  modal?: () => void
+}) {
+  const theme = useTheme()
+  const dispatchNotif = useNotification()
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
+  const handleDelete = useCallback(() => {
+    setLoading(true)
+    deleteAsset(assetId)
+      .then((res) => {
+        dispatchNotif({
+          type: NotificationTypes.SUCCESS,
+          message: `Asset succesfully Deleted`,
+        })
+      })
+      .catch((err: string[]) => {
+        err.forEach((ea) => {
+          dispatchNotif({
+            type: NotificationTypes.ERROR,
+            message: ea,
+          })
+        })
+      })
+      .finally(() => {
+        setLoading(false)
+        handleConfirmationModalIsOpen(false)()
+        revalidateFunction()
+        if (modal) {
+          modal()
+        }
+      })
+  }, [assetId])
+
+  const handleConfirmationModalIsOpen = useCallback(
+    (state: boolean) => () => {
+      setConfirmationModalOpen(state)
+    },
+    []
+  )
+
+  return (
+    <>
+      <AsyncButton
+        style={{
+          background: theme.palette.error.main,
+          color: theme.palette.getContrastText(theme.palette.error.main),
+        }}
+        variant="contained"
+        onClick={handleConfirmationModalIsOpen(true)}
+        // onClick={handleDelete}
+      >
+        Delete
+      </AsyncButton>
+      <ModalWrapper
+        containerSize="xs"
+        open={confirmationModalOpen}
+        onClose={handleConfirmationModalIsOpen(false)}
+      >
+        <Paper>
+          <Box p={2}>
+            <Typography variant="h6">Are you Sure you want to delete?</Typography>
+            <Box my={2}>
+              <Divider />
+            </Box>
+            <Typography variant="body2">
+              Deleting this will disable this as an option for creating inventory items
+            </Typography>
+            <Box my={2}>
+              <Divider />
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <AsyncButton
+                color="default"
+                onClick={handleConfirmationModalIsOpen(false)}
+                variant="contained"
+              >
+                Cancel
+              </AsyncButton>
+              <AsyncButton onClick={handleDelete} loading={loading} disabled={loading}>
+                Confirm
+              </AsyncButton>
+            </Box>
+          </Box>
+        </Paper>
+      </ModalWrapper>
     </>
   )
 }

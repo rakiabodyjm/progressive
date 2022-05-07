@@ -9,9 +9,6 @@ import {
   useTheme,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { LocalOffer } from '@material-ui/icons'
-import FormLabel from '@src/components/FormLabel'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import Image from 'next/image'
 import RoleBadge from '../RoleBadge'

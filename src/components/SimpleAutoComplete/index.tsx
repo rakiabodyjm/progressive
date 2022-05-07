@@ -5,19 +5,7 @@ import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
-export default function SimpleAutoComplete<T, U>({
-  onChange,
-  mutateOptions,
-  fetcher,
-  querySetter,
-  initialQuery,
-  defaultValue,
-  getOptionSelected,
-  getOptionLabel,
-  inputProps,
-  overrideTimeout,
-  ...restProps
-}: {
+export type SimpleAutoCompleteProps<T, U> = {
   /**
    * What to do when value is Changed
    */
@@ -47,7 +35,11 @@ export default function SimpleAutoComplete<T, U>({
    */
   getOptionSelected: (arg: T, value: T) => boolean
   /**
+   * !!! IMPORTANT:
+   *
+   * this contributes to accuracy of search
    * Label to be rendered
+   *
    */
   getOptionLabel: (option: T) => string
   /**
@@ -55,7 +47,21 @@ export default function SimpleAutoComplete<T, U>({
    */
   overrideTimeout?: number
   inputProps?: TextFieldProps
-} & Omit<Partial<AutocompleteProps<T, undefined, undefined, undefined>>, 'onChange'>) {
+} & Omit<Partial<AutocompleteProps<T, undefined, undefined, undefined>>, 'onChange'>
+
+export default function SimpleAutoComplete<T, U>({
+  onChange,
+  mutateOptions,
+  fetcher,
+  querySetter,
+  initialQuery,
+  defaultValue,
+  getOptionSelected,
+  getOptionLabel,
+  inputProps,
+  overrideTimeout,
+  ...restProps
+}: SimpleAutoCompleteProps<T, U>) {
   const [options, setOptions] = useState<T[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [query, setQuery] = useState(initialQuery)
@@ -88,7 +94,8 @@ export default function SimpleAutoComplete<T, U>({
           setLoading(false)
         })
     }, overrideTimeout || 500)
-  }, [query])
+  }, [query, dispatch, fetcher, mutateOptions, overrideTimeout])
+
   return (
     <Autocomplete
       options={options}

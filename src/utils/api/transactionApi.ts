@@ -1,4 +1,4 @@
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
@@ -20,9 +20,9 @@ export interface TransactionResponse {
 
   selling_price: number
 
-  buying_account: UserTypesAndUser
+  buying_account: UserTypes
 
-  selling_account: UserTypesAndUser
+  selling_account: UserTypes
 
   quantity: number
 
@@ -65,7 +65,7 @@ export interface PendingTransactionResponse {
   deleted_at: Date
 }
 
-export const getSrpKey = (account_type: UserTypesAndUser) => {
+export const getSrpKey = (account_type: UserTypes) => {
   switch (account_type) {
     case 'dsp': {
       return 'srp_for_dsp'

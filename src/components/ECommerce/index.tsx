@@ -9,14 +9,15 @@ import {
   Typography,
 } from '@material-ui/core'
 import { Apps, ListAlt } from '@material-ui/icons'
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getAllInventory, getCommerce, Inventory } from '@src/utils/api/inventoryApi'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import RowView from '@src/components/ECommerce/RowView'
 import type { InventoryNumbers } from '@src/components/ECommerce/RowView'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import CreatePurchase from '@src/components/pages/transactions/CreatePurchase'
 import ModalWrapper from '@src/components/ModalWrapper'
+import useSWR, { useSWRConfig } from 'swr'
 import GridView from './GridView'
 getAllInventory()
 
@@ -24,7 +25,7 @@ export default function ECommerce({
   // account,
   caesarBuyer,
 }: {
-  caesarBuyer: [UserTypesAndUser, string]
+  caesarBuyer: [UserTypes, string]
 }) {
   const [valid, setValid] = useState(Date.now())
   const [account_type, caesar_id] = caesarBuyer
@@ -39,9 +40,9 @@ export default function ECommerce({
     page: 0,
   })
 
-  const [paginatedInventory, setPaginatedInventory] = useState<Paginated<Inventory> | undefined>()
-  const inventory = useMemo(() => paginatedInventory?.data, [paginatedInventory])
-  const inventoryMetadata = useMemo(() => paginatedInventory?.metadata, [paginatedInventory])
+  // const [paginatedInventory, setPaginatedInventory] = useState<Paginated<Inventory> | undefined>()
+  // const inventory = useMemo(() => paginatedInventory?.data, [paginatedInventory])
+  // const inventoryMetadata = useMemo(() => paginatedInventory?.metadata, [paginatedInventory])
 
   const srpKey: keyof InventoryNumbers = useMemo(() => {
     switch (account_type) {
@@ -63,24 +64,75 @@ export default function ECommerce({
   }, [account_type])
 
   const caesar_idRef = useRef<typeof caesar_id | undefined>(caesar_id)
-  const [loading, setLoading] = useState<boolean>(false)
-  useEffect(() => {
-    if (caesar_id !== caesar_idRef.current) {
-      setLoading(true)
-      caesar_idRef.current = caesar_id
-    }
-    if (caesar_id) {
+  // const [loading, setLoading] = useState<boolean>(false)
+
+  // useEffect(() => {
+  //   if (caesar_id !== caesar_idRef.current) {
+  //     setLoading(true)
+  //     caesar_idRef.current = caesar_id
+  //   }
+  //   if (caesar_id) {
+  //     getCommerce({
+  //       ...paginateParams,
+  //       caesar: caesar_id,
+  //     }).then((res) => {
+  //       setPaginatedInventory(res)
+  //       setLoading(false)
+  //     })
+  //   }
+  // }, [paginateParams, caesar_id, valid])
+
+  const fetchCommerce = useCallback(
+    () =>
       getCommerce({
         ...paginateParams,
         caesar: caesar_id,
-      }).then((res) => {
-        setPaginatedInventory(res)
-        setLoading(false)
-      })
+      }),
+    [paginateParams, caesar_id]
+  )
+
+  const {
+    data: paginatedInventory,
+    error,
+    isValidating: loading,
+    // isValidating: commerceLoading,
+  } = useSWR<Paginated<Inventory>>(
+    () => {
+      if (caesar_id) {
+        return [caesar_id, paginateParams]
+      }
+      return undefined
+    },
+    // new URLSearchParams({ caesar_id, ...paginateParams }).toString(),
+    fetchCommerce,
+    {
+      revalidateOnFocus: false,
     }
-  }, [paginateParams, caesar_id, valid])
+  )
+
+  const { mutate } = useSWRConfig()
 
   const [selectedInventory, setSelectedInventory] = useState<undefined | Inventory>()
+
+  const revalidateECommerce = useCallback(() => {
+    mutate([caesar_id, 'e-commerce'])
+  }, [mutate, caesar_id])
+
+  const [inventory, setInventory] = useState<Inventory[] | undefined>()
+  const [inventoryMetadata, setInventoryMetadata] = useState<
+    Paginated<Inventory>['metadata'] | undefined
+  >()
+
+  useEffect(() => {
+    if (paginatedInventory) {
+      setInventory(paginatedInventory.data)
+      setInventoryMetadata(paginatedInventory.metadata)
+    }
+  }, [paginatedInventory])
+
+  // useEffect(() => {
+  //   console.log('useSWR isvalidating', loading)
+  // }, [loading])
   return (
     <div>
       <Container
@@ -211,9 +263,7 @@ export default function ECommerce({
             modal={() => {
               setSelectedInventory(undefined)
             }}
-            revalidateFunction={() => {
-              setValid(Date.now())
-            }}
+            revalidateFunction={revalidateECommerce}
           />
         ) : (
           <CircularProgress />

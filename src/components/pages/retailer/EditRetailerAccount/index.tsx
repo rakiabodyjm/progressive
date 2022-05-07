@@ -189,7 +189,7 @@ export default function EditRetailerAccount({
       })
       .catch((err: string[]) => {
         err.forEach((error) => {
-          dispatch({
+          dispatchNotif({
             type: NotificationTypes.ERROR,
             message: error,
           })

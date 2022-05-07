@@ -1,7 +1,6 @@
 import { Box, Container, Paper, Theme, Typography, useTheme } from '@material-ui/core'
 import UsersTable from '@src/components/UsersTable'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
-import { userDataSelector } from '@src/redux/data/userSlice'
+import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import { getAllPendingTransactions } from '@src/utils/api/pendingTransactionApi'
 import { PendingTransactionResponse } from '@src/utils/api/transactionApi'
@@ -21,12 +20,12 @@ export default function NotificationPageTable({
   as,
   caesar,
 }: {
-  as?: UserTypesAndUser
+  as?: UserTypes
   caesar?: string
   height?: number
 }) {
   const user = useSelector(userDataSelector)
-  // const [caesarTypes, setCaesarTypes] = useState<[UserTypesAndUser, string] | undefined>([])
+  // const [caesarTypes, setCaesarTypes] = useState<[UserTypes, string] | undefined>([])
   const theme: Theme = useTheme()
   const [selectedPendingTransaction, setSelectedPendingTransaction] = useState<null | string>(null)
   const [paginationParams, setPaginationParams] = useState<PaginateFetchParameters>({

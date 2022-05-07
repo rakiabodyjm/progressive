@@ -7,6 +7,7 @@ import { getUser } from '@src/redux/data/userSlice'
 import { useRouter } from 'next/router'
 import { AppProps } from 'next/dist/shared/lib/router/router'
 import Error from 'next/error'
+import { LoadingScreen2 } from '@components/LoadingScreen'
 
 axiosDefaults()
 export default function RouteGuard({
@@ -17,15 +18,7 @@ export default function RouteGuard({
   pageProps: any
 }) {
   const router = useRouter()
-  const dispatch = useDispatch()
   const user = useSelector((state: RootState) => state.user)
-  const [allowed, setAllowed] = useState(false)
-
-  // useEffect(() => {
-  //   if (user) {
-  //     dispatch(getUser())
-  //   }
-  // }, [])
   const checkPath = useMemo(() => {
     if (router.pathname.match(/\/admin\/./)) {
       if (user?.data.admin_id) {
@@ -62,6 +55,35 @@ export default function RouteGuard({
     return true
   }, [router.pathname, user])
 
-  console.log(checkPath)
-  return <>{checkPath ? <Component {...pageProps} /> : <Error statusCode={404} />}</>
+  if (user?.loading) {
+    return (
+      <LoadingScreen2
+        containerProps={{
+          // minHeight: 'calc(100vh - 64px)',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          left: 0,
+        }}
+        progressCircleProps={{
+          size: 72,
+        }}
+        textProps={{
+          variant: 'h4',
+          style: {
+            fontWeight: 600,
+          },
+        }}
+      />
+    )
+  }
+  return (
+    <>
+      {checkPath && user && !user?.loading ? (
+        <Component {...pageProps} />
+      ) : (
+        <Error statusCode={404} />
+      )}
+    </>
+  )
 }

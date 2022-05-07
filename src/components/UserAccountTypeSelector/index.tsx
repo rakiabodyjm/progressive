@@ -12,11 +12,12 @@ import {
   Typography,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
+import { UserTypes } from '@src/redux/data/userSlice'
 import { useIsMobile } from '@src/utils/hooks/useWidth'
 import clsx from 'clsx'
 import { useRef, useState } from 'react'
-const userTypesSorted: UserTypesAndUser[] = ['user', 'retailer', 'dsp', 'subdistributor', 'admin']
+
+const userTypesSorted: UserTypes[] = ['user', 'retailer', 'dsp', 'subdistributor', 'admin']
 
 const useStyles = makeStyles((theme: Theme) => ({
   accountTypeSelectorContainer: {
@@ -66,8 +67,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 type UserAccountTypeSelectorProps = {
-  activeUser: UserTypesAndUser
-  onChange: (changeUser: UserTypesAndUser) => void
+  activeUser: UserTypes
+  onChange: (changeUser: UserTypes) => void
 }
 export const DesktopUserAccountTypeSelector = ({
   activeUser,

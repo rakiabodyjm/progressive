@@ -25,7 +25,7 @@ import {
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { Asset, searchAsset } from '@src/utils/api/assetApi'
 import { useSelector } from 'react-redux'
-import { userDataSelector } from '@src/redux/data/userSlice'
+import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import {
   getWalletById,
   CaesarWalletResponse,
@@ -37,7 +37,6 @@ import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { useRouter } from 'next/router'
 import { grey } from '@material-ui/core/colors'
 import useSWR from 'swr'
-import { UserTypesAndUser } from '@src/pages/admin/accounts'
 import AsyncButton from '@src/components/AsyncButton'
 import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
 import { searchUser, UserResponse } from '@src/utils/api/userApi'
