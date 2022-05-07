@@ -4,6 +4,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  makeStyles,
   Theme,
   Tooltip,
   Typography,
@@ -13,6 +14,7 @@ import { useTheme } from '@material-ui/styles'
 import { nanoid } from '@reduxjs/toolkit'
 import type { MultipleMainMenuItemType } from '@src/components/NavigationLayout/Drawer/MainMenuItems'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
+import { useIsMobile } from '@src/utils/hooks/useWidth'
 import { useRef, useState } from 'react'
 
 export default function RenderSubListItem({
@@ -29,6 +31,7 @@ export default function RenderSubListItem({
   const theme: Theme = useTheme()
 
   const listitemRef = useRef<HTMLDivElement | null>()
+  const isMobile = useIsMobile()
 
   return (
     <div
@@ -44,7 +47,7 @@ export default function RenderSubListItem({
           top: listitemRef.current?.clientHeight,
           right: 0,
           bottom: 0,
-          left: 16,
+          left: isMobile ? 8 : 16,
         }}
       />
       <Tooltip
@@ -97,7 +100,7 @@ export default function RenderSubListItem({
                   width: 8,
                   height: 2,
                   top: '50%',
-                  left: 18,
+                  left: isMobile ? 8 : 18,
                   right: 0,
                   bottom: 0,
                   background: theme.palette.primary.main,
@@ -107,7 +110,7 @@ export default function RenderSubListItem({
               <RenderListItem
                 style={{
                   padding: 8,
-                  paddingLeft: 32,
+                  paddingLeft: isMobile ? 16 : 32,
                 }}
                 open={open}
                 {...ea}
