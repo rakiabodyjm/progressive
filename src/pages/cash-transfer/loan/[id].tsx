@@ -14,13 +14,16 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core'
-import { CloseOutlined, MonetizationOn } from '@material-ui/icons'
+import { Cancel, CloseOutlined, Edit, MonetizationOn, MoreVert } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
+import AsyncButton from '@src/components/AsyncButton'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import CashTransferList from '@src/components/pages/cash-transfer/CashTransferList'
 import LoanPaymentTypeTransaction from '@src/components/pages/cash-transfer/CreateLoanPaymentTypeTransaction'
+import EditLoanDetailsModal from '@src/components/pages/cash-transfer/EditLoanDetailsModal'
+import { PopUpMenu } from '@src/components/PopUpMenu'
 import RoleBadge from '@src/components/RoleBadge'
 import { formatIntoCurrency, formatIntoReadableDate } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
@@ -28,13 +31,15 @@ import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 
 export default function ViewLoanPage() {
   const theme: Theme = useTheme()
   const { query } = useRouter()
   const { id } = query
+
+  const [editMode, setEditMode] = useState<boolean>(false)
 
   const {
     data: cashTransferData,
@@ -106,87 +111,77 @@ export default function ViewLoanPage() {
           <Box p={2}>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <Paper variant="outlined">
-                  <Box p={2}>
-                    <Box display="flex" width="100%" justifyContent="space-between" mb={2}>
-                      <Typography
-                        style={{
-                          display: 'block',
-                          alignSelf: 'flex-end',
-                        }}
-                        color="textSecondary"
-                        variant="body2"
-                      >
-                        {cashTransferData?.id.split('-')[0]}
-                      </Typography>
-                      <Typography
-                        style={{
-                          display: 'block',
-                          alignSelf: 'flex-end',
-                        }}
-                        color="textSecondary"
-                        variant="body2"
-                      >
-                        {formatIntoReadableDate(cashTransferData?.created_at || Date.now())}
-                      </Typography>
-                    </Box>
-                    <RoleBadge disablePopUp variant="body1" color="primary">
-                      {caesar?.account_type.toUpperCase()}
-                    </RoleBadge>
-                    <Typography variant="h4">Loan Details</Typography>
-                    <Typography variant="body2">{caesar?.description.toUpperCase()}</Typography>
-
-                    <Typography variant="caption"></Typography>
-
-                    <Typography
-                      style={{
-                        marginTop: 16,
-                        marginBottom: -8,
-                        display: 'block',
-                      }}
-                      variant="caption"
-                      color="primary"
-                    >
-                      Amount:{' '}
-                    </Typography>
-                    <Typography variant="h6">
-                      {formatIntoCurrency(cashTransferData?.amount || 0)}
-                    </Typography>
-                    {!!cashTransferData?.bank_charge && (
-                      <>
+                <Paper
+                  style={{
+                    padding: 16,
+                  }}
+                  variant="outlined"
+                >
+                  <Box display="flex" justifyContent="space-between">
+                    <Box flexGrow={1} mr={2}>
+                      <Box display="flex" width="100%" justifyContent="space-between" mb={2}>
                         <Typography
                           style={{
-                            marginBottom: -8,
                             display: 'block',
+                            alignSelf: 'flex-end',
                           }}
-                          variant="caption"
-                          color="primary"
+                          color="textSecondary"
+                          variant="body2"
                         >
-                          Fees:
+                          {cashTransferData?.id.split('-')[0]}
                         </Typography>
-                        <Typography variant="h6">
-                          {formatIntoCurrency(cashTransferData?.bank_charge)}
+                        <Typography
+                          style={{
+                            display: 'block',
+                            alignSelf: 'flex-end',
+                          }}
+                          color="textSecondary"
+                          variant="body2"
+                        >
+                          {formatIntoReadableDate(cashTransferData?.created_at || Date.now())}
+                          {/* {console.log(cashTransferData?.created_at)} */}
                         </Typography>
-                      </>
-                    )}
+                      </Box>
+                      <RoleBadge disablePopUp variant="body1" color="primary">
+                        {caesar?.account_type.toUpperCase()}
+                      </RoleBadge>
+                      <Typography variant="h4">Loan Details</Typography>
+                      <Typography variant="body2">{caesar?.description.toUpperCase()}</Typography>
 
-                    <>
+                      <Typography variant="caption"></Typography>
+
                       <Typography
                         style={{
+                          marginTop: 16,
                           marginBottom: -8,
                           display: 'block',
                         }}
                         variant="caption"
                         color="primary"
                       >
-                        Interest:
+                        Amount:{' '}
                       </Typography>
                       <Typography variant="h6">
-                        {cashTransferData?.interest || 0}%
-                        {/* {formatIntoCurrency(cashTransferData?.bank_charge)} */}
+                        {formatIntoCurrency(cashTransferData?.amount || 0)}
                       </Typography>
-                    </>
-                    {cashTransferData?.interest && cashTransferData?.amount && (
+                      {!!cashTransferData?.bank_charge && (
+                        <>
+                          <Typography
+                            style={{
+                              marginBottom: -8,
+                              display: 'block',
+                            }}
+                            variant="caption"
+                            color="primary"
+                          >
+                            Fees:
+                          </Typography>
+                          <Typography variant="h6">
+                            {formatIntoCurrency(cashTransferData?.bank_charge)}
+                          </Typography>
+                        </>
+                      )}
+
                       <>
                         <Typography
                           style={{
@@ -196,42 +191,78 @@ export default function ViewLoanPage() {
                           variant="caption"
                           color="primary"
                         >
-                          Interest Amount:
+                          Interest:
                         </Typography>
                         <Typography variant="h6">
-                          {formatIntoCurrency(
-                            (cashTransferData?.interest / 100) * cashTransferData?.amount
-                          )}
+                          {cashTransferData?.interest || 0}%
                           {/* {formatIntoCurrency(cashTransferData?.bank_charge)} */}
                         </Typography>
                       </>
-                    )}
-                    <Box my={2} />
-                    {cashTransferData?.total_amount && (
-                      <Box textAlign="right">
-                        <Typography
-                          style={{
-                            marginBottom: -8,
-                            display: 'block',
-                          }}
-                          variant="body2"
-                          color="primary"
+                      {cashTransferData?.interest && cashTransferData?.amount && (
+                        <>
+                          <Typography
+                            style={{
+                              marginBottom: -8,
+                              display: 'block',
+                            }}
+                            variant="caption"
+                            color="primary"
+                          >
+                            Interest Amount:
+                          </Typography>
+                          <Typography variant="h6">
+                            {formatIntoCurrency(
+                              (cashTransferData?.interest / 100) * cashTransferData?.amount
+                            )}
+                            {/* {formatIntoCurrency(cashTransferData?.bank_charge)} */}
+                          </Typography>
+                        </>
+                      )}
+                      <Box my={2} display="flex" justifyContent="flex-end" />
+                      {cashTransferData?.total_amount && (
+                        <Box textAlign="right">
+                          <Typography
+                            style={{
+                              marginBottom: -8,
+                              display: 'block',
+                            }}
+                            variant="body2"
+                            color="primary"
+                          >
+                            Loan Payable:
+                          </Typography>
+                          <Typography
+                            style={{
+                              fontWeight: 600,
+                            }}
+                            variant="h4"
+                          >
+                            {formatIntoCurrency(cashTransferData.total_amount - paidAmount)}
+                            {/* {formatIntoCurrency(cashTransferData?.bank_charge)} */}
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                    <Box>
+                      <>
+                        <Tooltip
+                          arrow
+                          placement="left"
+                          title={<Typography variant="body1">Edit Details</Typography>}
                         >
-                          Loan Payable:
-                        </Typography>
-                        <Typography
-                          style={{
-                            fontWeight: 600,
-                          }}
-                          variant="h4"
-                        >
-                          {formatIntoCurrency(cashTransferData.total_amount - paidAmount)}
-                          {/* {formatIntoCurrency(cashTransferData?.bank_charge)} */}
-                        </Typography>
-                      </Box>
-                    )}
+                          <IconButton
+                            onClick={() => {
+                              setEditMode(true)
+                            }}
+                          >
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    </Box>
                   </Box>
                 </Paper>
+
                 <Box my={2} />
                 <Paper variant="outlined">
                   <Box p={2}>
@@ -251,7 +282,6 @@ export default function ViewLoanPage() {
                 </Paper>
               </Grid>
               <Grid item xs={12} md={6}>
-                {/* <Paper> */}
                 <Box>
                   {!openRecordPayment && (
                     <Button
@@ -318,6 +348,15 @@ export default function ViewLoanPage() {
             </Grid>
           </Box>
         </Paper>
+        {editMode && (
+          <EditLoanDetailsModal
+            open={editMode}
+            onClose={() => {
+              setEditMode(false)
+            }}
+            loanDetails={cashTransferData}
+          />
+        )}
       </Container>
     </>
   )

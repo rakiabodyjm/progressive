@@ -4,6 +4,8 @@ import { Box, ListItem, Paper, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import CashTransferDetailsModal from '@src/components/pages/cash-transfer/CashTransferDetailsModal'
+import LoanDetailsModal from '@src/components/pages/cash-transfer/LoanDetailsModal'
 import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import {
@@ -16,6 +18,11 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
+
+type TransferTypeModal = {
+  open: boolean
+  transferData?: CashTransferResponse
+}
 
 export default function CashTransferList({
   caesarId,
@@ -73,6 +80,13 @@ export default function CashTransferList({
   )
   const theme: Theme = useTheme()
   const router = useRouter()
+
+  const [loanModal, setLoanModal] = useState<TransferTypeModal>({
+    open: false,
+  })
+  const [transferModal, setTransferModal] = useState<TransferTypeModal>({
+    open: false,
+  })
   return (
     <>
       <Box
@@ -104,9 +118,17 @@ export default function CashTransferList({
                   onClick={
                     cashTransfer.as === CashTransferAs.LOAN
                       ? () => {
-                          router.push(`/cash-transfer/loan/${cashTransfer?.id}`)
+                          setLoanModal({
+                            open: true,
+                            transferData: cashTransfer,
+                          })
                         }
-                      : undefined
+                      : () => {
+                          setTransferModal({
+                            open: true,
+                            transferData: cashTransfer,
+                          })
+                        }
                   }
                 >
                   <Box display="flex" width="100%" justifyContent="space-between">
@@ -234,6 +256,28 @@ export default function CashTransferList({
                 </ListItem>
               </Paper>
             ))}
+            {transferModal.open && (
+              <CashTransferDetailsModal
+                open={transferModal.open}
+                onClose={() => {
+                  setTransferModal({
+                    open: false,
+                  })
+                }}
+                cashTransferData={transferModal.transferData}
+              />
+            )}
+            {loanModal.open && (
+              <LoanDetailsModal
+                open={loanModal.open}
+                onClose={() => {
+                  setLoanModal({
+                    open: false,
+                  })
+                }}
+                loanData={loanModal.transferData}
+              />
+            )}
           </>
         ) : loadingCashTransfers ? (
           <LoadingScreen2
