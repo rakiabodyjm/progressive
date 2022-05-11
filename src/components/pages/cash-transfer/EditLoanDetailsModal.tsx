@@ -71,7 +71,7 @@ export default function EditLoanDetailsModal({
       `${newDate.year}-${newDate.month.padStart(2, '0')}-${newDate.date.padStart(
         2,
         '0'
-      )}T${newDate.hour.padStart(2, '0')}:${newDate.minutes}`
+      )}T${newDate.hour.padStart(2, '0')}:${newDate.minutes.padStart(2, '0')}`
     )
   }, [newDate.minutes])
 
