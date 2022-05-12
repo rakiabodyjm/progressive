@@ -14,7 +14,16 @@ export default function FormNumberField({
 
   useEffect(() => {
     onChangeLocal(Number(inputValue?.replace(/[^0-9.]/g, '') || 0))
+    console.log('changed in Input Value:', inputValue)
   }, [inputValue])
+
+  useEffect(() => {
+    console.log('DETECTED CHANGED IN VALUE:', value)
+
+    if (!value) {
+      setInputValue(undefined)
+    }
+  }, [value])
 
   return (
     <>
@@ -42,35 +51,37 @@ export default function FormNumberField({
 
           setInputValue(inputString)
         }}
-        value={inputValue
-          ?.replace(/[^0-9.]/g, '')
-          ?.split('')
-          ?.reduce((acc, char, index, array) => {
-            const hasDecimal = array.includes('.')
-            const whole = hasDecimal ? [...array].splice(0, array.indexOf('.')) : [...array]
-            const decimal = hasDecimal
-              ? [...array].splice(array.indexOf('.'), array.length - 1)
-              : undefined
+        value={
+          inputValue
+            ?.replace(/[^0-9.]/g, '')
+            ?.split('')
+            ?.reduce((acc, char, index, array) => {
+              const hasDecimal = array.includes('.')
+              const whole = hasDecimal ? [...array].splice(0, array.indexOf('.')) : [...array]
+              const decimal = hasDecimal
+                ? [...array].splice(array.indexOf('.'), array.length - 1)
+                : undefined
 
-            if (whole.length >= 4) {
-              // const isCommaPlaced = false
+              if (whole.length >= 4) {
+                // const isCommaPlaced = false
 
-              return [...whole]
-                .reverse()
-                .reduce<string[]>((ac, ch, ind, ar) => {
-                  if ((ind + 1) % 3 === 0 && ind !== ar.length - 1) {
-                    return [...ac, ...[ch, ',']]
-                  }
-                  return [...ac, ch]
-                }, [])
-                .reverse()
-                .concat(decimal || [])
-                .join('')
-            }
-            return acc + char
+                return [...whole]
+                  .reverse()
+                  .reduce<string[]>((ac, ch, ind, ar) => {
+                    if ((ind + 1) % 3 === 0 && ind !== ar.length - 1) {
+                      return [...ac, ...[ch, ',']]
+                    }
+                    return [...ac, ch]
+                  }, [])
+                  .reverse()
+                  .concat(decimal || [])
+                  .join('')
+              }
+              return acc + char
 
-            // return acc + char
-          }, '')}
+              // return acc + char
+            }, '') || ''
+        }
       />
     </>
   )
