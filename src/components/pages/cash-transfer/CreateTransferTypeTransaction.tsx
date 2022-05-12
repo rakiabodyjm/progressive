@@ -124,47 +124,55 @@ const TransferTypeTransaction = ({
       submit()
       return
     }
-    axios
-      .post('/cash-transfer/transfer', {
-        ...formValues,
-      })
-      .then((res) => {
-        console.log('type: transfer | res.data', res.data)
-        dispatchNotif({
-          type: NotificationTypes.SUCCESS,
-          message: `Cash Transfer Success`,
+    if (transferForm.amount !== 0) {
+      axios
+        .post('/cash-transfer/transfer', {
+          ...formValues,
         })
-        setTransferForm({
-          amount: 0,
-          caesar_bank_from: transferForm.caesar_bank_from,
-          from: transferForm.from,
-          caesar_bank_to: undefined,
-          description: '',
-          as: CashTransferAs.TRANSFER,
-          bank_fee: undefined,
-          to: undefined,
-          message: '',
-        })
-        setResetValue(Date.now())
-      })
-      .catch((err) => {
-        extractMultipleErrorFromResponse(err).forEach((ea) => {
+        .then((res) => {
+          console.log('type: transfer | res.data', res.data)
           dispatchNotif({
-            type: NotificationTypes.ERROR,
-            message: ea,
+            type: NotificationTypes.SUCCESS,
+            message: `Cash Transfer Success`,
+          })
+          setTransferForm({
+            amount: 0,
+            caesar_bank_from: transferForm.caesar_bank_from,
+            from: transferForm.from,
+            caesar_bank_to: undefined,
+            description: '',
+            as: CashTransferAs.TRANSFER,
+            bank_fee: undefined,
+            to: undefined,
+            message: '',
+          })
+          setResetValue(Date.now())
+        })
+        .catch((err) => {
+          extractMultipleErrorFromResponse(err).forEach((ea) => {
+            dispatchNotif({
+              type: NotificationTypes.ERROR,
+              message: ea,
+            })
           })
         })
+        .finally(() => {
+          setLoading(false)
+          if (caesar_bank_from?.id) {
+            mutate(`/cash-transfer/caesar-bank/${caesar_bank_from.id}`, null, true)
+          }
+          if (caesar_bank_to?.id) {
+            mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
+          }
+          mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
+        })
+    } else {
+      dispatchNotif({
+        type: NotificationTypes.ERROR,
+        message: `Amount cannot be empty`,
       })
-      .finally(() => {
-        setLoading(false)
-        if (caesar_bank_from?.id) {
-          mutate(`/cash-transfer/caesar-bank/${caesar_bank_from.id}`, null, true)
-        }
-        if (caesar_bank_to?.id) {
-          mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
-        }
-        mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
-      })
+      setLoading(false)
+    }
   }, [transferForm, dispatchNotif, submit, mutate])
 
   useEffect(() => {
