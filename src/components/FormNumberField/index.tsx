@@ -58,7 +58,7 @@ export default function FormNumberField({
               return [...whole]
                 .reverse()
                 .reduce<string[]>((ac, ch, ind, ar) => {
-                  if ((ind + 1) % 3 === 0) {
+                  if ((ind + 1) % 3 === 0 && ind !== ar.length - 1) {
                     return [...ac, ...[ch, ',']]
                   }
                   return [...ac, ch]
