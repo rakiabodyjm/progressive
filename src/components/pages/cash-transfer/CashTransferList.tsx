@@ -118,10 +118,7 @@ export default function CashTransferList({
                   onClick={
                     cashTransfer.as === CashTransferAs.LOAN_PAYMENT
                       ? () => {
-
                           router.push(`/cash-transfer/loan/${cashTransfer.loan?.id}`)
-                          
-
                         }
                       : cashTransfer.as === CashTransferAs.LOAN
                       ? () => {
@@ -146,7 +143,9 @@ export default function CashTransferList({
                       }}
                       variant="caption"
                     >
-                      {cashTransfer.id.split('-')[0]}
+                      {cashTransfer?.ref_num
+                        ? cashTransfer?.ref_num
+                        : cashTransfer?.id.split('-')[0]}
                     </Typography>
                     <Typography
                       style={{

@@ -32,9 +32,7 @@ export default function CashTransferDetailsModal({
             <Box display="flex" justifyContent="space-between">
               <Box>
                 <FormLabel>Transaction Type:</FormLabel>
-                <Typography variant="h5" color="primary">
-                  {cashTransferData?.as}
-                </Typography>
+                <Typography variant="h5">{cashTransferData?.as}</Typography>
               </Box>
               <Box>
                 <IconButton onClick={onClose}>
@@ -46,11 +44,19 @@ export default function CashTransferDetailsModal({
             <Box>
               <Grid container spacing={1}>
                 <Grid item xs={12}>
-                  <Divider style={{ marginTop: 2, marginBottom: 2 }} />
+                  <Divider style={{ marginTop: 8, marginBottom: 8 }} />
                 </Grid>
                 {/* <Grid item xs={6}>
                 <Typography>{cashTransferData?.id.split('-')[0]}</Typography>
               </Grid> */}
+                <Grid item xs={12}>
+                  <FormLabel>Reference Number / ID:</FormLabel>
+                  <Typography>
+                    {cashTransferData?.ref_num
+                      ? cashTransferData?.ref_num
+                      : cashTransferData?.id.split('-')[0]}
+                  </Typography>
+                </Grid>
                 <Grid item xs={12}>
                   <FormLabel>Date of Transaction:</FormLabel>
                   <Typography>

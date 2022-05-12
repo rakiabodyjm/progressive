@@ -80,5 +80,7 @@ export type CashTransferResponse = {
   loan?: CashTransferResponse
 
   // interest_amount: number
+  ref_num: string
+
   total_amount: number
 }

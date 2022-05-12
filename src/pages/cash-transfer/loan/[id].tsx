@@ -128,7 +128,9 @@ export default function ViewLoanPage() {
                           color="textSecondary"
                           variant="body2"
                         >
-                          {cashTransferData?.id.split('-')[0]}
+                          {cashTransferData?.ref_num
+                            ? cashTransferData?.ref_num
+                            : cashTransferData?.id.split('-')[0]}
                         </Typography>
                         <Typography
                           style={{
