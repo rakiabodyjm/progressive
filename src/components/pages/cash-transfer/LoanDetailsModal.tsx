@@ -32,9 +32,7 @@ export default function LoanDetailsModal({
             <Box display="flex" justifyContent="space-between">
               <Box>
                 <FormLabel>Transaction Type:</FormLabel>
-                <Typography variant="h5" color="primary">
-                  {loanData?.as}
-                </Typography>
+                <Typography variant="h5">{loanData?.as}</Typography>
               </Box>
               <Box>
                 <IconButton onClick={onClose}>
@@ -62,11 +60,19 @@ export default function LoanDetailsModal({
 
                   <Grid item xs={6}>
                     <FormLabel>From:</FormLabel>
-                    <Typography>{loanData?.caesar_bank_from.description}</Typography>
+                    <Typography>
+                      {loanData?.caesar_bank_from.description ||
+                        loanData?.from?.description ||
+                        'ERROR'}
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <FormLabel>To:</FormLabel>
-                    <Typography>{loanData?.caesar_bank_to.description}</Typography>
+                    <Typography>
+                      {loanData?.caesar_bank_to?.description ||
+                        loanData?.to?.description ||
+                        'ERROR'}
+                    </Typography>
                   </Grid>
 
                   <Grid item xs={6}>
