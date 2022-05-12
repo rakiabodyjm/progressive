@@ -1,12 +1,19 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-redeclare */
 import { Box, Button, Divider, Grid, IconButton, Paper, Typography } from '@material-ui/core'
 import { CloseOutlined } from '@material-ui/icons'
 import FormLabel from '@src/components/FormLabel'
+import FormNumberField from '@src/components/FormNumberField'
 import FormTextField from '@src/components/FormTextField'
 import ModalWrapper from '@src/components/ModalWrapper'
-import { formatIntoReadableDate } from '@src/utils/api/common'
+import { NotificationTypes } from '@src/redux/data/notificationSlice'
+import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
+import useNotification from '@src/utils/hooks/useNotification'
+import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
-import { previousTuesday } from 'date-fns'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import axios, { AxiosError } from 'axios'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { useSWRConfig } from 'swr'
 
 type UpdateFormTypes = {
   override_interest?: number
@@ -64,7 +71,7 @@ export default function EditLoanDetailsModal({
   }
   useEffect(() => {
     computeDate(loanDetails?.created_at.toString())
-  }, [])
+  }, [loanDetails?.created_at])
 
   useEffect(() => {
     setConvertedDate(
@@ -73,7 +80,41 @@ export default function EditLoanDetailsModal({
         '0'
       )}T${newDate.hour.padStart(2, '0')}:${newDate.minutes.padStart(2, '0')}`
     )
-  }, [newDate.minutes])
+  }, [newDate])
+
+  const { mutate } = useSWRConfig()
+  const { submit, error, loading, response } = useSubmitFormData({
+    submitFunction: () =>
+      axios
+        .patch(`/cash-transfer/${loanDetails?.id}`, {
+          override_interest: updateForms?.override_interest,
+          created_at: updateForms?.created_at,
+        })
+        .finally(() => {
+          mutate(`/cash-transfer/${loanDetails?.id}`, null, true)
+        }),
+  })
+
+  const notify = useNotification()
+  useEffect(() => {
+    if (error) {
+      extractMultipleErrorFromResponse(error as AxiosError).forEach((err) => {
+        notify({
+          type: NotificationTypes.ERROR,
+          message: err,
+        })
+      })
+    }
+  }, [error, notify])
+
+  useEffect(() => {
+    if (response) {
+      notify({
+        type: NotificationTypes.SUCCESS,
+        message: `Loan Updated Successfully`,
+      })
+    }
+  }, [response, notify])
 
   return (
     <ModalWrapper open={open} onClose={onClose} containerSize="xs">
@@ -96,19 +137,28 @@ export default function EditLoanDetailsModal({
 
             <Box>
               <Box>
-                <Grid item xs={12}>
+                <Box my={2}>
                   <Divider style={{ marginTop: 5, marginBottom: 5 }} />
-                </Grid>
+                </Box>
 
                 <Grid container spacing={1}>
                   <Grid item xs={4}>
                     <FormLabel>Interest rate:</FormLabel>
-                    <FormTextField
-                      name="interest"
+                    <FormNumberField
+                      onChange={(newValue) => {
+                        setUpdateForms((prev) => ({
+                          ...prev,
+                          override_interest: newValue,
+                        }))
+                      }}
+                      value={updateForms?.override_interest}
+                    />
+                    {/* <FormTextField
+                      name="override_interest"
                       size="small"
                       value={updateForms.override_interest}
                       onChange={handleChange}
-                    ></FormTextField>
+                    ></FormTextField> */}
                   </Grid>
                   <Grid item xs={8}>
                     <FormLabel>Date Created:</FormLabel>
@@ -118,14 +168,14 @@ export default function EditLoanDetailsModal({
                       size="small"
                       value={convertedDate}
                       onChange={handleChange}
-                    ></FormTextField>
+                    />
                   </Grid>
                 </Grid>
               </Box>
             </Box>
             <Box display="flex" justifyContent="flex-end">
               <Box mt={2}>
-                <Button color="primary" variant="contained" onClick={() => {}}>
+                <Button color="primary" variant="contained" onClick={submit}>
                   Update
                 </Button>
               </Box>
