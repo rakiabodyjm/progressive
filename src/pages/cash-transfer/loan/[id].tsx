@@ -118,33 +118,57 @@ export default function ViewLoanPage() {
                   variant="outlined"
                 >
                   <Box display="flex" justifyContent="space-between" position="relative">
-                    <Box flexGrow={1} mr={2}>
-                      <Box display="flex" width="100%" justifyContent="space-between" mb={2}>
-                        <Typography
-                          style={{
-                            display: 'block',
-                            alignSelf: 'flex-end',
-                          }}
-                          color="textSecondary"
-                          variant="body2"
+                    <Box flexGrow={1}>
+                      <Box
+                        display="flex"
+                        alignItems="flex-start"
+                        justifyContent="space-between"
+                        width="100%"
+                      >
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          width="100%"
+                          justifyContent="space-between"
+                          mb={2}
                         >
-                          {cashTransferData?.ref_num
-                            ? cashTransferData?.ref_num
-                            : cashTransferData?.id.split('-')[0]}
-                        </Typography>
-                        <Typography
-                          style={{
-                            display: 'block',
-                            alignSelf: 'flex-end',
-                            marginRight: 50,
-                          }}
-                          color="textSecondary"
-                          variant="body2"
+                          <Typography
+                            style={{
+                              display: 'block',
+                            }}
+                            color="textSecondary"
+                            variant="body2"
+                          >
+                            {cashTransferData?.ref_num
+                              ? cashTransferData?.ref_num
+                              : cashTransferData?.id.split('-')[0]}
+                          </Typography>
+                          <Typography
+                            style={{
+                              display: 'block',
+                            }}
+                            color="textSecondary"
+                            variant="body2"
+                          >
+                            {formatIntoReadableDate(cashTransferData?.created_at || Date.now())}
+                            {/* {console.log(cashTransferData?.created_at)} */}
+                          </Typography>
+                        </Box>
+                        <Tooltip
+                          arrow
+                          placement="left"
+                          title={<Typography variant="body1">Edit Details</Typography>}
                         >
-                          {formatIntoReadableDate(cashTransferData?.created_at || Date.now())}
-                          {/* {console.log(cashTransferData?.created_at)} */}
-                        </Typography>
+                          <IconButton
+                            onClick={() => {
+                              setEditMode(true)
+                            }}
+                          >
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
                       </Box>
+
                       <RoleBadge disablePopUp variant="body1" color="primary">
                         {caesar?.account_type.toUpperCase()}
                       </RoleBadge>
@@ -246,30 +270,19 @@ export default function ViewLoanPage() {
                         </Box>
                       )}
                     </Box>
-                    <Box
+                    {/* <Box
                       style={{
                         position: 'absolute',
                         top: 0,
                         width: '100%',
+                        zIndex: 0,
                       }}
                       textAlign="end"
                     >
                       <>
-                        <Tooltip
-                          arrow
-                          placement="left"
-                          title={<Typography variant="body1">Edit Details</Typography>}
-                        >
-                          <IconButton
-                            onClick={() => {
-                              setEditMode(true)
-                            }}
-                          >
-                            <Edit />
-                          </IconButton>
-                        </Tooltip>
+                        
                       </>
-                    </Box>
+                    </Box> */}
                   </Box>
                 </Paper>
 
@@ -375,24 +388,35 @@ export default function ViewLoanPage() {
 const fetchCashTransferWithCompleteCaesar = async (cashTransferProps: CashTransferResponse) => {
   const [from, to] = await axios.all([
     axios
-      .get(`/caesar/${cashTransferProps?.from?.id || cashTransferProps.caesar_bank_from.caesar.id}`)
+      .get(
+        `/caesar/${cashTransferProps?.from?.id || cashTransferProps?.caesar_bank_from?.caesar?.id}`
+      )
       .then((res) => res.data),
     axios
-      .get(`/caesar/${cashTransferProps?.to?.id || cashTransferProps.caesar_bank_to}`)
+      .get(`/caesar/${cashTransferProps?.to?.id || cashTransferProps?.caesar_bank_to?.caesar?.id}`)
       .then((res) => res.data),
   ])
 
-  return {
+  const fetchReturn = {
     ...cashTransferProps,
-    caesar_bank_from: {
-      ...cashTransferProps.caesar_bank_from,
-      caesar: from,
-    },
-    caesar_bank_to: {
-      ...cashTransferProps.caesar_bank_to,
-      caesar: to,
-    },
+    ...(cashTransferProps?.caesar_bank_from && {
+      caesar_bank_from: {
+        ...cashTransferProps.caesar_bank_from,
+        caesar: from,
+      },
+    }),
+
+    ...(cashTransferProps?.caesar_bank_to && {
+      caesar_bank_to: {
+        ...cashTransferProps.caesar_bank_to,
+        caesar: to,
+      },
+    }),
+
     from,
     to,
   } as CashTransferResponse
+
+  // console.log('fetfcrEturn', fetchReturn)
+  return fetchReturn
 }
