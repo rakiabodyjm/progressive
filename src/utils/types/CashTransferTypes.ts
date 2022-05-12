@@ -77,6 +77,10 @@ export type CashTransferResponse = {
 
   remaining_balance_to: number
 
+  loan?: CashTransferResponse
+
   // interest_amount: number
+  ref_num: string
+
   total_amount: number
 }

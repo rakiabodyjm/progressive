@@ -9,7 +9,7 @@ import { previousTuesday } from 'date-fns'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 type UpdateFormTypes = {
-  interest?: number
+  override_interest?: number
   created_at?: string
 }
 type NewDateType = {
@@ -38,7 +38,7 @@ export default function EditLoanDetailsModal({
   })
   const [convertedDate, setConvertedDate] = useState<string>()
   const [updateForms, setUpdateForms] = useState<UpdateFormTypes>({
-    interest: loanDetails?.interest,
+    override_interest: loanDetails?.interest,
     created_at: convertedDate,
   })
 
@@ -106,7 +106,7 @@ export default function EditLoanDetailsModal({
                     <FormTextField
                       name="interest"
                       size="small"
-                      value={updateForms.interest}
+                      value={updateForms.override_interest}
                       onChange={handleChange}
                     ></FormTextField>
                   </Grid>

@@ -117,7 +117,7 @@ export default function ViewLoanPage() {
                   }}
                   variant="outlined"
                 >
-                  <Box display="flex" justifyContent="space-between">
+                  <Box display="flex" justifyContent="space-between" position="relative">
                     <Box flexGrow={1} mr={2}>
                       <Box display="flex" width="100%" justifyContent="space-between" mb={2}>
                         <Typography
@@ -128,12 +128,15 @@ export default function ViewLoanPage() {
                           color="textSecondary"
                           variant="body2"
                         >
-                          {cashTransferData?.id.split('-')[0]}
+                          {cashTransferData?.ref_num
+                            ? cashTransferData?.ref_num
+                            : cashTransferData?.id.split('-')[0]}
                         </Typography>
                         <Typography
                           style={{
                             display: 'block',
                             alignSelf: 'flex-end',
+                            marginRight: 50,
                           }}
                           color="textSecondary"
                           variant="body2"
@@ -243,7 +246,14 @@ export default function ViewLoanPage() {
                         </Box>
                       )}
                     </Box>
-                    <Box>
+                    <Box
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        width: '100%',
+                      }}
+                      textAlign="end"
+                    >
                       <>
                         <Tooltip
                           arrow
