@@ -38,7 +38,7 @@ const ToCaesarBankAutoComplete = ({
     initialQuery={undefined}
     fetcher={(params) => searchCaesarBank(params).then((res) => (filter ? filter(res) : res))}
     getOptionLabel={(option) =>
-      `${option.description} - ${option.caesar?.description || ''} ${
+      `${option?.description} - ${option.caesar?.description || ''} ${
         option?.account_number ? `- ${option.account_number}` : ''
       }`
     }
@@ -46,7 +46,7 @@ const ToCaesarBankAutoComplete = ({
       <Box display="flex" flexDirection="column">
         <Typography display="block" variant="body2">{`${option.description}`}</Typography>
         <Typography variant="caption" color="primary">
-          {option.caesar.description}{' '}
+          {option.caesar?.description || ''}
         </Typography>
         {option?.account_number && (
           <Typography variant="caption" color="textSecondary">
