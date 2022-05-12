@@ -9,7 +9,7 @@ const useSubmitFormData = ({ submitFunction }: { submitFunction: () => Promise<u
   const submit = useCallback(() => {
     setError(undefined)
     setLoading(true)
-
+    setResponse(undefined)
     submitFunction()
       .then((res) => {
         setResponse(res)

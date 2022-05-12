@@ -13,7 +13,7 @@ import ToCaesarBankAutoComplete, {
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { CaesarWalletResponse } from '@src/utils/api/walletApi'
+import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
 import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
@@ -31,6 +31,7 @@ const TransferTypeTransaction = ({
   const [transferForm, setTransferForm] = useState<{
     amount?: number
     caesar_bank_from?: CaesarBank
+    from?: CaesarWalletResponse
     // caesar_bank_to?: CaesarBank
     description?: string
     as?: CashTransferAs
@@ -45,11 +46,14 @@ const TransferTypeTransaction = ({
     description: undefined,
     as: CashTransferAs.TRANSFER,
     bank_fee: undefined,
+    from: undefined,
     to: undefined,
     message: undefined,
   })
+
   const [resetValue, setResetValue] = useState<number>()
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
+  const [fromCaesaeEnabled, setFromCaesaeEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const dispatchNotif = useNotification()
 
@@ -91,14 +95,25 @@ const TransferTypeTransaction = ({
   })
 
   const handleSubmit = useCallback(() => {
-    const { caesar_bank_from, amount, as, description, bank_fee, to, caesar_bank_to, message } =
-      transferForm
+    const {
+      caesar_bank_from,
+      amount,
+      as,
+      description,
+      bank_fee,
+      to,
+      caesar_bank_to,
+      message,
+      from,
+    } = transferForm
+
     const formValues = {
       amount,
       caesar_bank_from: caesar_bank_from?.id,
       caesar_bank_to: transferForm?.caesar_bank_to?.id,
       to: transferForm?.to?.id,
       as,
+      from: from?.id,
       description,
       bank_fee,
       message,
@@ -109,46 +124,55 @@ const TransferTypeTransaction = ({
       submit()
       return
     }
-    axios
-      .post('/cash-transfer/transfer', {
-        ...formValues,
-      })
-      .then((res) => {
-        console.log('type: transfer | res.data', res.data)
-        dispatchNotif({
-          type: NotificationTypes.SUCCESS,
-          message: `Cash Transfer Success`,
+    if (transferForm.amount !== 0) {
+      axios
+        .post('/cash-transfer/transfer', {
+          ...formValues,
         })
-        setTransferForm({
-          amount: 0,
-          caesar_bank_from: transferForm.caesar_bank_from,
-          caesar_bank_to: undefined,
-          description: '',
-          as: CashTransferAs.TRANSFER,
-          bank_fee: undefined,
-          to: undefined,
-          message: '',
-        })
-        setResetValue(Date.now())
-      })
-      .catch((err) => {
-        extractMultipleErrorFromResponse(err).forEach((ea) => {
+        .then((res) => {
+          console.log('type: transfer | res.data', res.data)
           dispatchNotif({
-            type: NotificationTypes.ERROR,
-            message: ea,
+            type: NotificationTypes.SUCCESS,
+            message: `Cash Transfer Success`,
+          })
+          setTransferForm({
+            amount: 0,
+            caesar_bank_from: transferForm.caesar_bank_from,
+            from: transferForm.from,
+            caesar_bank_to: undefined,
+            description: '',
+            as: CashTransferAs.TRANSFER,
+            bank_fee: undefined,
+            to: undefined,
+            message: '',
+          })
+          setResetValue(Date.now())
+        })
+        .catch((err) => {
+          extractMultipleErrorFromResponse(err).forEach((ea) => {
+            dispatchNotif({
+              type: NotificationTypes.ERROR,
+              message: ea,
+            })
           })
         })
+        .finally(() => {
+          setLoading(false)
+          if (caesar_bank_from?.id) {
+            mutate(`/cash-transfer/caesar-bank/${caesar_bank_from.id}`, null, true)
+          }
+          if (caesar_bank_to?.id) {
+            mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
+          }
+          mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
+        })
+    } else {
+      dispatchNotif({
+        type: NotificationTypes.ERROR,
+        message: `Amount cannot be empty`,
       })
-      .finally(() => {
-        setLoading(false)
-        if (caesar_bank_from?.id) {
-          mutate(`/cash-transfer/caesar-bank/${caesar_bank_from.id}`, null, true)
-        }
-        if (caesar_bank_to?.id) {
-          mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
-        }
-        mutate(`/caesar/${caesar_bank_from?.caesar?.id}`, null, true)
-      })
+      setLoading(false)
+    }
   }, [transferForm, dispatchNotif, submit, mutate])
 
   useEffect(() => {
@@ -183,18 +207,76 @@ const TransferTypeTransaction = ({
       <Box my={2}>
         <Divider />
       </Box>
+
       <Box>
-        <FormLabel>From Bank Account</FormLabel>
-        <ToCaesarBankAutoComplete
-          onChange={(caesarBank: CaesarBank) => {
-            setTransferForm((prev) => ({
-              ...prev,
-              caesar_bank_from: caesarBank,
-            }))
-          }}
-          defaultValue={transferForm.caesar_bank_from}
-          disabled={!!caesar_bank_from}
-        />
+        <Box my={2}></Box>
+        {fromCaesaeEnabled ? (
+          <>
+            <FormLabel>From Caesar Account</FormLabel>
+            <ToCaesarAutoComplete
+              onChange={(caesarSelected) => {
+                setTransferForm((prev) => ({
+                  ...prev,
+                  from: caesarSelected,
+                }))
+              }}
+              filter={(res) => res.filter((ea) => ea.id !== caesar_bank_from?.caesar.id)}
+              defaultValue={transferForm.from}
+              value={transferForm.from}
+              key={transferForm.amount}
+              disabled={!!caesar_bank_from?.caesar}
+            />
+          </>
+        ) : (
+          <>
+            <FormLabel>From Bank Account</FormLabel>
+            <ToCaesarBankAutoComplete
+              onChange={(caesarBank: CaesarBank) => {
+                setTransferForm((prev) => ({
+                  ...prev,
+                  caesar_bank_from: caesarBank,
+                }))
+              }}
+              defaultValue={transferForm.caesar_bank_from}
+              disabled={!!caesar_bank_from}
+            />
+          </>
+        )}
+        <Tooltip
+          arrow
+          placement="right"
+          title={
+            <Typography variant="subtitle2">Record as Transaction to User without bank</Typography>
+          }
+        >
+          <Link
+            component="button"
+            color="textSecondary"
+            variant="caption"
+            onClick={() => {
+              if (caesar_bank_from?.caesar.id && !fromCaesaeEnabled) {
+                getWalletById(caesar_bank_from?.caesar.id).then((res) => {
+                  setTransferForm((prev) => ({
+                    ...prev,
+                    from: res,
+                    caesar_bank_from: undefined,
+                  }))
+                  setFromCaesaeEnabled(true)
+                })
+              } else {
+                setTransferForm((prev) => ({
+                  ...prev,
+                  from: undefined,
+                  caesar_bank_from,
+                }))
+                setFromCaesaeEnabled(false)
+              }
+            }}
+          >
+            {fromCaesaeEnabled ? `Use Bank Account instead` : `Use Caesar Account instead`}
+          </Link>
+        </Tooltip>
+
         <Box my={2}></Box>
         {toCaesarEnabled ? (
           <>

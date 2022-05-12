@@ -56,9 +56,17 @@ const LoanTypeTransaction = ({
       axios
         .post('/cash-transfer/loan', {
           ...transferForm,
-          caesar_bank_to: transferForm?.caesar_bank_to?.id,
+          // caesar_bank_to:  transferForm?.caesar_bank_to?.id,
           caesar_bank_from: transferForm?.caesar_bank_from?.id,
-          to: transferForm?.caesar_bank_to?.caesar.id,
+          // to: transferForm?.caesar_bank_to?.caesar.id,
+
+          ...(toCaesarEnabled
+            ? {
+                to: transferForm?.to?.id || undefined,
+              }
+            : {
+                caesar_bank_to: transferForm?.caesar_bank_to?.id || undefined,
+              }),
         })
         .then((res) => res.data)
         .catch((err) => {
@@ -73,7 +81,7 @@ const LoanTypeTransaction = ({
             mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
           }
         }),
-    [transferForm, caesar_bank_from, caesar_bank_to, mutate]
+    [transferForm, caesar_bank_from, caesar_bank_to, mutate, toCaesarEnabled]
   )
 
   const {
@@ -86,20 +94,9 @@ const LoanTypeTransaction = ({
   })
 
   const handleSubmit = useCallback(() => {
-    const { caesar_bank_from, amount, as, description, bank_fee, to, caesar_bank_to } = transferForm
-    const formValues = {
-      amount,
-      caesar_bank_from: caesar_bank_from?.id,
-      caesar_bank_to: transferForm?.caesar_bank_to?.id,
-      to: transferForm?.to?.id,
-      as,
-      description,
-      bank_fee,
-    }
-
     setLoading(true)
     submit()
-  }, [transferForm, submit])
+  }, [submit])
 
   useEffect(() => {
     setLoading(loanLoading)
@@ -130,7 +127,21 @@ const LoanTypeTransaction = ({
       })
       setResetValue(Date.now())
     }
-  }, [error, response, dispatchNotif])
+  }, [error, response, dispatchNotif, caesar_bank_from])
+
+  useEffect(() => {
+    if (toCaesarEnabled) {
+      setTransferForm((prev) => ({
+        ...prev,
+        caesar_bank_to: undefined,
+      }))
+    } else {
+      setTransferForm((prev) => ({
+        ...prev,
+        to: undefined,
+      }))
+    }
+  }, [toCaesarEnabled])
 
   return (
     <>

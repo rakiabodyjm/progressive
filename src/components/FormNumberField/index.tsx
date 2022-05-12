@@ -14,12 +14,9 @@ export default function FormNumberField({
 
   useEffect(() => {
     onChangeLocal(Number(inputValue?.replace(/[^0-9.]/g, '') || 0))
-    console.log('changed in Input Value:', inputValue)
   }, [inputValue])
 
   useEffect(() => {
-    console.log('DETECTED CHANGED IN VALUE:', value)
-
     if (!value) {
       setInputValue(undefined)
     }
