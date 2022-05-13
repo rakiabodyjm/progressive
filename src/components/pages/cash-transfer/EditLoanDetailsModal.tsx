@@ -1,6 +1,17 @@
-/* eslint-disable no-underscore-dangle */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable no-undef */
 /* eslint-disable no-redeclare */
-import { Box, Button, Divider, Grid, IconButton, Paper, Typography } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Link,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 import { CloseOutlined } from '@material-ui/icons'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
@@ -12,11 +23,11 @@ import useNotification from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import axios, { AxiosError } from 'axios'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 type UpdateFormTypes = {
-  override_interest?: number
+  override_interest?: number | null
   created_at?: string
 }
 type NewDateType = {
@@ -44,7 +55,12 @@ export default function EditLoanDetailsModal({
     minutes: '',
   })
   const [convertedDate, setConvertedDate] = useState<string>()
+
   const [updateForms, setUpdateForms] = useState<UpdateFormTypes>({
+    override_interest: loanDetails?.interest,
+    created_at: convertedDate,
+  })
+  const defaultUpdateFormsRef = useRef<typeof updateForms>({
     override_interest: loanDetails?.interest,
     created_at: convertedDate,
   })
@@ -82,17 +98,39 @@ export default function EditLoanDetailsModal({
     )
   }, [newDate])
 
+  const formatter = useCallback(
+    (param: typeof updateForms) =>
+      Object.entries(param).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          ...(value !== defaultUpdateFormsRef?.current?.[key as keyof typeof updateForms] && {
+            [key]: value,
+          }),
+        }),
+        {} as typeof updateForms
+      ),
+    []
+  )
+
   const { mutate } = useSWRConfig()
-  const { submit, error, loading, response } = useSubmitFormData({
-    submitFunction: () =>
-      axios
-        .patch(`/cash-transfer/${loanDetails?.id}`, {
+
+  const submitFunction = useCallback(() => {
+    console.log('updateForms', updateForms)
+    return axios
+      .patch(
+        `/cash-transfer/${loanDetails?.id}`,
+        formatter({
           override_interest: updateForms?.override_interest,
           created_at: updateForms?.created_at,
         })
-        .finally(() => {
-          mutate(`/cash-transfer/${loanDetails?.id}`, null, true)
-        }),
+      )
+      .finally(() => {
+        mutate(`/cash-transfer/${loanDetails?.id}`, null, true)
+      })
+  }, [loanDetails, updateForms, mutate, formatter])
+
+  const { submit, error, loading, response } = useSubmitFormData({
+    submitFunction,
   })
 
   const notify = useNotification()
@@ -115,6 +153,37 @@ export default function EditLoanDetailsModal({
       })
     }
   }, [response, notify])
+
+  // const [isResetInterest, setIsResetInterest] = useState<boolean>(false)
+
+  const handleResetInterest = useCallback(() => {
+    // setUpdateForms((prev) => ({
+    //   ...prev,
+    //   override_interest: null,
+    // }))
+    // submit()
+    axios
+      .patch(`/cash-transfer/${loanDetails?.id}`, {
+        override_interest: null,
+      })
+      .then(() => {
+        notify({
+          type: NotificationTypes.SUCCESS,
+          message: `Loan Interest Updated`,
+        })
+      })
+      .catch((err) => {
+        extractMultipleErrorFromResponse(err as AxiosError).forEach((err) => {
+          notify({
+            type: NotificationTypes.ERROR,
+            message: err,
+          })
+        })
+      })
+      .finally(() => {
+        mutate(`/cash-transfer/${loanDetails?.id}`, null, true)
+      })
+  }, [loanDetails])
 
   return (
     <ModalWrapper open={open} onClose={onClose} containerSize="xs">
@@ -142,7 +211,7 @@ export default function EditLoanDetailsModal({
                 </Box>
 
                 <Grid container spacing={1}>
-                  <Grid item xs={4}>
+                  <Grid item xs={12} sm={4}>
                     <FormLabel>Interest rate:</FormLabel>
                     <FormNumberField
                       onChange={(newValue) => {
@@ -151,7 +220,7 @@ export default function EditLoanDetailsModal({
                           override_interest: newValue,
                         }))
                       }}
-                      value={updateForms?.override_interest}
+                      value={updateForms?.override_interest || undefined}
                     />
                     {/* <FormTextField
                       name="override_interest"
@@ -159,8 +228,12 @@ export default function EditLoanDetailsModal({
                       value={updateForms.override_interest}
                       onChange={handleChange}
                     ></FormTextField> */}
+                    <ResetInterestRateLink
+                      onClick={handleResetInterest}
+                      // toggled={isResetInterest}
+                    />
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={12} sm={8}>
                     <FormLabel>Date Created:</FormLabel>
                     <FormTextField
                       type="datetime-local"
@@ -186,3 +259,20 @@ export default function EditLoanDetailsModal({
     </ModalWrapper>
   )
 }
+
+const ResetInterestRateLink = ({ onClick }: { onClick: () => void }) => (
+  <Tooltip
+    arrow
+    placement="left"
+    title={
+      <Typography variant="subtitle2">
+        {/* Record as Transaction to {!toggled ? 'Caesar' : `Caesar's Bank Account`}{' '} */}
+        Reset interest rate back to daily calculated amount
+      </Typography>
+    }
+  >
+    <Link component="button" color="textSecondary" variant="caption" onClick={onClick}>
+      Reset Interest Rate
+    </Link>
+  </Tooltip>
+)
