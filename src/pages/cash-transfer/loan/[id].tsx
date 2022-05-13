@@ -57,8 +57,8 @@ export default function ViewLoanPage() {
     isValidating: caesarLoading,
     error: caesarError,
   } = useSWR(
-    cashTransferData?.caesar_bank_to?.caesar?.id
-      ? `/caesar/${cashTransferData.caesar_bank_to.caesar.id}`
+    cashTransferData?.caesar_bank_to?.caesar?.id || cashTransferData?.to?.id
+      ? `/caesar/${cashTransferData?.caesar_bank_to?.caesar.id || cashTransferData?.to?.id}`
       : undefined,
     (url) => axios.get(url).then((res) => res.data as CaesarWalletResponse)
   )
