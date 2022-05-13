@@ -1,11 +1,11 @@
 {
-  "name": "Realm1000 Corporation",
-  "short_name": "Realm1000 DITO",
-  "description": "DITO | REALM1000 Sim Packages",
-  "theme_color": "#ed8332",
+  "name": "REALM1000 PROJECT ALPHA",
+  "short_name": "TELCO",
+  "description": "REALM1000 Web App for User, ECommerce, Wallet and CashTransfer management",
+  "theme_color": "#ec5b2b",
   "background_color": "#0F254C",
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/cash-transfer",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

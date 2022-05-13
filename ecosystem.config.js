@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'REALM1000 Telco Frontend',
+      name: 'REALM1000 ALPHA FRONTEND',
       script: './server.js',
       exec_mode: 'cluster',
       instances: 2,
