@@ -2,11 +2,8 @@ import { Box, Divider, Grid, IconButton, Paper, Typography } from '@material-ui/
 import { CloseOutlined } from '@material-ui/icons'
 import FormLabel from '@src/components/FormLabel'
 import ModalWrapper from '@src/components/ModalWrapper'
-import RoleBadge from '@src/components/RoleBadge'
-import { formatIntoCurrency, formatIntoReadableDate } from '@src/utils/api/common'
-import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
-import axios from 'axios'
-import useSWR from 'swr'
+import { formatIntoReadableDate } from '@src/utils/api/common'
+import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 
 export default function CashTransferDetailsModal({
   open,
@@ -66,11 +63,15 @@ export default function CashTransferDetailsModal({
 
                 <Grid item xs={6}>
                   <FormLabel>From:</FormLabel>
-                  <Typography>{cashTransferData?.caesar_bank_from.description}</Typography>
+                  <Typography>
+                    {cashTransferData?.caesar_bank_from?.description || 'ERROR'}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <FormLabel>To:</FormLabel>
-                  <Typography>{cashTransferData?.caesar_bank_to.description}</Typography>
+                  <Typography>
+                    {cashTransferData?.caesar_bank_to?.description || 'ERROR'}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <FormLabel>Bank Fee:</FormLabel>
@@ -82,7 +83,7 @@ export default function CashTransferDetailsModal({
                 </Grid>
                 <Grid item xs={12}>
                   <FormLabel>Description:</FormLabel>
-                  <Typography noWrap>{cashTransferData?.description}</Typography>
+                  <Typography noWrap>{cashTransferData?.description || 'ERROR'}</Typography>
                 </Grid>
               </Grid>
             </Box>

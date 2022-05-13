@@ -160,7 +160,9 @@ export default function CashTransferList({
 
                   <Typography>
                     {isSender(cashTransfer)
-                      ? cashTransfer?.caesar_bank_to?.description || cashTransfer?.to?.description
+                      ? cashTransfer?.caesar_bank_to?.description ||
+                        cashTransfer?.to?.description ||
+                        'ERROR'
                       : cashTransfer?.caesar_bank_from?.description ||
                         cashTransfer?.from?.description ||
                         'ERROR'}
