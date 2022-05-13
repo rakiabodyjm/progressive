@@ -15,4 +15,3 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
 }
-module.exports = nextConfig

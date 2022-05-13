@@ -220,7 +220,7 @@ export default function CaesarIndexPage() {
                                     borderTopRightRadius: 4,
                                   }}
                                   p={2}
-                                  mt={2}
+                                  // mt={2}
                                 >
                                   <RoleBadge disablePopUp uppercase>
                                     {accountType}
