@@ -46,7 +46,7 @@ export default function CashTransferList({
     error: errorCashTransfers,
   } = useSWR(
     caesarId || caesarBankId || loanId
-      ? `cash-transfer?${objectToURLQuery({
+      ? `/cash-transfer?${objectToURLQuery({
           ...queryParameters,
           caesar: caesarId,
           caesar_bank: caesarBankId,
