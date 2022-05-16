@@ -66,37 +66,6 @@ export const CashTransferBalancesTable = ({
   const formatter = useCallback(
     (param: CaesarWalletResponse[]) =>
       param.map(({ id, description, account_type, cash_transfer_balance, bank_accounts }) => {
-        if (disabledKeys) {
-          return Object.entries({
-            id,
-            name: description,
-            account_type,
-            bank_accounts,
-            balance: formatIntoCurrency(cash_transfer_balance),
-            bank_balances: formatIntoCurrency(
-              bank_accounts.reduce((acc, ea) => acc + ea.balance, 0)
-            ),
-          }).reduce((acc, [key, value]) => {
-            if (
-              disabledKeys.includes(
-                key as
-                  | 'id'
-                  | 'name'
-                  | 'account_type'
-                  | 'bank_accounts'
-                  | 'balance'
-                  | 'bank_balances'
-              )
-            ) {
-              return { ...acc }
-            }
-            return {
-              ...acc,
-
-              [key]: value,
-            }
-          }, {} as Partial<Record<'id' | 'name' | 'account_type' | 'bank_accounts' | 'balance' | 'bank_balances', unknown>>)
-        }
         const returnValue = {
           id,
           name: description,
@@ -108,7 +77,7 @@ export const CashTransferBalancesTable = ({
         }
         return returnValue
       }),
-    []
+    [disabledKeys]
   )
   const fetcher = useCallback(
     () =>
@@ -235,7 +204,7 @@ export const CashTransferBalancesTable = ({
                             setLimit={setQueryState('limit')}
                             setPage={setQueryState('page')}
                             total={ceasarMetaData?.total || 0}
-                            hiddenFields={['id', 'account_type']}
+                            hiddenFields={['id', 'account_type', ...(disabledKeys || [])]}
                             onRowClick={(e, data) => {
                               const id = (data as { id: string })?.id
                               router.push({
