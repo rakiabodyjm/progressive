@@ -335,7 +335,11 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
             <Box my={2}>
               <Divider />
             </Box>
-            <CreateOrUpdateCaesarBank mutate={mutateCaesarBanks} caesar={caesarID as string} />
+            <CreateOrUpdateCaesarBank
+              onClose={handleAddCaesarModalClose}
+              mutate={mutateCaesarBanks}
+              caesar={caesarID as string}
+            />
           </Box>
         </Paper>
       </ModalWrapper>
