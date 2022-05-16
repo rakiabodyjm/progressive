@@ -17,6 +17,7 @@ import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
+import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
 import CreateOrUpdateCaesarBank from '@src/components/pages/cash-transfer/CreateOrUpdateCaesarBank'
 import RoleBadge from '@src/components/RoleBadge'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
@@ -67,7 +68,9 @@ export default function CashTransferDSP() {
         <Box p={2}>
           <Box>
             {currentUser?.roles.map((role) => (
-              <RoleBadge uppercase>{role}</RoleBadge>
+              <RoleBadge style={{ marginRight: 8 }} uppercase>
+                {role}
+              </RoleBadge>
             ))}
             <Typography variant="h4">Cash Transfer</Typography>
             <Typography variant="body1" color="primary">
@@ -103,7 +106,6 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
     retailer: '',
   })
   const [caesarWalletID, setCaesarWalletID] = useState('')
-  console.log(caesarId)
   useEffect(() => {
     caesarWallet.map((ea) => setCaesarId((prev) => ({ ...prev, [ea[0]]: ea[1] })))
   }, [caesarWallet])
@@ -116,7 +118,6 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
     caesarFetcher(caesarID as unknown as string)
   )
 
-  console.log(caesarID)
   const {
     data,
     error,
@@ -139,11 +140,11 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
   }, [])
 
   const currentUser = useSelector(userDataSelector)
-  const user = useSWR(
-    currentUser?.user_id ? `/user/${currentUser?.user_id}` : null,
-    () => getUser(currentUser!.user_id),
-    {}
-  )
+  // const user = useSWR(
+  //   currentUser?.user_id ? `/user/${currentUser?.user_id}` : null,
+  //   () => getUser(currentUser!.user_id),
+  //   {}
+  // )
   const router = useRouter()
 
   if (error) {
@@ -308,6 +309,10 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
                 </List>
               </Box>
             </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <CashTransferBalancesTable disabledKeys={['bank_balances', 'balance']} />
           </Grid>
         </Grid>
       </Box>
