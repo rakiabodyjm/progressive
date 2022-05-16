@@ -34,11 +34,12 @@ const LoanPaymentTypeTransaction = ({
   }>({
     id: cash_transfer?.id,
     caesar_bank_from: cash_transfer?.caesar_bank_to,
-    to: cash_transfer?.caesar_bank_from.caesar,
-    from: cash_transfer?.caesar_bank_to?.caesar,
     caesar_bank_to: cash_transfer?.caesar_bank_from,
+    from: undefined,
+    to: undefined,
     amount: undefined,
   })
+  console.log('FORM VALUES a HEAD', formValues)
 
   //   const [cash_transfer, set_cash_transfer] = useState<CashTransferResponse>(cashTransferProps)
 
@@ -96,8 +97,8 @@ const LoanPaymentTypeTransaction = ({
       _setFormValues({
         id: cash_transfer?.id,
         caesar_bank_from: cash_transfer?.caesar_bank_to,
-        from: cash_transfer?.caesar_bank_to?.caesar || cash_transfer?.to,
-        caesar_bank_to: undefined,
+        from: undefined,
+        caesar_bank_to: cash_transfer?.caesar_bank_from,
         to: undefined,
         amount: 0,
       })
@@ -106,31 +107,37 @@ const LoanPaymentTypeTransaction = ({
   }, [response, cash_transfer, dispatchNotif])
 
   useEffect(() => {
-    if (toCaesarEnabled) {
-      setFormValues('caesar_bank_to', undefined)
-      setFormValues('to', formValues?.caesar_bank_from?.caesar || cash_transfer?.from)
-    }
     if (fromCaesarEnabled) {
+      setFormValues('from', cash_transfer?.to || formValues?.caesar_bank_to?.caesar)
       setFormValues('caesar_bank_from', undefined)
-      setFormValues('from', formValues?.caesar_bank_to?.caesar || cash_transfer?.to)
+    } else {
+      setFormValues('caesar_bank_from', cash_transfer.caesar_bank_to)
+      setFormValues('from', undefined)
+    }
+    if (toCaesarEnabled) {
+      setFormValues('to', formValues?.caesar_bank_from?.caesar || cash_transfer?.from)
+      setFormValues('caesar_bank_to', undefined)
+    } else {
+      setFormValues('caesar_bank_to', cash_transfer.caesar_bank_from)
+      setFormValues('to', undefined)
     }
   }, [toCaesarEnabled, fromCaesarEnabled, setFormValues])
 
-  useEffect(() => {
-    if (!toCaesarEnabled && formValues?.caesar_bank_to) {
-      setFormValues('to', formValues?.caesar_bank_to?.caesar)
-    }
-    if (!fromCaesarEnabled && formValues?.caesar_bank_from) {
-      setFormValues('from', formValues?.caesar_bank_from?.caesar)
-    }
-  }, [
-    formValues.caesar_bank_from,
-    formValues.caesar_bank_to,
-    toCaesarEnabled,
-    fromCaesarEnabled,
-    setFormValues,
-    cash_transfer,
-  ])
+  // useEffect(() => {
+  //   if (!fromCaesarEnabled && formValues?.caesar_bank_from) {
+  //     setFormValues('from', formValues?.caesar_bank_from?.caesar)
+  //   }
+
+  //   if (!toCaesarEnabled && formValues?.caesar_bank_to) {
+  //   }
+  // }, [
+  //   formValues.caesar_bank_from,
+  //   formValues.caesar_bank_to,
+  //   toCaesarEnabled,
+  //   fromCaesarEnabled,
+  //   setFormValues,
+  //   cash_transfer,
+  // ])
 
   const dispatchError = useErrorNotification()
   const handleSubmit = useCallback(() => {
@@ -148,6 +155,8 @@ const LoanPaymentTypeTransaction = ({
     }
     submit()
   }, [formValues, dispatchError, submit])
+  console.log('FORM VALUES', formValues)
+  console.log('CASH TRANSFER VALUES', cash_transfer)
 
   return (
     <>
@@ -225,7 +234,7 @@ const LoanPaymentTypeTransaction = ({
               }}
               defaultValue={formValues.to}
               key={resetValue}
-              value={formValues.to}
+              value={cash_transfer?.from}
             />
           </>
         ) : (
@@ -235,8 +244,8 @@ const LoanPaymentTypeTransaction = ({
               onChange={(cbFrom) => {
                 setFormValues('caesar_bank_to', cbFrom)
               }}
-              defaultValue={formValues.caesar_bank_to}
-              value={formValues.caesar_bank_to}
+              defaultValue={formValues.caesar_bank_to || cash_transfer.caesar_bank_from}
+              value={cash_transfer.caesar_bank_from}
               key={resetValue}
             />
           </>
