@@ -55,7 +55,6 @@ export default function CashTransferDSP() {
     subdistributor: '',
     retailer: '',
   })
-  console.log(caesarId)
   useEffect(() => {
     caesarWallet.map((ea) => setCaesarId((prev) => ({ ...prev, [ea[0]]: ea[1] })))
   }, [caesarWallet])
@@ -68,7 +67,7 @@ export default function CashTransferDSP() {
         <Box p={2}>
           <Box>
             {currentUser?.roles.map((role) => (
-              <RoleBadge style={{ marginRight: 8 }} uppercase>
+              <RoleBadge key={role} style={{ marginRight: 8 }} uppercase>
                 {role}
               </RoleBadge>
             ))}
@@ -151,7 +150,6 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
     return <ErrorLoading />
   }
   //   const user = getUser()
-  console.log(data)
   return (
     <>
       <Box>
