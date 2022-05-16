@@ -116,18 +116,18 @@ const LoanTypeTransaction = ({
         type: NotificationTypes.SUCCESS,
         message: `Loan Created`,
       })
-      setTransferForm({
-        amount: 0,
-        caesar_bank_from,
+      setTransferForm((prev) => ({
+        ...prev,
+        amount: undefined,
         caesar_bank_to: undefined,
         description: '',
         as: CashTransferAs.LOAN,
         bank_fee: undefined,
         to: undefined,
-      })
+      }))
       setResetValue(Date.now())
     }
-  }, [error, response, dispatchNotif, caesar_bank_from])
+  }, [error, response])
 
   useEffect(() => {
     if (toCaesarEnabled) {
