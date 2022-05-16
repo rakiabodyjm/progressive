@@ -34,6 +34,7 @@ const LoanTypeTransaction = ({
     bank_fee?: number
     caesar_bank_to?: CaesarBank
     to?: CaesarWalletResponse
+    from?: CaesarWalletResponse
   }>({
     amount: undefined,
     caesar_bank_from,
@@ -42,6 +43,7 @@ const LoanTypeTransaction = ({
     as: CashTransferAs.LOAN,
     bank_fee: undefined,
     to: undefined,
+    from: undefined,
   })
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
@@ -95,6 +97,23 @@ const LoanTypeTransaction = ({
 
   const handleSubmit = useCallback(() => {
     setLoading(true)
+    if (!transferForm?.amount) {
+      dispatchNotif({
+        type: NotificationTypes.ERROR,
+        message: `Amount must not be empty or should be greater than 0`,
+      })
+      return
+    }
+
+    if (
+      !(transferForm?.caesar_bank_from || transferForm?.from) ||
+      !(transferForm?.caesar_bank_to || transferForm?.to)
+    ) {
+      dispatchNotif({
+        type: NotificationTypes.ERROR,
+        message: `Loan must have source and destination account`,
+      })
+    }
     submit()
   }, [submit])
 
@@ -111,6 +130,9 @@ const LoanTypeTransaction = ({
         })
       })
     }
+  }, [error])
+
+  useEffect(() => {
     if (response) {
       dispatchNotif({
         type: NotificationTypes.SUCCESS,
@@ -127,7 +149,7 @@ const LoanTypeTransaction = ({
       })
       setResetValue(Date.now())
     }
-  }, [error, response, dispatchNotif, caesar_bank_from])
+  }, [response])
 
   useEffect(() => {
     if (toCaesarEnabled) {

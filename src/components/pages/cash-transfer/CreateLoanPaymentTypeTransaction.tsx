@@ -129,11 +129,11 @@ const LoanPaymentTypeTransaction = ({
       dispatchError(`Amount must not be empty or should be greater than 0`)
       return
     }
-    if (!formValues?.from && !formValues?.caesar_bank_from) {
+    if (!formValues?.from || !formValues?.caesar_bank_from) {
       dispatchError(`Source Account must not be empty`)
       return
     }
-    if (!formValues?.to && !formValues?.caesar_bank_to) {
+    if (!formValues?.to || !formValues?.caesar_bank_to) {
       dispatchError(`Destination ACcount must not be empty`)
       return
     }
