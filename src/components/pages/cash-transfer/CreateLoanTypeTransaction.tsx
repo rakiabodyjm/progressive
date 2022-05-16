@@ -149,11 +149,7 @@ const LoanTypeTransaction = ({
       }))
       setResetValue(Date.now())
     }
-<<<<<<< HEAD
   }, [response])
-=======
-  }, [error, response])
->>>>>>> 2145afb72da768789966049bdb751df11670cec3
 
   useEffect(() => {
     if (toCaesarEnabled) {
