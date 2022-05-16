@@ -276,8 +276,9 @@ export const CashTransferBalancesTable = ({
                                         ?.sort((ea1, ea2) =>
                                           ea1.bank.name?.localeCompare(ea2.bank.name)
                                         )
-                                        .map((ea) => (
+                                        .map((ea, index) => (
                                           <RoleBadge
+                                            key={ea?.id || index}
                                             style={{
                                               marginTop: 4,
                                               marginRight: 4,
