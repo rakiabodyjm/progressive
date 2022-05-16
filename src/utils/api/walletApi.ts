@@ -192,7 +192,11 @@ export function getAllWallet({ account_type, ...allParams }: GetAllWalletParams)
     })
 }
 
-export function searchWalletV2(searchQuery: { searchQuery?: string } & PaginateFetchParameters) {
+export function searchWalletV2(
+  searchQuery: { searchQuery?: string } & PaginateFetchParameters & {
+      account_type?: UserTypes
+    }
+) {
   return axios
     .get('/caesar/search-v2', {
       params: {
