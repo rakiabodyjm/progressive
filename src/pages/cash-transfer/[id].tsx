@@ -177,7 +177,7 @@ export default function ViewCaesarPage() {
                           <Grid item xs={4}>
                             <FormLabel>Total Loan/Balance: </FormLabel>
 
-                            <Typography variant="body1">
+                            <Typography noWrap variant="body1">
                               ₱{' '}
                               {new Intl.NumberFormat('en-PH', {
                                 currency: 'PHP',
@@ -236,7 +236,7 @@ export default function ViewCaesarPage() {
                               <Grid item xs={4}>
                                 <FormLabel>Balance: </FormLabel>
 
-                                <Typography variant="body1">
+                                <Typography noWrap variant="body1">
                                   ₱{' '}
                                   {new Intl.NumberFormat('en-PH', {
                                     currency: 'PHP',
