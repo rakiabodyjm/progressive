@@ -293,7 +293,11 @@ export default function ViewCaesarPage() {
             <Box my={2}>
               <Divider />
             </Box>
-            <CreateOrUpdateCaesarBank mutate={mutateCaesarBanks} caesar={id as string} />
+            <CreateOrUpdateCaesarBank
+              onClose={handleAddCaesarModalClose}
+              mutate={mutateCaesarBanks}
+              caesar={id as string}
+            />
           </Box>
         </Paper>
       </ModalWrapper>
