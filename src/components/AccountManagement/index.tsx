@@ -234,6 +234,9 @@ export default function AccountManagement({
                           dspId={account.dsp.id}
                           subdistributorId={account.dsp.subdistributor.id}
                           role={userRole}
+                          mutate={() => {
+                            setModalOpen('retailer', false)
+                          }}
                         />
                         {/* <RetailerTable dspId={account.dsp.id} /> */}
                       </Paper>

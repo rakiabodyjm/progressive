@@ -454,6 +454,7 @@ const EditCaesarBankModal = ({
             </Box>
 
             <CreateOrUpdateCaesarBank
+              onClose={onClose}
               caesar={caesarBank!.caesar.id}
               mutate={mutate}
               updateValues={{

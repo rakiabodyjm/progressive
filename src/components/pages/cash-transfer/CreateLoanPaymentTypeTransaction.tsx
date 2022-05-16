@@ -34,11 +34,12 @@ const LoanPaymentTypeTransaction = ({
   }>({
     id: cash_transfer?.id,
     caesar_bank_from: cash_transfer?.caesar_bank_to,
-    to: cash_transfer?.caesar_bank_from.caesar,
-    from: cash_transfer?.caesar_bank_to?.caesar,
     caesar_bank_to: cash_transfer?.caesar_bank_from,
+    from: undefined,
+    to: undefined,
     amount: undefined,
   })
+  console.log('FORM VALUES a HEAD', formValues)
 
   //   const [cash_transfer, set_cash_transfer] = useState<CashTransferResponse>(cashTransferProps)
 
@@ -96,8 +97,8 @@ const LoanPaymentTypeTransaction = ({
       _setFormValues({
         id: cash_transfer?.id,
         caesar_bank_from: cash_transfer?.caesar_bank_to,
-        from: cash_transfer?.caesar_bank_to?.caesar || cash_transfer?.to,
-        caesar_bank_to: undefined,
+        from: undefined,
+        caesar_bank_to: cash_transfer?.caesar_bank_from,
         to: undefined,
         amount: 0,
       })
@@ -115,6 +116,7 @@ const LoanPaymentTypeTransaction = ({
       setFormValues('caesar_bank_to', cash_transfer?.caesar_bank_from)
     }
     if (fromCaesarEnabled) {
+      setFormValues('from', cash_transfer?.to || formValues?.caesar_bank_to?.caesar)
       setFormValues('caesar_bank_from', undefined)
       setFormValues('from', cash_transfer?.to)
     } else {
@@ -139,6 +141,8 @@ const LoanPaymentTypeTransaction = ({
     }
     submit()
   }, [formValues, dispatchError, submit])
+  console.log('FORM VALUES', formValues)
+  console.log('CASH TRANSFER VALUES', cash_transfer)
 
   return (
     <>
@@ -214,9 +218,8 @@ const LoanPaymentTypeTransaction = ({
                 // setFormValues('caesar_bank_from', cbFrom)
                 setFormValues('to', toCaesar)
               }}
-              defaultValue={formValues.to}
+              defaultValue={formValues?.to || cash_transfer?.from}
               key={resetValue}
-              value={formValues.to}
             />
           </>
         ) : (
@@ -226,8 +229,7 @@ const LoanPaymentTypeTransaction = ({
               onChange={(cbFrom) => {
                 setFormValues('caesar_bank_to', cbFrom)
               }}
-              defaultValue={formValues.caesar_bank_to}
-              value={formValues.caesar_bank_to}
+              defaultValue={formValues.caesar_bank_to || cash_transfer.caesar_bank_from}
               key={resetValue}
             />
           </>

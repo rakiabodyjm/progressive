@@ -23,11 +23,13 @@ const CreateOrUpdateCaesarBank = ({
   mutate,
   updateValues,
   updateValueId,
+  onClose,
 }: {
   mutate: KeyedMutator<Paginated<CaesarBank>> | KeyedMutator<CaesarBank>
   caesar: string
   updateValues?: Partial<Omit<CreateCaesarBank, 'id'>>
   updateValueId?: CaesarBank['id']
+  onClose: () => void
 }) => {
   const [formValues, setFormValues] = useState<Partial<Omit<CreateCaesarBank, 'id'>>>({
     bank: undefined,
@@ -62,6 +64,7 @@ const CreateOrUpdateCaesarBank = ({
         )
         .then((res) => {
           dispatchSuccess(`Caesar's Bank Account Updated`)
+          onClose()
         })
         .catch((err) => {
           extractMultipleErrorFromResponse(err).forEach((ea) => {
@@ -81,6 +84,13 @@ const CreateOrUpdateCaesarBank = ({
       })
       .then((res) => {
         dispatchSuccess(`Caesar Bank Created`)
+        setFormValues({
+          bank: undefined,
+          caesar,
+          description: '',
+          account_number: '',
+        })
+        onClose()
       })
       .catch((err) => {
         extractMultipleErrorFromResponse(err).forEach((ea) => {
@@ -149,6 +159,7 @@ const CreateOrUpdateCaesarBank = ({
           }}
           getOptionSelected={(val1, val2) => val1.id === val2.id}
           defaultValue={bankFetchValue}
+          key={formValues.caesar}
         />
       ) : (
         <Box display="flex" width="100%" alignItems="center" justifyContent="center">

@@ -11,22 +11,32 @@ type SearchRetailerTableProps =
       dspId: string
       subdistributorId?: never
       role?: string
+      mutate?: () => void
     }
   | {
       subdistributorId: string
       dspId?: never
       role?: string
+      mutate?: () => void
     }
   | {
       subdistributorId: string
       dspId: string
       role?: string
+      mutate?: () => void
+    }
+  | {
+      subdistributorId: string
+      dspId: string
+      role?: string
+      mutate?: () => void
     }
 
 export default function RetailerSearchTable({
   dspId,
   subdistributorId,
   role,
+  mutate,
 }: SearchRetailerTableProps) {
   const [searchDspRetailerQuery, setSearchDspRetailerQuery] = useState(' ')
   const [data, setData] = useState<RetailerResponseType[]>()
@@ -53,7 +63,7 @@ export default function RetailerSearchTable({
         setData(res)
       })
     }
-  }, [searchDspRetailerQuery, dspId, subdistributorId])
+  }, [mutate, searchDspRetailerQuery, dspId, subdistributorId])
   const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
 
   return (
