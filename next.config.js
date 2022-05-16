@@ -16,14 +16,24 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  useFileSystemPublicRoutes: false,
 }
 
-module.exports = withPWA({
-  ...nextConfig,
-  pwa: {
-    dest: 'public',
-    register: true,
-    scope: '/',
-  },
-})
+process.env.NODE_ENV === 'development'
+  ? (module.exports = nextConfig)
+  : (module.exports = withPWA({
+      ...nextConfig,
+      pwa: {
+        dest: 'public',
+        register: true,
+        scope: '/',
+      },
+    }))
+
+// module.exports = withPWA({
+//   ...nextConfig,
+//   pwa: {
+//     dest: 'public',
+//     register: true,
+//     scope: '/',
+//   },
+// })
