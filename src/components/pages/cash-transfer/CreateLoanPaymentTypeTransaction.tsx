@@ -218,9 +218,8 @@ const LoanPaymentTypeTransaction = ({
                 // setFormValues('caesar_bank_from', cbFrom)
                 setFormValues('to', toCaesar)
               }}
-              defaultValue={formValues.to}
+              defaultValue={formValues?.to || cash_transfer?.from}
               key={resetValue}
-              value={cash_transfer?.from}
             />
           </>
         ) : (
@@ -231,7 +230,6 @@ const LoanPaymentTypeTransaction = ({
                 setFormValues('caesar_bank_to', cbFrom)
               }}
               defaultValue={formValues.caesar_bank_to || cash_transfer.caesar_bank_from}
-              value={cash_transfer.caesar_bank_from}
               key={resetValue}
             />
           </>
