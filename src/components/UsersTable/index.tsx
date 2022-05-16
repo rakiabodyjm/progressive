@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import {
   TableContainer,
   Paper,
@@ -12,6 +13,7 @@ import {
   Typography,
   BoxProps,
   PaperProps,
+  TableCellProps,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
@@ -32,6 +34,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   renderCell,
   paperProps,
   hidePagination,
+  tableCellProps,
   // renderRow,
   ...restProps
 }: {
@@ -47,6 +50,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   renderCell?: Partial<Record<keyof T, (value: T[keyof T]) => JSX.Element>>
   paperProps?: PaperProps
   hidePagination?: true
+  tableCellProps?: Partial<Record<keyof T, TableCellProps>>
   /**
    * Render row according to override
    * Must include cells
@@ -150,7 +154,10 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
                   const value = row[ea]
                   return (
                     // eslint-disable-next-line react/no-array-index-key
-                    <TableCell key={`${value}-${index}`}>
+                    <TableCell
+                      key={`${value}-${index}`}
+                      {...(tableCellProps ? tableCellProps[ea] : {})}
+                    >
                       {renderComponent ? renderComponent(value) : value?.toString() || ''}
                       {/* {typeof value !== 'string'
                           ? (renderComponent && renderComponent(value)) || value?.toString() || ''
