@@ -114,20 +114,22 @@ export default function EditLoanDetailsModal({
 
   const { mutate } = useSWRConfig()
 
-  const submitFunction = useCallback(() => {
-    console.log('updateForms', updateForms)
-    return axios
-      .patch(
-        `/cash-transfer/${loanDetails?.id}`,
-        formatter({
-          override_interest: updateForms?.override_interest,
-          created_at: updateForms?.created_at,
-        })
-      )
-      .finally(() => {
-        mutate(`/cash-transfer/${loanDetails?.id}`, null, true)
-      })
-  }, [loanDetails, updateForms, mutate, formatter])
+  const submitFunction = useCallback(
+    () =>
+      axios
+        .patch(
+          `/cash-transfer/${loanDetails?.id}`,
+          formatter({
+            override_interest: updateForms?.override_interest,
+            created_at: updateForms?.created_at,
+          })
+        )
+        .finally(() => {
+          mutate(`/cash-transfer/${loanDetails?.id}`, null, true)
+          onClose()
+        }),
+    [loanDetails, updateForms, mutate, formatter]
+  )
 
   const { submit, error, loading, response } = useSubmitFormData({
     submitFunction,
@@ -182,6 +184,7 @@ export default function EditLoanDetailsModal({
       })
       .finally(() => {
         mutate(`/cash-transfer/${loanDetails?.id}`, null, true)
+        onClose()
       })
   }, [loanDetails])
 
