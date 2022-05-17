@@ -80,10 +80,28 @@ export default function CashTransferDSP() {
           <Box my={2}>
             <Divider />
           </Box>
-          {caesarId.admin && <CaesarAccount caesarID={caesarId.admin} />}
-          {caesarId.dsp && <CaesarAccount caesarID={caesarId.dsp} />}
-          {caesarId.retailer && <CaesarAccount caesarID={caesarId.retailer} />}
-          {caesarId.subdistributor && <CaesarAccount caesarID={caesarId.subdistributor} />}
+          <Grid container spacing={1}>
+            <Grid item md={6} xs={12}>
+              <Box mb={2}>{caesarId.admin && <CaesarAccount caesarID={caesarId.admin} />}</Box>
+              <Box mb={2}>
+                {caesarId.subdistributor && <CaesarAccount caesarID={caesarId.subdistributor} />}
+              </Box>
+              <Box mb={2}>{caesarId.dsp && <CaesarAccount caesarID={caesarId.dsp} />}</Box>
+              <Box mb={2}>
+                {caesarId.retailer && <CaesarAccount caesarID={caesarId.retailer} />}
+              </Box>
+            </Grid>
+            <Grid item md={6} xs={12}>
+              <Box mt={2}>
+                <CashTransferBalancesTable disabledKeys={['bank_balances', 'balance']} />
+              </Box>
+            </Grid>
+          </Grid>
+
+          {/* {caesarId.admin && <CaesarAccount caesarID={caesarId.admin} />}
+          {caesarId.dsp && <CaesarAccount caesarID={caesarId.dsp} />} */}
+          {/* {caesarId.retailer && <CaesarAccount caesarID={caesarId.retailer} />}
+          {caesarId.subdistributor && <CaesarAccount caesarID={caesarId.subdistributor} />} */}
         </Box>
       </Paper>
     </Container>
@@ -153,38 +171,84 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
   return (
     <>
       <Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <Paper>
-              <Box p={1.5}>
-                <Box>
-                  <Typography variant="h6" noWrap>
-                    Accounts
-                  </Typography>
-                  <Typography color="primary" variant="body2">
-                    Caesar Account and Banks that are linked to this Caesar Account
-                  </Typography>
-                  <Box textAlign="end">
-                    <IconButton
-                      onClick={() => {
-                        setAddCaesarBankModal(true)
-                      }}
-                    >
-                      <AddCircleOutlined />
-                    </IconButton>
-                  </Box>
-                </Box>
-
-                <Box my={1} mb={2}>
-                  <Divider />
-                </Box>
-                <List
-                  style={{
-                    display: 'grid',
-                    gap: 4,
+        <Paper>
+          <Box p={1.5}>
+            <Box>
+              <Typography variant="h6" noWrap>
+                Accounts
+              </Typography>
+              <Typography color="primary" variant="body2">
+                Caesar Account and Banks that are linked to this Caesar Account
+              </Typography>
+              <Box textAlign="end">
+                <IconButton
+                  onClick={() => {
+                    setAddCaesarBankModal(true)
                   }}
                 >
+                  <AddCircleOutlined />
+                </IconButton>
+              </Box>
+            </Box>
+
+            <Box my={1} mb={2}>
+              <Divider />
+            </Box>
+            <List
+              style={{
+                display: 'grid',
+                gap: 4,
+              }}
+            >
+              <ListItem
+                style={{
+                  border: theme.palette.divider,
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderRadius: 4,
+                  padding: 8,
+                }}
+                button
+                onClick={() => {
+                  router.push(`/cash-transfer/caesar/${caesarID}`)
+                }}
+              >
+                <Grid
+                  container
+                  spacing={1}
+                  style={{
+                    padding: 8,
+                  }}
+                >
+                  <Grid item xs={8}>
+                    <Typography
+                      variant="body1"
+                      style={{
+                        fontWeight: 700,
+                      }}
+                      color="primary"
+                    >
+                      {/* {caesar?.description} */}
+                      Caesar Account
+                    </Typography>
+                    <Typography variant="body2">{caesar?.description || ''}</Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <FormLabel>Total Loan/Balance: </FormLabel>
+
+                    <Typography variant="body1">
+                      ₱{' '}
+                      {new Intl.NumberFormat('en-PH', {
+                        currency: 'PHP',
+                      }).format(caesar?.cash_transfer_balance || 0)}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </ListItem>
+              {caesarBanks && caesarBanks?.length > 0 ? (
+                caesarBanks.map(({ id, bank, description, balance, account_number }) => (
                   <ListItem
+                    key={id}
                     style={{
                       border: theme.palette.divider,
                       borderWidth: 1,
@@ -194,7 +258,7 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
                     }}
                     button
                     onClick={() => {
-                      router.push(`/cash-transfer/caesar/${caesarID}`)
+                      router.push(`/cash-transfer/bank/${id}`)
                     }}
                   >
                     <Grid
@@ -212,107 +276,53 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
                           }}
                           color="primary"
                         >
-                          {/* {caesar?.description} */}
-                          Caesar Account
+                          {bank.name}
                         </Typography>
-                        <Typography variant="body2">{caesar?.description || ''}</Typography>
+                        {account_number && (
+                          <>
+                            <Typography variant="caption" color="textSecondary" component="span">
+                              {account_number}
+                            </Typography>
+                          </>
+                        )}
+
+                        <Typography variant="body2">{description || ''}</Typography>
                       </Grid>
                       <Grid item xs={4}>
-                        <FormLabel>Total Loan/Balance: </FormLabel>
+                        <FormLabel>Balance: </FormLabel>
 
                         <Typography variant="body1">
                           ₱{' '}
                           {new Intl.NumberFormat('en-PH', {
                             currency: 'PHP',
-                          }).format(caesar?.cash_transfer_balance || 0)}
+                          }).format(balance || 0)}
                         </Typography>
                       </Grid>
                     </Grid>
                   </ListItem>
-                  {caesarBanks && caesarBanks?.length > 0 ? (
-                    caesarBanks.map(({ id, bank, description, balance, account_number }) => (
-                      <ListItem
-                        key={id}
-                        style={{
-                          border: theme.palette.divider,
-                          borderWidth: 1,
-                          borderStyle: 'solid',
-                          borderRadius: 4,
-                          padding: 8,
-                        }}
-                        button
-                        onClick={() => {
-                          router.push(`/cash-transfer/bank/${id}`)
-                        }}
-                      >
-                        <Grid
-                          container
-                          spacing={1}
-                          style={{
-                            padding: 8,
-                          }}
-                        >
-                          <Grid item xs={8}>
-                            <Typography
-                              variant="body1"
-                              style={{
-                                fontWeight: 700,
-                              }}
-                              color="primary"
-                            >
-                              {bank.name}
-                            </Typography>
-                            {account_number && (
-                              <>
-                                <Typography
-                                  variant="caption"
-                                  color="textSecondary"
-                                  component="span"
-                                >
-                                  {account_number}
-                                </Typography>
-                              </>
-                            )}
+                ))
+              ) : (
+                <Paper
+                  style={{
+                    padding: 32,
+                    textAlign: 'center',
+                    background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                  }}
+                  variant="outlined"
+                >
+                  <Typography variant="body1" color="textSecondary">
+                    No Banks linked Found
+                  </Typography>
+                </Paper>
+                // <LoadingScreen2 />
+              )}
+            </List>
+          </Box>
+        </Paper>
 
-                            <Typography variant="body2">{description || ''}</Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <FormLabel>Balance: </FormLabel>
-
-                            <Typography variant="body1">
-                              ₱{' '}
-                              {new Intl.NumberFormat('en-PH', {
-                                currency: 'PHP',
-                              }).format(balance || 0)}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </ListItem>
-                    ))
-                  ) : (
-                    <Paper
-                      style={{
-                        padding: 32,
-                        textAlign: 'center',
-                        background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
-                      }}
-                      variant="outlined"
-                    >
-                      <Typography variant="body1" color="textSecondary">
-                        No Banks linked Found
-                      </Typography>
-                    </Paper>
-                    // <LoadingScreen2 />
-                  )}
-                </List>
-              </Box>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
             <CashTransferBalancesTable disabledKeys={['bank_balances', 'balance']} />
-          </Grid>
-        </Grid>
+          </Grid> */}
       </Box>
 
       <ModalWrapper
