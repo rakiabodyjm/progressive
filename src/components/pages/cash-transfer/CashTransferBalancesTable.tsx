@@ -251,7 +251,13 @@ export const CashTransferBalancesTable = ({
                         return accum
                       }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
                     )
-                      ?.sort(([key1], [key2]) => key1.localeCompare(key2))
+                      .filter((ea) => {
+                        if (!account?.admin && account?.dsp) {
+                          return ea[0] !== 'admin' && ea[0] !== 'subdistributor'
+                        }
+                        return ea
+                      })
+                      .sort(([key1], [key2]) => key1.localeCompare(key2))
                       .map(([accountType, caesarValues]) => (
                         <Box
                           style={{
