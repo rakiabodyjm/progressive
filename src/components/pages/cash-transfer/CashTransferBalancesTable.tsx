@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AddCircleOutlined, CloseOutlined } from '@material-ui/icons'
+import { AccountBoxRounded, AddCircleOutlined, CloseOutlined } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
@@ -21,12 +21,13 @@ import CreateRetailerShortcutModal from '@src/components/pages/retailer/CreateRe
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
+import { userDataSelector, UserTypes, UserTypesWithCashTransfer } from '@src/redux/data/userSlice'
 import { formatIntoCurrency } from '@src/utils/api/common'
 import { getDsp } from '@src/utils/api/dspApi'
 import { getSubdistributor } from '@src/utils/api/subdistributorApi'
 import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
 import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
+import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 import useNotification from '@src/utils/hooks/useNotification'
 import { Bank, CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
@@ -149,10 +150,12 @@ export const CashTransferBalancesTable = ({
         })
     }
   }, [dispatch, user])
+  const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
 
   if (error) {
     return <ErrorLoading />
   }
+
   return (
     <>
       <Paper variant="outlined" {...paperProps} style={{ display: 'relative' }}>
@@ -289,12 +292,28 @@ export const CashTransferBalancesTable = ({
                             hiddenFields={['id', 'account_type', ...(disabledKeys || [])]}
                             onRowClick={(e, data) => {
                               const id = (data as { id: string })?.id
-                              router.push({
-                                pathname: '/cash-transfer/[id]',
-                                query: {
-                                  id,
-                                },
-                              })
+                              if (isEligible) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+                              if (
+                                user?.roles &&
+                                (user?.roles as UserTypesWithCashTransfer[])?.includes(
+                                  'dsp' as UserTypesWithCashTransfer
+                                ) &&
+                                ['user', 'retailer'].includes(data.account_type)
+                              ) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
                             }}
                             hidePagination
                             tableCellProps={{
