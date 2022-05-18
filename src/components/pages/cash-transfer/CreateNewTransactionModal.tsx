@@ -18,19 +18,14 @@ import { useMemo } from 'react'
 const CreateNewTransactionModal = ({
   open,
   onClose,
-  disabledKeysProps,
   onSelect,
 }: {
   open: boolean
   onClose: () => void
-  disabledKeysProps?: TransferTypes[]
   onSelect?: (param: CashTransferAs) => void
 }) => {
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
-  const disabledKeys = useMemo(
-    () => [...(disabledKeysProps || []), ...(isEligible ? [] : ['withdraw', 'deposit'])],
-    [disabledKeysProps, isEligible]
-  )
+  const disabledKeys = useMemo(() => [...(isEligible ? [] : ['DEPOSIT', 'WITHDRAW'])], [isEligible])
 
   const theme = useTheme()
   const transactionTypes = useMemo<
@@ -67,7 +62,10 @@ const CreateNewTransactionModal = ({
         //   title: 'Loan Payment',
         //   description: 'Record Loan Payment Transactions',
         // },
-      ].filter((ea) => (disabledKeys ? !disabledKeys.includes(ea.id as CashTransferAs) : true)),
+      ].filter((ea) => {
+        console.log(ea)
+        return disabledKeys ? !disabledKeys.includes(ea.id as CashTransferAs) : true
+      }),
     [disabledKeys]
   )
   return (

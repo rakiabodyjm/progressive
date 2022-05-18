@@ -42,7 +42,7 @@ export enum CashTransferAs {
 
 // export type TransferTypes<T extends Deposit | Withdraw | Transfer> = TransferType & T
 
-export type TransferTypes = 'transfer' | 'withdraw' | 'deposit'
+export type TransferTypes = 'TRANSFER' | 'WITHDRAW' | 'DEPOSIT'
 
 export type CashTransferResponse = {
   id: string
