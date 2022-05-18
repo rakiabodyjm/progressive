@@ -196,6 +196,20 @@ const TransferTypeTransaction = ({
     }
   }, [error, response, dispatchNotif])
 
+  useEffect(() => {
+    if (toCaesarEnabled) {
+      setTransferForm((prev) => ({
+        ...prev,
+        caesar_bank_to: undefined,
+      }))
+    } else {
+      setTransferForm((prev) => ({
+        ...prev,
+        to: undefined,
+      }))
+    }
+  }, [toCaesarEnabled])
+
   return (
     <>
       <Box>

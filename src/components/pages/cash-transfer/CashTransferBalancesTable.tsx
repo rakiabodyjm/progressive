@@ -2,6 +2,8 @@
 import {
   Box,
   BoxProps,
+  Divider,
+  IconButton,
   Paper,
   PaperProps,
   TablePagination,
@@ -9,23 +11,29 @@ import {
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
+import { AddCircleOutlined, CloseOutlined } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import CreateRetailerShortcutModal from '@src/components/pages/retailer/CreateRetaileShortcutModal'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
+import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { formatIntoCurrency } from '@src/utils/api/common'
+import { getDsp } from '@src/utils/api/dspApi'
+import { getSubdistributor } from '@src/utils/api/subdistributorApi'
+import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
 import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import { Bank, CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { useRouter } from 'next/router'
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import useSWR from 'swr'
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import useSWR, { useSWRConfig } from 'swr'
 
 export const CashTransferBalancesTable = ({
   disabledKeys,
@@ -43,6 +51,11 @@ export const CashTransferBalancesTable = ({
   )
 
   const router = useRouter()
+
+  const [addRetailerModal, setAddRetailerModal] = useState<boolean>(false)
+  const [account, setAccount] = useState<UserResponse>()
+  const [loading, setLoading] = useState<boolean>(false)
+  const dispatch = useDispatch()
 
   // const searchQuery = useState<undefined | string>('')
   const [query, setQuery] = useState<PaginateFetchParameters & { searchQuery?: string }>({
@@ -85,10 +98,10 @@ export const CashTransferBalancesTable = ({
         metadata: res.metadata,
         data: formatter(res.data),
       })),
-    [query, formatter]
+    [formatter, query?.searchQuery]
   )
 
-  const { data: paginatedCaesar, isValidating, error } = useSWR(['/caesar', query], fetcher)
+  const { data: paginatedCaesar, isValidating, error, mutate } = useSWR(['/caesar', query], fetcher)
   const caesars = useMemo(() => paginatedCaesar?.data || undefined, [paginatedCaesar])
 
   const ceasarMetaData = useMemo(() => paginatedCaesar?.metadata || undefined, [paginatedCaesar])
@@ -96,14 +109,74 @@ export const CashTransferBalancesTable = ({
 
   const theme: Theme = useTheme()
 
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    // timeoutRef.current = setTimeout(() => {
+    //   mutate(['/caesar', query])
+    //   console.log('MUTATED')
+    // }, 1000)
+  }, [addRetailerModal])
+
+  useEffect(() => {
+    if (user) {
+      setLoading(true)
+      getUser(user.user_id as string, {
+        cached: false,
+      })
+        .then(async (res) => {
+          if (res?.dsp) {
+            res.dsp = await getDsp(res.dsp.id)
+          }
+          if (res?.dsp?.subdistributor) {
+            res.subdistributor = await getSubdistributor(res.dsp.subdistributor.id)
+          }
+          setAccount(res)
+        })
+
+        .catch((err) => {
+          const error = userApi.extractError(err)
+          dispatch(
+            setNotification({
+              type: NotificationTypes.ERROR,
+              message: error.toString(),
+            })
+          )
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+  }, [dispatch, user])
+
   if (error) {
     return <ErrorLoading />
   }
   return (
     <>
-      <Paper variant="outlined" {...paperProps}>
+      <Paper variant="outlined" {...paperProps} style={{ display: 'relative' }}>
         <Box p={2} {...boxProps}>
-          <FormLabel>Search for Accounts</FormLabel>
+          <Typography variant="h6" noWrap>
+            Search For Accounts
+          </Typography>
+          <Typography color="primary" variant="body2">
+            Find Bank Accounts to user that has Bank
+          </Typography>
+          <Box textAlign="end">
+            <Box>
+              <IconButton
+                onClick={() => {
+                  setAddRetailerModal(true)
+                }}
+              >
+                <AddCircleOutlined />
+              </IconButton>
+            </Box>
+          </Box>
+          <Box my={1} mb={2}>
+            <Divider />
+          </Box>
           <Box my={1} />
           <FormTextField
             name="search"
@@ -290,7 +363,22 @@ export const CashTransferBalancesTable = ({
             )}
           </Box>
         </Box>
+
+        {addRetailerModal && account && account.dsp && account.subdistributor && (
+          <CreateRetailerShortcutModal
+            open={addRetailerModal}
+            onClose={() => {
+              setAddRetailerModal(false)
+            }}
+            dsp={account.dsp}
+            subd={account.subdistributor}
+            triggerRender={mutate}
+          />
+        )}
       </Paper>
     </>
   )
+}
+function dispatch(arg0: any) {
+  throw new Error('Function not implemented.')
 }

@@ -13,7 +13,7 @@ export default function FormNumberField({
   const [inputValue, setInputValue] = useState<string | undefined>(value?.toString())
 
   useEffect(() => {
-    onChangeLocal(Number(inputValue?.replace(/[^0-9.]/g, '') || undefined))
+    onChangeLocal(Number(inputValue?.replace(/[^0-9.]/g, '') || 0))
   }, [inputValue])
 
   useEffect(() => {
