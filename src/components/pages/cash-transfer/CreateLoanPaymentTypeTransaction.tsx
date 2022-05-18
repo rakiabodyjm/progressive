@@ -102,7 +102,7 @@ const LoanPaymentTypeTransaction = ({
     if (toCaesarEnabled && formValues.to === undefined) {
       setFormValues((prev) => ({
         ...prev,
-        to: cash_transfer.to,
+        to: cash_transfer.from,
         caesar_bank_to: undefined,
       }))
     } else if (toCaesarEnabled && formValues.to === null) {
