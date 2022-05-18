@@ -163,17 +163,20 @@ export const CashTransferBalancesTable = ({
           <Typography color="primary" variant="body2">
             Find Bank Accounts to user that has Bank
           </Typography>
-          <Box textAlign="end">
-            <Box>
-              <IconButton
-                onClick={() => {
-                  setAddRetailerModal(true)
-                }}
-              >
-                <AddCircleOutlined />
-              </IconButton>
+          {account && account.dsp && (
+            <Box textAlign="end">
+              <Box>
+                <IconButton
+                  onClick={() => {
+                    setAddRetailerModal(true)
+                  }}
+                >
+                  <AddCircleOutlined />
+                </IconButton>
+              </Box>
             </Box>
-          </Box>
+          )}
+
           <Box my={1} mb={2}>
             <Divider />
           </Box>

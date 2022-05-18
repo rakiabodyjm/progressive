@@ -78,7 +78,12 @@ export default function CaesarBankLinking() {
             <Box my={2}>
               <Divider />
             </Box>
-            <CreateOrUpdateBank bankUpdateValues={editBankModal} />
+            <CreateOrUpdateBank
+              bankUpdateValues={editBankModal}
+              handleClose={() => {
+                setAddBankModal(false)
+              }}
+            />
           </Box>
         </Paper>
       </ModalWrapper>
@@ -151,9 +156,11 @@ const BanksTable = ({
 
 const CreateOrUpdateBank = ({
   bankUpdateValues,
+  handleClose,
 }: // mutateFn,
 {
   bankUpdateValues?: Bank
+  handleClose: () => void
   // mutateFn?: KeyedMutator<Paginated<Bank>>
 }) => {
   const { mutate } = useSWRConfig()
@@ -184,6 +191,7 @@ const CreateOrUpdateBank = ({
           type: NotificationTypes.SUCCESS,
           message: `Bank Created`,
         })
+        handleClose()
       })
     }
 
