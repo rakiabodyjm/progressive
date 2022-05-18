@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-nested-ternary */
-import { Box, ListItem, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, ListItem, Paper, TablePagination, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
@@ -16,7 +16,7 @@ import {
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useState } from 'react'
 import useSWR from 'swr'
 
 type TransferTypeModal = {
@@ -312,6 +312,28 @@ export default function CashTransferList({
             </Typography>
           </Paper>
         )}
+      </Box>
+
+      <Box pt={2}>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 20, 50, 100]}
+          count={cashTransfers?.metadata.total || 0}
+          rowsPerPage={cashTransfers?.metadata?.limit || 5}
+          page={cashTransfers?.metadata?.page || 0}
+          onPageChange={(_, page) => {
+            setQueryParameters((prev) => ({
+              ...prev,
+              page,
+            }))
+          }}
+          onRowsPerPageChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            setQueryParameters((prev) => ({
+              ...prev,
+              limit: Number(e.target.value),
+            }))
+          }}
+          component="div"
+        />
       </Box>
     </>
   )
