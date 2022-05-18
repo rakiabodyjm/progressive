@@ -102,6 +102,7 @@ const LoanTypeTransaction = ({
         type: NotificationTypes.ERROR,
         message: `Amount must not be empty or should be greater than 0`,
       })
+      setLoading(false)
       return
     }
 
@@ -113,6 +114,7 @@ const LoanTypeTransaction = ({
         type: NotificationTypes.ERROR,
         message: `Loan must have source and destination account`,
       })
+      return
     }
     submit()
   }, [submit])

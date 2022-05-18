@@ -39,7 +39,7 @@ const LoanPaymentTypeTransaction = ({
     to: undefined,
     amount: undefined,
   })
-
+  console.log('Form Values: ', formValues)
   //   const [cash_transfer, set_cash_transfer] = useState<CashTransferResponse>(cashTransferProps)
   const [resetValue, setResetValue] = useState<number>()
 
@@ -98,29 +98,52 @@ const LoanPaymentTypeTransaction = ({
     }
   }
   useEffect(() => {
-    if (toCaesarEnabled) {
+    // DESTINATION ACCOUNT
+    if (toCaesarEnabled && formValues.to === undefined) {
+      setFormValues((prev) => ({
+        ...prev,
+        to: cash_transfer.to,
+        caesar_bank_to: undefined,
+      }))
+    } else if (toCaesarEnabled && formValues.to === null) {
       setFormValues((prev) => ({
         ...prev,
         caesar_bank_to: undefined,
-        to: cash_transfer.from,
       }))
-    } else {
+    } else if (!toCaesarEnabled && formValues.caesar_bank_to === undefined) {
       setFormValues((prev) => ({
         ...prev,
         to: undefined,
         caesar_bank_to: cash_transfer.caesar_bank_from,
       }))
+    } else if (!toCaesarEnabled && formValues.caesar_bank_to === null) {
+      setFormValues((prev) => ({
+        ...prev,
+        to: undefined,
+      }))
     }
-    if (fromCaesarEnabled) {
+
+    // SOURCE ACCOUNT
+    if (fromCaesarEnabled && formValues.from === undefined) {
       setFormValues((prev) => ({
         ...prev,
         from: cash_transfer.to,
         caesar_bank_from: undefined,
       }))
-    } else {
+    } else if (fromCaesarEnabled && formValues.from === null) {
       setFormValues((prev) => ({
         ...prev,
-        caesar_bank_from: cash_transfer?.caesar_bank_to,
+        caesar_bank_from: undefined,
+      }))
+    } else if (!fromCaesarEnabled && formValues.caesar_bank_from === undefined) {
+      setFormValues((prev) => ({
+        ...prev,
+        from: undefined,
+        caesar_bank_from: cash_transfer.caesar_bank_to,
+      }))
+    } else if (!fromCaesarEnabled && formValues.caesar_bank_from === null) {
+      setFormValues((prev) => ({
+        ...prev,
         from: undefined,
       }))
     }
