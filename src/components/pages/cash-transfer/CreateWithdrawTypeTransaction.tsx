@@ -132,7 +132,7 @@ const WithDrawTypeTransaction = ({
           key={withDrawForm.amount}
         />
 
-        <Box my={2}></Box>
+        {/* <Box my={2}></Box>
         {withDrawForm.caesar_bank_from && (
           <FeesTransaction
             triggerReset={resetValue}
@@ -145,7 +145,7 @@ const WithDrawTypeTransaction = ({
               }))
             }}
           />
-        )}
+        )} */}
 
         <Box my={2}></Box>
         <FormLabel>Transaction Description</FormLabel>
