@@ -395,7 +395,6 @@ export default function ViewCaesarBankPage() {
                       transactionModalOpen: false,
                     }))
                   }}
-                  disabledKeysProps={!roles?.includes('ct-operator') ? ['deposit'] : undefined}
                 />
               </Grid>
             </Grid>
