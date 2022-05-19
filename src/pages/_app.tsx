@@ -18,6 +18,7 @@ import { nanoid } from '@reduxjs/toolkit'
 import { AppProps } from 'next/dist/shared/lib/router/router'
 // import { getDefaultCaesar } from '@src/redux/data/currentCaesarSlice'
 import RouteGuard from '@src/components/RouteGuard'
+import TutorialPage from '@src/pages/tutorial'
 import Registration from './register'
 
 const Login = dynamic(() => import(`@src/components/pages/login`))
@@ -128,6 +129,8 @@ function MyApp({ Component, pageProps }: { Component: AppProps['Component']; pag
             </NavigationLayout>
           ) : /\/register\/*/.test(router.pathname) ? (
             <Registration />
+          ) : /\/tutorial\/*/.test(router.pathname) ? (
+            <TutorialPage />
           ) : (
             <Login />
           )}
