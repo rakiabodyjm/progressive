@@ -15,7 +15,11 @@ import {
 import Hls from 'hls.js'
 import KeyboardArrowDownOutlinedIcon from '@material-ui/icons/KeyboardArrowDownOutlined'
 import { makeStyles } from '@material-ui/styles'
+import logoImageSrc from '@public/assets/realm1000-ent-logo-white.png'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { useSelector } from 'react-redux'
+import { userDataSelector } from '@src/redux/data/userSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -26,6 +30,12 @@ const useStyles = makeStyles((theme: Theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     background: theme.palette.secondary.main,
+    paddingLeft: 16,
+    paddingRight: 16,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   toolbar: {
     display: 'flex',
@@ -48,9 +58,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 export default function TutorialPage() {
-  const [src, setSrc] = useState(
-    'https://telco.caesarcoin.ph/public/telco-tutorial-stream/telco-tutorial.m3u8'
-  )
+  const [src, setSrc] = useState('https://telco.ap.ngrok.io/public/telco-tut.m3u8')
   const [player, setPlayer] = useState<HTMLMediaElement | undefined | null>()
 
   const [hls, setHls] = useState<Hls | undefined>()
@@ -59,7 +67,7 @@ export default function TutorialPage() {
     if (player) {
       if (Hls.isSupported()) {
         // const hls = new Hls()
-        const hls = setHls(new Hls())
+        setHls(new Hls())
       } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
         player.src = src
         player.addEventListener('loadedmetadata', () => {
@@ -71,6 +79,10 @@ export default function TutorialPage() {
       player?.removeEventListener('loadedmetadata', () => {})
     }
   }, [src, player])
+
+  useEffect(() => {
+    console.log('hls', hls)
+  }, [hls])
 
   const [open, setOpen] = useState<boolean>(false)
 
@@ -90,20 +102,37 @@ export default function TutorialPage() {
 
   //   const playerRef = useRef<HTMLVideoElement | undefined>()
   const classes = useStyles()
+  const router = useRouter()
+  const isAuthenticated = useSelector(userDataSelector)
+
   return (
     <>
-      <AppBar position="fixed" className={classes.appBar}>
-        <Box
-          position="relative"
-          style={{
-            height: '100%',
-            zIndex: 1,
-          }}
-        >
-          <Image src="/realm1000-ent-logo-white" layout="fill" />
-        </Box>
-      </AppBar>
-      <div className={classes.toolbar} />
+      {!isAuthenticated && (
+        <>
+          <AppBar position="fixed" className={classes.appBar}>
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault()
+                router.push('/')
+              }}
+              style={{
+                // height: '100%',
+                position: 'relative',
+                height: theme.spacing(7),
+                width: theme.spacing(7),
+                zIndex: theme.zIndex.drawer + 100,
+              }}
+            >
+              <Image src={logoImageSrc} alt="REALM1000 ENT" layout="fill" objectFit="contain" />
+            </a>
+            <Box></Box>
+          </AppBar>
+
+          <div className={classes.toolbar} />
+        </>
+      )}
+
       <Container maxWidth="sm" style={{ margin: 'auto' }}>
         <Box className={classes.content}>
           <Paper>
@@ -159,7 +188,6 @@ export default function TutorialPage() {
                   //   height={2400}
                   width="100%"
                   height={player?.offsetWidth ? player?.offsetWidth / 0.45 : '100%'}
-                  muted
                   color={theme.palette.primary.main}
                 />
               </Box>
