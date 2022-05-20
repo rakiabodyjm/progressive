@@ -1,6 +1,7 @@
 import {
   AppBar,
   Box,
+  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -207,6 +208,16 @@ const NavSettingsMenu = ({
       >
         <Typography variant="body2">Account Information</Typography>
         <AccountBox />
+      </MenuItem>
+      <Divider />
+      <MenuItem
+        onClick={(e) => {
+          e.preventDefault()
+          router.push('/tutorial')
+        }}
+        className={classes.menuItem}
+      >
+        <Typography variant="body2">Tutorial</Typography>
       </MenuItem>
     </Menu>
   )
