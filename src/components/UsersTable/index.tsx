@@ -14,6 +14,7 @@ import {
   BoxProps,
   PaperProps,
   TableCellProps,
+  TableHeadProps,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
@@ -35,6 +36,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   paperProps,
   hidePagination,
   tableCellProps,
+  tableHeadProps,
   // renderRow,
   ...restProps
 }: {
@@ -51,6 +53,8 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   paperProps?: PaperProps
   hidePagination?: true
   tableCellProps?: Partial<Record<keyof T, TableCellProps>>
+  tableHeadProps?: Partial<TableHeadProps>
+
   /**
    * Render row according to override
    * Must include cells
@@ -96,7 +100,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
             ...(!data || (data.length < 1 && { height: '100%' })),
           }}
         >
-          <TableHead>
+          <TableHead {...tableHeadProps}>
             <TableRow>
               {fields?.map((title) => (
                 <TableCell

@@ -104,7 +104,7 @@ export default function TutorialPage() {
         </Box>
       </AppBar>
       <div className={classes.toolbar} />
-      <Container maxWidth="sm">
+      <Container maxWidth="sm" style={{ margin: 'auto' }}>
         <Box className={classes.content}>
           <Paper>
             <Box p={2}>

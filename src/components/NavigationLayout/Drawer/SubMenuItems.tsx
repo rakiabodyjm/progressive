@@ -1,9 +1,23 @@
 import { List } from '@material-ui/core'
-import { AccountBalance, AllInbox, ListAlt, LocalGroceryStore, Store } from '@material-ui/icons'
+import {
+  AccountBalance,
+  AllInbox,
+  ListAlt,
+  LocalGroceryStore,
+  Store,
+  TableChart,
+} from '@material-ui/icons'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
+import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 
 export default function SubMenuItems({ open }: { open: boolean }) {
+  const isEligible = useIsCtOperatorOrAdmin(['ct-admin'])
   const subMenuItems = [
+    {
+      title: 'Summary Table',
+      icon: <TableChart />,
+      url: '/ct-summary',
+    },
     {
       title: 'E-Commerce',
       icon: <LocalGroceryStore />,
@@ -27,9 +41,16 @@ export default function SubMenuItems({ open }: { open: boolean }) {
   ]
   return (
     <List>
-      {subMenuItems.map((item) => (
-        <RenderListItem key={item.url} open={open} {...item} />
-      ))}
+      {subMenuItems
+        .filter((ea) => {
+          if (isEligible) {
+            return ea
+          }
+          return ea.title !== 'Summary Table'
+        })
+        .map((item) => (
+          <RenderListItem key={item.url} open={open} {...item} />
+        ))}
     </List>
   )
 }
