@@ -169,7 +169,28 @@ export const CashTransferBalancesTable = ({
             Find Bank Accounts to user that has Bank
           </Typography>
           {account && account.dsp && (
-            <Box textAlign="end">
+            <Box display="flex" justifyContent="space-between">
+              {eligibleAsCTAdmin ? (
+                <Box>
+                  <Tooltip
+                    arrow
+                    placement="left"
+                    title={<Typography variant="subtitle2">View Summary Table</Typography>}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        router.push({
+                          pathname: '/cash-transfer/ct-summary',
+                        })
+                      }}
+                    >
+                      <TableChart />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              ) : (
+                <Box />
+              )}
               <Box>
                 <IconButton
                   onClick={() => {
@@ -178,27 +199,6 @@ export const CashTransferBalancesTable = ({
                 >
                   <AddCircleOutlined />
                 </IconButton>
-              </Box>
-            </Box>
-          )}
-          {eligibleAsCTAdmin && (
-            <Box textAlign="end">
-              <Box>
-                <Tooltip
-                  arrow
-                  placement="left"
-                  title={<Typography variant="subtitle2">View Summary Table</Typography>}
-                >
-                  <IconButton
-                    onClick={() => {
-                      router.push({
-                        pathname: '/cash-transfer/ct-summary',
-                      })
-                    }}
-                  >
-                    <TableChart color="primary" />
-                  </IconButton>
-                </Tooltip>
               </Box>
             </Box>
           )}
