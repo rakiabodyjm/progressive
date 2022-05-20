@@ -26,6 +26,12 @@ export default function RouteGuard({
       }
       return false
     }
+    if (router.pathname.match('/ct-summary')) {
+      if (user?.data.admin_id || user?.data.roles.some((ea) => ['ct-admin'].includes(ea))) {
+        return true
+      }
+      return false
+    }
     if (router.pathname.match(/\/subdistributor\/./)) {
       if (user?.data.subdistributor_id) {
         return true
@@ -52,6 +58,7 @@ export default function RouteGuard({
       }
       return false
     }
+
     return true
   }, [router.pathname, user])
 
