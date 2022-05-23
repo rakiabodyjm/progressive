@@ -8,10 +8,11 @@ import {
   PaperProps,
   TablePagination,
   Theme,
+  Tooltip,
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AccountBoxRounded, AddCircleOutlined, CloseOutlined } from '@material-ui/icons'
+import { AccountBoxRounded, AddCircleOutlined, CloseOutlined, TableChart } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
@@ -151,6 +152,7 @@ export const CashTransferBalancesTable = ({
     }
   }, [dispatch, user])
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
+  const eligibleAsCTAdmin = useIsCtOperatorOrAdmin(['ct-admin'])
 
   if (error) {
     return <ErrorLoading />
@@ -176,6 +178,27 @@ export const CashTransferBalancesTable = ({
                 >
                   <AddCircleOutlined />
                 </IconButton>
+              </Box>
+            </Box>
+          )}
+          {account && eligibleAsCTAdmin && (
+            <Box textAlign="end">
+              <Box>
+                <Tooltip
+                  arrow
+                  placement="left"
+                  title={<Typography variant="subtitle2">View Summary Table</Typography>}
+                >
+                  <IconButton
+                    onClick={() => {
+                      router.push({
+                        pathname: '/cash-transfer/ct-summary',
+                      })
+                    }}
+                  >
+                    <TableChart color="primary" />
+                  </IconButton>
+                </Tooltip>
               </Box>
             </Box>
           )}
@@ -211,11 +234,30 @@ export const CashTransferBalancesTable = ({
                   flexDirection: 'column',
                 }}
               >
-                <Typography variant="body2">No Account Matched the Search</Typography>
-                <Typography variant="caption" color="primary">
+                <Typography
+                  variant="body2"
+                  style={{
+                    textAlign: 'center',
+                  }}
+                >
+                  No Account Matched the Search
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="primary"
+                  style={{
+                    textAlign: 'center',
+                  }}
+                >
                   Try Searching for a different keyword
                 </Typography>
-                <Typography variant="caption" color="textSecondary">
+                <Typography
+                  variant="caption"
+                  color="textSecondary"
+                  style={{
+                    textAlign: 'center',
+                  }}
+                >
                   Caesar Account's First Name, Last Name, Phone Number
                 </Typography>
               </Paper>
@@ -256,6 +298,9 @@ export const CashTransferBalancesTable = ({
                     )
                       .filter((ea) => {
                         if (!account?.admin && account?.dsp) {
+                          return ea[0] !== 'admin' && ea[0] !== 'subdistributor'
+                        }
+                        if (!account?.admin && account?.subdistributor) {
                           return ea[0] !== 'admin' && ea[0] !== 'subdistributor'
                         }
                         return ea
@@ -300,6 +345,21 @@ export const CashTransferBalancesTable = ({
                                   },
                                 })
                               }
+                              if (
+                                user?.roles &&
+                                (user?.roles as UserTypesWithCashTransfer[])?.includes(
+                                  'subdistributor' as UserTypesWithCashTransfer
+                                ) &&
+                                ['user', 'retailer', 'dsp'].includes(data.account_type)
+                              ) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+
                               if (
                                 user?.roles &&
                                 (user?.roles as UserTypesWithCashTransfer[])?.includes(

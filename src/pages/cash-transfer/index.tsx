@@ -53,7 +53,7 @@ export default function CaesarIndexPage() {
   useEffect(() => {
     if (user && user?.roles) {
       if (
-        [...user.roles].some((ea) => ['dsp'].includes(ea)) &&
+        [...user.roles].some((ea) => ['dsp', 'subdistributor'].includes(ea)) &&
         ![...user.roles].some((ea) => ['ct-operator', 'ct-admin'].includes(ea))
       ) {
         setIsDSP(true)
