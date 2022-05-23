@@ -348,6 +348,21 @@ export const CashTransferBalancesTable = ({
                               if (
                                 user?.roles &&
                                 (user?.roles as UserTypesWithCashTransfer[])?.includes(
+                                  'subdistributor' as UserTypesWithCashTransfer
+                                ) &&
+                                ['user', 'retailer', 'dsp'].includes(data.account_type)
+                              ) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+
+                              if (
+                                user?.roles &&
+                                (user?.roles as UserTypesWithCashTransfer[])?.includes(
                                   'dsp' as UserTypesWithCashTransfer
                                 ) &&
                                 ['user', 'retailer'].includes(data.account_type)
