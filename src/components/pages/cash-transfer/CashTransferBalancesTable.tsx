@@ -181,7 +181,7 @@ export const CashTransferBalancesTable = ({
               </Box>
             </Box>
           )}
-          {account && eligibleAsCTAdmin && (
+          {eligibleAsCTAdmin && (
             <Box textAlign="end">
               <Box>
                 <Tooltip

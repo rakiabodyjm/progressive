@@ -47,16 +47,38 @@ export default function CaesarIndexPage() {
   const router = useRouter()
 
   const [isDSP, setIsDSP] = useState(false)
+  const [caesarEmpty, setCaesarEmpty] = useState<boolean>(false)
 
   const user = useSelector(userDataSelector)
+
   const dispatchNotif = useNotification()
+
+  useEffect(() => {
+    if (currentCaesar) {
+      currentCaesar.map((ea) => {
+        if (ea[1] === null) {
+          setCaesarEmpty(true)
+        }
+        return ea
+      })
+    }
+  }, [currentCaesar])
+
   useEffect(() => {
     if (user && user?.roles) {
       if (
         [...user.roles].some((ea) => ['dsp', 'subdistributor'].includes(ea)) &&
         ![...user.roles].some((ea) => ['ct-operator', 'ct-admin'].includes(ea))
       ) {
-        setIsDSP(true)
+        if (caesarEmpty) {
+          router.push('/')
+          dispatchNotif({
+            type: NotificationTypes.WARNING,
+            message: `Unauthorized to access`,
+          })
+        } else {
+          setIsDSP(true)
+        }
       } else if (![...user.roles].some((ea) => ['ct-operator', 'ct-admin'].includes(ea))) {
         router.push('/')
         dispatchNotif({
