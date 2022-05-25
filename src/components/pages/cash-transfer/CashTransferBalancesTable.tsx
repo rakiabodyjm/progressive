@@ -12,7 +12,13 @@ import {
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AccountBoxRounded, AddCircleOutlined, CloseOutlined, TableChart } from '@material-ui/icons'
+import {
+  AccountBoxRounded,
+  AddCircleOutlined,
+  CloseOutlined,
+  TableChart,
+  Assessment,
+} from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
@@ -168,9 +174,9 @@ export const CashTransferBalancesTable = ({
           <Typography color="primary" variant="body2">
             Find Bank Accounts to user that has Bank
           </Typography>
-          {account && account.dsp && (
-            <Box display="flex" justifyContent="space-between">
-              {eligibleAsCTAdmin ? (
+          <Box display="flex" flexDirection="row-reverse">
+            {eligibleAsCTAdmin && (
+              <Box textAlign="end">
                 <Box>
                   <Tooltip
                     arrow
@@ -188,20 +194,28 @@ export const CashTransferBalancesTable = ({
                     </IconButton>
                   </Tooltip>
                 </Box>
-              ) : (
-                <Box />
-              )}
-              <Box>
-                <IconButton
-                  onClick={() => {
-                    setAddRetailerModal(true)
-                  }}
-                >
-                  <AddCircleOutlined />
-                </IconButton>
               </Box>
-            </Box>
-          )}
+            )}
+            {user && user.roles.some((ea) => ['dsp', 'subdistributor'].includes(ea)) && (
+              <Box textAlign="end">
+                <Box>
+                  <Tooltip
+                    arrow
+                    placement="left"
+                    title={<Typography variant="subtitle2">Add Retailer</Typography>}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        setAddRetailerModal(true)
+                      }}
+                    >
+                      <AddCircleOutlined />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Box>
+            )}
+          </Box>
 
           <Box my={1} mb={2}>
             <Divider />
@@ -300,7 +314,7 @@ export const CashTransferBalancesTable = ({
                         if (!account?.admin && account?.dsp) {
                           return ea[0] !== 'admin' && ea[0] !== 'subdistributor'
                         }
-                        if (!account?.admin && account?.subdistributor) {
+                        if (!account?.admin && account?.subdistributor && !isEligible) {
                           return ea[0] !== 'admin' && ea[0] !== 'subdistributor'
                         }
                         return ea
@@ -451,18 +465,28 @@ export const CashTransferBalancesTable = ({
             )}
           </Box>
         </Box>
-
-        {addRetailerModal && account && account.dsp && account.subdistributor && (
+        {addRetailerModal && user?.roles.filter((ea) => ea !== 'admin') && isEligible && (
           <CreateRetailerShortcutModal
             open={addRetailerModal}
             onClose={() => {
               setAddRetailerModal(false)
             }}
-            dsp={account.dsp}
-            subd={account.subdistributor}
             triggerRender={mutate}
           />
         )}
+        {addRetailerModal &&
+          user?.roles.some((ea) => ['subdistributor'] || ['dsp'].includes(ea)) &&
+          !isEligible && (
+            <CreateRetailerShortcutModal
+              open={addRetailerModal}
+              onClose={() => {
+                setAddRetailerModal(false)
+              }}
+              dsp={account?.dsp ? account.dsp : undefined}
+              subd={account?.subdistributor ? account.subdistributor : undefined}
+              triggerRender={mutate}
+            />
+          )}
       </Paper>
     </>
   )
