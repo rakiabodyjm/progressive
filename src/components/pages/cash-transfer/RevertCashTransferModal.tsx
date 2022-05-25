@@ -19,6 +19,7 @@ import useSWR from 'swr'
 
 const useStyles = makeStyles((theme: Theme) => ({
   gridContainer: {
+    marginTop: 64,
     [theme.breakpoints.down('xs')]: {
       transform: 'rotate(90deg)',
       marginTop: 16,
@@ -119,9 +120,9 @@ export default function RevertCashTransferModal({
                             <Grid item xs={12}>
                               <FormLabel>New Balance:</FormLabel>
                               <Typography>
-                                {ct_data.caesar_bank_from
-                                  ? ct_data.caesar_bank_from.balance + ct_data.amount
-                                  : ct_data.from.cash_transfer_balance + ct_data.amount}
+                                {ct_data.caesar_bank_to
+                                  ? ct_data.caesar_bank_to.balance - ct_data.amount
+                                  : ct_data.to.cash_transfer_balance - ct_data.amount}
                               </Typography>
                             </Grid>
                           </Box>
