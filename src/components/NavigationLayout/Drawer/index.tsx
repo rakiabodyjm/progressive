@@ -241,7 +241,7 @@ const LogoutListItem = ({ open }: { open: boolean }) => {
       arrow
     >
       <ListItem
-        className={clsx(classes.logoutButton)}
+        className={clsx(classes.logoutButton, 'list-item')}
         button
         onClick={() => {
           dispatch(logoutUser())
