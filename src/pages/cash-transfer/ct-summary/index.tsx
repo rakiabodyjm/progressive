@@ -21,6 +21,7 @@ import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
+import RevertCashTransferModal from '@src/components/pages/cash-transfer/RevertCashTransferModal'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import RoleBadge from '@src/components/RoleBadge'
@@ -77,6 +78,8 @@ export default function CashTransferSummaryTable() {
           throw extractMultipleErrorFromResponse(err)
         })
   )
+  const [revertModal, setRevertModal] = useState<boolean>(false)
+  const [ct_id, setCTID] = useState('')
 
   const classes = useStyles()
 
@@ -368,7 +371,10 @@ export default function CashTransferSummaryTable() {
                           </Box>
                         ),
                       }}
-                      onRowClick={() => {}}
+                      onRowClick={(rowData, data) => {
+                        setRevertModal(true)
+                        setCTID(data.reference_number)
+                      }}
                     />
                   )}
                 </Grid>
@@ -377,6 +383,15 @@ export default function CashTransferSummaryTable() {
           </Box>
         </Box>
       </Paper>
+      {revertModal && (
+        <RevertCashTransferModal
+          open={revertModal}
+          onClose={() => {
+            setRevertModal(false)
+          }}
+          ct_id={ct_id}
+        />
+      )}
     </Container>
   )
 }
@@ -386,8 +401,8 @@ const formatSummaryTable = (param: CashTransferResponse[]) =>
     as,
     description,
     amount,
-    from: from === null ? caesar_bank_from.description : from.description,
-    from_bank_account: from === null ? caesar_bank_from.caesar.bank_accounts : from.bank_accounts,
-    to: to === null ? caesar_bank_to.description : to.description,
-    to_bank_account: to === null ? caesar_bank_to.caesar.bank_accounts : to.bank_accounts,
+    from: from === null ? caesar_bank_from?.description : from.description,
+    from_bank_account: from === null ? caesar_bank_from?.caesar.bank_accounts : from.bank_accounts,
+    to: to === null ? caesar_bank_to?.description : to.description,
+    to_bank_account: to === null ? caesar_bank_to?.caesar.bank_accounts : to.bank_accounts,
   }))
