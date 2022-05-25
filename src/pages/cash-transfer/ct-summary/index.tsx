@@ -19,6 +19,7 @@ import { AccountCircle, ArrowBack, CloseOutlined, Search } from '@material-ui/ic
 import { makeStyles, useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
@@ -69,7 +70,11 @@ export default function CashTransferSummaryTable() {
     from: undefined,
     to: undefined,
   })
-  const { data: summaryTableData } = useSWR<Paginated<CashTransferResponse>>(
+  const {
+    data: summaryTableData,
+    mutate,
+    isValidating,
+  } = useSWR<Paginated<CashTransferResponse>>(
     `/cash-transfer?${objectToURLQuery({
       ...query,
     })}`,
@@ -296,7 +301,7 @@ export default function CashTransferSummaryTable() {
 
                 <Grid item sm={12} md={8} lg={9}>
                   {/* <CashTransferBalancesTable /> */}
-                  {summaryTableData && summaryTableData.data && (
+                  {summaryTableData && summaryTableData.data && !isValidating ? (
                     <UsersTable
                       data={formatSummaryTable(summaryTableData.data)}
                       page={paginated.page}
@@ -387,6 +392,8 @@ export default function CashTransferSummaryTable() {
                         setCTID(data.reference_number)
                       }}
                     />
+                  ) : (
+                    <LoadingScreen2 />
                   )}
                 </Grid>
               </Grid>
@@ -438,6 +445,7 @@ export default function CashTransferSummaryTable() {
               }))
             }}
             ct_id={ct_id}
+            mutate={mutate}
           />
         )}
     </Container>
