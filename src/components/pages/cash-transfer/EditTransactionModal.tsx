@@ -124,8 +124,6 @@ export default function EditTransactionModal({
     )
   }, [newDate])
 
-  console.log('UPDATE FORM VALUES:', updateForms)
-
   const dispatchNotif = useNotification()
   const classes = useStyles()
 
