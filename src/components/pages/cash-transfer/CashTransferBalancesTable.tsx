@@ -311,7 +311,7 @@ export const CashTransferBalancesTable = ({
                       }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
                     )
                       .filter((ea) => {
-                        if (!account?.admin && account?.dsp) {
+                        if (!account?.admin && account?.dsp && !isEligible) {
                           return ea[0] !== 'admin' && ea[0] !== 'subdistributor'
                         }
                         if (!account?.admin && account?.subdistributor && !isEligible) {

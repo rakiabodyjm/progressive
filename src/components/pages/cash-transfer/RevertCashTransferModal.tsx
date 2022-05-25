@@ -140,7 +140,7 @@ export default function RevertCashTransferModal({
                           }}
                         />
                       </Grid>
-                      <Grid xs={12} sm={5}>
+                      <Grid item xs={12} sm={5}>
                         <FormLabel>{ct_data.caesar_bank_from ? 'To Bank' : 'To Caesar'}</FormLabel>
                         <Typography>
                           {ct_data.caesar_bank_from

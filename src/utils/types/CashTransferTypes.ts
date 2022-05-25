@@ -83,4 +83,11 @@ export type CashTransferResponse = {
   ref_num: string
 
   total_amount: number
+
+  message?: string
+}
+
+export enum EditOrRevertTypes {
+  EDIT = 'EDIT',
+  REVERT = 'REVERT',
 }
