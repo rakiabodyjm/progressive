@@ -426,7 +426,6 @@ export default function CashTransferSummaryTable() {
             ct_id={ct_id}
           />
         )}
-      {console.log('TRANSACTION TYPE IS:', transactionModal)}
       {transactionModal.transactionSelected === EditOrRevertTypes.EDIT &&
         transactionModal.transactionModalOpen && (
           <EditTransactionModal
