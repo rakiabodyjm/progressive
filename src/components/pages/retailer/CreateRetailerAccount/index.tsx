@@ -345,9 +345,7 @@ export default function CreateRetailerAccount({
             {newRetailerAccount.subdistributor && dspOptions.length > 0 ? (
               <Autocomplete<DspResponseType>
                 options={dspOptions}
-                getOptionLabel={(option) =>
-                  `${option.dsp_code} - ${option.user.last_name}, ${option.user.first_name}`
-                }
+                getOptionLabel={(option) => `${option.dsp_code}`}
                 getOptionSelected={(val1, val2) => val1.id === val2.id}
                 onChange={(_, value) => handleChange('dsp', value?.id || null)}
                 renderInput={(params) => (
