@@ -107,9 +107,11 @@ export default function RevertCashTransferModal({
                             <Grid item xs={12}>
                               <FormLabel>Current Balance:</FormLabel>
                               <Typography>
-                                {ct_data.caesar_bank_to
-                                  ? ct_data.caesar_bank_to.balance
-                                  : ct_data?.to?.cash_transfer_balance}
+                                {formatIntoCurrency(
+                                  ct_data.caesar_bank_to
+                                    ? ct_data.caesar_bank_to.balance
+                                    : ct_data?.to?.cash_transfer_balance
+                                )}
                               </Typography>
                             </Grid>
                           </Box>
@@ -120,9 +122,11 @@ export default function RevertCashTransferModal({
                             <Grid item xs={12}>
                               <FormLabel>New Balance:</FormLabel>
                               <Typography>
-                                {ct_data.caesar_bank_to
-                                  ? ct_data.caesar_bank_to.balance - ct_data.amount
-                                  : ct_data.to.cash_transfer_balance - ct_data.amount}
+                                {formatIntoCurrency(
+                                  ct_data.caesar_bank_to
+                                    ? ct_data.caesar_bank_to.balance - ct_data.amount
+                                    : ct_data.to.cash_transfer_balance - ct_data.amount
+                                )}
                               </Typography>
                             </Grid>
                           </Box>
@@ -149,9 +153,11 @@ export default function RevertCashTransferModal({
                             <Grid item xs={12}>
                               <FormLabel>Current Balance:</FormLabel>
                               <Typography>
-                                {ct_data.caesar_bank_from
-                                  ? ct_data.caesar_bank_from.balance
-                                  : ct_data?.from?.cash_transfer_balance}
+                                {formatIntoCurrency(
+                                  ct_data.caesar_bank_from
+                                    ? ct_data.caesar_bank_from.balance
+                                    : ct_data?.from?.cash_transfer_balance
+                                )}
                               </Typography>
                             </Grid>
                           </Box>
@@ -162,9 +168,11 @@ export default function RevertCashTransferModal({
                             <Grid item xs={12}>
                               <FormLabel>New Balance:</FormLabel>
                               <Typography>
-                                {ct_data.caesar_bank_from
-                                  ? ct_data.caesar_bank_from.balance + ct_data.amount
-                                  : ct_data.from.cash_transfer_balance + ct_data.amount}
+                                {formatIntoCurrency(
+                                  ct_data.caesar_bank_from
+                                    ? ct_data.caesar_bank_from.balance + ct_data.amount
+                                    : ct_data.from.cash_transfer_balance + ct_data.amount
+                                )}
                               </Typography>
                             </Grid>
                           </Box>
