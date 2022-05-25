@@ -25,6 +25,7 @@ import CreateOrUpdateCaesarBank from '@src/components/pages/cash-transfer/Create
 import { PopUpMenu } from '@src/components/PopUpMenu'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
+import { userDataSelector, userSelector } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import { useSuccessNotification, useErrorNotification } from '@src/utils/hooks/useNotification'
@@ -32,6 +33,7 @@ import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 import { Caesar, CaesarBank, CashTransferResponse } from '../../../utils/types/CashTransferTypes'
 
@@ -47,6 +49,7 @@ export default function ViewCashTransferCaesar() {
     getWalletById(id as string)
   )
   const theme: Theme = useTheme()
+  const user = useSelector(userDataSelector)
 
   // if (errorCashTransfers) {
   //   return (
@@ -117,56 +120,58 @@ export default function ViewCashTransferCaesar() {
                           Total Loan/Balance:{' '}
                         </Typography>
                       </Box>
-                      <Box>
-                        <Tooltip
-                          arrow
-                          placement="left"
-                          title={<Typography variant="body1">Edit Account</Typography>}
-                        >
-                          <IconButton
-                            onClick={(e) => {
-                              setEditMenu((prev) => ({
-                                ...prev,
-                                modal: editAnchorElement.current,
-                              }))
-                            }}
-                            innerRef={editAnchorElement}
+                      {user?.roles.some((ea) => ['ct-admin'].includes(ea)) && (
+                        <Box>
+                          <Tooltip
+                            arrow
+                            placement="left"
+                            title={<Typography variant="body1">Edit Account</Typography>}
                           >
-                            <MoreVert />
-                          </IconButton>
-                        </Tooltip>
-                        <PopUpMenu
-                          menuItems={[
-                            {
-                              text: 'Edit',
-                              Component: <Edit />,
-                              action: () => {
+                            <IconButton
+                              onClick={(e) => {
                                 setEditMenu((prev) => ({
                                   ...prev,
-                                  editMode: true,
+                                  modal: editAnchorElement.current,
                                 }))
-                                // setEditMode((prevState) => !prevState)
-                                // setEditPopUpMenuOpen(false)
+                              }}
+                              innerRef={editAnchorElement}
+                            >
+                              <MoreVert />
+                            </IconButton>
+                          </Tooltip>
+                          <PopUpMenu
+                            menuItems={[
+                              {
+                                text: 'Edit',
+                                Component: <Edit />,
+                                action: () => {
+                                  setEditMenu((prev) => ({
+                                    ...prev,
+                                    editMode: true,
+                                  }))
+                                  // setEditMode((prevState) => !prevState)
+                                  // setEditPopUpMenuOpen(false)
+                                },
                               },
-                            },
-                          ]}
-                          open={!!editMenu.modal}
-                          // anchorEl={(editMenu?.modal as HTMLButtonElement) | undefined}
-                          anchorEl={editAnchorElement.current}
-                          onClose={() => {
-                            setEditMenu((prev) => ({
-                              ...prev,
-                              modal: undefined,
-                            }))
-                            // setEditPopUpMenuOpen((prevState) => !prevState)
-                          }}
-                          autoFocus
-                          transformOrigin={{
-                            horizontal: 'right',
-                            vertical: 'top',
-                          }}
-                        />
-                      </Box>
+                            ]}
+                            open={!!editMenu.modal}
+                            // anchorEl={(editMenu?.modal as HTMLButtonElement) | undefined}
+                            anchorEl={editAnchorElement.current}
+                            onClose={() => {
+                              setEditMenu((prev) => ({
+                                ...prev,
+                                modal: undefined,
+                              }))
+                              // setEditPopUpMenuOpen((prevState) => !prevState)
+                            }}
+                            autoFocus
+                            transformOrigin={{
+                              horizontal: 'right',
+                              vertical: 'top',
+                            }}
+                          />
+                        </Box>
+                      )}
                     </Box>
 
                     {caesar && (
