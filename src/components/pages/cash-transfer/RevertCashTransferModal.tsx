@@ -4,11 +4,16 @@ import { makeStyles } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import ModalWrapper from '@src/components/ModalWrapper'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
-import { formatIntoReadableDate } from '@src/utils/api/common'
+import {
+  extractMultipleErrorFromResponse,
+  formatIntoCurrency,
+  formatIntoReadableDate,
+} from '@src/utils/api/common'
+import { getWalletById } from '@src/utils/api/walletApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import router from 'next/router'
 import useSWR from 'swr'
 
@@ -16,6 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   gridContainer: {
     [theme.breakpoints.down('xs')]: {
       transform: 'rotate(90deg)',
+      marginTop: 16,
     },
   },
 }))
@@ -30,13 +36,21 @@ export default function RevertCashTransferModal({
   ct_id: string
 }) {
   const { data: ct_data } = useSWR<CashTransferResponse>(`/cash-transfer/${ct_id}`, (url) =>
-    axios.get(url).then((res) => res.data)
+    axios
+      .get(url)
+      .then((res) => res.data)
+      .then(async (cashTransferData) => ({
+        ...cashTransferData,
+        ...(cashTransferData.from && { from: await getWalletById(cashTransferData.from.id) }),
+        ...(cashTransferData.to && { to: await getWalletById(cashTransferData.to.id) }),
+      }))
+      .then((res) => res)
   )
-  console.log(ct_data)
+
   const dispatchNotif = useNotification()
   const classes = useStyles()
   return (
-    <ModalWrapper open={open} onClose={onClose} containerSize="xs">
+    <ModalWrapper open={open} onClose={onClose} containerSize="sm">
       <Paper
         style={{
           padding: 16,
@@ -51,7 +65,7 @@ export default function RevertCashTransferModal({
                 <Typography variant="h5">{ct_data?.as}</Typography>
               </Box>
               <Box>
-                <IconButton>
+                <IconButton onClick={onClose}>
                   {/* onClick={onClose} */}
                   <CloseOutlined />
                 </IconButton>
@@ -61,41 +75,32 @@ export default function RevertCashTransferModal({
             <Box>
               <Box>
                 <Grid item xs={12}>
-                  <Divider style={{ marginTop: 5, marginBottom: 5 }} />
+                  <Divider style={{ marginTop: 8, marginBottom: 8 }} />
                 </Grid>
 
-                <Grid container spacing={1}>
+                <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <FormLabel>Date of Transaction:</FormLabel>
                     <Typography>
                       {formatIntoReadableDate(ct_data?.created_at || Date.now())}
                     </Typography>
-                  </Grid>
 
-                  <Grid item xs={12} md={4}>
-                    <FormLabel>From: </FormLabel>
-                    <Typography>
-                      {ct_data.caesar_bank_to
-                        ? ct_data.caesar_bank_to.description
-                        : ct_data.to.description}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <FormLabel>To:</FormLabel>
-                    <Typography>
-                      {ct_data.caesar_bank_from
-                        ? ct_data.caesar_bank_from.description
-                        : ct_data.from.description}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} md={4}>
                     <FormLabel>Amount:</FormLabel>
-                    <Typography>{ct_data.amount}</Typography>
+                    <Typography>{formatIntoCurrency(ct_data.amount)}</Typography>
                   </Grid>
 
                   <Grid item xs={12}>
                     <Grid container alignItems="center" justifyContent="space-around">
                       <Grid item xs={12} sm={5}>
+                        <FormLabel>
+                          {ct_data.caesar_bank_to ? 'From Bank' : 'From Caesar'}
+                        </FormLabel>
+                        <Typography>
+                          {ct_data.caesar_bank_to
+                            ? ct_data.caesar_bank_to.description
+                            : ct_data.to.description}
+                        </Typography>
+                        <Box mt={2}></Box>
                         <Paper>
                           <Box p={2}>
                             <Grid item xs={12}>
@@ -108,8 +113,21 @@ export default function RevertCashTransferModal({
                             </Grid>
                           </Box>
                         </Paper>
+                        <Box mt={2}></Box>
+                        <Paper>
+                          <Box p={2}>
+                            <Grid item xs={12}>
+                              <FormLabel>New Balance:</FormLabel>
+                              <Typography>
+                                {ct_data.caesar_bank_from
+                                  ? ct_data.caesar_bank_from.balance + ct_data.amount
+                                  : ct_data.from.cash_transfer_balance + ct_data.amount}
+                              </Typography>
+                            </Grid>
+                          </Box>
+                        </Paper>
                       </Grid>
-                      <Grid>
+                      <Grid item>
                         <DoubleArrow
                           className={classes.gridContainer}
                           style={{
@@ -118,6 +136,26 @@ export default function RevertCashTransferModal({
                         />
                       </Grid>
                       <Grid xs={12} sm={5}>
+                        <FormLabel>{ct_data.caesar_bank_from ? 'To Bank' : 'To Caesar'}</FormLabel>
+                        <Typography>
+                          {ct_data.caesar_bank_from
+                            ? ct_data.caesar_bank_from.description
+                            : ct_data.from.description}
+                        </Typography>
+                        <Box mt={2}></Box>
+                        <Paper>
+                          <Box p={2}>
+                            <Grid item xs={12}>
+                              <FormLabel>Current Balance:</FormLabel>
+                              <Typography>
+                                {ct_data.caesar_bank_from
+                                  ? ct_data.caesar_bank_from.balance
+                                  : ct_data?.from?.cash_transfer_balance}
+                              </Typography>
+                            </Grid>
+                          </Box>
+                        </Paper>
+                        <Box mt={2}></Box>
                         <Paper>
                           <Box p={2}>
                             <Grid item xs={12}>
@@ -136,18 +174,30 @@ export default function RevertCashTransferModal({
                 </Grid>
               </Box>
             </Box>
+            <Divider style={{ marginTop: 16 }} />
             <Box display="flex" justifyContent="flex-end">
               <Box mt={2}>
                 <Button
                   color="primary"
                   variant="contained"
                   onClick={() => {
-                    axios.post(`/cash-transfer/revert/${ct_id}`).then((res) => {
-                      dispatchNotif({
-                        type: NotificationTypes.SUCCESS,
-                        message: `Transaction Reverted`,
+                    axios
+                      .post(`/cash-transfer/revert/${ct_id}`)
+                      .then((res) => {
+                        dispatchNotif({
+                          type: NotificationTypes.SUCCESS,
+                          message: `Transaction Reverted`,
+                        })
                       })
-                    })
+                      .catch((err) => {
+                        extractMultipleErrorFromResponse(err as AxiosError).forEach((ea) => {
+                          dispatchNotif({
+                            type: NotificationTypes.ERROR,
+                            message: ea,
+                          })
+                        })
+                      })
+                      .finally(() => onClose())
                   }}
                 >
                   Revert Transaction
