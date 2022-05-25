@@ -102,7 +102,7 @@ export default function CashTransferForm({
         </Paper>
       )}
 
-      {transactionType === CashTransferAs['LOAN PAYMENT'] && (
+      {transactionType === CashTransferAs.LOAN_PAYMENT && (
         <Paper>
           <Box p={2}>
             <LoanPaymentTransaction {...restProps} />
