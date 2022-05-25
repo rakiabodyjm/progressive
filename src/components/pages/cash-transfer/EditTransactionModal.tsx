@@ -56,21 +56,25 @@ export default function EditTransactionModal({
   open,
   onClose,
   ct_id,
+  mutate,
 }: {
   open: boolean
   onClose: () => void
   ct_id: string
+  mutate: () => void
 }) {
-  const { data: ct_data } = useSWR<CashTransferResponse>(`/cash-transfer/${ct_id}`, (url) =>
-    axios
-      .get(url)
-      .then((res) => res.data)
-      .then(async (cashTransferData) => ({
-        ...cashTransferData,
-        ...(cashTransferData.from && { from: await getWalletById(cashTransferData.from.id) }),
-        ...(cashTransferData.to && { to: await getWalletById(cashTransferData.to.id) }),
-      }))
-      .then((res) => res)
+  const { data: ct_data, mutate: mutateCT } = useSWR<CashTransferResponse>(
+    `/cash-transfer/${ct_id}`,
+    (url) =>
+      axios
+        .get(url)
+        .then((res) => res.data)
+        .then(async (cashTransferData) => ({
+          ...cashTransferData,
+          ...(cashTransferData.from && { from: await getWalletById(cashTransferData.from.id) }),
+          ...(cashTransferData.to && { to: await getWalletById(cashTransferData.to.id) }),
+        }))
+        .then((res) => res)
   )
 
   const [convertedDate, setConvertedDate] = useState<string>()
@@ -129,13 +133,22 @@ export default function EditTransactionModal({
 
   const handleSubmit = () => {
     if (ct_data) {
-      axios.patch(`/cash-transfer/${ct_data.id}`, updateForms).then((res) => {
-        dispatchNotif({
-          type: NotificationTypes.SUCCESS,
-          message: 'Update Saved',
+      axios
+        .patch(`/cash-transfer/${ct_data.id}`, updateForms)
+        .then((res) => {
+          dispatchNotif({
+            type: NotificationTypes.SUCCESS,
+            message: 'Update Saved',
+          })
         })
-        onClose()
-      })
+        .catch((err) => {
+          throw extractMultipleErrorFromResponse(err)
+        })
+        .finally(() => {
+          mutate()
+          mutateCT()
+          onClose()
+        })
     }
   }
   return (
