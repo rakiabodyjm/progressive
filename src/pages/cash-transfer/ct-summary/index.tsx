@@ -15,12 +15,15 @@ import {
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AccountCircle, ArrowBack, Search } from '@material-ui/icons'
+import { AccountCircle, ArrowBack, CloseOutlined, Search } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
+import ModalWrapper from '@src/components/ModalWrapper'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
+import EditOrRevertModal from '@src/components/pages/cash-transfer/EditOrRevertModal'
+import EditTransactionModal from '@src/components/pages/cash-transfer/EditTransactionModal'
 import RevertCashTransferModal from '@src/components/pages/cash-transfer/RevertCashTransferModal'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
@@ -29,11 +32,11 @@ import UsersTable from '@src/components/UsersTable'
 import CaesarIndexPage from '@src/pages/cash-transfer'
 import { objectToURLQuery, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
-
 import {
   CaesarBank,
   CashTransferAs,
   CashTransferResponse,
+  EditOrRevertTypes,
 } from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
@@ -90,6 +93,14 @@ export default function CashTransferSummaryTable() {
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [fromCaesarEnabled, setFromCaesarEnabled] = useState<boolean>(false)
+
+  const [transactionModal, setTransactionModal] = useState<{
+    transactionModalOpen: boolean
+    transactionSelected?: EditOrRevertTypes
+  }>({
+    transactionModalOpen: false,
+    transactionSelected: undefined,
+  })
 
   return (
     <Container>
@@ -384,14 +395,52 @@ export default function CashTransferSummaryTable() {
         </Box>
       </Paper>
       {revertModal && (
-        <RevertCashTransferModal
+        <EditOrRevertModal
           open={revertModal}
           onClose={() => {
             setRevertModal(false)
           }}
-          ct_id={ct_id}
+          selected={(selected) => {
+            setTransactionModal((prev) => ({
+              ...prev,
+              transactionSelected: selected,
+            }))
+            setTransactionModal((prev) => ({
+              ...prev,
+              transactionModalOpen: true,
+            }))
+          }}
         />
       )}
+      {transactionModal.transactionSelected === EditOrRevertTypes.REVERT &&
+        transactionModal.transactionModalOpen && (
+          <RevertCashTransferModal
+            open={revertModal}
+            onClose={() => {
+              setRevertModal(false)
+              setTransactionModal((prev) => ({
+                ...prev,
+                transactionModalOpen: false,
+              }))
+            }}
+            ct_id={ct_id}
+          />
+        )}
+      {console.log('TRANSACTION TYPE IS:', transactionModal)}
+      {transactionModal.transactionSelected === EditOrRevertTypes.EDIT &&
+        transactionModal.transactionModalOpen && (
+          <EditTransactionModal
+            open={revertModal}
+            onClose={() => {
+              setRevertModal(false)
+              setTransactionModal((prev) => ({
+                ...prev,
+                transactionModalOpen: false,
+              }))
+            }}
+            ct_id={ct_id}
+          />
+        )}
     </Container>
   )
 }
