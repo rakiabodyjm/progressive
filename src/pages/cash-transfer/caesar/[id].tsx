@@ -1,20 +1,45 @@
-import { Box, Container, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+/* eslint-disable react/no-unescaped-entities */
+import {
+  Box,
+  CircularProgress,
+  Container,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  Theme,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
+import { MoreVert, Edit, Close } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
+import AsyncButton from '@src/components/AsyncButton'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
+import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import ModalWrapper from '@src/components/ModalWrapper'
 import CashTransferList from '@src/components/pages/cash-transfer/CashTransferList'
+import CreateOrUpdateCaesarBank from '@src/components/pages/cash-transfer/CreateOrUpdateCaesarBank'
+import { PopUpMenu } from '@src/components/PopUpMenu'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
+import { userDataSelector, userSelector } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
+import { useSuccessNotification, useErrorNotification } from '@src/utils/hooks/useNotification'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import useSWR from 'swr'
-import { CashTransferResponse } from '../../../utils/types/CashTransferTypes'
+import { Caesar, CaesarBank, CashTransferResponse } from '../../../utils/types/CashTransferTypes'
+
+type CreateCaesar = {
+  cash_transfer_balance: number
+}
 
 export default function ViewCashTransferCaesar() {
   const { query } = useRouter()
@@ -24,6 +49,7 @@ export default function ViewCashTransferCaesar() {
     getWalletById(id as string)
   )
   const theme: Theme = useTheme()
+  const user = useSelector(userDataSelector)
 
   // if (errorCashTransfers) {
   //   return (
@@ -45,6 +71,16 @@ export default function ViewCashTransferCaesar() {
   //   )
   // }
 
+  const [editMenu, setEditMenu] = useState<{
+    modal: HTMLButtonElement | undefined
+    editMode: boolean
+  }>({
+    modal: undefined,
+    editMode: false,
+  })
+
+  const editAnchorElement = useRef<HTMLButtonElement | undefined>()
+
   return (
     <>
       <Container maxWidth="lg" disableGutters>
@@ -54,32 +90,90 @@ export default function ViewCashTransferCaesar() {
               <Grid item xs={12} md={6}>
                 <Paper>
                   <Box p={2}>
-                    <RoleBadge variant="body1" color="primary">
-                      {caesar?.account_type.toUpperCase()}
-                    </RoleBadge>
-                    <Typography variant="h4">
-                      <span
-                        style={{
-                          color: theme.palette.primary.main,
-                        }}
-                      >
-                        Caesar{' '}
-                      </span>{' '}
-                      Account
-                    </Typography>
-                    <Typography variant="body2">{caesar?.description.toUpperCase()}</Typography>
+                    <Box display="flex" justifyContent="space-between">
+                      <Box>
+                        <RoleBadge variant="body1" color="primary">
+                          {caesar?.account_type.toUpperCase()}
+                        </RoleBadge>
+                        <Typography variant="h4">
+                          <span
+                            style={{
+                              color: theme.palette.primary.main,
+                            }}
+                          >
+                            Caesar{' '}
+                          </span>{' '}
+                          Account
+                        </Typography>
 
-                    <Typography
-                      style={{
-                        marginTop: 16,
-                        marginBottom: -8,
-                        display: 'block',
-                      }}
-                      variant="caption"
-                      color="primary"
-                    >
-                      Total Loan/Balance:{' '}
-                    </Typography>
+                        <Typography variant="body2">{caesar?.description.toUpperCase()}</Typography>
+
+                        <Typography
+                          style={{
+                            marginTop: 16,
+                            marginBottom: -8,
+                            display: 'block',
+                          }}
+                          variant="caption"
+                          color="primary"
+                        >
+                          Total Loan/Balance:{' '}
+                        </Typography>
+                      </Box>
+                      {user?.roles.some((ea) => ['ct-admin'].includes(ea)) && (
+                        <Box>
+                          <Tooltip
+                            arrow
+                            placement="left"
+                            title={<Typography variant="body1">Edit Account</Typography>}
+                          >
+                            <IconButton
+                              onClick={(e) => {
+                                setEditMenu((prev) => ({
+                                  ...prev,
+                                  modal: editAnchorElement.current,
+                                }))
+                              }}
+                              innerRef={editAnchorElement}
+                            >
+                              <MoreVert />
+                            </IconButton>
+                          </Tooltip>
+                          <PopUpMenu
+                            menuItems={[
+                              {
+                                text: 'Edit',
+                                Component: <Edit />,
+                                action: () => {
+                                  setEditMenu((prev) => ({
+                                    ...prev,
+                                    editMode: true,
+                                  }))
+                                  // setEditMode((prevState) => !prevState)
+                                  // setEditPopUpMenuOpen(false)
+                                },
+                              },
+                            ]}
+                            open={!!editMenu.modal}
+                            // anchorEl={(editMenu?.modal as HTMLButtonElement) | undefined}
+                            anchorEl={editAnchorElement.current}
+                            onClose={() => {
+                              setEditMenu((prev) => ({
+                                ...prev,
+                                modal: undefined,
+                              }))
+                              // setEditPopUpMenuOpen((prevState) => !prevState)
+                            }}
+                            autoFocus
+                            transformOrigin={{
+                              horizontal: 'right',
+                              vertical: 'top',
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Box>
+
                     {caesar && (
                       <Typography variant="h6">
                         {formatIntoCurrency(caesar.cash_transfer_balance)}
@@ -100,11 +194,115 @@ export default function ViewCashTransferCaesar() {
                     <CashTransferList caesarId={caesar?.id} />
                   </Box>
                 </Paper>
+                {editMenu.editMode && (
+                  <EditCaesarModal
+                    open={editMenu.editMode}
+                    onClose={() => {
+                      setEditMenu((prev) => ({
+                        ...prev,
+                        editMode: false,
+                      }))
+                    }}
+                    caesarId={id as string}
+                  />
+                )}
               </Grid>
             </Grid>
           </Box>
         </Paper>
       </Container>
     </>
+  )
+}
+const EditCaesarModal = ({
+  open,
+  onClose,
+  caesarId,
+}: {
+  open: boolean
+  onClose: () => void
+  caesarId: Caesar['id']
+}) => {
+  const {
+    data: caesar,
+    error,
+    isValidating: loading,
+    mutate,
+  } = useSWR<Caesar>(`/caesar/${caesarId}`, (url) => axios.get(url).then((res) => res.data))
+  const [formValues, setFormValues] = useState<Partial<Omit<CreateCaesar, 'id'>>>({
+    cash_transfer_balance: caesar?.cash_transfer_balance,
+  })
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const dispatchSuccess = useSuccessNotification()
+  const dispatchError = useErrorNotification()
+  const handleSubmit = () => {
+    axios
+      .patch(`/caesar/${caesarId}`, formValues)
+      .then((res) => {
+        dispatchSuccess(`Caesar's Bank Account Updated`)
+        onClose()
+      })
+      .catch((err) => {
+        extractMultipleErrorFromResponse(err).forEach((ea) => {
+          dispatchError(ea)
+        })
+      })
+      .finally(() => {
+        setIsSubmitting(false)
+        mutate()
+      })
+  }
+  return (
+    <ModalWrapper onClose={onClose} open={open} containerSize="xs">
+      <Paper
+        style={{
+          padding: 16,
+        }}
+      >
+        {loading && caesar ? (
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+              <Box>
+                <Typography variant="h6">Update Caesar Account</Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Update this Caesar Account
+                </Typography>
+              </Box>
+
+              <IconButton onClick={onClose}>
+                <Close />
+              </IconButton>
+            </Box>
+            <Box my={2}>
+              <Divider />
+            </Box>
+            <Box my={2} />
+            <FormLabel>Account Number</FormLabel>
+            <FormTextField
+              name="cash_transfer_balance"
+              onChange={(e) => {
+                setFormValues((prev) => ({
+                  ...prev,
+                  [e.target.name]: e.target.value,
+                }))
+              }}
+              value={formValues.cash_transfer_balance}
+            />
+            <Box my={2}>
+              <Divider />
+            </Box>
+            <Box display="flex" justifyContent="flex-end">
+              <AsyncButton onClick={handleSubmit} disabled={isSubmitting} loading={isSubmitting}>
+                Submit
+              </AsyncButton>
+            </Box>
+          </>
+        )}
+      </Paper>
+    </ModalWrapper>
   )
 }
