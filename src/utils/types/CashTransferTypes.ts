@@ -22,6 +22,11 @@ export type CaesarBank = {
   deleted_at: Date
 }
 
+export type Caesar = {
+  id: string
+  cash_transfer_balance: number
+}
+
 export type TransferType = {
   id: number
   name: string
