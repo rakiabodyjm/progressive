@@ -119,53 +119,6 @@ export default function ViewCaesarBankPage() {
           <Box p={2}>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <Paper
-                  variant="outlined"
-                  style={{
-                    padding: 16,
-                  }}
-                >
-                  <Box display="flex" alignItems="center">
-                    <ErrorOutline color="error" />
-
-                    <Typography
-                      style={{
-                        marginLeft: 4,
-                        fontWeight: 500,
-                        letterSpacing: 2,
-                        alignItems: 'center',
-                        display: 'inline',
-                      }}
-                      color="error"
-                      variant="body1"
-                    >
-                      TIP / GUIDE:
-                    </Typography>
-                  </Box>
-
-                  <Box my={1}>
-                    <Divider />
-                  </Box>
-
-                  <Box display="inline">
-                    <Typography color="error" variant="body2">
-                      Sender's Bank Fee:{' '}
-                    </Typography>
-                    <Typography variant="caption">
-                      - Add this on top of your Bank Fee for Loans
-                    </Typography>
-                  </Box>
-                  {/* <Box mt={2} display="inline">
-                    <Typography color="error" variant="body2">'
-                      
-                    </Typography>
-                    <Typography variant="caption">
-                      Add this on top of your Bank Fee for Loans
-                    </Typography>
-                  </Box> */}
-                </Paper>
-                <Box my={2} />
-
                 <Paper variant="outlined">
                   <Box p={2}>
                     {caesarBankData && caesarData ? (

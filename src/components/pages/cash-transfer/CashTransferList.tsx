@@ -1,9 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-nested-ternary */
-import { Box, ListItem, Paper, TablePagination, Theme, Typography } from '@material-ui/core'
+import { Box, Grid, ListItem, Paper, TablePagination, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
+import FormLabel from '@src/components/FormLabel'
+import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import CashTransferDetailsModal from '@src/components/pages/cash-transfer/CashTransferDetailsModal'
 import LoanDetailsModal from '@src/components/pages/cash-transfer/LoanDetailsModal'
 import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
@@ -11,6 +14,7 @@ import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import {
   CaesarBank,
   CashTransferAs,
+  CashTransferFilterTypes,
   CashTransferResponse,
 } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
@@ -18,6 +22,13 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import { ChangeEvent, useCallback, useState } from 'react'
 import useSWR from 'swr'
+type NewDateType = {
+  year: string
+  month: string
+  date: string
+  // hour: string
+  // minutes: string
+}
 
 type TransferTypeModal = {
   open: boolean
@@ -40,17 +51,40 @@ export default function CashTransferList({
     page: 0,
     limit: 100,
   })
+
+  const [formQuery, setFormQuery] = useState<CashTransferFilterTypes>({
+    as: undefined,
+    date_from: undefined,
+    date_to: undefined,
+  })
+  const [newDate, setNewDate] = useState<NewDateType>({
+    year: '',
+    date: '',
+    month: '',
+    // hour: '',
+    // minutes: '',
+  })
+  const [convertedDate, setConvertedDate] = useState<string>()
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormQuery((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
   const {
     data: cashTransfers,
     isValidating: loadingCashTransfers,
     error: errorCashTransfers,
   } = useSWR(
-    caesarId || caesarBankId || loanId
+    caesarId || caesarBankId || loanId || formQuery
       ? `/cash-transfer?${objectToURLQuery({
           ...queryParameters,
           caesar: caesarId,
           caesar_bank: caesarBankId,
           loan: loanId,
+          ...formQuery,
         })}`
       : null,
     (url) =>
@@ -89,6 +123,56 @@ export default function CashTransferList({
   })
   return (
     <>
+      <Paper
+        style={{
+          marginBottom: 8,
+          background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+          padding: 8,
+        }}
+      >
+        <Box p={1}>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={4}>
+              <FormLabel>Transaction Type</FormLabel>
+              <AsDropDown
+                onChange={(e) => {
+                  if (e.target.value === '') {
+                    setFormQuery((prev) => ({
+                      ...prev,
+                      as: undefined,
+                    }))
+                  } else {
+                    setFormQuery((prev) => ({
+                      ...prev,
+                      as: e.target.value,
+                    }))
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <FormLabel>Date From</FormLabel>
+              <FormTextField
+                type="date"
+                name="date_from"
+                size="small"
+                value={formQuery.date_from}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <FormLabel>Date To</FormLabel>
+              <FormTextField
+                type="date"
+                name="date_to"
+                size="small"
+                value={formQuery.date_to}
+                onChange={handleChange}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </Paper>
       <Box
         style={{
           display: 'grid',
