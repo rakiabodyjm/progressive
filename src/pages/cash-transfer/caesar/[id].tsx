@@ -267,9 +267,11 @@ const EditCaesarModal = ({
           <>
             <Box display="flex" justifyContent="space-between" alignItems="flex-start">
               <Box>
-                <Typography variant="h6">Update Caesar Account</Typography>
+                <Typography color="primary" variant="h6">
+                  Update Caesar
+                </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Update this Caesar Account
+                  Update this Caesar Account's balance
                 </Typography>
               </Box>
 
@@ -281,7 +283,7 @@ const EditCaesarModal = ({
               <Divider />
             </Box>
             <Box my={2} />
-            <FormLabel>Account Number</FormLabel>
+            <FormLabel>Cash Transfer Balance: </FormLabel>
             <FormTextField
               name="cash_transfer_balance"
               onChange={(e) => {
