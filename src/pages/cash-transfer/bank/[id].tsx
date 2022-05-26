@@ -414,6 +414,7 @@ const EditCaesarBankModal = ({
                 bank: caesarBank?.bank.id,
                 caesar: caesarBank?.caesar.id,
                 description: caesarBank?.description,
+                balance: caesarBank?.balance,
               }}
               updateValueId={caesarBankId}
             />

@@ -10,6 +10,7 @@ import axios from 'axios'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import useSWR, { KeyedMutator } from 'swr'
 import AsyncButton from '@src/components/AsyncButton'
+import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 
 type CreateCaesarBank = {
   caesar: string
@@ -27,15 +28,32 @@ const CreateOrUpdateCaesarBank = ({
 }: {
   mutate: KeyedMutator<Paginated<CaesarBank>> | KeyedMutator<CaesarBank>
   caesar: string
-  updateValues?: Partial<Omit<CreateCaesarBank, 'id'>>
+  updateValues?: Partial<
+    Omit<
+      CreateCaesarBank & {
+        balance: number
+      },
+      'id'
+    >
+  >
   updateValueId?: CaesarBank['id']
   onClose: () => void
 }) => {
-  const [formValues, setFormValues] = useState<Partial<Omit<CreateCaesarBank, 'id'>>>({
+  const [formValues, setFormValues] = useState<
+    Partial<
+      Omit<
+        CreateCaesarBank & {
+          balance: number
+        },
+        'id'
+      >
+    >
+  >({
     bank: undefined,
     caesar,
     description: undefined,
     account_number: undefined,
+    balance: undefined,
     ...updateValues,
   })
   // const updateValuesRef = useRef<typeof updateValues | undefined>()
@@ -107,6 +125,8 @@ const CreateOrUpdateCaesarBank = ({
     updateValues?.bank ? `/cash-transfer/bank/${updateValues.bank}` : undefined,
     (url) => axios.get(url).then((res) => res.data)
   )
+
+  const isEligible = useIsCtOperatorOrAdmin(['ct-admin'])
 
   return (
     <>
@@ -191,6 +211,25 @@ const CreateOrUpdateCaesarBank = ({
         }}
         value={formValues.description}
       />
+
+      {isEligible && (
+        <>
+          <Box my={2} />
+          <FormLabel>Balance</FormLabel>
+          <FormTextField
+            type="number"
+            name="balance"
+            onChange={(e) => {
+              setFormValues((prev) => ({
+                ...prev,
+                [e.target.name]: e.target.value,
+              }))
+            }}
+            value={formValues.balance}
+          />
+        </>
+      )}
+
       <Box my={2}>
         <Divider />
       </Box>
