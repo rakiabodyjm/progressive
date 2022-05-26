@@ -91,3 +91,9 @@ export enum EditOrRevertTypes {
   EDIT = 'EDIT',
   REVERT = 'REVERT',
 }
+
+export type CashTransferFilterTypes = {
+  as?: string
+  date_from?: string
+  date_to?: string
+}
