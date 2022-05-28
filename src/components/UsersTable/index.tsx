@@ -37,7 +37,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   hidePagination,
   tableCellProps,
   tableHeadProps,
-  // renderRow,
+  renderRow,
   ...restProps
 }: {
   data: T[]
@@ -54,6 +54,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
   hidePagination?: true
   tableCellProps?: Partial<Record<keyof T, TableCellProps>>
   tableHeadProps?: Partial<TableHeadProps>
+  renderRow?: (param: T) => JSX.Element
 
   /**
    * Render row according to override
@@ -137,40 +138,44 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
                 </TableRow>
               ))}
 
-            {data.map((row) => (
-              <TableRow
-                onClick={(e: MouseEvent<HTMLElement>) => {
-                  if (onRowClick) {
-                    onRowClick(e, row)
-                  }
-                }}
-                style={{
-                  cursor: 'pointer',
-                }}
-                key={(row?.id as string) || nanoid()}
-                hover
-              >
-                {fields?.map((ea, index) => {
-                  const renderComponent = renderCell?.[ea] || undefined
-                  // if (renderComponent) {
-                  //   console.log('caught one ', renderComponent)
-                  // }
-                  const value = row[ea]
-                  return (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <TableCell
-                      key={`${value}-${index}`}
-                      {...(tableCellProps ? tableCellProps[ea] : {})}
-                    >
-                      {renderComponent ? renderComponent(value) : value?.toString() || ''}
-                      {/* {typeof value !== 'string'
+            {data.map((row) =>
+              renderRow ? (
+                renderRow(row)
+              ) : (
+                <TableRow
+                  onClick={(e: MouseEvent<HTMLElement>) => {
+                    if (onRowClick) {
+                      onRowClick(e, row)
+                    }
+                  }}
+                  style={{
+                    cursor: 'pointer',
+                  }}
+                  key={(row?.id as string) || nanoid()}
+                  hover
+                >
+                  {fields?.map((ea, index) => {
+                    const renderComponent = renderCell?.[ea] || undefined
+                    // if (renderComponent) {
+                    //   console.log('caught one ', renderComponent)
+                    // }
+                    const value = row[ea]
+                    return (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <TableCell
+                        key={`${value}-${index}`}
+                        {...(tableCellProps ? tableCellProps[ea] : {})}
+                      >
+                        {renderComponent ? renderComponent(value) : value?.toString() || ''}
+                        {/* {typeof value !== 'string'
                           ? (renderComponent && renderComponent(value)) || value?.toString() || ''
                           : value} */}
-                    </TableCell>
-                  )
-                })}
-              </TableRow>
-            ))}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              )
+            )}
           </TableBody>
         </Table>
       </TableContainer>
