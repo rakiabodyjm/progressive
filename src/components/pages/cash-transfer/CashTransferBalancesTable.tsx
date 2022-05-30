@@ -47,10 +47,12 @@ export const CashTransferBalancesTable = ({
   disabledKeys,
   paperProps,
   boxProps,
+  caesarId,
 }: {
   disabledKeys?: ('id' | 'name' | 'account_type' | 'bank_accounts' | 'balance' | 'bank_balances')[]
   paperProps?: PaperProps
   boxProps?: BoxProps
+  caesarId?: string
 }) => {
   const user = useSelector(userDataSelector)
   const isAuthorizedForViewingBalances = useMemo(
@@ -478,6 +480,7 @@ export const CashTransferBalancesTable = ({
           user?.roles.some((ea) => ['subdistributor'] || ['dsp'].includes(ea)) &&
           !isEligible && (
             <CreateRetailerShortcutModal
+              caesar={caesarId}
               open={addRetailerModal}
               onClose={() => {
                 setAddRetailerModal(false)

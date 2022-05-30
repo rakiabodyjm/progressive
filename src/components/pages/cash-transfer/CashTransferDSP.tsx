@@ -93,7 +93,10 @@ export default function CashTransferDSP() {
             </Grid>
             <Grid item md={6} xs={12}>
               <Box mt={2}>
-                <CashTransferBalancesTable disabledKeys={['bank_balances', 'balance']} />
+                <CashTransferBalancesTable
+                  disabledKeys={['bank_balances', 'balance']}
+                  caesarId={caesarId.dsp}
+                />
               </Box>
             </Grid>
           </Grid>

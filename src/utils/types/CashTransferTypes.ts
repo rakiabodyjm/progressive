@@ -90,6 +90,8 @@ export type CashTransferResponse = {
   total_amount: number
 
   message?: string
+
+  is_loan_paid?: boolean
 }
 
 export enum EditOrRevertTypes {
