@@ -161,6 +161,7 @@ export const CashTransferBalancesTable = ({
   }, [dispatch, user])
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
   const eligibleAsCTAdmin = useIsCtOperatorOrAdmin(['ct-admin'])
+  const eligibleAsSubToDsp = useIsCtOperatorOrAdmin(['dsp', 'subdistributor'])
 
   if (error) {
     return <ErrorLoading />
@@ -198,7 +199,7 @@ export const CashTransferBalancesTable = ({
                 </Box>
               </Box>
             )}
-            {user && user.roles.some((ea) => ['dsp', 'subdistributor'].includes(ea)) && (
+            {(isEligible || eligibleAsSubToDsp) && (
               <Box textAlign="end">
                 <Box>
                   <Tooltip
