@@ -11,15 +11,17 @@ import {
   TablePagination,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
+import { AirlineSeatLegroomNormalTwoTone } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import DirectPaidModal from '@src/components/pages/cash-transfer/DirectPaidModal'
 import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 type LoanCollectTypes = {
@@ -41,6 +43,7 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
     data: cashTransfers,
     isValidating: loadingCashTransfers,
     error: errorCashTransfers,
+    mutate,
   } = useSWR(
     caesarId
       ? `/cash-transfer?${objectToURLQuery({
@@ -78,6 +81,8 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
     toBeCollect: undefined,
   })
 
+  const [loanData, setLoanData] = useState<CashTransferResponse>()
+
   useEffect(() => {
     if (cashTransfers) {
       setLoanToCollect((prev) => ({
@@ -87,6 +92,8 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
       }))
     }
   }, [cashTransfers?.data])
+
+  const [creditToOtherDsp, setCreditToOtherDsp] = useState<boolean>(false)
 
   return (
     <>
@@ -176,7 +183,10 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
                           }}
                           key={cashTransfer.id}
                           button
-                          // onClick={}
+                          onClick={() => {
+                            setCreditToOtherDsp(true)
+                            setLoanData(cashTransfer)
+                          }}
                         >
                           <Box display="flex" width="100%" justifyContent="space-between">
                             <Typography
@@ -265,6 +275,16 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
             )}
           </Box>
         </Box>
+        {creditToOtherDsp && (
+          <DirectPaidModal
+            open={creditToOtherDsp}
+            handleClose={() => {
+              setCreditToOtherDsp(false)
+            }}
+            loanData={loanData}
+            triggeredRender={mutate}
+          ></DirectPaidModal>
+        )}
         {/* <Box pt={2}>
           <TablePagination
             rowsPerPageOptions={[5, 10, 20, 50, 100]}
