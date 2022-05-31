@@ -12,17 +12,14 @@ import {
 } from '@material-ui/core'
 import { AddOutlined, CloseOutlined } from '@material-ui/icons'
 import AsyncButton from '@src/components/AsyncButton'
-import { BasePickerProps } from '@material-ui/pickers/typings/BasePicker'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import ModalWrapper from '@src/components/ModalWrapper'
-import { userDataSelector } from '@src/redux/data/userSlice'
-import { CaesarBank } from '@src/utils/types/CashTransferTypes'
+import { Bank } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import useSWR, { useSWRConfig } from 'swr'
 import { CreateDspAccount, DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import {
   getDsps,
@@ -30,13 +27,13 @@ import {
   searchSubdistributor,
   SubdistributorResponseType,
 } from '@src/utils/api/subdistributorApi'
-import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import { on } from 'events'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import useNotification from '@src/utils/hooks/useNotification'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { Autocomplete } from '@material-ui/lab'
+import { useRouter } from 'next/router'
+import { searchWalletV2 } from '@src/utils/api/walletApi'
 
 type FormValuesType = {
   first_name: string
@@ -47,19 +44,34 @@ type FormValuesType = {
   subdistributor: string
 }
 
+type BankValuesTypes = {
+  caesar?: string
+  bank?: number
+  description?: string
+  account_number?: string
+}
+
+type SearchParams = {
+  searchQuery?: string
+}
+
 export default function CreateRetailerShortcutModal({
   open,
   onClose,
   subd,
   dsp,
   triggerRender,
+  caesar,
 }: {
   open: boolean
   onClose: () => void
   subd?: SubdistributorResponseType
   dsp?: DspResponseType
   triggerRender?: () => void
+  caesar?: string
 }) {
+  const { query } = useRouter()
+  const { id } = query
   const [formValues, setFormValues] = useState<FormValuesType>({
     first_name: '',
     last_name: '',
@@ -67,6 +79,17 @@ export default function CreateRetailerShortcutModal({
     address: '',
     dsp: dsp?.id as string,
     subdistributor: subd?.id as string,
+  })
+
+  const [bankFormValues, setBankFormValues] = useState<BankValuesTypes>({
+    bank: undefined,
+    caesar: undefined,
+    description: undefined,
+    account_number: '',
+  })
+
+  const [searchParam, setSearchParam] = useState<SearchParams>({
+    searchQuery: '',
   })
   const dispatchNotif = useNotification()
   const [visible, setVisible] = useState<boolean>(false)
@@ -80,18 +103,49 @@ export default function CreateRetailerShortcutModal({
     }))
   }
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    if (formValues.phone_number) {
+      setBankFormValues((prev) => ({
+        ...prev,
+        account_number: formValues.phone_number,
+      }))
+      setSearchParam((prev) => ({
+        ...prev,
+        searchQuery: formValues.phone_number,
+      }))
+    }
+  }, [formValues.phone_number])
+
+  const handleSubmit = async () => {
     setLoading(true)
     if (open) {
-      axios
+      await axios
         .post('retailer/cash-transfer/', { ...formValues })
-        .then((res) => {
+        .then(async (res) => {
           dispatch(
             setNotification({
               type: NotificationTypes.SUCCESS,
               message: 'Retailer Created',
             })
           )
+          await searchWalletV2(searchParam).then((res) => {
+            res.data.map(async (ea) => {
+              setBankFormValues((prev) => ({
+                ...prev,
+                caesar: ea.id,
+              }))
+              await axios
+                .post('/cash-transfer/caesar-bank', { ...bankFormValues, caesar: ea.id })
+                .then((res) => {
+                  dispatch(
+                    setNotification({
+                      type: NotificationTypes.SUCCESS,
+                      message: 'Bank Created',
+                    })
+                  )
+                })
+            })
+          })
         })
         .catch((err) => {
           extractMultipleErrorFromResponse(err).forEach((msg) => {
@@ -159,6 +213,9 @@ export default function CreateRetailerShortcutModal({
       handleChangeSubd('subdistributor', autoLoadSubdistributor?.id)
     }
   }, [autoLoadSubdistributor])
+
+  const [selectedBank, setSelectedBank] = useState({})
+  const [visibleChip, setVisibleChip] = useState<boolean>(false)
 
   return (
     <ModalWrapper open={open} onClose={onClose} containerSize="sm">
@@ -277,6 +334,126 @@ export default function CreateRetailerShortcutModal({
                 placeholder="Unit#/Bldg/Street/Brgy/City/Province"
                 onChange={handleChange}
               ></FormTextField>
+            </Grid>
+            <Grid item xs={12}>
+              <Box>
+                <Chip
+                  avatar={
+                    <IconButton>
+                      <AddOutlined />
+                    </IconButton>
+                  }
+                  style={{
+                    display: visibleChip ? 'none' : undefined,
+                  }}
+                  onClick={() => {
+                    setVisibleChip(true)
+                  }}
+                  label="Add Bank"
+                />
+              </Box>
+              <Box my={2} />
+
+              {visibleChip && (
+                <Box>
+                  <Paper>
+                    <Box p={2}>
+                      <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                        <FormLabel>Add Bank</FormLabel>
+                        <IconButton
+                          style={{
+                            padding: 2,
+                            marginBottom: 8,
+                          }}
+                          onClick={() => {
+                            setVisibleChip(false)
+                          }}
+                        >
+                          <CloseOutlined
+                            style={{
+                              fontSize: 16,
+                            }}
+                          />
+                        </IconButton>
+                      </Box>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <SimpleAutoComplete<
+                            Bank,
+                            {
+                              page: number
+                              limit: number
+                              search: string
+                            }
+                          >
+                            initialQuery={{ limit: 100, page: 0, search: '' }}
+                            fetcher={(q) =>
+                              axios
+                                .get('/cash-transfer/bank', {
+                                  params: {
+                                    ...q,
+                                  },
+                                })
+                                .then((res) => res.data.data)
+                            }
+                            querySetter={(arg, inputValue) => ({
+                              ...arg,
+                              search: inputValue,
+                            })}
+                            getOptionLabel={(option) =>
+                              `${option.name}  ${
+                                option?.description && ` - ${option?.description}`
+                              }`
+                            }
+                            onChange={(value) => {
+                              setBankFormValues((prev) => ({
+                                ...prev,
+                                bank: value?.id || undefined,
+                              }))
+                            }}
+                            getOptionSelected={(val1, val2) => val1.id === val2.id}
+
+                            // defaultValue={}
+                            // key={}
+                          />
+
+                          {/* ) : (
+                <Box display="flex" width="100%" alignItems="center" justifyContent="center">
+                  <CircularProgress />
+                </Box>
+                ) */}
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <FormLabel>Account Number</FormLabel>
+                          <FormTextField
+                            name="account_number"
+                            onChange={(e) => {
+                              setBankFormValues((prev) => ({
+                                ...prev,
+                                [e.target.name]: e.target.value,
+                              }))
+                            }}
+                            value={bankFormValues.account_number}
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <FormLabel>Description</FormLabel>
+                          <FormTextField
+                            name="description"
+                            onChange={(e) => {
+                              setBankFormValues((prev) => ({
+                                ...prev,
+                                [e.target.name]: e.target.value,
+                              }))
+                            }}
+                            value={bankFormValues.description}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  </Paper>
+                </Box>
+              )}
             </Grid>
           </Grid>
           <Box display="flex" justifyContent="flex-end">
