@@ -6,6 +6,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  makeStyles,
   Paper,
   Theme,
   Tooltip,
@@ -15,6 +16,7 @@ import { grey } from '@material-ui/core/colors'
 import { MoreVert, Edit, Close } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import AsyncButton from '@src/components/AsyncButton'
+import CollectiblesTable from '@src/components/CollectiblesTable'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
@@ -41,7 +43,16 @@ type CreateCaesar = {
   cash_transfer_balance: number
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+  gridContainer: {
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column-reverse',
+    },
+  },
+}))
+
 export default function ViewCashTransferCaesar() {
+  const classes = useStyles()
   const { query } = useRouter()
   const { id } = query
 
@@ -86,7 +97,7 @@ export default function ViewCashTransferCaesar() {
       <Container maxWidth="lg" disableGutters>
         <Paper>
           <Box p={2}>
-            <Grid container>
+            <Grid container spacing={2} className={classes.gridContainer}>
               <Grid item xs={12} md={6}>
                 <Paper>
                   <Box p={2}>
@@ -206,6 +217,9 @@ export default function ViewCashTransferCaesar() {
                     caesarId={id as string}
                   />
                 )}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <CollectiblesTable caesarId={caesar?.id} />
               </Grid>
             </Grid>
           </Box>
