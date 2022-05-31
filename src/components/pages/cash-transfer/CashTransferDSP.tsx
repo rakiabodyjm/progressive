@@ -82,15 +82,31 @@ export default function CashTransferDSP() {
           </Box>
           <Grid container spacing={1}>
             <Grid item md={6} xs={12}>
-              <Box mb={2}>{caesarId.admin && <CaesarAccount caesarID={caesarId.admin} />}</Box>
-              <Box mb={2}>
-                {caesarId.subdistributor && <CaesarAccount caesarID={caesarId.subdistributor} />}
-              </Box>
-              <Box mb={2}>{caesarId.dsp && <CaesarAccount caesarID={caesarId.dsp} />}</Box>
-              <Box mb={2}>
-                {caesarId.retailer && <CaesarAccount caesarID={caesarId.retailer} />}
-              </Box>
+              {caesarId.admin || caesarId.subdistributor || caesarId.dsp || caesarId.retailer ? (
+                <>
+                  <Box mb={2}>{caesarId.admin && <CaesarAccount caesarID={caesarId.admin} />}</Box>
+                  <Box mb={2}>
+                    {caesarId.subdistributor && (
+                      <CaesarAccount caesarID={caesarId.subdistributor} />
+                    )}
+                  </Box>
+                  <Box mb={2}>{caesarId.dsp && <CaesarAccount caesarID={caesarId.dsp} />}</Box>
+                  <Box mb={2}>
+                    {caesarId.retailer && <CaesarAccount caesarID={caesarId.retailer} />}
+                  </Box>
+                </>
+              ) : (
+                <LoadingScreen2
+                  containerProps={{
+                    minHeight: 480,
+                  }}
+                  textProps={{
+                    variant: 'h4',
+                  }}
+                />
+              )}
             </Grid>
+
             <Grid item md={6} xs={12}>
               <Box mt={2}>
                 <CashTransferBalancesTable
