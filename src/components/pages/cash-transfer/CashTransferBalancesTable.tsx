@@ -161,7 +161,7 @@ export const CashTransferBalancesTable = ({
   }, [dispatch, user])
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
   const eligibleAsCTAdmin = useIsCtOperatorOrAdmin(['ct-admin'])
-  const eligibleAsSubToDsp = useIsCtOperatorOrAdmin(['dsp', 'subdistributor'])
+  const eligibleAsSubToDsp = useIsCtOperatorOrAdmin(['dsp', 'subdistributor', 'admin'])
 
   if (error) {
     return <ErrorLoading />
