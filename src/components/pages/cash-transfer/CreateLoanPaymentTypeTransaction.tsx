@@ -165,7 +165,7 @@ const LoanPaymentTypeTransaction = ({
             {cash_transfer?.to ? (
               <ToCaesarAutoComplete
                 // disabled
-                onChange={(cFrom) => {
+                onChange={(cFrom: CaesarWalletResponse) => {
                   // setFormValues('caesar_bank_from', cbFrom)
                   setFormValues((prev) => ({
                     ...prev,

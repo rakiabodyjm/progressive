@@ -70,7 +70,13 @@ const LoanTypeTransaction = ({
                 caesar_bank_to: transferForm?.caesar_bank_to?.id || undefined,
               }),
         })
-        .then((res) => res.data)
+        .then((res) => {
+          dispatchNotif({
+            type: NotificationTypes.SUCCESS,
+            message: `Loan Created`,
+          })
+          return res.data
+        })
         .catch((err) => {
           throw extractMultipleErrorFromResponse(err)
         })
@@ -136,10 +142,6 @@ const LoanTypeTransaction = ({
 
   useEffect(() => {
     if (response) {
-      dispatchNotif({
-        type: NotificationTypes.SUCCESS,
-        message: `Loan Created`,
-      })
       setTransferForm((prev) => ({
         ...prev,
         amount: undefined,
@@ -181,7 +183,7 @@ const LoanTypeTransaction = ({
       <Box>
         <FormLabel>From Bank Account</FormLabel>
         <ToCaesarBankAutoComplete
-          onChange={(caesarBank: CaesarBank) => {
+          onChange={(caesarBank) => {
             setTransferForm((prev) => ({
               ...prev,
               caesar_bank_from: caesarBank,
@@ -211,7 +213,7 @@ const LoanTypeTransaction = ({
             <FormLabel>To Another Bank Account</FormLabel>
 
             <ToCaesarBankAutoComplete
-              onChange={(caesarBank: CaesarBank) => {
+              onChange={(caesarBank) => {
                 setTransferForm((prev) => ({
                   ...prev,
                   caesar_bank_to: caesarBank,
@@ -227,7 +229,7 @@ const LoanTypeTransaction = ({
               }
               defaultValue={transferForm?.caesar_bank_to || undefined}
               disabled={!!caesar_bank_to}
-              value={transferForm.caesar_bank_to}
+              value={transferForm.caesar_bank_to || undefined}
               key={resetValue}
             />
           </>
