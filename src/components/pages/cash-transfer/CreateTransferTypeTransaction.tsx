@@ -245,7 +245,7 @@ const TransferTypeTransaction = ({
           <>
             <FormLabel>From Bank Account</FormLabel>
             <ToCaesarBankAutoComplete
-              onChange={(caesarBank: CaesarBank) => {
+              onChange={(caesarBank) => {
                 setTransferForm((prev) => ({
                   ...prev,
                   caesar_bank_from: caesarBank,
@@ -311,7 +311,7 @@ const TransferTypeTransaction = ({
           <>
             <FormLabel>To Another Bank Account</FormLabel>
             <ToCaesarBankAutoComplete
-              onChange={(caesarBank: CaesarBank) => {
+              onChange={(caesarBank) => {
                 setTransferForm((prev) => ({
                   ...prev,
                   caesar_bank_to: caesarBank,

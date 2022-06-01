@@ -3,6 +3,8 @@ import SimpleAutoComplete, { SimpleAutoCompleteProps } from '@src/components/Sim
 import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import type { CaesarWalletResponse } from '@api/walletApi'
+import { memo } from 'react'
+import deepEqual from '@src/utils/deepEqual'
 
 export const searchCaesarBank = (
   searchString?: string,
@@ -22,44 +24,49 @@ export const searchCaesarBank = (
     })
     .then((res) => res.data.data as CaesarBank[])
 
-const ToCaesarBankAutoComplete = ({
-  filter,
-  onChange,
-  additionalParams,
-  ...restProps
-}: {
-  filter?: (param: CaesarBank[]) => CaesarBank[]
-  onChange: (arg: CaesarBank) => void
-  additionalParams?: {
-    ceasar: CaesarWalletResponse['id']
-  }
-} & Partial<SimpleAutoCompleteProps<CaesarBank, string | undefined>>) => (
-  <SimpleAutoComplete<CaesarBank, string | undefined>
-    initialQuery={undefined}
-    fetcher={(params) => searchCaesarBank(params).then((res) => (filter ? filter(res) : res))}
-    getOptionLabel={(option) =>
-      `${option?.description} - ${option.caesar?.description || ''} ${
-        option?.account_number ? `- ${option.account_number}` : ''
-      }`
+const ToCaesarBankAutoComplete = memo(
+  function ToCaesarBankAutoCompleteOriginal({
+    filter,
+    onChange,
+    additionalParams,
+    ...restProps
+  }: {
+    filter?: (param: CaesarBank[]) => CaesarBank[]
+    onChange: (arg: CaesarBank) => void
+    additionalParams?: {
+      ceasar: CaesarWalletResponse['id']
     }
-    renderOption={(option) => (
-      <Box display="flex" flexDirection="column">
-        <Typography display="block" variant="body2">{`${option.description}`}</Typography>
-        <Typography variant="caption" color="primary">
-          {option.caesar?.description || ''}
-        </Typography>
-        {option?.account_number && (
-          <Typography variant="caption" color="textSecondary">
-            {option?.account_number.slice(0, 26)}
-          </Typography>
+  } & Partial<SimpleAutoCompleteProps<CaesarBank, string | undefined>>) {
+    return (
+      <SimpleAutoComplete<CaesarBank, string | undefined>
+        initialQuery={undefined}
+        fetcher={(params) => searchCaesarBank(params).then((res) => (filter ? filter(res) : res))}
+        getOptionLabel={(option) =>
+          `${option?.description} - ${option.caesar?.description || ''} ${
+            option?.account_number ? `- ${option.account_number}` : ''
+          }`
+        }
+        renderOption={(option) => (
+          <Box display="flex" flexDirection="column">
+            <Typography display="block" variant="body2">{`${option.description}`}</Typography>
+            <Typography variant="caption" color="primary">
+              {option.caesar?.description || ''}
+            </Typography>
+            {option?.account_number && (
+              <Typography variant="caption" color="textSecondary">
+                {option?.account_number.slice(0, 26)}
+              </Typography>
+            )}
+          </Box>
         )}
-      </Box>
-    )}
-    getOptionSelected={(val1, val2) => val1.id === val2.id}
-    querySetter={(param, input) => input}
-    onChange={onChange}
-    {...restProps}
-  />
+        getOptionSelected={(val1, val2) => val1.id === val2.id}
+        querySetter={(param, input) => input}
+        onChange={onChange}
+        {...restProps}
+      />
+    )
+  },
+  (prevProps, nextProps) => deepEqual(prevProps, nextProps)
 )
 
 export default ToCaesarBankAutoComplete
