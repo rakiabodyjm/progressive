@@ -151,7 +151,6 @@ export default function ViewLoanPage() {
                             variant="body2"
                           >
                             {formatIntoReadableDate(cashTransferData?.created_at || Date.now())}
-                            {/* {console.log(cashTransferData?.created_at)} */}
                           </Typography>
                         </Box>
                         <Tooltip
@@ -173,13 +172,32 @@ export default function ViewLoanPage() {
                         {caesar?.account_type.toUpperCase()}
                       </RoleBadge>
                       <Typography variant="h4">Loan Details</Typography>
-                      <Typography variant="body2">{caesar?.description.toUpperCase()}</Typography>
-
-                      <Typography variant="caption"></Typography>
+                      {/* <Typography variant="body2" color="primary">
+                        {caesar?.description.toUpperCase()}
+                      </Typography> */}
+                      <Typography variant="body2" color="primary">
+                        {cashTransferData?.caesar_bank_to.description || caesar?.description}
+                      </Typography>
 
                       <Typography
                         style={{
                           marginTop: 16,
+                          marginBottom: -8,
+                          display: 'block',
+                        }}
+                        variant="caption"
+                        color="primary"
+                      >
+                        Transacted By:
+                      </Typography>
+                      <Typography variant="h6">
+                        {cashTransferData?.caesar_bank_from?.description ||
+                          cashTransferData?.from?.description ||
+                          'ERROR'}
+                      </Typography>
+
+                      <Typography
+                        style={{
                           marginBottom: -8,
                           display: 'block',
                         }}
