@@ -31,10 +31,12 @@ export default function RevertCashTransferModal({
   open,
   onClose,
   ct_id,
+  triggerRender,
 }: {
   open: boolean
   onClose: () => void
   ct_id: string
+  triggerRender: () => void
 }) {
   const { data: ct_data } = useSWR<CashTransferResponse>(`/cash-transfer/${ct_id}`, (url) =>
     axios
@@ -206,7 +208,12 @@ export default function RevertCashTransferModal({
                           })
                         })
                       })
-                      .finally(() => onClose())
+                      .finally(() => {
+                        onClose()
+                        if (triggerRender) {
+                          triggerRender()
+                        }
+                      })
                   }}
                 >
                   Revert Transaction
