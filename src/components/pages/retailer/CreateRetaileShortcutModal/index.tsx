@@ -117,8 +117,6 @@ export default function CreateRetailerShortcutModal({
     }
   }, [formValues.phone_number])
 
-  const [caesarDataofRetailer, setCaesarDataOfRetailer] = useState<CaesarWalletResponse[]>()
-
   useEffect(() => {
     if (findCaesar) {
       searchWalletV2(searchParam).then((res) => {
