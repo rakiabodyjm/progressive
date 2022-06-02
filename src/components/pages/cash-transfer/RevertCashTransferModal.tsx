@@ -1,6 +1,7 @@
 import { Box, Button, Divider, Grid, IconButton, Paper, Theme, Typography } from '@material-ui/core'
 import { CloseOutlined, DoubleArrow } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
+import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import ModalWrapper from '@src/components/ModalWrapper'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
@@ -15,6 +16,7 @@ import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 
 import axios, { AxiosError } from 'axios'
 import router from 'next/router'
+import { useState } from 'react'
 import useSWR from 'swr'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -31,10 +33,12 @@ export default function RevertCashTransferModal({
   open,
   onClose,
   ct_id,
+  triggerRender,
 }: {
   open: boolean
   onClose: () => void
   ct_id: string
+  triggerRender: () => void
 }) {
   const { data: ct_data } = useSWR<CashTransferResponse>(`/cash-transfer/${ct_id}`, (url) =>
     axios
@@ -50,6 +54,8 @@ export default function RevertCashTransferModal({
 
   const dispatchNotif = useNotification()
   const classes = useStyles()
+  const [loading, setLoading] = useState<boolean>(false)
+
   return (
     <ModalWrapper open={open} onClose={onClose} containerSize="sm">
       <Paper
@@ -186,10 +192,13 @@ export default function RevertCashTransferModal({
             <Divider style={{ marginTop: 16 }} />
             <Box display="flex" justifyContent="flex-end">
               <Box mt={2}>
-                <Button
+                <AsyncButton
+                  loading={loading}
+                  disabled={loading}
                   color="primary"
                   variant="contained"
                   onClick={() => {
+                    setLoading(true)
                     axios
                       .post(`/cash-transfer/revert/${ct_id}`)
                       .then((res) => {
@@ -206,11 +215,17 @@ export default function RevertCashTransferModal({
                           })
                         })
                       })
-                      .finally(() => onClose())
+                      .finally(() => {
+                        setLoading(false)
+                        onClose()
+                        if (triggerRender) {
+                          triggerRender()
+                        }
+                      })
                   }}
                 >
                   Revert Transaction
-                </Button>
+                </AsyncButton>
               </Box>
             </Box>
           </>

@@ -431,6 +431,7 @@ export default function CashTransferSummaryTable() {
               }))
             }}
             ct_id={ct_id}
+            triggerRender={mutate}
           />
         )}
       {transactionModal.transactionSelected === EditOrRevertTypes.EDIT &&
