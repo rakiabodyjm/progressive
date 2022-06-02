@@ -33,7 +33,7 @@ import useNotification from '@src/utils/hooks/useNotification'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { Autocomplete } from '@material-ui/lab'
 import { useRouter } from 'next/router'
-import { searchWalletV2 } from '@src/utils/api/walletApi'
+import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
 
 type FormValuesType = {
   first_name: string
@@ -94,6 +94,7 @@ export default function CreateRetailerShortcutModal({
   const dispatchNotif = useNotification()
   const [visible, setVisible] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const [findCaesar, setFindCaesar] = useState<boolean>(false)
   const dispatch = useDispatch()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -116,36 +117,51 @@ export default function CreateRetailerShortcutModal({
     }
   }, [formValues.phone_number])
 
+  const [caesarDataofRetailer, setCaesarDataOfRetailer] = useState<CaesarWalletResponse[]>()
+
+  useEffect(() => {
+    if (findCaesar) {
+      searchWalletV2(searchParam).then((res) => {
+        res.data.map((ea) => {
+          setBankFormValues((prev) => ({
+            ...prev,
+            caesar: ea.id,
+          }))
+          return ea
+        })
+        setFindCaesar(false)
+      })
+    }
+    if (bankFormValues.caesar) {
+      axios.post('/cash-transfer/caesar-bank', { ...bankFormValues }).then((res) => {
+        dispatch(
+          setNotification({
+            type: NotificationTypes.SUCCESS,
+            message: 'Bank Created',
+          })
+        )
+        onClose()
+        setLoading(false)
+        if (triggerRender) {
+          triggerRender()
+        }
+      })
+    }
+  }, [findCaesar])
+
   const handleSubmit = async () => {
     setLoading(true)
     if (open) {
       await axios
         .post('retailer/cash-transfer/', { ...formValues })
-        .then(async (res) => {
+        .then((res) => {
           dispatch(
             setNotification({
               type: NotificationTypes.SUCCESS,
               message: 'Retailer Created',
             })
           )
-          await searchWalletV2(searchParam).then((res) => {
-            res.data.map(async (ea) => {
-              setBankFormValues((prev) => ({
-                ...prev,
-                caesar: ea.id,
-              }))
-              await axios
-                .post('/cash-transfer/caesar-bank', { ...bankFormValues, caesar: ea.id })
-                .then((res) => {
-                  dispatch(
-                    setNotification({
-                      type: NotificationTypes.SUCCESS,
-                      message: 'Bank Created',
-                    })
-                  )
-                })
-            })
-          })
+          setFindCaesar(true)
         })
         .catch((err) => {
           extractMultipleErrorFromResponse(err).forEach((msg) => {
@@ -156,12 +172,7 @@ export default function CreateRetailerShortcutModal({
           })
         })
         .finally(() => {
-          onClose()
-          setLoading(false)
           // mutate('/caesar/ct-balance')
-          if (triggerRender) {
-            triggerRender()
-          }
         })
     }
   }
@@ -458,9 +469,15 @@ export default function CreateRetailerShortcutModal({
           </Grid>
           <Box display="flex" justifyContent="flex-end">
             <Box mt={2}>
-              <Button variant="contained" color="primary" onClick={handleSubmit}>
+              <AsyncButton
+                loading={loading}
+                disabled={loading}
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+              >
                 Submit
-              </Button>
+              </AsyncButton>
             </Box>
           </Box>
         </>
