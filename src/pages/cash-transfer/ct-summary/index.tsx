@@ -396,21 +396,21 @@ export default function CashTransferSummaryTable() {
                           // ),
                         }
                       }
-                      renderRow={({ amount, description, as, from, to, reference_number }) => (
-                        <>
-                          <Box>
-                            <Paper>
-                              <Box p={2}>
-                                <Typography>{amount}</Typography>
-                              </Box>
-                            </Paper>
-                          </Box>
-                        </>
-                      )}
-                      onRowClick={(rowData, data) => {
-                        setRevertModal(true)
-                        setCTID(data.reference_number)
-                      }}
+                      // renderRow={({ amount, description, as, from, to, reference_number }) => (
+                      //   <>
+                      //     <Box>
+                      //       <Paper>
+                      //         <Box p={2}>
+                      //           <Typography>{amount}</Typography>
+                      //         </Box>
+                      //       </Paper>
+                      //     </Box>
+                      //   </>
+                      // )}
+                      // onRowClick={(rowData, data) => {
+                      //   setRevertModal(true)
+                      //   setCTID(data.reference_number)
+                      // }}
                     />
                   ) : (
                     <LoadingScreen2 />

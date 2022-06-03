@@ -101,21 +101,23 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
             ...(!data || (data.length < 1 && { height: '100%' })),
           }}
         >
-          <TableHead {...tableHeadProps}>
-            <TableRow>
-              {fields?.map((title) => (
-                <TableCell
-                  style={{
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                  key={title}
-                >
-                  {(formatTitle && formatTitle[title]) ?? formatKeyIntoReadables(title)}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
+          {!renderRow && (
+            <TableHead {...tableHeadProps}>
+              <TableRow>
+                {fields?.map((title) => (
+                  <TableCell
+                    style={{
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                    }}
+                    key={title}
+                  >
+                    {(formatTitle && formatTitle[title]) ?? formatKeyIntoReadables(title)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+          )}
 
           <TableBody>
             {!data ||
