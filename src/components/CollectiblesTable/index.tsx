@@ -44,28 +44,20 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
     isValidating: loadingCashTransfers,
     error: errorCashTransfers,
     mutate,
-  } = useSWR(
-    caesarId
-      ? `/cash-transfer?${objectToURLQuery({
-          ...queryParameters,
-          caesar: caesarId,
-          as: CashTransferAs.LOAN,
-        })}`
-      : null,
-    (url) =>
-      axios
-        .get(url, {
-          // params: {
-          //   caesar: caesarId,
-          //   caesar_bank: caesarBankId,
-          //   loan: loanId,
-          //   ...queryParameters,
-          // },
-        })
-        .then((res) => res.data as Paginated<CashTransferResponse>)
-        .catch((err) => {
-          console.log('failed loading cash-transfers', err)
-        })
+  } = useSWR(caesarId ? `/cash-transfer/all/${caesarId})}` : null, (url) =>
+    axios
+      .get(url, {
+        // params: {
+        //   caesar: caesarId,
+        //   caesar_bank: caesarBankId,
+        //   loan: loanId,
+        //   ...queryParameters,
+        // },
+      })
+      .then((res) => res.data as CashTransferResponse[])
+      .catch((err) => {
+        console.log('failed loading cash-transfers', err)
+      })
   )
   const isSender = useCallback(
     (cashTransfer: CashTransferResponse) =>
@@ -87,11 +79,11 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
     if (cashTransfers) {
       setLoanToCollect((prev) => ({
         ...prev,
-        collected: cashTransfers?.data.filter((ea) => ea.is_loan_paid).length as number,
-        toBeCollect: cashTransfers?.data.filter((ea) => !ea.is_loan_paid).length as number,
+        collected: cashTransfers.filter((ea) => ea.is_loan_paid).length as number,
+        toBeCollect: cashTransfers?.filter((ea) => !ea.is_loan_paid).length as number,
       }))
     }
-  }, [cashTransfers?.data])
+  }, [cashTransfers])
 
   const [creditToOtherDsp, setCreditToOtherDsp] = useState<boolean>(false)
 
@@ -158,12 +150,11 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
             }}
           >
             {cashTransfers &&
-            cashTransfers?.data &&
             loanToCollect &&
             loanToCollect?.toBeCollect &&
             loanToCollect.toBeCollect > 0 ? (
               <>
-                {cashTransfers.data
+                {cashTransfers
                   .filter((ea) => !ea.is_loan_paid)
                   .map((cashTransfer) => (
                     <Box key={cashTransfer.id}>
