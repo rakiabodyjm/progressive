@@ -208,6 +208,7 @@ export const CashTransferBalancesTable = ({
                     title={<Typography variant="subtitle2">Add Retailer</Typography>}
                   >
                     <IconButton
+                      disabled={!account?.dsp}
                       onClick={() => {
                         setAddRetailerModal(true)
                       }}
@@ -478,6 +479,8 @@ export const CashTransferBalancesTable = ({
           />
         )}
         {addRetailerModal &&
+          account?.dsp &&
+          account?.subdistributor &&
           user?.roles.some((ea) => ['subdistributor'] || ['dsp'].includes(ea)) &&
           !isEligible && (
             <CreateRetailerShortcutModal
