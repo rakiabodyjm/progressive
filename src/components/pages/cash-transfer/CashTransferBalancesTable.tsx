@@ -161,7 +161,7 @@ export const CashTransferBalancesTable = ({
   }, [dispatch, user])
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
   const eligibleAsCTAdmin = useIsCtOperatorOrAdmin(['ct-admin'])
-  const eligibleAsSubToDsp = useIsCtOperatorOrAdmin(['dsp', 'subdistributor', 'admin'])
+  const eligibleAsSubToDsp = useIsCtOperatorOrAdmin(['dsp', 'subdistributor'])
 
   if (error) {
     return <ErrorLoading />
@@ -199,7 +199,26 @@ export const CashTransferBalancesTable = ({
                 </Box>
               </Box>
             )}
-            {(isEligible || eligibleAsSubToDsp) && (
+            {(isEligible || user?.admin_id) && (
+              <Box textAlign="end">
+                <Box>
+                  <Tooltip
+                    arrow
+                    placement="left"
+                    title={<Typography variant="subtitle2">Add Retailer</Typography>}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        setAddRetailerModal(true)
+                      }}
+                    >
+                      <AddCircleOutlined />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Box>
+            )}
+            {eligibleAsSubToDsp && (
               <Box textAlign="end">
                 <Box>
                   <Tooltip
@@ -469,7 +488,7 @@ export const CashTransferBalancesTable = ({
             )}
           </Box>
         </Box>
-        {addRetailerModal && user?.roles.filter((ea) => ea !== 'admin') && isEligible && (
+        {((addRetailerModal && user?.roles.filter((ea) => ea !== 'admin')) || isEligible) && (
           <CreateRetailerShortcutModal
             open={addRetailerModal}
             onClose={() => {
