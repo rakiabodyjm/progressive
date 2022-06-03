@@ -1,6 +1,21 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Box, Divider, Link, Tooltip, Typography } from '@material-ui/core'
+import {
+  Box,
+  BoxProps,
+  Divider,
+  Grid,
+  GridProps,
+  IconButton,
+  Link,
+  Paper,
+  PaperProps,
+  Theme,
+  Tooltip,
+  Typography,
+  TypographyProps,
+} from '@material-ui/core'
+import { AutocompleteProps } from '@material-ui/lab'
 import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
@@ -8,15 +23,22 @@ import FormTextField from '@src/components/FormTextField'
 import FeesTransaction from '@src/components/pages/cash-transfer/FeesTransactionForm'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
+import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
+import useNotification, { useErrorNotification } from '@src/utils/hooks/useNotification'
+import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
+import { Caesar, CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
+import axios from 'axios'
+import { useCallback, useEffect, useState, useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import useSWR, { useSWRConfig } from 'swr'
+import ModalWrapper from '@components/ModalWrapper'
+import { CloseOutlined } from '@material-ui/icons'
+import { useTheme } from '@material-ui/styles'
+import { grey } from '@material-ui/core/colors'
+import removeKeyFromObject from '@src/utils/removeKeyFromObject'
+import ToCaesarAndCaesarBank from '@src/components/pages/cash-transfer/ToCaesarAndCaesarBank'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { CaesarWalletResponse } from '@src/utils/api/walletApi'
-import useNotification from '@src/utils/hooks/useNotification'
-import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
-import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
-import axios from 'axios'
-import { useCallback, useEffect, useState } from 'react'
-import { useSWRConfig } from 'swr'
 
 const LoanTypeTransaction = ({
   caesar_bank_from,
@@ -47,35 +69,34 @@ const LoanTypeTransaction = ({
   })
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
+  const [fromCaesarEnabled, setFromCaesarEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [resetValue, setResetValue] = useState<number>()
+  const [confirmationModal, setConfirmationModal] = useState<boolean>(false)
   const dispatchNotif = useNotification()
 
   const { mutate } = useSWRConfig()
+  const initialFrom = useRef({
+    caesar_bank_from,
+    // from,
+  })
+  const initialTo = useRef({
+    caesar_bank_to,
+    // to,
+  })
 
   const submitAsLoanFunction = useCallback(
     () =>
       axios
         .post('/cash-transfer/loan', {
-          ...transferForm,
-          // caesar_bank_to:  transferForm?.caesar_bank_to?.id,
-          caesar_bank_from: transferForm?.caesar_bank_from?.id,
-          // to: transferForm?.caesar_bank_to?.caesar.id,
-
-          ...(toCaesarEnabled
-            ? {
-                to: transferForm?.to?.id || undefined,
-              }
-            : {
-                caesar_bank_to: transferForm?.caesar_bank_to?.id || undefined,
-              }),
+          ...formatFormValues(transferForm),
         })
-        .then((res) => {
+        .then(({ data }) => {
           dispatchNotif({
             type: NotificationTypes.SUCCESS,
             message: `Loan Created`,
           })
-          return res.data
+          return data
         })
         .catch((err) => {
           throw extractMultipleErrorFromResponse(err)
@@ -88,8 +109,9 @@ const LoanTypeTransaction = ({
           if (caesar_bank_to?.id) {
             mutate(`/cash-transfer/caesar-bank/${caesar_bank_to.id}`, null, true)
           }
+          setLoading(false)
         }),
-    [transferForm, caesar_bank_from, caesar_bank_to, mutate, toCaesarEnabled]
+    [transferForm, caesar_bank_from, caesar_bank_to, mutate, dispatchNotif]
   )
 
   const {
@@ -100,30 +122,6 @@ const LoanTypeTransaction = ({
   } = useSubmitFormData({
     submitFunction: submitAsLoanFunction,
   })
-
-  const handleSubmit = useCallback(() => {
-    setLoading(true)
-    if (!transferForm?.amount) {
-      dispatchNotif({
-        type: NotificationTypes.ERROR,
-        message: `Amount must not be empty or should be greater than 0`,
-      })
-      setLoading(false)
-      return
-    }
-
-    if (
-      !(transferForm?.caesar_bank_from || transferForm?.from) ||
-      !(transferForm?.caesar_bank_to || transferForm?.to)
-    ) {
-      dispatchNotif({
-        type: NotificationTypes.ERROR,
-        message: `Loan must have source and destination account`,
-      })
-      return
-    }
-    submit()
-  }, [submit])
 
   useEffect(() => {
     setLoading(loanLoading)
@@ -177,70 +175,64 @@ const LoanTypeTransaction = ({
           Record Loan from Account's Bank to Bank/Person
         </Typography>
       </Box>
-      <Box my={2}>
+      <Margin2>
         <Divider />
-      </Box>
+      </Margin2>
       <Box>
-        <FormLabel>From Bank Account</FormLabel>
-        <ToCaesarBankAutoComplete
-          onChange={(caesarBank) => {
+        <FormLabel>From {fromCaesarEnabled ? 'Caesar' : 'Bank'} Account</FormLabel>
+        <ToCaesarAndCaesarBank
+          caesarBank={initialFrom.current.caesar_bank_from}
+          caesarMode={fromCaesarEnabled}
+          onChange={(param) => {
             setTransferForm((prev) => ({
               ...prev,
-              caesar_bank_from: caesarBank,
+              ...(fromCaesarEnabled
+                ? {
+                    from: (param as CaesarWalletResponse) || undefined,
+                    caesar_bank_from: undefined,
+                  }
+                : { caesar_bank_from: (param as CaesarBank) || undefined, from: undefined }),
             }))
           }}
-          defaultValue={transferForm.caesar_bank_from}
-          disabled={!!caesar_bank_from}
+          disabled
         />
-        <Box my={2}></Box>
-        {toCaesarEnabled ? (
-          <>
-            <FormLabel>To Caesar Account</FormLabel>
-            <ToCaesarAutoComplete
-              onChange={(caesarSelected) => {
-                setTransferForm((prev) => ({
-                  ...prev,
-                  to: caesarSelected,
-                }))
-              }}
-              filter={(res) => res.filter((ea) => ea.id !== caesar_bank_from?.caesar.id)}
-              value={transferForm.to}
-              key={resetValue}
-            />
-          </>
-        ) : (
-          <>
-            <FormLabel>To Another Bank Account</FormLabel>
-
-            <ToCaesarBankAutoComplete
-              onChange={(caesarBank) => {
-                setTransferForm((prev) => ({
-                  ...prev,
-                  caesar_bank_to: caesarBank,
-                  to: undefined,
-                }))
-              }}
-              filter={(args) =>
-                args.filter((ea) =>
-                  transferForm.caesar_bank_from?.id
-                    ? transferForm.caesar_bank_from.id !== ea.id
-                    : ea
-                )
-              }
-              defaultValue={transferForm?.caesar_bank_to || undefined}
-              disabled={!!caesar_bank_to}
-              value={transferForm.caesar_bank_to || undefined}
-              key={resetValue}
-            />
-          </>
-        )}
 
         <Tooltip
           arrow
-          placement="right"
-          title={
-            <Typography variant="subtitle2">Record as Transaction to User without bank</Typography>
-          }
+          placement="bottom"
+          title={<Typography variant="subtitle2">Record Transaction FROM </Typography>}
+        >
+          <Link
+            component="button"
+            color="textSecondary"
+            variant="caption"
+            onClick={() => {
+              setFromCaesarEnabled((prev) => !prev)
+            }}
+          >
+            {fromCaesarEnabled ? `Use Bank Account instead` : `Use Caesar Account instead`}
+          </Link>
+        </Tooltip>
+
+        <Margin2></Margin2>
+        <FormLabel>To {toCaesarEnabled ? 'Caesar' : 'Bank'} Account</FormLabel>
+        <ToCaesarAndCaesarBank
+          caesarBank={initialTo.current.caesar_bank_to}
+          caesarMode={toCaesarEnabled}
+          onChange={(param) => {
+            setTransferForm((prev) => ({
+              ...prev,
+              ...(toCaesarEnabled
+                ? { to: param as CaesarWalletResponse, caesar_bank_to: undefined }
+                : { caesar_bank_to: param as CaesarBank, to: undefined }),
+            }))
+          }}
+        />
+
+        <Tooltip
+          arrow
+          placement="bottom"
+          title={<Typography variant="subtitle2">Record Transaction TO</Typography>}
         >
           <Link
             component="button"
@@ -267,10 +259,10 @@ const LoanTypeTransaction = ({
          *
          */}
 
-        <Box my={2}></Box>
+        <Margin2></Margin2>
 
         {transferForm?.caesar_bank_from && (
-          <Box my={2}>
+          <Margin2>
             <FeesTransaction
               triggerReset={resetValue}
               newValue={transferForm.bank_fee}
@@ -282,10 +274,10 @@ const LoanTypeTransaction = ({
               }}
               caesar_bank={transferForm?.caesar_bank_from}
             />
-          </Box>
+          </Margin2>
         )}
 
-        <Box my={2}></Box>
+        <Margin2></Margin2>
         <FormLabel>Transaction Description</FormLabel>
         <FormTextField
           multiline
@@ -300,7 +292,7 @@ const LoanTypeTransaction = ({
           value={transferForm.description}
         />
 
-        <Box my={2} />
+        <Margin2 />
         <FormLabel>Amount</FormLabel>
         <FormNumberField
           onChange={(value) => {
@@ -312,46 +304,164 @@ const LoanTypeTransaction = ({
           value={transferForm.amount}
         />
 
-        <Box my={2} />
+        <Margin2 />
 
-        {/* <FormLabel>Transaction Type:</FormLabel> */}
-        {/* <AsDropDown
-          disabledKeys={['WITHDRAW', 'DEPOSIT', 'LOAN PAYMENT']}
-          onChange={(e) => {
-            setTransferForm((prev) => ({
-              ...prev,
-              as: e.target.value as CashTransferAs,
-            }))
-          }}
-        /> */}
-
-        {/* <Box my={2} />
-        {transferForm?.as === CashTransferAs['LOAN PAYMENT'] && <>
-        
-          
-        </>} */}
-
-        <Box my={2}>
+        <Margin2>
           <Divider />
-        </Box>
-        <AsyncButton onClick={handleSubmit} loading={loading} disabled={loading} fullWidth>
+        </Margin2>
+        <AsyncButton
+          onClick={() => {
+            submit()
+            // submitAsLoanFunction()
+            // setConfirmationModal((prev) => !prev)
+          }}
+          loading={loading}
+          disabled={loading}
+          fullWidth
+        >
           Submit
         </AsyncButton>
       </Box>
+      {/* <LoanConfirmationModal
+        open={confirmationModal}
+        submitFunction={() => {}}
+        loanValues={transferForm}
+        onClose={() => {
+          setConfirmationModal(false)
+        }}
+      /> */}
     </>
   )
 }
 
-// const InterstAmountNumberField = ({ onChange, value,  }: {
-//   onChange: (val: number|undefined)=> void
-//   value: number|undefined
-// }) => {
-//   return (
-//     <FormNumberField
-//     onChange={onChange}
-//     value={value}
-//     />
-//   )
-// }
-
 export default LoanTypeTransaction
+
+const formatFormValues = (params: {
+  caesar_bank_from?: CaesarBank
+  to?: CaesarWalletResponse
+  from?: CaesarWalletResponse
+  caesar_bank_to?: CaesarBank
+  amount?: number
+  message?: string
+  description?: string
+}) =>
+  Object.entries(params).reduce((acc, [key, value]) => {
+    if (value && typeof value === 'object') {
+      return { ...acc, [key]: value.id }
+    }
+    return acc
+  }, params)
+
+function LoanConfirmationModal({
+  open,
+  submitFunction,
+  onClose,
+  loanValues,
+}: {
+  open: boolean
+  submitFunction(): void
+  onClose(): void
+  loanValues: {
+    from?: CaesarWalletResponse
+    to?: CaesarWalletResponse
+    caesar_bank_from?: CaesarBank
+    caesar_bank_to?: CaesarBank
+    message?: string
+    description?: string
+    amount?: number
+  }
+}) {
+  return (
+    <>
+      <ModalWrapper open={open} onClose={onClose} containerSize="xs">
+        <Paper>
+          <Box className="loan-confirmation-container" p={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+              <div>
+                <Typography variant="h6" color="primary">
+                  Confirmation
+                </Typography>
+                <Typography variant="body2">Confirm Loan Details</Typography>
+              </div>
+
+              <IconButton onClick={onClose}>
+                <CloseOutlined />
+              </IconButton>
+            </Box>
+
+            <Divider />
+            <Grid container>
+              <Grid item xs={6}>
+                <T variant="caption" color="primary">
+                  From:
+                </T>
+                <T variant="body2">{loanValues?.from ? 'Caesar' : 'Bank'}</T>
+              </Grid>
+              <GridOpposite item xs={6}>
+                <T variant="caption" color="primary">
+                  To:
+                </T>
+                <T variant="body2">{loanValues?.from ? 'Caesar' : 'Bank'}</T>
+              </GridOpposite>
+            </Grid>
+
+            <Grid container>
+              <Grid item>
+                <DarkPaper
+                  style={{
+                    padding: 16,
+                  }}
+                ></DarkPaper>
+              </Grid>
+              <GridOpposite item xs={6}></GridOpposite>
+            </Grid>
+          </Box>
+        </Paper>
+      </ModalWrapper>
+      <style jsx>{`
+        .loan-confirmation-container > * {
+          margin-bottom: 16px;
+        }
+      `}</style>
+    </>
+  )
+}
+
+const T = (props: TypographyProps) => (
+  <Typography {...removeKeyFromObject(props, ['children'])}>{props?.children}</Typography>
+)
+
+const GridOpposite = (props: GridProps) => (
+  <Grid
+    style={{
+      display: 'flex',
+      alignItems: 'flex-end',
+      flexDirection: 'column',
+      ...props?.style,
+    }}
+    {...removeKeyFromObject(props, ['style', 'children'])}
+  >
+    {props?.children}
+  </Grid>
+)
+
+const DarkPaper = ({ style, children, ...props }: PaperProps) => {
+  const theme: Theme = useTheme()
+  return (
+    <Paper
+      style={{
+        background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+        ...style,
+      }}
+      {...props}
+    >
+      {children}
+    </Paper>
+  )
+}
+
+const Margin2 = ({ children, ...props }: BoxProps) => (
+  <Box my={2} {...props}>
+    {children}
+  </Box>
+)
