@@ -85,13 +85,7 @@ export default function CashTransferSummaryTable() {
         .then((res) => res.data)
         .catch((err) => {
           throw extractMultipleErrorFromResponse(err)
-        }),
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnMount: false,
-      revalidateOnReconnect: false,
-    }
+        })
   )
   const [revertModal, setRevertModal] = useState<boolean>(false)
   const [ct_id, setCTID] = useState('')
@@ -346,71 +340,71 @@ export default function CashTransferSummaryTable() {
                           },
                         },
                       }}
-                      renderCell={
-                        {
-                          // from_bank_account: (value) => (
-                          //   <Box display="flex" flexWrap="wrap">
-                          //     {value && Array.isArray(value)
-                          //       ? (value as CaesarBank[])
-                          //           ?.sort((ea1, ea2) => ea1.bank.name?.localeCompare(ea2.bank.name))
-                          //           .map((ea, index) => (
-                          //             <RoleBadge
-                          //               key={ea?.id || index}
-                          //               style={{
-                          //                 marginTop: 4,
-                          //                 marginRight: 4,
-                          //                 borderRadius: '4em',
-                          //                 paddingLeft: 16,
-                          //                 paddingRight: 16,
-                          //               }}
-                          //               disablePopUp
-                          //             >
-                          //               {ea.bank.name}
-                          //             </RoleBadge>
-                          //           ))
-                          //       : null}
-                          //   </Box>
-                          // ),
-                          // to_bank_account: (value) => (
-                          //   <Box display="flex" flexWrap="wrap">
-                          //     {value && Array.isArray(value)
-                          //       ? (value as CaesarBank[])
-                          //           ?.sort((ea1, ea2) => ea1.bank.name?.localeCompare(ea2.bank.name))
-                          //           .map((ea, index) => (
-                          //             <RoleBadge
-                          //               key={ea?.id || index}
-                          //               style={{
-                          //                 marginTop: 4,
-                          //                 marginRight: 4,
-                          //                 borderRadius: '4em',
-                          //                 paddingLeft: 16,
-                          //                 paddingRight: 16,
-                          //               }}
-                          //               disablePopUp
-                          //             >
-                          //               {ea.bank.name}
-                          //             </RoleBadge>
-                          //           ))
-                          //       : null}
-                          //   </Box>
-                          // ),
-                        }
-                      }
-                      // renderRow={({ amount, description, as, from, to, reference_number }) => (
-                      //   <>
-                      //     <Box>
-                      //       <Paper>
-                      //         <Box p={2}>
-                      //           <Typography>{amount}</Typography>
-                      //         </Box>
-                      //       </Paper>
-                      //     </Box>
-                      //   </>
-                      // )}
-                      // onRowClick={(rowData, data) => {
-                      //   setRevertModal(true)
-                      //   setCTID(data.reference_number)
-                      // }}
+                      // renderCell={
+                      // {
+                      // from_bank_account: (value) => (
+                      //   <Box display="flex" flexWrap="wrap">
+                      //     {value && Array.isArray(value)
+                      //       ? (value as CaesarBank[])
+                      //           ?.sort((ea1, ea2) => ea1.bank.name?.localeCompare(ea2.bank.name))
+                      //           .map((ea, index) => (
+                      //             <RoleBadge
+                      //               key={ea?.id || index}
+                      //               style={{
+                      //                 marginTop: 4,
+                      //                 marginRight: 4,
+                      //                 borderRadius: '4em',
+                      //                 paddingLeft: 16,
+                      //                 paddingRight: 16,
+                      //               }}
+                      //               disablePopUp
+                      //             >
+                      //               {ea.bank.name}
+                      //             </RoleBadge>
+                      //           ))
+                      //       : null}
+                      //   </Box>
+                      // ),
+                      // to_bank_account: (value) => (
+                      //   <Box display="flex" flexWrap="wrap">
+                      //     {value && Array.isArray(value)
+                      //       ? (value as CaesarBank[])
+                      //           ?.sort((ea1, ea2) => ea1.bank.name?.localeCompare(ea2.bank.name))
+                      //           .map((ea, index) => (
+                      //             <RoleBadge
+                      //               key={ea?.id || index}
+                      //               style={{
+                      //                 marginTop: 4,
+                      //                 marginRight: 4,
+                      //                 borderRadius: '4em',
+                      //                 paddingLeft: 16,
+                      //                 paddingRight: 16,
+                      //               }}
+                      //               disablePopUp
+                      //             >
+                      //               {ea.bank.name}
+                      //             </RoleBadge>
+                      //           ))
+                      //       : null}
+                      //   </Box>
+                      // ),
+                      // }
+                      // }
+                      renderRow={({ amount, description, as, from, to, reference_number }) => (
+                        <>
+                          <Box>
+                            <Paper>
+                              <Box p={2}>
+                                <Typography>{amount}</Typography>
+                              </Box>
+                            </Paper>
+                          </Box>
+                        </>
+                      )}
+                      onRowClick={(rowData, data) => {
+                        setRevertModal(true)
+                        setCTID(data.reference_number)
+                      }}
                     />
                   ) : (
                     <LoadingScreen2 />
@@ -478,7 +472,6 @@ const formatSummaryTable = (param: CashTransferResponse[]) =>
     as,
     description,
     amount,
-    // from: from === null ? caesar_bank_from?.description : from.description,
     from: from?.description || caesar_bank_from?.description || 'error',
     to: to?.description || caesar_bank_to?.description || 'error',
   }))
