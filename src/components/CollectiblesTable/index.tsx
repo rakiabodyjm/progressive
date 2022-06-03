@@ -40,25 +40,65 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
   })
 
   const {
-    data: cashTransfers,
+    data: _cashTransfers,
     isValidating: loadingCashTransfers,
     error: errorCashTransfers,
     mutate,
-  } = useSWR(caesarId ? `/cash-transfer/all/${caesarId})}` : null, (url) =>
-    axios
-      .get(url, {
-        // params: {
-        //   caesar: caesarId,
-        //   caesar_bank: caesarBankId,
-        //   loan: loanId,
-        //   ...queryParameters,
-        // },
-      })
-      .then((res) => res.data as CashTransferResponse[])
-      .catch((err) => {
-        console.log('failed loading cash-transfers', err)
-      })
+  } = useSWR(
+    caesarId
+      ? `/cash-transfer?${objectToURLQuery({
+          ...queryParameters,
+          caesar: caesarId,
+          as: CashTransferAs.LOAN,
+        })}`
+      : null,
+    (url) =>
+      axios
+        .get(url, {
+          // params: {
+          //   caesar: caesarId,
+          //   caesar_bank: caesarBankId,
+          //   loan: loanId,
+          //   ...queryParameters,
+          // },
+        })
+        .then((res) => res.data as Paginated<CashTransferResponse>)
+        .catch((err) => {
+          console.log('failed loading cash-transfers', err)
+        })
   )
+
+  const {
+    data: loanOfRetailerFromThisCaesar,
+    error,
+    isValidating,
+  } = useSWR(!caesarId ? null : `/cash-transfer/get-retailer-loan?caesar=${caesarId}`, (url) =>
+    axios.get(url).then((res) => res.data as CashTransferResponse[])
+  )
+
+  useEffect(() => {
+    console.log('loanOfRetailerFromThisCaesar', loanOfRetailerFromThisCaesar)
+  }, [loanOfRetailerFromThisCaesar])
+
+  const cashTransfers = useMemo(() => {
+    let cashTransReturn: CashTransferResponse[] = []
+    if (_cashTransfers) {
+      cashTransReturn = [..._cashTransfers.data]
+    }
+    if (loanOfRetailerFromThisCaesar) {
+      cashTransReturn = [...cashTransReturn, ...loanOfRetailerFromThisCaesar]
+      // console.log(cashTransReturn.map((ea) => ea.caesar_bank_to.description || ea.to.description))
+    }
+    console.log(
+      cashTransReturn.map(
+        (ea) => `${ea.ref_num} e${ea.caesar_bank_to.description || ea.to.description} ${ea.amount}`
+      )
+    )
+    return cashTransReturn.filter(
+      (ct, index, array) => array.map((ea) => ea.id).indexOf(ct.id) === index
+    )
+  }, [_cashTransfers, loanOfRetailerFromThisCaesar])
+
   const isSender = useCallback(
     (cashTransfer: CashTransferResponse) =>
       !!(
@@ -80,7 +120,7 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
       setLoanToCollect((prev) => ({
         ...prev,
         collected: cashTransfers.filter((ea) => ea.is_loan_paid).length as number,
-        toBeCollect: cashTransfers?.filter((ea) => !ea.is_loan_paid).length as number,
+        toBeCollect: cashTransfers.filter((ea) => !ea.is_loan_paid).length as number,
       }))
     }
   }, [cashTransfers])
@@ -274,7 +314,7 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
             }}
             loanData={loanData}
             triggeredRender={mutate}
-          ></DirectPaidModal>
+          />
         )}
         {/* <Box pt={2}>
           <TablePagination
