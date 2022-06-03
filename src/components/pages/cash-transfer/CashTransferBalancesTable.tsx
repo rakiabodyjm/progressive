@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-unescaped-entities */
 import {
   Box,
@@ -18,8 +19,10 @@ import {
   CloseOutlined,
   TableChart,
   Assessment,
+  MoreVert,
 } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
+import AsyncButton from '@src/components/AsyncButton'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
@@ -36,6 +39,7 @@ import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
 import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 import useNotification from '@src/utils/hooks/useNotification'
+import { useIsMobile } from '@src/utils/hooks/useWidth'
 import { Bank, CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { useRouter } from 'next/router'
@@ -162,7 +166,7 @@ export const CashTransferBalancesTable = ({
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
   const eligibleAsCTAdmin = useIsCtOperatorOrAdmin(['ct-admin'])
   const eligibleAsSubToDsp = useIsCtOperatorOrAdmin(['dsp', 'subdistributor'])
-
+  const isMobile = useIsMobile()
   if (error) {
     return <ErrorLoading />
   }
@@ -199,44 +203,62 @@ export const CashTransferBalancesTable = ({
                 </Box>
               </Box>
             )}
-            {(isEligible || user?.admin_id) && (
-              <Box textAlign="end">
-                <Box>
-                  <Tooltip
-                    arrow
-                    placement="left"
-                    title={<Typography variant="subtitle2">Add Retailer</Typography>}
-                  >
-                    <IconButton
-                      onClick={() => {
-                        setAddRetailerModal(true)
-                      }}
+            {!isMobile ? (
+              isEligible || user?.admin_id ? (
+                <Box textAlign="end">
+                  <Box>
+                    <Tooltip
+                      arrow
+                      placement="left"
+                      title={<Typography variant="subtitle2">Add Retailer</Typography>}
                     >
-                      <AddCircleOutlined />
-                    </IconButton>
-                  </Tooltip>
+                      <IconButton
+                        onClick={() => {
+                          setAddRetailerModal(true)
+                        }}
+                      >
+                        <AddCircleOutlined />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Box>
-              </Box>
-            )}
-            {eligibleAsSubToDsp && (
-              <Box textAlign="end">
-                <Box>
-                  <Tooltip
-                    arrow
-                    placement="left"
-                    title={<Typography variant="subtitle2">Add Retailer</Typography>}
-                  >
-                    <IconButton
-                      disabled={!account?.dsp}
-                      onClick={() => {
-                        setAddRetailerModal(true)
-                      }}
-                    >
-                      <AddCircleOutlined />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </Box>
+              ) : (
+                eligibleAsSubToDsp && (
+                  <Box textAlign="end">
+                    <Box>
+                      <Tooltip
+                        arrow
+                        placement="left"
+                        title={<Typography variant="subtitle2">Add Retailer</Typography>}
+                      >
+                        <IconButton
+                          disabled={!account?.dsp}
+                          onClick={() => {
+                            setAddRetailerModal(true)
+                          }}
+                        >
+                          <AddCircleOutlined />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                )
+              )
+            ) : (
+              <AsyncButton
+                variant="contained"
+                type="submit"
+                size="small"
+                onClick={() => {
+                  setAddRetailerModal(true)
+                }}
+                color="primary"
+                endIcon={<AddCircleOutlined />}
+                disabled={!account?.dsp}
+                style={{ fontSize: 12 }}
+              >
+                Add
+              </AsyncButton>
             )}
           </Box>
 
