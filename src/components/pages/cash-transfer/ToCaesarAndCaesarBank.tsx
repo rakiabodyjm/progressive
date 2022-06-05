@@ -4,7 +4,7 @@ import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaes
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
-import { Caesar, CaesarBank } from '@src/utils/types/CashTransferTypes'
+import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { useEffect, useState } from 'react'
 
 export default function ToCaesarAndCaesarBank({
@@ -79,23 +79,23 @@ export default function ToCaesarAndCaesarBank({
     onChange(caesarMode ? caesar : caesarBank)
   }, [caesar, caesarBank, caesarMode])
 
-  //   useEffect(() => {
-  //     console.log(
-  //       'caesar',
-  //       caesar,
-  //       'caearbank',
-  //       caesarBank,
-  //       'initialFetch',
-  //       initialFetch,
-  //       'caesarMode',
-  //       caesarMode,
-  //       'caesarBankProps',
-  //       caesarBankProps
-  //     )
-  //   }, [caesar, caesarBank, initialFetch, caesarMode])
+  // useEffect(() => {
+  //   console.log(
+  //     'caesar',
+  //     caesar,
+  //     'caearbank',
+  //     caesarBank,
+  //     'initialFetch',
+  //     initialFetch,
+  //     'caesarMode',
+  //     caesarMode,
+  //     'caesarBankProps',
+  //     caesarBankProps
+  //   )
+  // }, [caesar, caesarBank, initialFetch, caesarMode])
   return (
     <>
-      {!initialFetch && (caesarBank || caesar) ? (
+      {!initialFetch ? (
         <>
           {caesarMode ? (
             <ToCaesarAutoComplete
