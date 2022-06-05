@@ -1,6 +1,15 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-nested-ternary */
-import { Box, Grid, ListItem, Paper, TablePagination, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Grid,
+  ListItem,
+  Paper,
+  TablePagination,
+  TextField,
+  Theme,
+  Typography,
+} from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
@@ -9,6 +18,7 @@ import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import CashTransferDetailsModal from '@src/components/pages/cash-transfer/CashTransferDetailsModal'
 import LoanDetailsModal from '@src/components/pages/cash-transfer/LoanDetailsModal'
+import RoleBadge from '@src/components/RoleBadge'
 import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import {
@@ -121,6 +131,7 @@ export default function CashTransferList({
   const [transferModal, setTransferModal] = useState<TransferTypeModal>({
     open: false,
   })
+
   return (
     <>
       <Paper
@@ -260,9 +271,26 @@ export default function CashTransferList({
                     alignItems="flex-end"
                     justifyContent="space-between"
                   >
-                    <Typography variant="body2" color="primary">
-                      {cashTransfer.as}
-                    </Typography>
+                    <Box display="inline-flex">
+                      <Typography variant="body2" color="primary">
+                        {cashTransfer.as}
+                      </Typography>
+                      {cashTransfer?.as === CashTransferAs.LOAN && cashTransfer?.is_loan_paid && (
+                        <Typography
+                          variant="caption"
+                          component="span"
+                          color="initial"
+                          style={{
+                            display: 'inline',
+                            marginLeft: 8,
+                            border: `2px solid ${theme.typography.caption.color}`,
+                          }}
+                        >
+                          PAID
+                        </Typography>
+                      )}
+                    </Box>
+
                     <Typography
                       style={{
                         alignSelf: 'flex-end',
