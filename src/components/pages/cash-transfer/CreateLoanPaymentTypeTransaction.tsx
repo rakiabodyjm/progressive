@@ -1,13 +1,24 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Box, CircularProgress, Divider, Link, Tooltip, Typography } from '@material-ui/core'
+import {
+  Box,
+  CircularProgress,
+  Divider,
+  Grid,
+  Link,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
+import { ArrowRight, MonetizationOnOutlined } from '@material-ui/icons'
 import AsyncButton from '@src/components/AsyncButton'
+import ConfirmationModal from '@src/components/ConfirmationModal'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
 import ToCaesarAndCaesarBank from '@src/components/pages/cash-transfer/ToCaesarAndCaesarBank'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
-import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
+import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import useNotification, { useErrorNotification } from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
@@ -43,6 +54,7 @@ const LoanPaymentTypeTransaction = ({
     amount: undefined,
   })
   const dispatchNotif = useNotification()
+  const [confirmation, setConfirmation] = useState<boolean>(false)
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -89,6 +101,8 @@ const LoanPaymentTypeTransaction = ({
      * handle post here
      */
 
+    setConfirmation(true)
+
     setLoading(true)
     if (formValues?.amount !== 0) {
       axios
@@ -114,6 +128,7 @@ const LoanPaymentTypeTransaction = ({
         .finally(() => {
           setLoading(false)
           triggerMutate()
+          setConfirmation(false)
         })
     } else {
       setLoading(false)
@@ -209,9 +224,71 @@ const LoanPaymentTypeTransaction = ({
 
       <Box my={2} />
 
-      <AsyncButton loading={loading} disabled={loading} onClick={handleSubmit} fullWidth>
+      <AsyncButton
+        loading={loading}
+        disabled={loading}
+        onClick={() => {
+          setConfirmation(true)
+        }}
+        fullWidth
+      >
         SUBMIT
       </AsyncButton>
+      {confirmation && (
+        <ConfirmationModal
+          open={confirmation}
+          handleClose={() => {
+            setConfirmation(false)
+          }}
+          submitFunction={handleSubmit}
+          ctData={formValues}
+          renderProps={(formValues) => (
+            <Paper style={{ padding: 16 }}>
+              <Grid container spacing={1} style={{ textAlign: 'left' }}>
+                <Grid item xs={12}>
+                  <Box display="flex" justifyContent="space-between" alignItems="baseline">
+                    <Box>
+                      <FormLabel>From:</FormLabel>
+                    </Box>
+                    <Box>
+                      <Typography>{formValues?.caesar_bank_from?.description}</Typography>
+                    </Box>
+                  </Box>
+                  <Box pt={1}>
+                    <Divider />
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box display="flex" justifyContent="space-between">
+                    <Box>
+                      <FormLabel>To:</FormLabel>
+                    </Box>
+                    <Box>
+                      <Typography>{formValues?.caesar_bank_to?.description}</Typography>
+                    </Box>
+                  </Box>
+                  <Box pt={1}>
+                    <Divider />
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box display="flex" justifyContent="space-between">
+                    <Box>
+                      <FormLabel>Amount:</FormLabel>
+                    </Box>
+                    <Box>
+                      <Typography>{formatIntoCurrency(formValues?.amount as number)}</Typography>
+                    </Box>
+                  </Box>
+                  <Box pt={1}>
+                    <Divider />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          )}
+        />
+      )}
     </>
   )
 }
