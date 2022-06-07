@@ -15,6 +15,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { AddOutlined, CloseOutlined } from '@material-ui/icons'
+import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
 import FormTextField from '@src/components/FormTextField'
@@ -55,6 +56,7 @@ export default function DirectPaidModal({
   const [specificAmount, setSpecificAmount] = useState<boolean>(false)
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const {
     data: loanPayments,
@@ -119,6 +121,7 @@ export default function DirectPaidModal({
   }, [toCaesarEnabled, loanData])
 
   const handleSubmit = () => {
+    setLoading(true)
     if (!formValues.from && !formValues.caesar_bank_from) {
       dispatchNotif({
         type: NotificationTypes.ERROR,
@@ -157,6 +160,7 @@ export default function DirectPaidModal({
           })
         })
         .finally(() => {
+          setLoading(false)
           triggeredRender()
           handleClose()
         })
@@ -395,9 +399,15 @@ export default function DirectPaidModal({
               >
                 Go to Page
               </Button>
-              <Button color="primary" variant="contained" onClick={handleSubmit}>
+              <AsyncButton
+                loading={loading}
+                disabled={loading}
+                color="primary"
+                variant="contained"
+                onClick={handleSubmit}
+              >
                 Mark as Paid
-              </Button>
+              </AsyncButton>
             </Box>
           </>
         )}
