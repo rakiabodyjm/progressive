@@ -45,6 +45,7 @@ export default function ViewLoanPage() {
     data: cashTransferData,
     isValidating: cashTransferLoading,
     error: cashTransferError,
+    mutate: triggerCashTransferMutate,
   } = useSWR(id ? `/cash-transfer/${id}` : undefined, (url) =>
     axios
       .get(url)
@@ -67,6 +68,7 @@ export default function ViewLoanPage() {
     data: loanPayments,
     isValidating: loanPaymentsLoading,
     error: loanPaymentsError,
+    mutate: triggerLoanPaymentsMutate,
   } = useSWR(
     cashTransferData?.id && id ? `/cash-transfer?loan=${cashTransferData?.id}` : undefined,
     (url) => axios.get(url).then((res) => res.data as Paginated<CashTransferResponse>)
@@ -317,7 +319,10 @@ export default function ViewLoanPage() {
                     {cashTransferLoading && !id ? (
                       <LoadingScreen2 />
                     ) : (
-                      <CashTransferList loanId={id as string} />
+                      <CashTransferList
+                        loanId={id as string}
+                        triggerMutate={!cashTransferLoading}
+                      />
                     )}
                   </Box>
                 </Paper>
@@ -377,7 +382,13 @@ export default function ViewLoanPage() {
                             </IconButton>
                           </Box>
                           {cashTransferData && openRecordPayment && (
-                            <LoanPaymentTypeTransaction cash_transfer={cashTransferData!} />
+                            <LoanPaymentTypeTransaction
+                              cash_transfer={cashTransferData!}
+                              triggerMutate={() => {
+                                triggerLoanPaymentsMutate()
+                                triggerCashTransferMutate()
+                              }}
+                            />
                           )}
                         </Box>
                       </Box>
