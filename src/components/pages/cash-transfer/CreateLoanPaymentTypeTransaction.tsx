@@ -18,28 +18,31 @@ import useSWR, { useSWRConfig } from 'swr'
 
 const LoanPaymentTypeTransaction = ({
   cash_transfer,
+  triggerMutate,
 }: {
   // /**
   //  *caeasr account of the debtor
   //  */
   // caesar: CaesarWalletResponse['id']
   cash_transfer: CashTransferResponse
+  triggerMutate: () => void
 }) => {
   const [formValues, setFormValues] = useState<{
     id: CashTransferResponse['id']
     caesar_bank_from?: CaesarBank
     to?: CaesarWalletResponse
-    from?: CaesarWalletResponse
+    // from?: CaesarWalletResponse
     caesar_bank_to?: CaesarBank
     amount?: number
   }>({
     id: cash_transfer?.id,
     caesar_bank_from: cash_transfer?.caesar_bank_to,
     caesar_bank_to: cash_transfer?.caesar_bank_from,
-    from: cash_transfer?.to,
-    to: cash_transfer?.from,
+    // from: cash_transfer?.to,
+    to: undefined,
     amount: undefined,
   })
+  const dispatchNotif = useNotification()
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -58,18 +61,67 @@ const LoanPaymentTypeTransaction = ({
             to: await getWalletById(res.data.to.id),
           }),
         }))
-        .then((res) => {
-          console.log('fetch', res)
-          return res
-        })
+        .then((res) => res)
   )
 
-  function handleSubmit() {
+  useEffect(() => {
+    if (toCaesarEnabled && !formValues.to) {
+      setFormValues((prev) => ({
+        ...prev,
+        to: cash_transfer?.from,
+        caesar_bank_to: undefined,
+      }))
+    } else if (!toCaesarEnabled && !formValues.caesar_bank_to) {
+      setFormValues((prev) => ({
+        ...prev,
+        caesar_bank_to: cash_transfer.caesar_bank_from,
+        to: undefined,
+      }))
+    }
+  }, [toCaesarEnabled])
+
+  const handleSubmit = () => {
     console.log('form', formValues)
+    console.log('Cash Transfers:', cash_transfer)
+    console.log('Data:', data)
 
     /**
      * handle post here
      */
+
+    setLoading(true)
+    if (formValues?.amount !== 0) {
+      axios
+        .post('/cash-transfer/loan-payment', formatFormValues({ ...formValues }))
+        .then((res) => {
+          dispatchNotif({
+            type: NotificationTypes.SUCCESS,
+            message: 'Loan Payment Success',
+          })
+          setFormValues((prev) => ({
+            ...prev,
+            amount: undefined,
+          }))
+        })
+        .catch((err) => {
+          extractMultipleErrorFromResponse(err as AxiosError).forEach((ea) => {
+            dispatchNotif({
+              type: NotificationTypes.ERROR,
+              message: ea,
+            })
+          })
+        })
+        .finally(() => {
+          setLoading(false)
+          triggerMutate()
+        })
+    } else {
+      setLoading(false)
+      dispatchNotif({
+        type: NotificationTypes.ERROR,
+        message: 'Amount cannot be 0',
+      })
+    }
   }
 
   return (
@@ -86,18 +138,17 @@ const LoanPaymentTypeTransaction = ({
         <>
           <FormLabel>From {data?.caesar_bank_to ? 'Bank' : 'Caesar'} Account </FormLabel>
 
-          <ToCaesarAndCaesarBank
-            caesarMode={!data?.caesar_bank_to}
-            caesar={data?.to || undefined}
-            caesarBank={data?.caesar_bank_to || undefined}
-            onChange={(e) => {
-              console.log('e', e)
+          <ToCaesarBankAutoComplete
+            onChange={(cbFrom) => {
+              // setFormValues('caesar_bank_from', cbFrom)
               setFormValues((prev) => ({
                 ...prev,
-                [data?.to ? 'from' : 'caesar_bank_from']: e,
+                caesar_bank_from: cbFrom,
               }))
             }}
+            defaultValue={formValues?.caesar_bank_from}
             disabled
+            // key={resetValue}
           />
         </>
 
@@ -111,6 +162,7 @@ const LoanPaymentTypeTransaction = ({
                 setFormValues((prev) => ({
                   ...prev,
                   to: toCaesar,
+                  caesar_bank_to: undefined,
                 }))
               }}
               defaultValue={formValues?.to || cash_transfer?.from}
@@ -125,6 +177,7 @@ const LoanPaymentTypeTransaction = ({
                 setFormValues((prev) => ({
                   ...prev,
                   caesar_bank_to: cbFrom,
+                  to: undefined,
                 }))
               }}
               defaultValue={formValues.caesar_bank_to || cash_transfer.caesar_bank_from}
@@ -186,23 +239,14 @@ const SwitchToCaesarBankOrCaesarToggle = ({
 )
 export default LoanPaymentTypeTransaction
 
-const formatFormValues = (
-  params: {
-    id: CashTransferResponse['id']
-    caesar_bank_from?: CaesarBank
-    to?: CaesarWalletResponse
-    from?: CaesarWalletResponse
-    caesar_bank_to?: CaesarBank
-    amount?: number
-  },
-  {
-    toCaesarEnabled,
-    fromCaesarEnabled,
-  }: {
-    toCaesarEnabled: boolean
-    fromCaesarEnabled: boolean
-  }
-) =>
+const formatFormValues = (params: {
+  id: CashTransferResponse['id']
+  caesar_bank_from?: CaesarBank
+  to?: CaesarWalletResponse
+  from?: CaesarWalletResponse
+  caesar_bank_to?: CaesarBank
+  amount?: number
+}) =>
   Object.entries(params).reduce((acc, [key, value]) => {
     if (value && typeof value === 'object') {
       return { ...acc, [key]: value.id }

@@ -30,7 +30,7 @@ import {
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import useSWR from 'swr'
 type NewDateType = {
   year: string
@@ -49,10 +49,12 @@ export default function CashTransferList({
   caesarId,
   caesarBankId,
   loanId,
+  triggerMutate,
 }: {
   caesarId?: CaesarWalletResponse['id']
   caesarBankId?: CaesarBank['id']
   loanId?: CashTransferResponse['id']
+  triggerMutate?: boolean
 }) {
   const [queryParameters, setQueryParameters] = useState<{
     page: number
@@ -87,6 +89,7 @@ export default function CashTransferList({
     data: cashTransfers,
     isValidating: loadingCashTransfers,
     error: errorCashTransfers,
+    mutate: triggerRender,
   } = useSWR(
     caesarId || caesarBankId || loanId || formQuery
       ? `/cash-transfer?${objectToURLQuery({
@@ -124,6 +127,10 @@ export default function CashTransferList({
   )
   const theme: Theme = useTheme()
   const router = useRouter()
+
+  useEffect(() => {
+    triggerRender()
+  }, [triggerMutate])
 
   const [loanModal, setLoanModal] = useState<TransferTypeModal>({
     open: false,
