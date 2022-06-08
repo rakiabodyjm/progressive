@@ -264,7 +264,9 @@ const LoanPaymentTypeTransaction = ({
                       <FormLabel>To:</FormLabel>
                     </Box>
                     <Box>
-                      <Typography>{formValues?.caesar_bank_to?.description}</Typography>
+                      <Typography>
+                        {formValues?.caesar_bank_to?.description || formValues?.to?.description}
+                      </Typography>
                     </Box>
                   </Box>
                   <Box pt={1}>
