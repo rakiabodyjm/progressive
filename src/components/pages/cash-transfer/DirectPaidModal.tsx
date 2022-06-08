@@ -15,6 +15,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { AddOutlined, CloseOutlined } from '@material-ui/icons'
+import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
 import FormTextField from '@src/components/FormTextField'
@@ -55,6 +56,7 @@ export default function DirectPaidModal({
   const [specificAmount, setSpecificAmount] = useState<boolean>(false)
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const {
     data: loanPayments,
@@ -83,10 +85,14 @@ export default function DirectPaidModal({
     id: loanData?.id,
     caesar_bank_from: loanData?.caesar_bank_to,
     caesar_bank_to: loanData?.caesar_bank_from,
-    from: undefined,
-    to: undefined,
+    from: loanData?.from,
+    to: loanData?.to,
     amount: (loanData?.total_amount as number) - paidAmount || 0,
   })
+
+  useEffect(() => {
+    console.log('formValues', formValues)
+  }, [formValues])
 
   useEffect(() => {
     if (toCaesarEnabled && formValues.to === undefined) {
@@ -115,6 +121,7 @@ export default function DirectPaidModal({
   }, [toCaesarEnabled, loanData])
 
   const handleSubmit = () => {
+    setLoading(true)
     if (!formValues.from && !formValues.caesar_bank_from) {
       dispatchNotif({
         type: NotificationTypes.ERROR,
@@ -153,6 +160,7 @@ export default function DirectPaidModal({
           })
         })
         .finally(() => {
+          setLoading(false)
           triggeredRender()
           handleClose()
         })
@@ -171,6 +179,9 @@ export default function DirectPaidModal({
           <>
             <Box display="flex" justifyContent="space-between">
               <Box>
+                <Typography color="textSecondary" variant="caption">
+                  {loanData.ref_num}
+                </Typography>
                 <FormLabel>Transaction Type:</FormLabel>
                 <Typography variant="h5">Loan Payment</Typography>
               </Box>
@@ -183,185 +194,220 @@ export default function DirectPaidModal({
 
             <Box>
               <Box>
-                <Grid item xs={12}>
-                  <Divider style={{ marginTop: 5, marginBottom: 5 }} />
-                </Grid>
+                <Grid spacing={1} container>
+                  <Grid item xs={12}>
+                    <Divider style={{ marginTop: 5, marginBottom: 5 }} />
+                  </Grid>
 
-                <Grid container spacing={1}>
                   <Grid item xs={12}>
                     <FormLabel>Date loaned:</FormLabel>
-                    <Typography>
+                    <Typography color="textSecondary">
                       {formatIntoReadableDate(loanData?.created_at || Date.now())}
                     </Typography>
                   </Grid>
-                  {/* <Grid item xs={6}>
-                    <Typography>{cashTransferData?.id.split('-')[0]}</Typography>
-                  </Grid> */}
-
-                  <Grid item xs={12} sm={6}>
-                    <FormLabel>From:</FormLabel>
-                    <Typography>
-                      {loanData?.caesar_bank_to?.description ||
-                        loanData?.to?.description ||
-                        'ERROR'}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <FormLabel>To:</FormLabel>
-                    <Typography>
-                      {formValues.caesar_bank_to
-                        ? formValues.caesar_bank_to.description
-                        : formValues.to?.description
-                        ? formValues.to?.description
-                        : '<Empty>'}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={6}>
-                    <FormLabel>Payable Loan:</FormLabel>
-                    <Typography>
-                      {formatIntoCurrency(loanData.total_amount - paidAmount)}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={6}>
-                    <FormLabel>Payment Amount:</FormLabel>
-                    <Typography>{formatIntoCurrency(formValues?.amount as number)}</Typography>
-                  </Grid>
-
-                  <Box my={2}>
-                    <Chip
-                      avatar={
-                        <IconButton>
-                          <AddOutlined />
-                        </IconButton>
-                      }
-                      style={{
-                        display: visibleChip ? 'none' : undefined,
-                      }}
-                      onClick={() => {
-                        setVisibleChip(true)
-                      }}
-                      label="Select other Destination Account"
-                    />
-                  </Box>
-                  <Box my={2} />
                   <Grid item xs={12}>
-                    {visibleChip && (
-                      <Box my={1}>
-                        <Paper>
-                          <Box p={2}>
-                            <Box
-                              display="flex"
-                              justifyContent="space-between"
-                              alignItems="flex-start"
-                            >
-                              <FormLabel>Change Destination Account</FormLabel>
-                              <IconButton
-                                style={{
-                                  padding: 2,
-                                  marginBottom: 8,
-                                }}
-                                onClick={() => {
-                                  setVisibleChip(false)
-                                  if (!formValues.caesar_bank_to && !formValues.to) {
-                                    setFormValues((prev) => ({
-                                      ...prev,
-                                      caesar_bank_to: loanData.caesar_bank_from,
-                                    }))
-                                  }
-                                }}
-                              >
-                                <CloseOutlined
-                                  style={{
-                                    fontSize: 16,
-                                  }}
-                                />
-                              </IconButton>
-                            </Box>
-                            {loanData && toCaesarEnabled ? (
-                              <>
-                                <ToCaesarAutoComplete
-                                  onChange={(toCaesar) => {
-                                    // setFormValues('caesar_bank_from', cbFrom)
-                                    setFormValues((prev) => ({
-                                      ...prev,
-                                      to: toCaesar,
-                                    }))
-                                  }}
-                                  defaultValue={formValues?.to || loanData?.from}
-                                  //   key={resetValue}
-                                />
-                              </>
-                            ) : (
-                              <>
-                                <ToCaesarBankAutoComplete
-                                  onChange={(cbFrom) => {
-                                    setFormValues((prev) => ({
-                                      ...prev,
-                                      caesar_bank_to: cbFrom,
-                                    }))
-                                  }}
-                                  // defaultValue={
-                                  //   formValues.caesar_bank_to || loanData.caesar_bank_from
-                                  // }
-                                  //   key={resetValue}
-                                />
-                              </>
-                            )}
-                            <SwitchToCaesarBankOrCaesarToggle
-                              onClick={() => {
-                                setToCaesarEnabled((prev) => !prev)
-                              }}
-                              toggled={toCaesarEnabled}
-                            />
+                    <Typography
+                      variant="body2"
+                      style={{
+                        fontWeight: 600,
+                      }}
+                    >
+                      This will automatically generate Loan Payment Transaction as written below:
+                    </Typography>
+                  </Grid>
+                  <Grid item container>
+                    <Paper
+                      style={{
+                        padding: 16,
+                      }}
+                    >
+                      <Grid item container spacing={1}>
+                        <Grid item xs={12} sm={6}>
+                          <FormLabel>From:</FormLabel>
+                          <Typography>
+                            {loanData?.caesar_bank_to?.description ||
+                              loanData?.to?.description ||
+                              'ERROR'}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <FormLabel>To:</FormLabel>
+                          <Typography>
+                            {formValues.caesar_bank_to
+                              ? formValues.caesar_bank_to.description
+                              : formValues.to?.description
+                              ? formValues.to?.description
+                              : '<Empty>'}
+                          </Typography>
+                        </Grid>
 
-                            <Box>
-                              <Box my={1}>
-                                <Chip
-                                  avatar={
-                                    <IconButton>
-                                      <AddOutlined />
+                        <Grid item xs={6}>
+                          <FormLabel>Payable Loan:</FormLabel>
+                          <Typography>
+                            {formatIntoCurrency(loanData.total_amount - paidAmount)}
+                          </Typography>
+                        </Grid>
+
+                        <Grid item xs={6}>
+                          <FormLabel>Payment Amount:</FormLabel>
+                          <Typography>
+                            {formatIntoCurrency(formValues?.amount as number)}
+                          </Typography>
+                        </Grid>
+
+                        <Box my={2}>
+                          <Chip
+                            avatar={
+                              <IconButton>
+                                <AddOutlined />
+                              </IconButton>
+                            }
+                            style={{
+                              display: visibleChip ? 'none' : undefined,
+                            }}
+                            onClick={() => {
+                              setVisibleChip(true)
+                            }}
+                            label="Select other Destination Account"
+                          />
+                        </Box>
+                        {/* <Box my={2} /> */}
+                        {visibleChip && (
+                          <Grid item xs={12}>
+                            <Box my={1}>
+                              <Paper>
+                                <Box p={2}>
+                                  <Box
+                                    display="flex"
+                                    justifyContent="space-between"
+                                    alignItems="flex-start"
+                                  >
+                                    <FormLabel>Change Destination Account</FormLabel>
+                                    <IconButton
+                                      style={{
+                                        padding: 2,
+                                        marginBottom: 8,
+                                      }}
+                                      onClick={() => {
+                                        setVisibleChip(false)
+                                        if (!formValues.caesar_bank_to && !formValues.to) {
+                                          setFormValues((prev) => ({
+                                            ...prev,
+                                            caesar_bank_to: loanData.caesar_bank_from,
+                                          }))
+                                        }
+                                      }}
+                                    >
+                                      <CloseOutlined
+                                        style={{
+                                          fontSize: 16,
+                                        }}
+                                      />
                                     </IconButton>
-                                  }
-                                  style={{
-                                    display: specificAmount ? 'none' : undefined,
-                                  }}
-                                  onClick={() => {
-                                    setSpecificAmount(true)
-                                  }}
-                                  label="Set Amount"
-                                />
-                              </Box>
-                              {specificAmount && (
-                                <>
-                                  <FormLabel>Amount</FormLabel>
-                                  <FormNumberField
-                                    onChange={(value) => {
-                                      setFormValues((prev) => ({
-                                        ...prev,
-                                        amount: value,
-                                      }))
+                                  </Box>
+                                  {loanData && toCaesarEnabled ? (
+                                    <>
+                                      <ToCaesarAutoComplete
+                                        onChange={(toCaesar) => {
+                                          // setFormValues('caesar_bank_from', cbFrom)
+                                          setFormValues((prev) => ({
+                                            ...prev,
+                                            to: toCaesar,
+                                          }))
+                                        }}
+                                        defaultValue={formValues?.to || loanData?.from}
+                                        //   key={resetValue}
+                                      />
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ToCaesarBankAutoComplete
+                                        onChange={(cbFrom) => {
+                                          setFormValues((prev) => ({
+                                            ...prev,
+                                            caesar_bank_to: cbFrom,
+                                          }))
+                                        }}
+                                        // defaultValue={
+                                        //   formValues.caesar_bank_to || loanData.caesar_bank_from
+                                        // }
+                                        //   key={resetValue}
+                                      />
+                                    </>
+                                  )}
+                                  <SwitchToCaesarBankOrCaesarToggle
+                                    onClick={() => {
+                                      setToCaesarEnabled((prev) => !prev)
                                     }}
-                                    value={formValues.amount as number}
-                                  ></FormNumberField>
-                                </>
-                              )}
+                                    toggled={toCaesarEnabled}
+                                  />
+
+                                  <Box>
+                                    <Box my={1}>
+                                      <Chip
+                                        avatar={
+                                          <IconButton>
+                                            <AddOutlined />
+                                          </IconButton>
+                                        }
+                                        style={{
+                                          display: specificAmount ? 'none' : undefined,
+                                        }}
+                                        onClick={() => {
+                                          setSpecificAmount(true)
+                                        }}
+                                        label="Set Amount"
+                                      />
+                                    </Box>
+                                    {specificAmount && (
+                                      <>
+                                        <FormLabel>Amount</FormLabel>
+                                        <FormNumberField
+                                          onChange={(value) => {
+                                            setFormValues((prev) => ({
+                                              ...prev,
+                                              amount: value,
+                                            }))
+                                          }}
+                                          value={formValues.amount as number}
+                                        ></FormNumberField>
+                                      </>
+                                    )}
+                                  </Box>
+                                </Box>
+                              </Paper>
                             </Box>
-                          </Box>
-                        </Paper>
-                      </Box>
-                    )}
+                          </Grid>
+                        )}
+                      </Grid>
+                    </Paper>
                   </Grid>
                 </Grid>
               </Box>
             </Box>
-            <Box display="flex" justifyContent="flex-end">
-              <Box mt={2}>
-                <Button color="primary" variant="contained" onClick={handleSubmit}>
-                  Mark as Paid
-                </Button>
-              </Box>
+            <Box display="flex" mt={2} justifyContent="space-between">
+              <Button
+                variant="contained"
+                onClick={() => {
+                  router.push({
+                    pathname: '/cash-transfer/loan/[id]',
+                    query: {
+                      id: loanData.id,
+                    },
+                  })
+                }}
+              >
+                Go to Page
+              </Button>
+              <AsyncButton
+                loading={loading}
+                disabled={loading}
+                color="primary"
+                variant="contained"
+                onClick={handleSubmit}
+              >
+                Mark as Paid
+              </AsyncButton>
             </Box>
           </>
         )}

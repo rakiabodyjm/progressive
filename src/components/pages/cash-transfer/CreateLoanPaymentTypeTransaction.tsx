@@ -1,70 +1,110 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Box, CircularProgress, Divider, Link, Tooltip, Typography } from '@material-ui/core'
+import {
+  Box,
+  CircularProgress,
+  Divider,
+  Grid,
+  Link,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@material-ui/core'
+import { ArrowRight, MonetizationOnOutlined } from '@material-ui/icons'
 import AsyncButton from '@src/components/AsyncButton'
+import ConfirmationModal from '@src/components/ConfirmationModal'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
+import ToCaesarAndCaesarBank from '@src/components/pages/cash-transfer/ToCaesarAndCaesarBank'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
-import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { CaesarWalletResponse } from '@src/utils/api/walletApi'
+import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
+import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import useNotification, { useErrorNotification } from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
 import { CaesarBank, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import axios, { AxiosError } from 'axios'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 const LoanPaymentTypeTransaction = ({
   cash_transfer,
+  triggerMutate,
 }: {
   // /**
   //  *caeasr account of the debtor
   //  */
   // caesar: CaesarWalletResponse['id']
   cash_transfer: CashTransferResponse
+  triggerMutate: () => void
 }) => {
   const [formValues, setFormValues] = useState<{
     id: CashTransferResponse['id']
     caesar_bank_from?: CaesarBank
     to?: CaesarWalletResponse
-    from?: CaesarWalletResponse
+    // from?: CaesarWalletResponse
     caesar_bank_to?: CaesarBank
     amount?: number
   }>({
     id: cash_transfer?.id,
     caesar_bank_from: cash_transfer?.caesar_bank_to,
     caesar_bank_to: cash_transfer?.caesar_bank_from,
-    from: undefined,
+    // from: cash_transfer?.to,
     to: undefined,
     amount: undefined,
   })
-  console.log('Form Values: ', formValues)
-  //   const [cash_transfer, set_cash_transfer] = useState<CashTransferResponse>(cashTransferProps)
-  const [resetValue, setResetValue] = useState<number>()
-
-  const [fromCaesarEnabled, setFromCaesarEnabled] = useState<boolean>(false)
-  const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
-  const { mutate } = useSWRConfig()
   const dispatchNotif = useNotification()
+  const [confirmation, setConfirmation] = useState<boolean>(false)
+
+  const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const { data, isValidating } = useSWR(
+    cash_transfer ? `/cash-transfer/${cash_transfer.id}` : null,
+    (url) =>
+      axios
+        .get<CashTransferResponse>(url)
+        .then(async (res) => ({
+          ...res.data,
+          ...(res.data.from && {
+            from: await getWalletById(res.data.from.id),
+          }),
+          ...(res.data.to && {
+            to: await getWalletById(res.data.to.id),
+          }),
+        }))
+        .then((res) => res)
+  )
+
+  useEffect(() => {
+    if (toCaesarEnabled && !formValues.to) {
+      setFormValues((prev) => ({
+        ...prev,
+        to: cash_transfer?.from,
+        caesar_bank_to: undefined,
+      }))
+    } else if (!toCaesarEnabled && !formValues.caesar_bank_to) {
+      setFormValues((prev) => ({
+        ...prev,
+        caesar_bank_to: cash_transfer.caesar_bank_from,
+        to: undefined,
+      }))
+    }
+  }, [toCaesarEnabled])
 
   const handleSubmit = () => {
-    if (!formValues.from && !formValues.caesar_bank_from) {
-      dispatchNotif({
-        type: NotificationTypes.ERROR,
-        message: 'Source Account cannnot be empty',
-      })
-    } else if (!formValues.to && !formValues.caesar_bank_to) {
-      dispatchNotif({
-        type: NotificationTypes.ERROR,
-        message: 'Destination Account cannnot be empty',
-      })
-    } else if (formValues.amount === 0 || !formValues.amount) {
-      dispatchNotif({
-        type: NotificationTypes.ERROR,
-        message: 'Amount cannot be empty',
-      })
-    } else if (formValues.amount !== 0) {
+    console.log('form', formValues)
+    console.log('Cash Transfers:', cash_transfer)
+    console.log('Data:', data)
+
+    /**
+     * handle post here
+     */
+
+    setConfirmation(true)
+
+    setLoading(true)
+    if (formValues?.amount !== 0) {
       axios
         .post('/cash-transfer/loan-payment', formatFormValues({ ...formValues }))
         .then((res) => {
@@ -77,7 +117,6 @@ const LoanPaymentTypeTransaction = ({
             amount: undefined,
           }))
         })
-
         .catch((err) => {
           extractMultipleErrorFromResponse(err as AxiosError).forEach((ea) => {
             dispatchNotif({
@@ -87,67 +126,18 @@ const LoanPaymentTypeTransaction = ({
           })
         })
         .finally(() => {
-          mutate(`/cash-transfer?loan=${formValues?.id}`, undefined, true)
-          mutate(`/cash-transfer`, undefined, true)
-          mutate(
-            `/caesar/${formValues?.caesar_bank_from?.caesar?.id || formValues?.from?.id}`,
-            undefined,
-            true
-          )
+          setLoading(false)
+          triggerMutate()
+          setConfirmation(false)
         })
+    } else {
+      setLoading(false)
+      dispatchNotif({
+        type: NotificationTypes.ERROR,
+        message: 'Amount cannot be 0',
+      })
     }
   }
-  useEffect(() => {
-    // DESTINATION ACCOUNT
-    if (toCaesarEnabled && formValues.to === undefined) {
-      setFormValues((prev) => ({
-        ...prev,
-        to: cash_transfer.from,
-        caesar_bank_to: undefined,
-      }))
-    } else if (toCaesarEnabled && formValues.to === null) {
-      setFormValues((prev) => ({
-        ...prev,
-        caesar_bank_to: undefined,
-      }))
-    } else if (!toCaesarEnabled && formValues.caesar_bank_to === undefined) {
-      setFormValues((prev) => ({
-        ...prev,
-        to: undefined,
-        caesar_bank_to: cash_transfer.caesar_bank_from,
-      }))
-    } else if (!toCaesarEnabled && formValues.caesar_bank_to === null) {
-      setFormValues((prev) => ({
-        ...prev,
-        to: undefined,
-      }))
-    }
-
-    // SOURCE ACCOUNT
-    if (fromCaesarEnabled && formValues.from === undefined) {
-      setFormValues((prev) => ({
-        ...prev,
-        from: cash_transfer.to,
-        caesar_bank_from: undefined,
-      }))
-    } else if (fromCaesarEnabled && formValues.from === null) {
-      setFormValues((prev) => ({
-        ...prev,
-        caesar_bank_from: undefined,
-      }))
-    } else if (!fromCaesarEnabled && formValues.caesar_bank_from === undefined) {
-      setFormValues((prev) => ({
-        ...prev,
-        from: undefined,
-        caesar_bank_from: cash_transfer.caesar_bank_to,
-      }))
-    } else if (!fromCaesarEnabled && formValues.caesar_bank_from === null) {
-      setFormValues((prev) => ({
-        ...prev,
-        from: undefined,
-      }))
-    }
-  }, [toCaesarEnabled, fromCaesarEnabled, cash_transfer])
 
   return (
     <>
@@ -159,67 +149,25 @@ const LoanPaymentTypeTransaction = ({
         <Box my={2}>
           <Divider />
         </Box>
-        {fromCaesarEnabled ? (
-          <>
-            <FormLabel>Payment from User</FormLabel>
-            {cash_transfer?.to ? (
-              <ToCaesarAutoComplete
-                // disabled
-                onChange={(cFrom: CaesarWalletResponse) => {
-                  // setFormValues('caesar_bank_from', cbFrom)
-                  setFormValues((prev) => ({
-                    ...prev,
-                    from: cFrom,
-                  }))
-                }}
-                defaultValue={formValues?.from || cash_transfer?.to}
-              />
-            ) : (
-              <Box>
-                <CircularProgress />
-              </Box>
-            )}
-          </>
-        ) : (
-          <>
-            <FormLabel>Payment from Bank Account</FormLabel>
 
-            <ToCaesarBankAutoComplete
-              // disabled
-              onChange={(cbFrom) => {
-                setFormValues((prev) => ({
-                  ...prev,
-                  caesar_bank_from: cbFrom,
-                }))
-              }}
-              defaultValue={
-                formValues?.caesar_bank_from || cash_transfer?.caesar_bank_to || undefined
-              }
-              additionalParams={{
-                ceasar:
-                  formValues?.caesar_bank_from?.caesar.id ||
-                  cash_transfer?.caesar_bank_to?.caesar.id,
-              }}
-            />
-            {/* ) : (
-              <>
-                <Box>
-                  <CircularProgress />
-                </Box>
-              </>
-            )} */}
-          </>
-        )}
+        <>
+          <FormLabel>From {data?.caesar_bank_to ? 'Bank' : 'Caesar'} Account </FormLabel>
 
-        <SwitchToCaesarBankOrCaesarToggle
-          onClick={() => {
-            setFromCaesarEnabled((prev) => !prev)
-          }}
-          toggled={fromCaesarEnabled}
-        />
+          <ToCaesarBankAutoComplete
+            onChange={(cbFrom) => {
+              // setFormValues('caesar_bank_from', cbFrom)
+              setFormValues((prev) => ({
+                ...prev,
+                caesar_bank_from: cbFrom,
+              }))
+            }}
+            defaultValue={formValues?.caesar_bank_from}
+            disabled
+            // key={resetValue}
+          />
+        </>
 
         <Box my={2} />
-
         {toCaesarEnabled ? (
           <>
             <FormLabel>Payment To User </FormLabel>
@@ -229,10 +177,11 @@ const LoanPaymentTypeTransaction = ({
                 setFormValues((prev) => ({
                   ...prev,
                   to: toCaesar,
+                  caesar_bank_to: undefined,
                 }))
               }}
               defaultValue={formValues?.to || cash_transfer?.from}
-              key={resetValue}
+              // key={resetValue}
             />
           </>
         ) : (
@@ -243,10 +192,11 @@ const LoanPaymentTypeTransaction = ({
                 setFormValues((prev) => ({
                   ...prev,
                   caesar_bank_to: cbFrom,
+                  to: undefined,
                 }))
               }}
               defaultValue={formValues.caesar_bank_to || cash_transfer.caesar_bank_from}
-              key={resetValue}
+              // key={resetValue}
             />
           </>
         )}
@@ -274,9 +224,71 @@ const LoanPaymentTypeTransaction = ({
 
       <Box my={2} />
 
-      <AsyncButton onClick={handleSubmit} fullWidth>
+      <AsyncButton
+        loading={loading}
+        disabled={loading}
+        onClick={() => {
+          setConfirmation(true)
+        }}
+        fullWidth
+      >
         SUBMIT
       </AsyncButton>
+      {confirmation && (
+        <ConfirmationModal
+          open={confirmation}
+          handleClose={() => {
+            setConfirmation(false)
+          }}
+          submitFunction={handleSubmit}
+          ctData={formValues}
+          renderProps={(formValues) => (
+            <Paper style={{ padding: 16 }}>
+              <Grid container spacing={1} style={{ textAlign: 'left' }}>
+                <Grid item xs={12}>
+                  <Box display="flex" justifyContent="space-between" alignItems="baseline">
+                    <Box>
+                      <FormLabel>From:</FormLabel>
+                    </Box>
+                    <Box>
+                      <Typography>{formValues?.caesar_bank_from?.description}</Typography>
+                    </Box>
+                  </Box>
+                  <Box pt={1}>
+                    <Divider />
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box display="flex" justifyContent="space-between">
+                    <Box>
+                      <FormLabel>To:</FormLabel>
+                    </Box>
+                    <Box>
+                      <Typography>{formValues?.caesar_bank_to?.description}</Typography>
+                    </Box>
+                  </Box>
+                  <Box pt={1}>
+                    <Divider />
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box display="flex" justifyContent="space-between">
+                    <Box>
+                      <FormLabel>Amount:</FormLabel>
+                    </Box>
+                    <Box>
+                      <Typography>{formatIntoCurrency(formValues?.amount as number)}</Typography>
+                    </Box>
+                  </Box>
+                  <Box pt={1}>
+                    <Divider />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          )}
+        />
+      )}
     </>
   )
 }
@@ -290,7 +302,7 @@ const SwitchToCaesarBankOrCaesarToggle = ({
 }) => (
   <Tooltip
     arrow
-    placement="right"
+    placement="bottom"
     title={
       <Typography variant="subtitle2">
         Record as Transaction to {!toggled ? 'Caesar' : `Caesar's Bank Account`}{' '}

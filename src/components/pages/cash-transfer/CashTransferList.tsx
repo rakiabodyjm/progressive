@@ -1,6 +1,15 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-nested-ternary */
-import { Box, Grid, ListItem, Paper, TablePagination, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Grid,
+  ListItem,
+  Paper,
+  TablePagination,
+  TextField,
+  Theme,
+  Typography,
+} from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
@@ -9,6 +18,7 @@ import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import CashTransferDetailsModal from '@src/components/pages/cash-transfer/CashTransferDetailsModal'
 import LoanDetailsModal from '@src/components/pages/cash-transfer/LoanDetailsModal'
+import RoleBadge from '@src/components/RoleBadge'
 import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import {
@@ -20,7 +30,7 @@ import {
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import useSWR from 'swr'
 type NewDateType = {
   year: string
@@ -39,10 +49,12 @@ export default function CashTransferList({
   caesarId,
   caesarBankId,
   loanId,
+  triggerMutate,
 }: {
   caesarId?: CaesarWalletResponse['id']
   caesarBankId?: CaesarBank['id']
   loanId?: CashTransferResponse['id']
+  triggerMutate?: boolean
 }) {
   const [queryParameters, setQueryParameters] = useState<{
     page: number
@@ -77,6 +89,7 @@ export default function CashTransferList({
     data: cashTransfers,
     isValidating: loadingCashTransfers,
     error: errorCashTransfers,
+    mutate: triggerRender,
   } = useSWR(
     caesarId || caesarBankId || loanId || formQuery
       ? `/cash-transfer?${objectToURLQuery({
@@ -115,12 +128,17 @@ export default function CashTransferList({
   const theme: Theme = useTheme()
   const router = useRouter()
 
+  useEffect(() => {
+    triggerRender()
+  }, [triggerMutate])
+
   const [loanModal, setLoanModal] = useState<TransferTypeModal>({
     open: false,
   })
   const [transferModal, setTransferModal] = useState<TransferTypeModal>({
     open: false,
   })
+
   return (
     <>
       <Paper
@@ -260,9 +278,26 @@ export default function CashTransferList({
                     alignItems="flex-end"
                     justifyContent="space-between"
                   >
-                    <Typography variant="body2" color="primary">
-                      {cashTransfer.as}
-                    </Typography>
+                    <Box display="inline-flex">
+                      <Typography variant="body2" color="primary">
+                        {cashTransfer.as}
+                      </Typography>
+                      {cashTransfer?.as === CashTransferAs.LOAN && cashTransfer?.is_loan_paid && (
+                        <Typography
+                          variant="caption"
+                          component="span"
+                          color="initial"
+                          style={{
+                            display: 'inline',
+                            marginLeft: 8,
+                            border: `2px solid ${theme.typography.caption.color}`,
+                          }}
+                        >
+                          PAID
+                        </Typography>
+                      )}
+                    </Box>
+
                     <Typography
                       style={{
                         alignSelf: 'flex-end',

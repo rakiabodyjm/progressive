@@ -45,6 +45,7 @@ export default function ViewLoanPage() {
     data: cashTransferData,
     isValidating: cashTransferLoading,
     error: cashTransferError,
+    mutate: triggerCashTransferMutate,
   } = useSWR(id ? `/cash-transfer/${id}` : undefined, (url) =>
     axios
       .get(url)
@@ -67,6 +68,7 @@ export default function ViewLoanPage() {
     data: loanPayments,
     isValidating: loanPaymentsLoading,
     error: loanPaymentsError,
+    mutate: triggerLoanPaymentsMutate,
   } = useSWR(
     cashTransferData?.id && id ? `/cash-transfer?loan=${cashTransferData?.id}` : undefined,
     (url) => axios.get(url).then((res) => res.data as Paginated<CashTransferResponse>)
@@ -151,7 +153,6 @@ export default function ViewLoanPage() {
                             variant="body2"
                           >
                             {formatIntoReadableDate(cashTransferData?.created_at || Date.now())}
-                            {/* {console.log(cashTransferData?.created_at)} */}
                           </Typography>
                         </Box>
                         <Tooltip
@@ -173,13 +174,32 @@ export default function ViewLoanPage() {
                         {caesar?.account_type.toUpperCase()}
                       </RoleBadge>
                       <Typography variant="h4">Loan Details</Typography>
-                      <Typography variant="body2">{caesar?.description.toUpperCase()}</Typography>
-
-                      <Typography variant="caption"></Typography>
+                      {/* <Typography variant="body2" color="primary">
+                        {caesar?.description.toUpperCase()}
+                      </Typography> */}
+                      <Typography variant="body2" color="primary">
+                        {cashTransferData?.caesar_bank_to.description || caesar?.description}
+                      </Typography>
 
                       <Typography
                         style={{
                           marginTop: 16,
+                          marginBottom: -8,
+                          display: 'block',
+                        }}
+                        variant="caption"
+                        color="primary"
+                      >
+                        Transacted By:
+                      </Typography>
+                      <Typography variant="h6">
+                        {cashTransferData?.caesar_bank_from?.description ||
+                          cashTransferData?.from?.description ||
+                          'ERROR'}
+                      </Typography>
+
+                      <Typography
+                        style={{
                           marginBottom: -8,
                           display: 'block',
                         }}
@@ -299,7 +319,10 @@ export default function ViewLoanPage() {
                     {cashTransferLoading && !id ? (
                       <LoadingScreen2 />
                     ) : (
-                      <CashTransferList loanId={id as string} />
+                      <CashTransferList
+                        loanId={id as string}
+                        triggerMutate={!cashTransferLoading}
+                      />
                     )}
                   </Box>
                 </Paper>
@@ -359,7 +382,13 @@ export default function ViewLoanPage() {
                             </IconButton>
                           </Box>
                           {cashTransferData && openRecordPayment && (
-                            <LoanPaymentTypeTransaction cash_transfer={cashTransferData!} />
+                            <LoanPaymentTypeTransaction
+                              cash_transfer={cashTransferData!}
+                              triggerMutate={() => {
+                                triggerLoanPaymentsMutate()
+                                triggerCashTransferMutate()
+                              }}
+                            />
                           )}
                         </Box>
                       </Box>
