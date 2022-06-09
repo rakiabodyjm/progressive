@@ -130,20 +130,25 @@ export default function CreateRetailerShortcutModal({
         setFindCaesar(false)
       })
     }
-    if (bankFormValues.caesar) {
-      axios.post('/cash-transfer/caesar-bank', { ...bankFormValues }).then((res) => {
-        dispatch(
-          setNotification({
-            type: NotificationTypes.SUCCESS,
-            message: 'Bank Created',
-          })
-        )
-        onClose()
-        setLoading(false)
-        if (triggerRender) {
-          triggerRender()
-        }
-      })
+    if (bankFormValues.caesar && visibleChip) {
+      axios
+        .post('/cash-transfer/caesar-bank', { ...bankFormValues })
+        .then((res) => {
+          dispatch(
+            setNotification({
+              type: NotificationTypes.SUCCESS,
+              message: 'Bank Created',
+            })
+          )
+          onClose()
+          setLoading(false)
+          if (triggerRender) {
+            triggerRender()
+          }
+        })
+        .catch((err) => {
+          throw extractMultipleErrorFromResponse(err)
+        })
     }
   }, [findCaesar])
 
@@ -171,6 +176,13 @@ export default function CreateRetailerShortcutModal({
         })
         .finally(() => {
           // mutate('/caesar/ct-balance')
+          if (!visibleChip) {
+            setLoading(false)
+            onClose()
+            if (triggerRender) {
+              triggerRender()
+            }
+          }
         })
     }
   }
