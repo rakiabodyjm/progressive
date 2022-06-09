@@ -56,7 +56,7 @@ export default function ViewCashTransferCaesar() {
   const { query } = useRouter()
   const { id } = query
 
-  const { data: caesar } = useSWR(id ? `/caesar/${id}` : undefined, () =>
+  const { data: caesar, mutate: mutateCaesar } = useSWR(id ? `/caesar/${id}` : undefined, () =>
     getWalletById(id as string)
   )
   const theme: Theme = useTheme()
@@ -219,7 +219,7 @@ export default function ViewCashTransferCaesar() {
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
-                <CollectiblesTable caesarId={caesar?.id} />
+                <CollectiblesTable caesarId={caesar?.id} triggerRender={mutateCaesar} />
               </Grid>
             </Grid>
           </Box>
