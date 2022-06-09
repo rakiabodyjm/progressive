@@ -24,7 +24,13 @@ import axios from 'axios'
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalletResponse['id'] }) {
+export default function CollectiblesTable({
+  caesarId,
+  triggerRender,
+}: {
+  caesarId?: CaesarWalletResponse['id']
+  triggerRender: () => void
+}) {
   const theme: Theme = useTheme()
   const [queryParameters, setQueryParameters] = useState<{
     page: number
@@ -295,6 +301,7 @@ export default function CollectiblesTable({ caesarId }: { caesarId?: CaesarWalle
             triggeredRender={() => {
               mutateRetailerLoanList()
               mutateCashTransferList()
+              triggerRender()
             }}
           ></DirectPaidModal>
         )}

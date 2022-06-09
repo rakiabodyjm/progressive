@@ -87,12 +87,15 @@ export default function DirectPaidModal({
     caesar_bank_to: loanData?.caesar_bank_from,
     from: loanData?.from,
     to: loanData?.to,
-    amount: (loanData?.total_amount as number) - paidAmount || 0,
+    amount: (loanData?.total_amount && loanData.total_amount - paidAmount) || 0,
   })
 
   useEffect(() => {
-    console.log('formValues', formValues)
-  }, [formValues])
+    setFormValues((prev) => ({
+      ...prev,
+      amount: (loanData?.total_amount as number) - paidAmount,
+    }))
+  }, [loanData?.total_amount, paidAmount])
 
   useEffect(() => {
     if (toCaesarEnabled && formValues.to === undefined) {
