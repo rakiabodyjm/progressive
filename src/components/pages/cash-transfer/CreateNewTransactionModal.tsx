@@ -79,7 +79,7 @@ const CreateNewTransactionModal = ({
         }
         return disabledKeys ? !disabledKeys.includes(ea.id as CashTransferAs) : true
       }),
-    [disabledKeys]
+    [disabledKeys, disabledKeysAsRetailer]
   )
   return (
     <ModalWrapper containerSize="xs" open={open} onClose={onClose}>

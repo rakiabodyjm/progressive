@@ -25,6 +25,7 @@ import LoanPaymentTypeTransaction from '@src/components/pages/cash-transfer/Crea
 import EditLoanDetailsModal from '@src/components/pages/cash-transfer/EditLoanDetailsModal'
 import { PopUpMenu } from '@src/components/PopUpMenu'
 import RoleBadge from '@src/components/RoleBadge'
+import { userDataSelector } from '@src/redux/data/userSlice'
 import { formatIntoCurrency, formatIntoReadableDate } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
@@ -32,12 +33,14 @@ import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 export default function ViewLoanPage() {
   const theme: Theme = useTheme()
   const { query } = useRouter()
   const { id } = query
+  const user = useSelector(userDataSelector)
 
   const [editMode, setEditMode] = useState<boolean>(false)
 
@@ -155,19 +158,21 @@ export default function ViewLoanPage() {
                             {formatIntoReadableDate(cashTransferData?.created_at || Date.now())}
                           </Typography>
                         </Box>
-                        <Tooltip
-                          arrow
-                          placement="left"
-                          title={<Typography variant="body1">Edit Details</Typography>}
-                        >
-                          <IconButton
-                            onClick={() => {
-                              setEditMode(true)
-                            }}
+                        {!user?.retailer_id && (
+                          <Tooltip
+                            arrow
+                            placement="left"
+                            title={<Typography variant="body1">Edit Details</Typography>}
                           >
-                            <Edit />
-                          </IconButton>
-                        </Tooltip>
+                            <IconButton
+                              onClick={() => {
+                                setEditMode(true)
+                              }}
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                       </Box>
 
                       <RoleBadge disablePopUp variant="body1" color="primary">
