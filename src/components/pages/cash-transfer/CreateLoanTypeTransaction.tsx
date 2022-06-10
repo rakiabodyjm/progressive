@@ -143,11 +143,11 @@ const LoanTypeTransaction = ({
       setTransferForm((prev) => ({
         ...prev,
         amount: undefined,
-        caesar_bank_to: undefined,
+        // caesar_bank_to: undefined,
         description: '',
         as: CashTransferAs.LOAN,
         bank_fee: undefined,
-        to: undefined,
+        // to: undefined,
       }))
       setResetValue(Date.now())
     }
