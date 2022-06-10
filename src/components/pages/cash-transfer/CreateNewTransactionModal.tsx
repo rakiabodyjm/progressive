@@ -11,9 +11,11 @@ import {
 } from '@material-ui/core'
 import { CloseOutlined } from '@material-ui/icons'
 import ModalWrapper from '@src/components/ModalWrapper'
+import { userDataSelector } from '@src/redux/data/userSlice'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 import { CashTransferAs, TransferTypes } from '@src/utils/types/CashTransferTypes'
 import { useMemo } from 'react'
+import { useSelector } from 'react-redux'
 
 const CreateNewTransactionModal = ({
   open,
@@ -26,6 +28,12 @@ const CreateNewTransactionModal = ({
 }) => {
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
   const disabledKeys = useMemo(() => [...(isEligible ? [] : ['DEPOSIT', 'WITHDRAW'])], [isEligible])
+  const disabledKeysAsRetailer = useMemo(
+    () => [...(isEligible ? [] : ['LOAN', 'WITHDRAW'])],
+    [isEligible]
+  )
+
+  const user = useSelector(userDataSelector)
 
   const theme = useTheme()
   const transactionTypes = useMemo<
@@ -64,6 +72,11 @@ const CreateNewTransactionModal = ({
         // },
       ].filter((ea) => {
         console.log(ea)
+        if (user?.retailer_id) {
+          return disabledKeysAsRetailer
+            ? !disabledKeysAsRetailer.includes(ea.id as CashTransferAs)
+            : true
+        }
         return disabledKeys ? !disabledKeys.includes(ea.id as CashTransferAs) : true
       }),
     [disabledKeys]

@@ -24,6 +24,7 @@ import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAu
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import CashTransfer from '@src/pages/admin/topup'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
+import { userDataSelector } from '@src/redux/data/userSlice'
 import {
   extractMultipleErrorFromResponse,
   formatIntoCurrency,
@@ -36,6 +37,7 @@ import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios, { AxiosError } from 'axios'
 import { useRouter } from 'next/router'
 import React, { useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 import useSWR, { useSWRConfig } from 'swr'
 
 export default function DirectPaidModal({
@@ -50,6 +52,8 @@ export default function DirectPaidModal({
   triggeredRender: () => void
 }) {
   const dispatchNotif = useNotification()
+
+  const user = useSelector(userDataSelector)
 
   const router = useRouter()
   const [visibleChip, setVisibleChip] = useState<boolean>(false)
@@ -389,19 +393,24 @@ export default function DirectPaidModal({
               </Box>
             </Box>
             <Box display="flex" mt={2} justifyContent="space-between">
-              <Button
-                variant="contained"
-                onClick={() => {
-                  router.push({
-                    pathname: '/cash-transfer/loan/[id]',
-                    query: {
-                      id: loanData.id,
-                    },
-                  })
-                }}
-              >
-                Go to Page
-              </Button>
+              {!user?.retailer_id ? (
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    router.push({
+                      pathname: '/cash-transfer/loan/[id]',
+                      query: {
+                        id: loanData.id,
+                      },
+                    })
+                  }}
+                >
+                  Go to Page
+                </Button>
+              ) : (
+                <Box></Box>
+              )}
+
               <AsyncButton
                 loading={loading}
                 disabled={loading}

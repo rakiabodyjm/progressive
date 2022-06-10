@@ -18,6 +18,7 @@ import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import CaesarBankLinking from '@src/components/pages/bank/CaesarBankLinking'
 import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
 import CashTransferDSP from '@src/components/pages/cash-transfer/CashTransferDSP'
+import RetailerCashTransferView from '@src/components/RetailerCashTransferView'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
@@ -47,6 +48,9 @@ export default function CaesarIndexPage() {
   const router = useRouter()
 
   const [isDSP, setIsDSP] = useState(false)
+
+  const [isRetailer, setIsRetailer] = useState(false)
+
   const [caesarEmpty, setCaesarEmpty] = useState<boolean>(false)
 
   const user = useSelector(userDataSelector)
@@ -79,6 +83,19 @@ export default function CaesarIndexPage() {
         } else {
           setIsDSP(true)
         }
+      } else if (
+        [...user.roles].some((ea) => ['retailer'].includes(ea)) &&
+        ![...user.roles].some((ea) => ['ct-operator', 'ct-admin'].includes(ea))
+      ) {
+        if (caesarEmpty) {
+          router.push('/')
+          dispatchNotif({
+            type: NotificationTypes.WARNING,
+            message: `Unauthorized to access`,
+          })
+        } else {
+          setIsRetailer(true)
+        }
       } else if (![...user.roles].some((ea) => ['ct-operator', 'ct-admin'].includes(ea))) {
         router.push('/')
         dispatchNotif({
@@ -92,7 +109,7 @@ export default function CaesarIndexPage() {
   }, [user])
   const theme = useTheme()
 
-  if (!isDSP) {
+  if (!isDSP && !isRetailer) {
     return (
       <Container maxWidth="lg" disableGutters>
         <CashTransferBalancesTable />
@@ -118,9 +135,18 @@ export default function CaesarIndexPage() {
       </Container>
     )
   }
-  return (
-    <>
-      <CashTransferDSP />
-    </>
-  )
+  if (isRetailer) {
+    return (
+      <>
+        <RetailerCashTransferView />
+      </>
+    )
+  }
+  if (isDSP) {
+    return (
+      <>
+        <CashTransferDSP />
+      </>
+    )
+  }
 }

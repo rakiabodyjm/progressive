@@ -64,13 +64,17 @@ export default function CashTransferDetailsModal({
                 <Grid item xs={6}>
                   <FormLabel>From:</FormLabel>
                   <Typography>
-                    {cashTransferData?.caesar_bank_from?.description || 'ERROR'}
+                    {cashTransferData?.caesar_bank_from?.description ||
+                      cashTransferData.from ||
+                      'ERROR'}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <FormLabel>To:</FormLabel>
                   <Typography>
-                    {cashTransferData?.caesar_bank_to?.description || 'ERROR'}
+                    {cashTransferData?.caesar_bank_to?.description ||
+                      cashTransferData.to.description ||
+                      'ERROR'}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -83,7 +87,9 @@ export default function CashTransferDetailsModal({
                 </Grid>
                 <Grid item xs={12}>
                   <FormLabel>Description:</FormLabel>
-                  <Typography noWrap>{cashTransferData?.description || 'ERROR'}</Typography>
+                  <Typography noWrap>
+                    {cashTransferData?.description || '<No Description>'}
+                  </Typography>
                 </Grid>
               </Grid>
             </Box>
