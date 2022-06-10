@@ -5,9 +5,11 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 export default function FormNumberField({
   value,
   onChange,
+  disabledField,
 }: {
   value: number | undefined
   onChange: (value: number | undefined) => void
+  disabledField?: boolean
 }) {
   const onChangeLocal = useCallback(onChange, [])
   const [inputValue, setInputValue] = useState<string | undefined>(value?.toString())
@@ -25,6 +27,7 @@ export default function FormNumberField({
   return (
     <>
       <TextField
+        disabled={!!disabledField}
         variant="outlined"
         size="small"
         fullWidth

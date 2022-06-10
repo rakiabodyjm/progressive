@@ -41,11 +41,11 @@ const TransferTypeTransaction = ({
     message?: string
   }>({
     amount: undefined,
-    caesar_bank_from,
-    caesar_bank_to,
+    caesar_bank_from: caesar_bank_from as CaesarBank,
+    caesar_bank_to: caesar_bank_to as CaesarBank,
     description: undefined,
     as: CashTransferAs.TRANSFER,
-    bank_fee: undefined,
+    bank_fee: 0,
     from: undefined,
     to: undefined,
     message: undefined,
@@ -93,6 +93,27 @@ const TransferTypeTransaction = ({
   } = useSubmitFormData({
     submitFunction: submitAsLoan,
   })
+
+  useEffect(() => {
+    if (
+      transferForm?.caesar_bank_from?.bank.name === 'BDO' &&
+      transferForm?.caesar_bank_to?.bank.name === 'GCASH'
+    ) {
+      setTransferForm((prev) => ({
+        ...prev,
+        bank_fee: 25,
+      }))
+    }
+    if (
+      transferForm?.caesar_bank_from?.bank.name === 'GCASH' &&
+      transferForm?.caesar_bank_to?.bank.name === 'BDO'
+    ) {
+      setTransferForm((prev) => ({
+        ...prev,
+        bank_fee: 15,
+      }))
+    }
+  }, [transferForm.caesar_bank_from, transferForm.caesar_bank_to])
 
   const handleSubmit = useCallback(() => {
     const {
@@ -303,7 +324,7 @@ const TransferTypeTransaction = ({
                 }))
               }}
               filter={(res) => res.filter((ea) => ea.id !== caesar_bank_from?.caesar.id)}
-              value={transferForm.to}
+              // value={transferForm.to}
               key={transferForm.amount}
             />
           </>
@@ -329,7 +350,7 @@ const TransferTypeTransaction = ({
               }}
               defaultValue={transferForm?.caesar_bank_to || undefined}
               disabled={!!caesar_bank_to}
-              value={transferForm.caesar_bank_to}
+              // value={transferForm.caesar_bank_to}
               key={transferForm.amount}
             />
           </>
@@ -372,6 +393,7 @@ const TransferTypeTransaction = ({
         {transferForm?.caesar_bank_from && (
           <Box my={2}>
             <FeesTransaction
+              disabledTextField
               triggerReset={resetValue}
               newValue={transferForm.bank_fee}
               onChange={(bank_fee: number | undefined) => {
