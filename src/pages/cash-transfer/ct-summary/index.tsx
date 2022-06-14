@@ -48,6 +48,7 @@ import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 import { CSVLink } from 'react-csv'
+import { fromUnixTime } from 'date-fns/esm'
 
 const useStyles = makeStyles((theme: Theme) => ({
   gridContainer: {
@@ -506,7 +507,9 @@ export default function CashTransferSummaryTable() {
 const formatToCsv = (param: CashTransferResponse[]) =>
   param.map(
     ({
+      original_created_at,
       as,
+      from,
       amount,
       to,
       caesar_bank_from,
@@ -516,20 +519,22 @@ const formatToCsv = (param: CashTransferResponse[]) =>
       total_amount,
       remaining_balance_to,
     }) => ({
-      sender_bank: caesar_bank_from?.bank.name,
+      sender_bank: caesar_bank_from?.bank.name || `${from.description} - CAESAR`,
       date_posting: new Date(created_at).toLocaleDateString(),
       type: as,
-      receiver: caesar_bank_to?.bank.name || 'CAESAR',
-      dsp_name: caesar_bank_from?.description,
-      dsp_number: `'${caesar_bank_from?.account_number}`,
-      customer_name: caesar_bank_to?.description || to.description,
-      c_number: caesar_bank_to ? `'${caesar_bank_to?.account_number}` : `'${to?.data?.cp_number}`,
+      med_used: caesar_bank_to?.bank.name || 'CAESAR',
+      sender: caesar_bank_from?.description || `${from.description} - CAESAR`,
+      sender_account: caesar_bank_from ? `'${caesar_bank_from?.account_number}` : '',
+      // : `'${from?.data?.cp_number}`,
+      receiver: caesar_bank_to?.description || `${to.description} - CAESAR`,
+      receiver_account: caesar_bank_to ? `'${caesar_bank_to?.account_number}` : '',
+      // : `'${to?.data?.cp_number}`,
       amount,
       time: new Date(created_at).toLocaleTimeString(),
       requested_by: caesar_bank_to?.description || to.description,
       one_percent: as === CashTransferAs.LOAN ? total_amount : '',
       status: as === CashTransferAs.LOAN ? (is_loan_paid ? 'PAID' : 'CREDIT') : '',
-      date_paid: new Date(created_at).toLocaleDateString(),
+      date_paid: original_created_at && new Date(original_created_at).toLocaleDateString(),
       receiver_bank: caesar_bank_to?.bank.name || 'Cash On Hand',
       remaining_balance: remaining_balance_to,
     })
@@ -537,12 +542,12 @@ const formatToCsv = (param: CashTransferResponse[]) =>
 
 const headers = [
   {
-    label: 'Description',
-    key: 'sender_bank',
-  },
-  {
     label: 'Posting Date',
     key: 'date_posting',
+  },
+  {
+    label: 'Description',
+    key: 'sender_bank',
   },
   {
     label: 'Transaction Type',
@@ -550,23 +555,23 @@ const headers = [
   },
   {
     label: 'Transfer',
-    key: 'receiver',
+    key: 'med_used',
   },
   {
     label: 'Sender Name',
-    key: 'dsp_name',
+    key: 'sender',
   },
   {
     label: 'Account Number',
-    key: 'dsp_number',
+    key: 'sender_account',
   },
   {
     label: 'Receiver Name',
-    key: 'customer_name',
+    key: 'receiver',
   },
   {
     label: 'Account Number',
-    key: 'c_number',
+    key: 'receiver_account',
   },
   {
     label: 'Amount',
@@ -593,7 +598,7 @@ const headers = [
     key: 'status',
   },
   {
-    label: 'Date Paid',
+    label: 'Transaction Date',
     key: 'date_paid',
   },
   {
