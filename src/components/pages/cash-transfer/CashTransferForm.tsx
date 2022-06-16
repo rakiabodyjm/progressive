@@ -34,6 +34,10 @@ const LoanPaymentTransaction = dynamicImportWithLoading(
   () => import('@src/components/pages/cash-transfer/CreateLoanPaymentTypeTransaction')
 )
 
+const LoadTypeTransaction = dynamicImportWithLoading(
+  () => import('@src/components/pages/cash-transfer/CreateLoadTypeTransaction')
+)
+
 type TransferTypeProps = {
   caesar_bank_from?: CaesarBank
   caesar_bank_to?: CaesarBank
@@ -57,6 +61,12 @@ type LoanTypeProps = {
   transactionType: CashTransferAs.LOAN
 }
 
+type LoadTypeProps = {
+  caesar_bank_from?: CaesarBank
+  caesar_bank_to?: CaesarBank
+  transactionType: CashTransferAs.LOAD
+}
+
 type LoanPaymentTypeProps = {
   transactionType: CashTransferAs.LOAN_PAYMENT
   cash_transfer: CashTransferResponse
@@ -65,7 +75,12 @@ export default function CashTransferForm({
   transactionType,
   ...restProps
 }: Omit<
-  TransferTypeProps | WithdrawTypeProps | DepositTypeProps | LoanTypeProps | LoanPaymentTypeProps,
+  | TransferTypeProps
+  | WithdrawTypeProps
+  | DepositTypeProps
+  | LoanTypeProps
+  | LoanPaymentTypeProps
+  | LoadTypeProps,
   'children'
 >) {
   return (
@@ -98,6 +113,14 @@ export default function CashTransferForm({
         <Paper>
           <Box p={2}>
             <LoanTypeTransaction {...restProps} />
+          </Box>
+        </Paper>
+      )}
+
+      {transactionType === CashTransferAs.LOAD && (
+        <Paper>
+          <Box p={2}>
+            <LoadTypeTransaction {...restProps} />
           </Box>
         </Paper>
       )}

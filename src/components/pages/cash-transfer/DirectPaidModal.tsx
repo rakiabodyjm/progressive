@@ -32,7 +32,11 @@ import {
 } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import useNotification from '@src/utils/hooks/useNotification'
-import { CaesarBank, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
+import {
+  CaesarBank,
+  CashTransferAs,
+  CashTransferResponse,
+} from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios, { AxiosError } from 'axios'
 import { useRouter } from 'next/router'
@@ -190,7 +194,9 @@ export default function DirectPaidModal({
                   {loanData.ref_num}
                 </Typography>
                 <FormLabel>Transaction Type:</FormLabel>
-                <Typography variant="h5">Loan Payment</Typography>
+                <Typography variant="h5">
+                  {loanData.as === CashTransferAs.LOAN ? 'Loan:' : 'Load'} Payment
+                </Typography>
               </Box>
               <Box>
                 <IconButton onClick={handleClose}>
@@ -207,7 +213,9 @@ export default function DirectPaidModal({
                   </Grid>
 
                   <Grid item xs={12}>
-                    <FormLabel>Date loaned:</FormLabel>
+                    <FormLabel>
+                      Date {loanData.as === CashTransferAs.LOAN ? 'loaned:' : 'loaded'}
+                    </FormLabel>
                     <Typography color="textSecondary">
                       {formatIntoReadableDate(loanData?.created_at || Date.now())}
                     </Typography>
@@ -249,7 +257,9 @@ export default function DirectPaidModal({
                         </Grid>
 
                         <Grid item xs={6}>
-                          <FormLabel>Payable Loan:</FormLabel>
+                          <FormLabel>
+                            Payable {loanData.as === CashTransferAs.LOAN ? 'Loan:' : 'Load'}:
+                          </FormLabel>
                           <Typography>
                             {formatIntoCurrency(loanData.total_amount - paidAmount)}
                           </Typography>

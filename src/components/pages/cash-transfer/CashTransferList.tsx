@@ -280,22 +280,25 @@ export default function CashTransferList({
                   >
                     <Box display="inline-flex">
                       <Typography variant="body2" color="primary">
-                        {cashTransfer.as}
+                        {(cashTransfer.as === CashTransferAs.LOAN_PAYMENT && 'PAYMENT') ||
+                          cashTransfer.as}
                       </Typography>
-                      {cashTransfer?.as === CashTransferAs.LOAN && cashTransfer?.is_loan_paid && (
-                        <Typography
-                          variant="caption"
-                          component="span"
-                          color="initial"
-                          style={{
-                            display: 'inline',
-                            marginLeft: 8,
-                            border: `2px solid ${theme.typography.caption.color}`,
-                          }}
-                        >
-                          PAID
-                        </Typography>
-                      )}
+                      {(cashTransfer?.as === CashTransferAs.LOAN ||
+                        cashTransfer?.as === CashTransferAs.LOAD) &&
+                        cashTransfer?.is_loan_paid && (
+                          <Typography
+                            variant="caption"
+                            component="span"
+                            color="initial"
+                            style={{
+                              display: 'inline',
+                              marginLeft: 8,
+                              border: `2px solid ${theme.typography.caption.color}`,
+                            }}
+                          >
+                            PAID
+                          </Typography>
+                        )}
                     </Box>
 
                     <Typography

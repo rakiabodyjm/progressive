@@ -288,6 +288,9 @@ export default function ViewCaesarBankPage() {
                         {...(transactionSelected === CashTransferAs.LOAN && {
                           caesar_bank_from: caesarBankData,
                         })}
+                        {...(transactionSelected === CashTransferAs.LOAD && {
+                          caesar_bank_from: caesarBankData,
+                        })}
                         transactionType={transactionSelected}
                       />
                     )}
@@ -331,6 +334,7 @@ export default function ViewCaesarBankPage() {
                 )}
 
                 <CreateNewTransactionModal
+                  caesarBankName={caesarBankData?.bank.name as string}
                   open={transactionModal.transactionModalOpen}
                   onClose={() => {
                     setTransactionModal((prev) => ({

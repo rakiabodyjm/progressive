@@ -55,7 +55,7 @@ export default function RetailerLoanList({
       ? null
       : `/cash-transfer?${objectToURLQuery({
           caesar: caesarId,
-          as: CashTransferAs.LOAN,
+          // as: CashTransferAs.LOAN,
           // caesar_bank: caesarBankId,
           // loan: loanId,
           ...queryParameters,
@@ -82,8 +82,14 @@ export default function RetailerLoanList({
     if (cashTransfers) {
       setLoanToCollect((prev) => ({
         ...prev,
-        collected: cashTransfers.data.filter((ea) => ea.is_loan_paid).length as number,
-        toBeCollect: cashTransfers?.data.filter((ea) => !ea.is_loan_paid).length as number,
+        collected: cashTransfers.data.filter(
+          (ea) =>
+            (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && ea.is_loan_paid
+        ).length as number,
+        toBeCollect: cashTransfers?.data.filter(
+          (ea) =>
+            (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && !ea.is_loan_paid
+        ).length as number,
       }))
     }
   }, [cashTransfers])
@@ -158,7 +164,11 @@ export default function RetailerLoanList({
             loanToCollect.toBeCollect > 0 ? (
               <>
                 {cashTransfers.data
-                  .filter((ea) => !ea.is_loan_paid)
+                  .filter(
+                    (ea) =>
+                      (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&
+                      !ea.is_loan_paid
+                  )
                   .map((cashTransfer) => (
                     <Box key={cashTransfer.id}>
                       <Paper
@@ -206,7 +216,7 @@ export default function RetailerLoanList({
                           </Box>
 
                           <Typography>
-                            {!isSender(cashTransfer)
+                            {isSender(cashTransfer)
                               ? cashTransfer?.caesar_bank_to?.description ||
                                 cashTransfer?.to?.description ||
                                 'ERROR'
