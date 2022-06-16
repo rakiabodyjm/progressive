@@ -1,7 +1,9 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {
   Box,
+  Button,
   Container,
   Divider,
   Grid,
@@ -16,7 +18,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AccountCircle, ArrowBack, CloseOutlined, Search } from '@material-ui/icons'
+import { AccountCircle, ArrowBack, CloseOutlined, GetApp, Search } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
@@ -33,7 +35,7 @@ import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import CaesarIndexPage from '@src/pages/cash-transfer'
 import { objectToURLQuery, extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { CaesarWalletResponse } from '@src/utils/api/walletApi'
+import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import {
   CaesarBank,
   CashTransferAs,
@@ -45,6 +47,8 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import useSWR from 'swr'
+import { CSVLink } from 'react-csv'
+import { fromUnixTime } from 'date-fns/esm'
 
 const useStyles = makeStyles((theme: Theme) => ({
   gridContainer: {
@@ -108,6 +112,15 @@ export default function CashTransferSummaryTable() {
     transactionSelected: undefined,
   })
 
+  console.log(
+    summaryTableData?.data.map((ea) => {
+      console.log('Account:', ea.to?.account_type)
+      console.log('DSP CODE:', ea.to?.dsp?.dsp_code)
+      console.log('DSP CP NUMBER', ea.to?.dsp?.e_bind_number)
+      return ea
+    })
+  )
+
   return (
     <Container>
       <Paper variant="outlined">
@@ -120,7 +133,7 @@ export default function CashTransferSummaryTable() {
               </Typography>
             </Box>
           </Box>
-          <Box textAlign="end">
+          <Box display="flex" flexDirection="row-reverse">
             <Box>
               <Tooltip
                 arrow
@@ -138,7 +151,23 @@ export default function CashTransferSummaryTable() {
                 </IconButton>
               </Tooltip>
             </Box>
+            {summaryTableData && summaryTableData.data && (
+              <Box>
+                <Tooltip
+                  arrow
+                  placement="left"
+                  title={<Typography variant="subtitle2">Export to CSV</Typography>}
+                >
+                  <CSVLink data={formatToCsv(summaryTableData?.data)} {...csvLinkFormat}>
+                    <IconButton>
+                      <GetApp color="primary" />
+                    </IconButton>
+                  </CSVLink>
+                </Tooltip>
+              </Box>
+            )}
           </Box>
+          <Box textAlign="end"></Box>
           <Box my={2}>
             <Divider />
           </Box>
@@ -297,6 +326,15 @@ export default function CashTransferSummaryTable() {
                         </Link>
                       </Tooltip>
                     </Grid>
+                    {/* {summaryTableData && summaryTableData.data && (
+                      <Grid item xs={12}>
+                        <CSVLink data={formatToCsv(summaryTableData?.data)} {...csvLinkFormat}>
+                          <Button variant="contained" color="primary">
+                            <Typography>Export to CSV</Typography>
+                          </Button>
+                        </CSVLink>
+                      </Grid>
+                    )} */}
                   </Grid>
                 </Grid>
 
@@ -465,6 +503,117 @@ export default function CashTransferSummaryTable() {
         )}
     </Container>
   )
+}
+const formatToCsv = (param: CashTransferResponse[]) =>
+  param.map(
+    ({
+      original_created_at,
+      as,
+      from,
+      amount,
+      to,
+      caesar_bank_from,
+      caesar_bank_to,
+      created_at,
+      is_loan_paid,
+      total_amount,
+      remaining_balance_to,
+    }) => ({
+      sender_bank: caesar_bank_from?.bank.name || `${from.description} - CAESAR`,
+      date_posting: new Date(created_at).toLocaleDateString(),
+      type: as,
+      med_used: caesar_bank_to?.bank.name || 'CAESAR',
+      sender: caesar_bank_from?.description || `${from.description} - CAESAR`,
+      sender_account: caesar_bank_from ? `'${caesar_bank_from?.account_number}` : '',
+      // : `'${from?.data?.cp_number}`,
+      receiver: caesar_bank_to?.description || `${to.description} - CAESAR`,
+      receiver_account: caesar_bank_to ? `'${caesar_bank_to?.account_number}` : '',
+      // : `'${to?.data?.cp_number}`,
+      amount,
+      time: new Date(created_at).toLocaleTimeString(),
+      requested_by: caesar_bank_to?.description || to.description,
+      one_percent: as === CashTransferAs.LOAN ? total_amount : '',
+      status: as === CashTransferAs.LOAN ? (is_loan_paid ? 'PAID' : 'CREDIT') : '',
+      date_paid: original_created_at && new Date(original_created_at).toLocaleDateString(),
+      receiver_bank: caesar_bank_to?.bank.name || 'Cash On Hand',
+      remaining_balance: remaining_balance_to,
+    })
+  )
+
+const headers = [
+  {
+    label: 'Posting Date',
+    key: 'date_posting',
+  },
+  {
+    label: 'Description',
+    key: 'sender_bank',
+  },
+  {
+    label: 'Transaction Type',
+    key: 'type',
+  },
+  {
+    label: 'Transfer',
+    key: 'med_used',
+  },
+  {
+    label: 'Sender Name',
+    key: 'sender',
+  },
+  {
+    label: 'Account Number',
+    key: 'sender_account',
+  },
+  {
+    label: 'Receiver Name',
+    key: 'receiver',
+  },
+  {
+    label: 'Account Number',
+    key: 'receiver_account',
+  },
+  {
+    label: 'Amount',
+    key: 'amount',
+  },
+  {
+    label: 'Time',
+    key: 'time',
+  },
+  {
+    label: 'Requested By',
+    key: 'requested_by',
+  },
+  {
+    label: '1%',
+    key: 'one_percent',
+  },
+  {
+    label: '2%',
+    key: 'two_percent',
+  },
+  {
+    label: 'Status',
+    key: 'status',
+  },
+  {
+    label: 'Transaction Date',
+    key: 'date_paid',
+  },
+  {
+    label: 'Transaction',
+    key: 'receiver_bank',
+  },
+  {
+    label: 'Running Balance',
+    key: 'remaining_balance',
+  },
+]
+
+const csvLinkFormat = {
+  filename: 'Summary Report.csv',
+  headers,
 }
 const formatSummaryTable = (param: CashTransferResponse[]) =>
   param.map(({ ref_num, as, description, amount, from, to, caesar_bank_from, caesar_bank_to }) => ({

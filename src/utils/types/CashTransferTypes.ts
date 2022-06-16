@@ -92,6 +92,8 @@ export type CashTransferResponse = {
   message?: string
 
   is_loan_paid?: boolean
+
+  original_created_at?: Date
 }
 
 export enum EditOrRevertTypes {
