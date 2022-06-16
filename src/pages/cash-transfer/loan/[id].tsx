@@ -28,7 +28,7 @@ import RoleBadge from '@src/components/RoleBadge'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { formatIntoCurrency, formatIntoReadableDate } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
-import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
+import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -178,7 +178,9 @@ export default function ViewLoanPage() {
                       <RoleBadge disablePopUp variant="body1" color="primary">
                         {caesar?.account_type.toUpperCase()}
                       </RoleBadge>
-                      <Typography variant="h4">Loan Details</Typography>
+                      <Typography variant="h4">
+                        {cashTransferData?.as === CashTransferAs.LOAN ? 'Loan:' : 'Load'} Details
+                      </Typography>
                       {/* <Typography variant="body2" color="primary">
                         {caesar?.description.toUpperCase()}
                       </Typography> */}
@@ -281,7 +283,8 @@ export default function ViewLoanPage() {
                             variant="body2"
                             color="primary"
                           >
-                            Loan Payable:
+                            {cashTransferData.as === CashTransferAs.LOAN ? 'Loan:' : 'Load'}{' '}
+                            Payable:
                           </Typography>
                           <Typography
                             style={{

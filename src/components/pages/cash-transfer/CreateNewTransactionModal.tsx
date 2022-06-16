@@ -13,7 +13,7 @@ import { CloseOutlined } from '@material-ui/icons'
 import ModalWrapper from '@src/components/ModalWrapper'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
-import { CashTransferAs, TransferTypes } from '@src/utils/types/CashTransferTypes'
+import { CaesarBank, CashTransferAs, TransferTypes } from '@src/utils/types/CashTransferTypes'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -21,17 +21,27 @@ const CreateNewTransactionModal = ({
   open,
   onClose,
   onSelect,
+  caesarBankName,
 }: {
   open: boolean
   onClose: () => void
   onSelect?: (param: CashTransferAs) => void
+  caesarBankName: string
 }) => {
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
   const disabledKeys = useMemo(() => [...(isEligible ? [] : ['DEPOSIT', 'WITHDRAW'])], [isEligible])
+  const disableLoad = useMemo(() => ['LOAD'], [])
   const disabledKeysAsRetailer = useMemo(
-    () => [...(isEligible ? [] : ['LOAN', 'WITHDRAW'])],
+    () => [...(isEligible ? [] : ['LOAN', 'WITHDRAW', 'LOAD'])],
     [isEligible]
   )
+
+  const telcoNetwork = [
+    'Smart Communications',
+    'Globe Telecommunications',
+    'Dito Telecommunity',
+    'Shoppe',
+  ]
 
   const user = useSelector(userDataSelector)
 
@@ -45,6 +55,11 @@ const CreateNewTransactionModal = ({
   >(
     () =>
       [
+        {
+          id: CashTransferAs.LOAD,
+          title: 'Load',
+          description: 'Recording Load Transactions',
+        },
         {
           id: CashTransferAs.TRANSFER,
           title: 'Cash Transfer',
@@ -77,10 +92,16 @@ const CreateNewTransactionModal = ({
             ? !disabledKeysAsRetailer.includes(ea.id as CashTransferAs)
             : true
         }
-        return disabledKeys ? !disabledKeys.includes(ea.id as CashTransferAs) : true
+        if (caesarBankName && isEligible && telcoNetwork.includes(caesarBankName as string)) {
+          console.log(telcoNetwork.includes(caesarBankName as string))
+          return disabledKeys ? !disabledKeys.includes(ea.id as CashTransferAs) : true
+        }
+        console.log(telcoNetwork.includes(caesarBankName as string))
+        return disableLoad ? !disableLoad.includes(ea.id as CashTransferAs) : true
       }),
-    [disabledKeys, disabledKeysAsRetailer]
+    [disabledKeys, disabledKeysAsRetailer, disableLoad, caesarBankName]
   )
+
   return (
     <ModalWrapper containerSize="xs" open={open} onClose={onClose}>
       <Paper

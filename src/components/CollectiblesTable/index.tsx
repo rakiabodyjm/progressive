@@ -87,11 +87,15 @@ export default function CollectiblesTable({
   const loanToCollect = useMemo(
     () => ({
       collected:
-        aggreGatedCashTransfers.filter((ea) => ea.as === CashTransferAs.LOAN && ea.is_loan_paid)
-          ?.length || 0,
+        aggreGatedCashTransfers.filter(
+          (ea) =>
+            (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && ea.is_loan_paid
+        )?.length || 0,
       toBeCollect:
-        aggreGatedCashTransfers.filter((ea) => ea.as === CashTransferAs.LOAN && !ea.is_loan_paid)
-          ?.length || 0,
+        aggreGatedCashTransfers.filter(
+          (ea) =>
+            (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && !ea.is_loan_paid
+        )?.length || 0,
     }),
     [aggreGatedCashTransfers]
   )
@@ -113,7 +117,7 @@ export default function CollectiblesTable({
                   letterSpacing: -1,
                 }}
               >
-                Loan Payments
+                Loan/Load Payments
               </span>{' '}
               to Collect
             </Typography>
@@ -170,7 +174,11 @@ export default function CollectiblesTable({
             loanToCollect?.toBeCollect > 0 ? (
               <>
                 {aggreGatedCashTransfers
-                  .filter((ea) => ea.as === CashTransferAs.LOAN && !ea.is_loan_paid)
+                  .filter(
+                    (ea) =>
+                      (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&
+                      !ea.is_loan_paid
+                  )
                   .map((cashTransfer) => (
                     <Box key={cashTransfer.id}>
                       <Paper

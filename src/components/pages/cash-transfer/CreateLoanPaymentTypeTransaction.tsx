@@ -22,7 +22,11 @@ import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import useNotification, { useErrorNotification } from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
-import { CaesarBank, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
+import {
+  CaesarBank,
+  CashTransferAs,
+  CashTransferResponse,
+} from '@src/utils/types/CashTransferTypes'
 import axios, { AxiosError } from 'axios'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
@@ -142,9 +146,11 @@ const LoanPaymentTypeTransaction = ({
   return (
     <>
       <Box>
-        <Typography variant="h4">Loan Payment</Typography>
+        <Typography variant="h4">
+          {cash_transfer.as === CashTransferAs.LOAN ? 'Loan' : 'Load'} Payment
+        </Typography>
         <Typography variant="body2" color="textSecondary">
-          Record payment to this Loan
+          Record payment to this {cash_transfer.as === CashTransferAs.LOAN ? 'Loan' : 'Load'}
         </Typography>
         <Box my={2}>
           <Divider />
