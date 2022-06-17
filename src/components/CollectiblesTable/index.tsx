@@ -102,11 +102,6 @@ export default function CollectiblesTable({
     [externalCashTransfers, externalCashTransfersLoad]
   )
 
-  console.log('Aggregated Transactions', aggreGatedCashTransfers)
-  console.log('External Transaction', externalCashTransfers)
-  console.log('Internal Transaction', cashTransfers)
-  console.log('External Transactions with Load', externalCashTransfersLoad)
-
   const loanToCollect = useMemo(
     () => ({
       collected:
