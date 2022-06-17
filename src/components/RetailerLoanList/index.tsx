@@ -16,7 +16,11 @@ import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import DirectPaidModal from '@src/components/pages/cash-transfer/DirectPaidModal'
-import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
+import {
+  extractMultipleErrorFromResponse,
+  formatIntoCurrency,
+  objectToURLQuery,
+} from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
@@ -60,7 +64,13 @@ export default function RetailerLoanList({
           // loan: loanId,
           ...queryParameters,
         })}`,
-    (url) => axios.get(url).then((res) => res.data)
+    (url) =>
+      axios
+        .get(url)
+        .then((res) => res.data)
+        .catch((err) => {
+          throw extractMultipleErrorFromResponse(err)
+        })
   )
   const isSender = useCallback(
     (cashTransfer: CashTransferResponse) =>
@@ -93,6 +103,8 @@ export default function RetailerLoanList({
       }))
     }
   }, [cashTransfers])
+
+  console.log('RETAILER TRANSACTIONS', cashTransfers)
 
   const [creditToOtherDsp, setCreditToOtherDsp] = useState<boolean>(false)
 

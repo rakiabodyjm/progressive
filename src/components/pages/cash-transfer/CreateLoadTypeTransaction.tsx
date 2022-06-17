@@ -86,7 +86,12 @@ const LoadTypeTransaction = ({
     isValidating,
     mutate: mutateCaesarBanks,
   } = useSWR<Paginated<CaesarBank>>(`/cash-transfer/caesar-bank/`, (url) =>
-    axios.get(url).then((res) => res.data)
+    axios
+      .get(url)
+      .then((res) => res.data)
+      .catch((err) => {
+        throw extractMultipleErrorFromResponse(err)
+      })
   )
 
   // const [filteredBanks, setFilterBanks] = useState<CaesarBank[]>([])

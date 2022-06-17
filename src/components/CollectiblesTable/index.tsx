@@ -67,6 +67,16 @@ export default function CollectiblesTable({
     (url) => axios.get(url).then((res) => res.data as CashTransferResponse[])
   )
 
+  const {
+    data: externalCashTransfersLoad,
+    isValidating: loadingCashTransfersLoad,
+    error: errorCashTransfersLoad,
+    mutate: mutateRetailerLoanListLoad,
+  } = useSWR<CashTransferResponse[]>(
+    caesarId ? `/cash-transfer/get-retailer-load?caesar=${caesarId}` : null,
+    (url) => axios.get(url).then((res) => res.data as CashTransferResponse[])
+  )
+
   const isSender = useCallback(
     (cashTransfer: CashTransferResponse) =>
       !!(
@@ -84,20 +94,28 @@ export default function CollectiblesTable({
     [externalCashTransfers, cashTransfers]
   )
 
+  const aggreGatedCashTransfersWithLoad = useMemo(
+    () =>
+      [...(aggreGatedCashTransfers || []), ...(externalCashTransfersLoad || [])].filter(
+        (fi, index, array) => array.map((ea) => ea.id).indexOf(fi.id) === index
+      ),
+    [externalCashTransfers, externalCashTransfersLoad]
+  )
+
   const loanToCollect = useMemo(
     () => ({
       collected:
-        aggreGatedCashTransfers.filter(
+        aggreGatedCashTransfersWithLoad.filter(
           (ea) =>
             (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && ea.is_loan_paid
         )?.length || 0,
       toBeCollect:
-        aggreGatedCashTransfers.filter(
+        aggreGatedCashTransfersWithLoad.filter(
           (ea) =>
             (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && !ea.is_loan_paid
         )?.length || 0,
     }),
-    [aggreGatedCashTransfers]
+    [aggreGatedCashTransfersWithLoad]
   )
 
   const [loanData, setLoanData] = useState<CashTransferResponse>()
@@ -168,12 +186,12 @@ export default function CollectiblesTable({
               overflowY: 'auto',
             }}
           >
-            {aggreGatedCashTransfers &&
+            {aggreGatedCashTransfersWithLoad &&
             loanToCollect &&
             loanToCollect?.toBeCollect &&
             loanToCollect?.toBeCollect > 0 ? (
               <>
-                {aggreGatedCashTransfers
+                {aggreGatedCashTransfersWithLoad
                   .filter(
                     (ea) =>
                       (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&

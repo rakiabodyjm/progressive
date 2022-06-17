@@ -121,6 +121,13 @@ export default function CashTransferSummaryTable() {
     })
   )
 
+  const newDate = new Date(Date.now()).toLocaleDateString()
+
+  const csvLinkFormat = {
+    filename: query.as ? `${query.as}-Reports_${newDate}.csv` : `Summary-Reports_${newDate}.csv`,
+    headers,
+  }
+
   return (
     <Container>
       <Paper variant="outlined">
@@ -611,10 +618,6 @@ const headers = [
   },
 ]
 
-const csvLinkFormat = {
-  filename: 'Summary Report.csv',
-  headers,
-}
 const formatSummaryTable = (param: CashTransferResponse[]) =>
   param.map(({ ref_num, as, description, amount, from, to, caesar_bank_from, caesar_bank_to }) => ({
     reference_number: ref_num,

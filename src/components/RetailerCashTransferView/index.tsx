@@ -176,7 +176,13 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
     caesarID
       ? `/cash-transfer/caesar-bank/?caesar=${caesarID}&page=${paginateOptions.page}&limit=${paginateOptions.limit}`
       : null,
-    (url) => axios.get(url).then((res) => res.data),
+    (url) =>
+      axios
+        .get(url)
+        .then((res) => res.data)
+        .catch((err) => {
+          throw extractMultipleErrorFromResponse(err)
+        }),
     {}
   )
 
