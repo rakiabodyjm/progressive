@@ -86,17 +86,14 @@ const CreateNewTransactionModal = ({
         //   description: 'Record Loan Payment Transactions',
         // },
       ].filter((ea) => {
-        console.log(ea)
         if (user?.retailer_id) {
           return disabledKeysAsRetailer
             ? !disabledKeysAsRetailer.includes(ea.id as CashTransferAs)
             : true
         }
         if (caesarBankName && isEligible && telcoNetwork.includes(caesarBankName as string)) {
-          console.log(telcoNetwork.includes(caesarBankName as string))
           return disabledKeys ? !disabledKeys.includes(ea.id as CashTransferAs) : true
         }
-        console.log(telcoNetwork.includes(caesarBankName as string))
         return disableLoad ? !disableLoad.includes(ea.id as CashTransferAs) : true
       }),
     [disabledKeys, disabledKeysAsRetailer, disableLoad, caesarBankName]

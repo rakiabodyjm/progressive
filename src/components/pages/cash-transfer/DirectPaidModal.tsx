@@ -195,7 +195,7 @@ export default function DirectPaidModal({
                 </Typography>
                 <FormLabel>Transaction Type:</FormLabel>
                 <Typography variant="h5">
-                  {loanData.as === CashTransferAs.LOAN ? 'Loan:' : 'Load'} Payment
+                  {loanData.as === CashTransferAs.LOAN ? 'Loan' : 'Load'} Payment
                 </Typography>
               </Box>
               <Box>
@@ -258,7 +258,7 @@ export default function DirectPaidModal({
 
                         <Grid item xs={6}>
                           <FormLabel>
-                            Payable {loanData.as === CashTransferAs.LOAN ? 'Loan:' : 'Load'}:
+                            Payable {loanData.as === CashTransferAs.LOAN ? 'Loan' : 'Load'}:
                           </FormLabel>
                           <Typography>
                             {formatIntoCurrency(loanData.total_amount - paidAmount)}

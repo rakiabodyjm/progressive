@@ -179,7 +179,7 @@ export default function ViewLoanPage() {
                         {caesar?.account_type.toUpperCase()}
                       </RoleBadge>
                       <Typography variant="h4">
-                        {cashTransferData?.as === CashTransferAs.LOAN ? 'Loan:' : 'Load'} Details
+                        {cashTransferData?.as === CashTransferAs.LOAN ? 'Loan' : 'Load'} Details
                       </Typography>
                       {/* <Typography variant="body2" color="primary">
                         {caesar?.description.toUpperCase()}
@@ -283,7 +283,7 @@ export default function ViewLoanPage() {
                             variant="body2"
                             color="primary"
                           >
-                            {cashTransferData.as === CashTransferAs.LOAN ? 'Loan:' : 'Load'}{' '}
+                            {cashTransferData.as === CashTransferAs.LOAN ? 'Loan' : 'Load'}
                             Payable:
                           </Typography>
                           <Typography
