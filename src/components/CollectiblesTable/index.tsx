@@ -118,6 +118,18 @@ export default function CollectiblesTable({
     [aggreGatedCashTransfersWithLoad]
   )
 
+  const loanAndLoad = useMemo(
+    () => ({
+      unpaid: aggreGatedCashTransfersWithLoad.filter(
+        (ea) => (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && !ea.is_loan_paid
+      ),
+      paid: aggreGatedCashTransfersWithLoad.filter(
+        (ea) => (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && ea.is_loan_paid
+      ),
+    }),
+    [aggreGatedCashTransfersWithLoad]
+  )
+
   const [loanData, setLoanData] = useState<CashTransferResponse>()
 
   const [creditToOtherDsp, setCreditToOtherDsp] = useState<boolean>(false)
@@ -145,8 +157,8 @@ export default function CollectiblesTable({
             <Divider />
           </Box>
 
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={4} md={4} lg={6}>
               <Paper
                 style={{
                   textAlign: 'center',
@@ -161,7 +173,30 @@ export default function CollectiblesTable({
                 </Typography>
               </Paper>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={8} md={8} lg={6}>
+              <Paper
+                style={{
+                  textAlign: 'center',
+                  height: '100%',
+                  padding: 16,
+                  background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                }}
+              >
+                <FormLabel>Amount</FormLabel>
+                <Typography variant="h4" style={{ fontWeight: '800' }}>
+                  {formatIntoCurrency(
+                    loanAndLoad.unpaid.reduce((prev, { total_amount }) => prev + total_amount, 0)
+                  )}
+                </Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+          <Box my={2}>
+            <Divider />
+          </Box>
+
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={4} md={4} lg={6}>
               <Paper
                 style={{
                   textAlign: 'center',
@@ -173,6 +208,23 @@ export default function CollectiblesTable({
                 <FormLabel>Paid Loan/s</FormLabel>
                 <Typography variant="h4" style={{ fontWeight: '800' }}>
                   {loanToCollect.collected || 0}
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={8} md={8} lg={6}>
+              <Paper
+                style={{
+                  textAlign: 'center',
+                  height: '100%',
+                  padding: 16,
+                  background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                }}
+              >
+                <FormLabel>Amount</FormLabel>
+                <Typography variant="h4" style={{ fontWeight: '800' }}>
+                  {formatIntoCurrency(
+                    loanAndLoad.paid.reduce((prev, { total_amount }) => prev + total_amount, 0)
+                  )}
                 </Typography>
               </Paper>
             </Grid>
@@ -276,7 +328,7 @@ export default function CollectiblesTable({
                                 alignSelf: 'flex-end',
                               }}
                             >
-                              {formatIntoCurrency(cashTransfer.amount)}
+                              {formatIntoCurrency(cashTransfer.total_amount)}
                             </Typography>
                           </Box>
                           <Box
