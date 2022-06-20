@@ -83,19 +83,19 @@ export default function CaesarIndexPage() {
         } else {
           setIsDSP(true)
         }
-      } else if (
-        [...user.roles].some((ea) => ['retailer'].includes(ea)) &&
-        ![...user.roles].some((ea) => ['ct-operator', 'ct-admin'].includes(ea))
-      ) {
-        if (caesarEmpty) {
-          router.push('/')
-          dispatchNotif({
-            type: NotificationTypes.WARNING,
-            message: `Unauthorized to access`,
-          })
-        } else {
-          setIsRetailer(true)
-        }
+        // } else if (
+        //   [...user.roles].some((ea) => ['retailer'].includes(ea)) &&
+        //   ![...user.roles].some((ea) => ['ct-operator', 'ct-admin'].includes(ea))
+        // ) {
+        //   if (caesarEmpty) {
+        //     router.push('/')
+        //     dispatchNotif({
+        //       type: NotificationTypes.WARNING,
+        //       message: `Unauthorized to access`,
+        //     })
+        //   } else {
+        //     setIsRetailer(true)
+        //   }
       } else if (![...user.roles].some((ea) => ['ct-operator', 'ct-admin'].includes(ea))) {
         router.push('/')
         dispatchNotif({
@@ -135,13 +135,13 @@ export default function CaesarIndexPage() {
       </Container>
     )
   }
-  if (isRetailer) {
-    return (
-      <>
-        <RetailerCashTransferView />
-      </>
-    )
-  }
+  // if (isRetailer) {
+  //   return (
+  //     <>
+  //       <RetailerCashTransferView />
+  //     </>
+  //   )
+  // }
   if (isDSP) {
     return (
       <>
