@@ -206,6 +206,17 @@ const LoadTypeTransaction = ({
     }
   }, [toCaesarEnabled])
 
+  const handleSubmit = () => {
+    if (transferForm.amount !== 0) {
+      submit()
+    } else {
+      dispatchNotif({
+        type: NotificationTypes.ERROR,
+        message: 'Amount cannot be zero',
+      })
+    }
+  }
+
   return (
     <>
       <Box>
@@ -233,7 +244,11 @@ const LoadTypeTransaction = ({
         <Margin2></Margin2>
         <FormLabel>To {toCaesarEnabled ? 'Caesar' : 'Bank'} Account</FormLabel>
         <ToCaesarBankAutoComplete
-          filter={(filterBanks) => filterBanks.filter((ea) => telcoNetwork.includes(ea.bank.name))}
+          filter={(filterBanks) =>
+            filterBanks.filter(
+              (ea) => ea.account_number !== null && telcoNetwork.includes(ea.bank.name)
+            )
+          }
           onChange={(caesarBank) => {
             setTransferForm((prev) => ({
               ...prev,
@@ -276,7 +291,7 @@ const LoadTypeTransaction = ({
         </Margin2>
         <AsyncButton
           onClick={() => {
-            submit()
+            handleSubmit()
             // submitAsLoanFunction()
             // setConfirmationModal((prev) => !prev)
           }}
