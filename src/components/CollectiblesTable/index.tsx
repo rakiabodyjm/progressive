@@ -182,7 +182,7 @@ export default function CollectiblesTable({
                   background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
                 }}
               >
-                <FormLabel>Amount</FormLabel>
+                <FormLabel>Total Amount</FormLabel>
                 <Typography variant="h4" style={{ fontWeight: '800' }}>
                   {formatIntoCurrency(
                     loanAndLoad.unpaid.reduce((prev, { total_amount }) => prev + total_amount, 0)
@@ -191,7 +191,7 @@ export default function CollectiblesTable({
               </Paper>
             </Grid>
           </Grid>
-          <Box my={2}>
+          {/* <Box my={2}>
             <Divider />
           </Box>
 
@@ -228,7 +228,7 @@ export default function CollectiblesTable({
                 </Typography>
               </Paper>
             </Grid>
-          </Grid>
+          </Grid> */}
           <Box
             my={2}
             style={{
