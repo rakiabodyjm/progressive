@@ -112,14 +112,14 @@ export default function CashTransferSummaryTable() {
     transactionSelected: undefined,
   })
 
-  console.log(
-    summaryTableData?.data.map((ea) => {
-      console.log('Account:', ea.to?.account_type)
-      console.log('DSP CODE:', ea.to?.dsp?.dsp_code)
-      console.log('DSP CP NUMBER', ea.to?.dsp?.e_bind_number)
-      return ea
-    })
-  )
+  // console.log(
+  //   summaryTableData?.data.map((ea) => {
+  //     console.log('Account:', ea.to?.account_type)
+  //     console.log('DSP CODE:', ea.to?.dsp?.dsp_code)
+  //     console.log('DSP CP NUMBER', ea.to?.dsp?.e_bind_number)
+  //     return ea
+  //   })
+  // )
 
   const newDate = new Date(Date.now()).toLocaleDateString()
 
@@ -525,9 +525,10 @@ const formatToCsv = (param: CashTransferResponse[]) =>
       is_loan_paid,
       total_amount,
       remaining_balance_to,
+      updated_at,
     }) => ({
       sender_bank: caesar_bank_from?.bank.name || `${from.description} - CAESAR`,
-      date_posting: new Date(created_at).toLocaleDateString(),
+      date_posting: original_created_at && new Date(original_created_at).toLocaleDateString(),
       type: as,
       med_used: caesar_bank_to?.bank.name || 'CAESAR',
       sender: caesar_bank_from?.description || `${from.description} - CAESAR`,
@@ -537,11 +538,13 @@ const formatToCsv = (param: CashTransferResponse[]) =>
       receiver_account: caesar_bank_to ? `'${caesar_bank_to?.account_number}` : '',
       // : `'${to?.data?.cp_number}`,
       amount,
-      time: new Date(created_at).toLocaleTimeString(),
+      transact_time: new Date(created_at).toLocaleTimeString(),
       requested_by: caesar_bank_to?.description || to.description,
       one_percent: as === CashTransferAs.LOAN ? total_amount : '',
       status: as === CashTransferAs.LOAN ? (is_loan_paid ? 'PAID' : 'CREDIT') : '',
-      date_paid: original_created_at && new Date(original_created_at).toLocaleDateString(),
+      date_transact: original_created_at && new Date(original_created_at).toLocaleDateString(),
+      date_paid: is_loan_paid ? updated_at && new Date(updated_at).toLocaleDateString() : '',
+      time_paid: is_loan_paid ? new Date(updated_at).toLocaleTimeString() : '',
       receiver_bank: caesar_bank_to?.bank.name || 'Cash On Hand',
       remaining_balance: remaining_balance_to,
     })
@@ -584,10 +587,7 @@ const headers = [
     label: 'Amount',
     key: 'amount',
   },
-  {
-    label: 'Time',
-    key: 'time',
-  },
+
   {
     label: 'Requested By',
     key: 'requested_by',
@@ -606,7 +606,19 @@ const headers = [
   },
   {
     label: 'Transaction Date',
+    key: 'date_transact',
+  },
+  {
+    label: 'Time',
+    key: 'transact_time',
+  },
+  {
+    label: 'Payment Date',
     key: 'date_paid',
+  },
+  {
+    label: 'Time',
+    key: 'time_paid',
   },
   {
     label: 'Transaction',
