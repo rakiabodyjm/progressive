@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-import { Box, Container, makeStyles } from '@material-ui/core'
+import { Box, Container, makeStyles, Paper } from '@material-ui/core'
 import Drawer from '@src/components/NavigationLayout/Drawer'
 import Nav from '@src/components/NavigationLayout/Nav'
 import { RootState } from '@src/redux/store'
@@ -74,9 +74,7 @@ export default function NavigationLayout({ children }: { children: JSX.Element }
       )}
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Container maxWidth="lg" disableGutters>
-          {children}
-        </Container>
+        <Box>{children}</Box>
       </main>
     </div>
   )

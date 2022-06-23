@@ -65,7 +65,7 @@ export default function CashTransferDetailsModal({
                   <FormLabel>From:</FormLabel>
                   <Typography>
                     {cashTransferData?.caesar_bank_from?.description ||
-                      cashTransferData.from ||
+                      cashTransferData.from.description ||
                       'ERROR'}
                   </Typography>
                 </Grid>

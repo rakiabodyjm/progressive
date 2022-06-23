@@ -111,7 +111,7 @@ export default function CaesarIndexPage() {
 
   if (!isDSP && !isRetailer) {
     return (
-      <Container maxWidth="lg" disableGutters>
+      <Paper>
         <CashTransferBalancesTable />
         <Box my={2} />
         <Grid container>
@@ -132,7 +132,7 @@ export default function CaesarIndexPage() {
             </Paper>
           </Grid>
         </Grid>
-      </Container>
+      </Paper>
     )
   }
   // if (isRetailer) {
