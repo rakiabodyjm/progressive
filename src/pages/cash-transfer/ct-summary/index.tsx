@@ -129,7 +129,7 @@ export default function CashTransferSummaryTable() {
   }
 
   return (
-    <Container>
+    <>
       <Paper variant="outlined">
         <Box p={2}>
           <Box display="flex" justifyContent="space-between">
@@ -181,9 +181,9 @@ export default function CashTransferSummaryTable() {
           <Box>
             <Paper variant="outlined" style={{ padding: 16 }}>
               <Grid container spacing={2} className={classes.gridContainer}>
-                <Grid item sm={12} md={4} lg={3}>
+                <Grid item xs={12}>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={4} md={3} lg={2}>
                       <FormLabel>Transaction Type</FormLabel>
                       <AsDropDown
                         onChange={(e) => {
@@ -201,7 +201,7 @@ export default function CashTransferSummaryTable() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={4} md={3} lg={2}>
                       {fromCaesarEnabled ? (
                         <>
                           <FormLabel>From Caesar Account</FormLabel>
@@ -266,7 +266,7 @@ export default function CashTransferSummaryTable() {
                         </Link>
                       </Tooltip>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={4} md={3} lg={2}>
                       {toCaesarEnabled ? (
                         <>
                           <FormLabel>To Caesar Account</FormLabel>
@@ -344,8 +344,9 @@ export default function CashTransferSummaryTable() {
                     )} */}
                   </Grid>
                 </Grid>
-
-                <Grid item sm={12} md={8} lg={9}>
+              </Grid>
+              <Grid container spacing={2} className={classes.gridContainer}>
+                <Grid item xs={12}>
                   {/* <CashTransferBalancesTable /> */}
                   {summaryTableData && summaryTableData.data && !isValidating ? (
                     <UsersTable
@@ -381,7 +382,7 @@ export default function CashTransferSummaryTable() {
                       tableCellProps={{
                         reference_number: {
                           style: {
-                            width: '40%',
+                            width: '20%',
                           },
                         },
                       }}
@@ -508,7 +509,7 @@ export default function CashTransferSummaryTable() {
             mutate={mutate}
           />
         )}
-    </Container>
+    </>
   )
 }
 const formatToCsv = (param: CashTransferResponse[]) =>
@@ -526,6 +527,7 @@ const formatToCsv = (param: CashTransferResponse[]) =>
       total_amount,
       remaining_balance_to,
       updated_at,
+      bank_charge,
     }) => ({
       sender_bank: caesar_bank_from?.bank.name || `${from.description} - CAESAR`,
       date_posting: original_created_at && new Date(original_created_at).toLocaleDateString(),
@@ -547,6 +549,7 @@ const formatToCsv = (param: CashTransferResponse[]) =>
       time_paid: is_loan_paid ? new Date(updated_at).toLocaleTimeString() : '',
       receiver_bank: caesar_bank_to?.bank.name || 'Cash On Hand',
       remaining_balance: remaining_balance_to,
+      bank_fee: bank_charge,
     })
   )
 
@@ -587,7 +590,10 @@ const headers = [
     label: 'Amount',
     key: 'amount',
   },
-
+  {
+    label: 'Bank Fee',
+    key: 'bank_fee',
+  },
   {
     label: 'Requested By',
     key: 'requested_by',
@@ -631,11 +637,24 @@ const headers = [
 ]
 
 const formatSummaryTable = (param: CashTransferResponse[]) =>
-  param.map(({ ref_num, as, description, amount, from, to, caesar_bank_from, caesar_bank_to }) => ({
-    reference_number: ref_num,
-    as,
-    description,
-    amount,
-    from: from?.description || caesar_bank_from?.description || 'error',
-    to: to?.description || caesar_bank_to?.description || 'error',
-  }))
+  param.map(
+    ({
+      ref_num,
+      as,
+      description,
+      amount,
+      from,
+      to,
+      caesar_bank_from,
+      caesar_bank_to,
+      bank_charge,
+    }) => ({
+      reference_number: ref_num,
+      as,
+      description: description || '<No Description>',
+      amount,
+      bank_charge,
+      from: from?.description || caesar_bank_from?.description || 'error',
+      to: to?.description || caesar_bank_to?.description || 'error',
+    })
+  )
