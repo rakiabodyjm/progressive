@@ -42,7 +42,12 @@ import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 import useNotification from '@src/utils/hooks/useNotification'
 import { useIsMobile } from '@src/utils/hooks/useWidth'
-import { Bank, CaesarBank, CashTransferRequestTypes } from '@src/utils/types/CashTransferTypes'
+import {
+  Bank,
+  CaesarBank,
+  CashTransferRequestTypes,
+  RequestStatus,
+} from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -135,9 +140,10 @@ export const CashTransferBalancesTable = ({
     //   console.log('MUTATED')
     // }, 1000)
   }, [addRetailerModal])
+
   const { data: requestSummaryData, mutate: requestMutate } = useSWR<
-    Paginated<CashTransferRequestTypes[]>
-  >(`/request?status=PENDING`, (url) =>
+    Paginated<CashTransferRequestTypes>
+  >('/request', (url) =>
     axios
       .get(url)
       .then((res) => res.data)
@@ -211,7 +217,14 @@ export const CashTransferBalancesTable = ({
                           })
                         }}
                       >
-                        <Badge color="error" badgeContent={requestSummaryData?.metadata.total}>
+                        <Badge
+                          color="error"
+                          badgeContent={
+                            requestSummaryData?.data.filter(
+                              (ea) => ea.status === RequestStatus.PENDING
+                            ).length
+                          }
+                        >
                           <Notifications style={{ padding: 0 }} />
                         </Badge>
                       </IconButton>

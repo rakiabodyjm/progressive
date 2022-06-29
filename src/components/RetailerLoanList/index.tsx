@@ -9,13 +9,16 @@ import {
   Grid,
   ListItem,
   TablePagination,
+  Button,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { AirlineSeatLegroomNormalTwoTone } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
+import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import DirectPaidModal from '@src/components/pages/cash-transfer/DirectPaidModal'
+import RetailerRequestModal from '@src/components/RetailerRequestModal'
 import {
   extractMultipleErrorFromResponse,
   formatIntoCurrency,
@@ -104,9 +107,8 @@ export default function RetailerLoanList({
     }
   }, [cashTransfers])
 
-  console.log('RETAILER TRANSACTIONS', cashTransfers)
-
   const [creditToOtherDsp, setCreditToOtherDsp] = useState<boolean>(false)
+  const [newTransaction, setNewTransaction] = useState<boolean>(false)
 
   return (
     <>
@@ -290,6 +292,14 @@ export default function RetailerLoanList({
               </Paper>
             )}
           </Box>
+          <AsyncButton
+            fullWidth
+            onClick={() => {
+              setNewTransaction(true)
+            }}
+          >
+            REQUEST NEW TRANSACTION
+          </AsyncButton>
         </Box>
         {creditToOtherDsp && (
           <DirectPaidModal
@@ -300,6 +310,16 @@ export default function RetailerLoanList({
             loanData={loanData}
             triggeredRender={mutateCashTransferList}
           ></DirectPaidModal>
+        )}
+
+        {newTransaction && (
+          <RetailerRequestModal
+            caesarId={caesarId}
+            openModal={newTransaction}
+            handleClose={() => {
+              setNewTransaction(false)
+            }}
+          />
         )}
         {/* <Box pt={2}>
           <TablePagination

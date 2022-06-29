@@ -92,7 +92,7 @@ export default function RequestModal({
             dispatch(
               setNotification({
                 type: NotificationTypes.SUCCESS,
-                message: 'Reference Number and Amount are valid',
+                message: 'Reference Number Found',
               })
             )
             return ea
@@ -163,7 +163,7 @@ export default function RequestModal({
         dispatch(
           setNotification({
             type: NotificationTypes.ERROR,
-            message: 'Reference Number is not valid',
+            message: 'Reference number is already used',
           })
         )
       })
@@ -178,7 +178,7 @@ export default function RequestModal({
     setLoading(false)
     axios
       .patch(`/request/${requestData.id}`, {
-        status: RequestStatus.DECLINED,
+        is_declined: true,
       })
       .then((res) => {
         dispatch(
@@ -209,7 +209,7 @@ export default function RequestModal({
       <Paper style={{ padding: 16 }}>
         <Box display="flex" justifyContent="space-between">
           <Box>
-            <FormLabel>Transaction Type:</FormLabel>
+            <FormLabel>Request Type</FormLabel>
             <Typography variant="h5">{requestData.as}</Typography>
           </Box>
           <Box>
@@ -227,41 +227,55 @@ export default function RequestModal({
             <Grid item xs={12}>
               <Divider style={{ marginTop: 8, marginBottom: 8 }} />
             </Grid>
+
             <Paper style={{ padding: 16 }}>
-              <Grid container spacing={1}>
-                <Grid item xs={5}>
-                  <FormLabel>Status:</FormLabel>
-                  <RoleBadge> {requestData.status}</RoleBadge>
-                </Grid>
-                <Grid item xs={7}>
+              <Box display="flex" justifyContent="space-between">
+                <Box>
                   <FormLabel>Date Requested:</FormLabel>
                   <Typography>
                     {requestData && formatIntoReadableDate(requestData.created_at as Date)}
                   </Typography>
-                </Grid>
+                </Box>
+                <Box>
+                  <RoleBadge disablePopUp>{requestData.status}</RoleBadge>
+                </Box>
+              </Box>
 
+              <Grid container spacing={1}>
+                <Grid item xs={12}></Grid>
                 <Grid item xs={5}>
-                  <FormLabel>From:</FormLabel>
+                  <FormLabel>Requester:</FormLabel>
                   <Typography>{requestData.requester}</Typography>
                 </Grid>
 
                 <Grid item xs={7}>
                   <FormLabel>Amount:</FormLabel>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    variant="outlined"
-                    defaultValue={requestData.amount}
-                    disabled={!editAmount}
-                    onChange={(e) => {
-                      setUpdateAmount(Number(e.target.value))
-                    }}
-                  ></TextField>
+                  {editAmount ? (
+                    <>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        variant="outlined"
+                        defaultValue={requestData.amount}
+                        disabled={!editAmount}
+                        onChange={(e) => {
+                          setUpdateAmount(Number(e.target.value))
+                        }}
+                      ></TextField>
+                    </>
+                  ) : (
+                    <>
+                      <Typography>{requestData.amount}</Typography>
+                    </>
+                  )}
                 </Grid>
+
                 <Grid item xs={12}>
                   <FormLabel>Description:</FormLabel>
                   <Typography noWrap>{requestData.description}</Typography>
                 </Grid>
+
+                <Grid item xs={12}></Grid>
               </Grid>
               {!isButtonClick && (
                 <Box pt={2} display="flex" justifyContent="space-evenly">

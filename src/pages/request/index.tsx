@@ -116,97 +116,94 @@ export default function RequestPage() {
             <Divider />
           </Box>
           <Box>
-            <Paper variant="outlined" style={{ padding: 16 }}>
-              <Grid container spacing={2} className={classes.gridContainer}>
-                <Grid item xs={12}>
-                  {/* sm={7} md={6} lg={4} xl={2} */}
-                  <FormTextField
-                    placeholder="Search"
-                    name="search"
-                    onChange={(e) => {
-                      if (timeoutRef.current) {
-                        clearTimeout(timeoutRef.current)
-                      }
-                      timeoutRef.current = setTimeout(() => {
-                        setQuery((prev) => ({
-                          ...prev,
-                          // searchQuery: e.target.value?.length > 0 ? e.target.value : undefined,
-                          searchQuery: e.target.value,
-                        }))
-                      }, 500)
+            <Grid container spacing={2} className={classes.gridContainer}>
+              {/* <Grid item xs={12}>
+                sm={7} md={6} lg={4} xl={2}
+                <FormTextField
+                  placeholder="Search"
+                  name="search"
+                  onChange={(e) => {
+                    if (timeoutRef.current) {
+                      clearTimeout(timeoutRef.current)
+                    }
+                    timeoutRef.current = setTimeout(() => {
+                      setQuery((prev) => ({
+                        ...prev,
+                        searchQuery: e.target.value,
+                      }))
+                    }, 500)
+                  }}
+                />
+              </Grid> */}
+            </Grid>
+            <Box pt={1}>
+              <Paper style={{ padding: 16 }}>
+                {summaryTableData && summaryTableData.data && !isValidating ? (
+                  <UsersTable
+                    data={formatSummaryTable(summaryTableData.data)}
+                    page={paginated.page}
+                    limit={paginated.limit}
+                    setPage={(page: number) => {
+                      setPaginated((prev) => ({
+                        ...prev,
+                        page,
+                      }))
+                    }}
+                    setLimit={(limit: number) => {
+                      setPaginated((prev) => ({
+                        ...prev,
+                        limit,
+                      }))
+                    }}
+                    paperProps={{
+                      style: {
+                        ...(paperHeight && { height: paperHeight! - 50 }),
+                      },
+                    }}
+                    total={summaryTableData.metadata.total}
+                    hiddenFields={['id', 'deleted_at', 'created_at', 'updated_at']}
+                    tableHeadProps={{
+                      style: {
+                        position: 'sticky',
+                        top: 0,
+                        background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                      },
+                    }}
+                    tableCellProps={{
+                      reference_number: {
+                        style: {
+                          width: '30%',
+                        },
+                      },
+                    }}
+                    renderCell={{
+                      status: (value) => (
+                        <Box display="flex" flexWrap="wrap">
+                          <RoleBadge disablePopUp>{value}</RoleBadge>
+                        </Box>
+                      ),
+                    }}
+                    // renderRow={({ amount, description, as, from, to, reference_number }) => (
+                    //   <>
+                    //     <Box>
+                    //       <Paper>
+                    //         <Box p={2}>
+                    //           <Typography>{amount}</Typography>
+                    //         </Box>
+                    //       </Paper>
+                    //     </Box>
+                    //   </>
+                    // )}
+                    onRowClick={(rowData, data) => {
+                      setIsOpen(true)
+                      setRowData(data)
                     }}
                   />
-                </Grid>
-              </Grid>
-              <Box pt={1}>
-                <Paper style={{ padding: 16 }}>
-                  {summaryTableData && summaryTableData.data && !isValidating ? (
-                    <UsersTable
-                      data={formatSummaryTable(summaryTableData.data)}
-                      page={paginated.page}
-                      limit={paginated.limit}
-                      setPage={(page: number) => {
-                        setPaginated((prev) => ({
-                          ...prev,
-                          page,
-                        }))
-                      }}
-                      setLimit={(limit: number) => {
-                        setPaginated((prev) => ({
-                          ...prev,
-                          limit,
-                        }))
-                      }}
-                      paperProps={{
-                        style: {
-                          ...(paperHeight && { height: paperHeight! - 50 }),
-                        },
-                      }}
-                      total={summaryTableData.metadata.total}
-                      hiddenFields={['id', 'deleted_at', 'created_at', 'updated_at']}
-                      tableHeadProps={{
-                        style: {
-                          position: 'sticky',
-                          top: 0,
-                          background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
-                        },
-                      }}
-                      tableCellProps={{
-                        reference_number: {
-                          style: {
-                            width: '30%',
-                          },
-                        },
-                      }}
-                      renderCell={{
-                        status: (value) => (
-                          <Box display="flex" flexWrap="wrap">
-                            <RoleBadge>{value}</RoleBadge>
-                          </Box>
-                        ),
-                      }}
-                      // renderRow={({ amount, description, as, from, to, reference_number }) => (
-                      //   <>
-                      //     <Box>
-                      //       <Paper>
-                      //         <Box p={2}>
-                      //           <Typography>{amount}</Typography>
-                      //         </Box>
-                      //       </Paper>
-                      //     </Box>
-                      //   </>
-                      // )}
-                      onRowClick={(rowData, data) => {
-                        setIsOpen(true)
-                        setRowData(data)
-                      }}
-                    />
-                  ) : (
-                    <LoadingScreen2 />
-                  )}
-                </Paper>
-              </Box>
-            </Paper>
+                ) : (
+                  <LoadingScreen2 />
+                )}
+              </Paper>
+            </Box>
           </Box>
         </Box>
       </Paper>
