@@ -8,11 +8,13 @@ import {
   ListItem,
   Paper,
   Theme,
+  Tooltip,
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AddCircleOutlined, CloseOutlined } from '@material-ui/icons'
-import { useTheme } from '@material-ui/styles'
+import { AddCircleOutlined, CloseOutlined, ListAlt } from '@material-ui/icons'
+import { makeStyles, useTheme } from '@material-ui/styles'
+import AsyncButton from '@src/components/AsyncButton'
 import CollectiblesTable from '@src/components/CollectiblesTable'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
@@ -39,6 +41,14 @@ import useSWR from 'swr'
 
 const caesarFetcher = (id: string) => () => getWalletById(id)
 
+const useStyles = makeStyles((theme: Theme) => ({
+  gridContainer: {
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column-reverse',
+    },
+  },
+}))
+
 /**
  *
  * View Overall Transactions
@@ -50,6 +60,8 @@ const caesarFetcher = (id: string) => () => getWalletById(id)
 
 const disabledAccounts = ['user'] as UserTypes[]
 export default function RetailerCashTransferView() {
+  const theme: Theme = useTheme()
+  const classes = useStyles()
   const { data: caesarWallet, account } = useGetCaesarOfUser({ disabledAccounts })
   const [caesarId, setCaesarId] = useState({
     admin: '',
@@ -87,7 +99,20 @@ export default function RetailerCashTransferView() {
           <Box my={2}>
             <Divider />
           </Box>
-          <Grid container spacing={1}>
+          {/* <Box display="flex" justifyContent="flex-end">
+            <Box>
+              <Tooltip
+                arrow
+                placement="left"
+                title={<Typography variant="subtitle2">View Requests</Typography>}
+              >
+                <IconButton>
+                  <ListAlt color="primary" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box> */}
+          <Grid container spacing={1} className={classes.gridContainer}>
             <Grid item md={6} xs={12}>
               {caesarId.admin || caesarId.subdistributor || caesarId.dsp || caesarId.retailer ? (
                 <>
@@ -295,9 +320,9 @@ const CaesarAccount = ({ caesarID }: { caesarID: string }) => {
                       padding: 8,
                     }}
                     button
-                    onClick={() => {
-                      router.push(`/cash-transfer/bank/${id}`)
-                    }}
+                    // onClick={() => {
+                    //   router.push(`/cash-transfer/bank/${id}`)
+                    // }}
                   >
                     <Grid
                       container

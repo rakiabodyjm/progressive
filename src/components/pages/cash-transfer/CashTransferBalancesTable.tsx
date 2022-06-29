@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-unescaped-entities */
 import {
+  Badge,
   Box,
   BoxProps,
   Divider,
@@ -20,6 +21,7 @@ import {
   TableChart,
   Assessment,
   MoreVert,
+  Notifications,
 } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import AsyncButton from '@src/components/AsyncButton'
@@ -32,7 +34,7 @@ import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { userDataSelector, UserTypes, UserTypesWithCashTransfer } from '@src/redux/data/userSlice'
-import { formatIntoCurrency } from '@src/utils/api/common'
+import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
 import { getDsp } from '@src/utils/api/dspApi'
 import { getSubdistributor } from '@src/utils/api/subdistributorApi'
 import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
@@ -40,8 +42,14 @@ import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 import useNotification from '@src/utils/hooks/useNotification'
 import { useIsMobile } from '@src/utils/hooks/useWidth'
-import { Bank, CaesarBank } from '@src/utils/types/CashTransferTypes'
-import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
+import {
+  Bank,
+  CaesarBank,
+  CashTransferRequestTypes,
+  RequestStatus,
+} from '@src/utils/types/CashTransferTypes'
+import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
+import axios from 'axios'
 import { useRouter } from 'next/router'
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -133,6 +141,17 @@ export const CashTransferBalancesTable = ({
     // }, 1000)
   }, [addRetailerModal])
 
+  const { data: requestSummaryData, mutate: requestMutate } = useSWR<
+    Paginated<CashTransferRequestTypes>
+  >('/request', (url) =>
+    axios
+      .get(url)
+      .then((res) => res.data)
+      .catch((err) => {
+        throw extractMultipleErrorFromResponse(err)
+      })
+  )
+
   useEffect(() => {
     if (user) {
       setLoading(true)
@@ -183,25 +202,55 @@ export const CashTransferBalancesTable = ({
           </Typography>
           <Box display="flex" flexDirection="row-reverse">
             {eligibleAsCTAdmin && (
-              <Box textAlign="end">
-                <Box>
-                  <Tooltip
-                    arrow
-                    placement="left"
-                    title={<Typography variant="subtitle2">View Summary Table</Typography>}
-                  >
-                    <IconButton
-                      onClick={() => {
-                        router.push({
-                          pathname: '/cash-transfer/ct-summary',
-                        })
-                      }}
+              <>
+                <Box textAlign="end">
+                  <Box>
+                    <Tooltip
+                      arrow
+                      placement="left"
+                      title={<Typography variant="subtitle2">View Request Summary</Typography>}
                     >
-                      <TableChart />
-                    </IconButton>
-                  </Tooltip>
+                      <IconButton
+                        onClick={() => {
+                          router.push({
+                            pathname: '/request',
+                          })
+                        }}
+                      >
+                        <Badge
+                          color="error"
+                          badgeContent={
+                            requestSummaryData?.data.filter(
+                              (ea) => ea.status === RequestStatus.PENDING
+                            ).length
+                          }
+                        >
+                          <Notifications style={{ padding: 0 }} />
+                        </Badge>
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Box>
-              </Box>
+                <Box textAlign="end">
+                  <Box>
+                    <Tooltip
+                      arrow
+                      placement="left"
+                      title={<Typography variant="subtitle2">View Summary Table</Typography>}
+                    >
+                      <IconButton
+                        onClick={() => {
+                          router.push({
+                            pathname: '/cash-transfer/ct-summary',
+                          })
+                        }}
+                      >
+                        <TableChart />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
+              </>
             )}
             {!isMobile ? (
               isEligible || user?.admin_id ? (
