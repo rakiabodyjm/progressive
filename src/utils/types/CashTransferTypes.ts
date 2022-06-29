@@ -107,3 +107,20 @@ export type CashTransferFilterTypes = {
   date_from?: string
   date_to?: string
 }
+
+export enum RequestStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  DECLINED = 'DECLINED',
+}
+
+export type CashTransferRequestTypes = {
+  as?: string
+  amount?: number
+  description?: string
+  caesar_bank?: CaesarBank
+  requester?: string
+  id?: string
+  status?: string
+  created_at?: Date
+}
