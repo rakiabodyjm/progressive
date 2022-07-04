@@ -26,6 +26,12 @@ export default function RouteGuard({
       }
       return false
     }
+    if (router.pathname.match('/request')) {
+      if (user?.data.admin_id || user?.data.roles.some((ea) => ['ct-admin'].includes(ea))) {
+        return true
+      }
+      return false
+    }
     if (router.pathname.match('/ct-summary')) {
       if (user?.data.admin_id || user?.data.roles.some((ea) => ['ct-admin'].includes(ea))) {
         return true
