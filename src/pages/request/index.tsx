@@ -19,6 +19,7 @@ import ModalWrapper from '@src/components/ModalWrapper'
 import RequestModal from '@src/components/RequestModal'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
+import CashTransfer from '@src/pages/admin/topup'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import {
   extractMultipleErrorFromResponse,
@@ -75,25 +76,26 @@ export default function RequestPage() {
   const classes = useStyles()
 
   const {
-    data: summaryTableData,
-    mutate,
+    data: pendingRequest,
+    mutate: requestMutate,
     isValidating,
-  } = useSWR<Paginated<CashTransferRequestTypes>>(
-    `/request?${objectToURLQuery({
-      ...query,
-    })}`,
-    (url) =>
-      axios
-        .get(url)
-        .then((res) => res.data)
-        .catch((err) => {
-          throw extractMultipleErrorFromResponse(err)
-        })
+  } = useSWR<Paginated<CashTransferRequestTypes>>(`/request?is_declined=false`, (url) =>
+    axios
+      .get(url)
+      .then((res) => res.data)
+      .catch((err) => {
+        throw extractMultipleErrorFromResponse(err)
+      })
   )
   const [paginated, setPaginated] = useState({
     limit: 100,
     page: 0,
   })
+
+  const totalSummaryData = useMemo(
+    () => [pendingRequest?.data.filter((ea) => ea.status === RequestStatus.PENDING)],
+    [pendingRequest]
+  )
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [rowData, setRowData] = useState<CashTransferRequestTypes>()
@@ -138,9 +140,9 @@ export default function RequestPage() {
             </Grid>
             <Box pt={1}>
               <Paper style={{ padding: 16 }}>
-                {summaryTableData && summaryTableData.data && !isValidating ? (
+                {pendingRequest && pendingRequest.data && !isValidating ? (
                   <UsersTable
-                    data={formatSummaryTable(summaryTableData.data)}
+                    data={formatSummaryTable(pendingRequest.data)}
                     page={paginated.page}
                     limit={paginated.limit}
                     setPage={(page: number) => {
@@ -160,7 +162,7 @@ export default function RequestPage() {
                         ...(paperHeight && { height: paperHeight! - 50 }),
                       },
                     }}
-                    total={summaryTableData.metadata.total}
+                    total={pendingRequest.metadata.total}
                     hiddenFields={['id', 'deleted_at', 'created_at', 'updated_at']}
                     tableHeadProps={{
                       style: {
@@ -215,7 +217,7 @@ export default function RequestPage() {
           }}
           requestData={rowData as CashTransferRequestTypes}
           triggerRequestMutate={() => {
-            mutate()
+            requestMutate()
           }}
         />
       )}
