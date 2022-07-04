@@ -16,9 +16,18 @@ import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import DirectPaidModal from '@src/components/pages/cash-transfer/DirectPaidModal'
-import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
+import RoleBadge from '@src/components/RoleBadge'
+import {
+  extractMultipleErrorFromResponse,
+  formatIntoCurrency,
+  objectToURLQuery,
+} from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
-import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
+import {
+  CashTransferAs,
+  CashTransferRequestTypes,
+  CashTransferResponse,
+} from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
@@ -55,6 +64,19 @@ export default function CollectiblesTable({
           ...queryParameters,
         })}`,
     (url) => axios.get(url).then((res) => res.data)
+  )
+
+  const {
+    data: pendingRequest,
+    isValidating: loadingPendingRequest,
+    mutate: mutatePendingRequest,
+  } = useSWR<Paginated<CashTransferRequestTypes>>(`/request?is_declined=false`, (url) =>
+    axios
+      .get(url)
+      .then((res) => res.data)
+      .catch((err) => {
+        throw extractMultipleErrorFromResponse(err)
+      })
   )
 
   const {
@@ -173,6 +195,7 @@ export default function CollectiblesTable({
                 </Typography>
               </Paper>
             </Grid>
+
             <Grid item xs={12} sm={8} md={8} lg={6}>
               <Paper
                 style={{
@@ -369,6 +392,159 @@ export default function CollectiblesTable({
             )}
           </Box>
         </Box>
+        <Box my={2}>
+          <Divider />
+        </Box>
+
+        <Box p={2}>
+          <Box display="flex" justifyContent="space-between">
+            <Typography variant="h4">
+              <span
+                style={{
+                  color: theme.palette.primary.main,
+                  fontWeight: 600,
+                  letterSpacing: -1,
+                }}
+              >
+                Pending
+              </span>{' '}
+              Request
+            </Typography>
+          </Box>
+          <Box my={2} />
+          <Box my={2}>
+            <Divider />
+          </Box>
+          <Box
+            // my={2}
+            style={{
+              display: 'grid',
+              gap: 8,
+              maxHeight: 400,
+              overflowY: 'auto',
+            }}
+          >
+            <Grid container>
+              <Grid item xs={12}>
+                <Paper
+                  style={{
+                    textAlign: 'center',
+                    height: '100%',
+                    padding: 16,
+                    background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                  }}
+                >
+                  <FormLabel>Pending Request</FormLabel>
+                  <Typography variant="h4" style={{ fontWeight: '800' }}>
+                    {pendingRequest?.metadata.total || 0}
+                  </Typography>
+                </Paper>
+              </Grid>
+            </Grid>
+            {pendingRequest && pendingRequest.metadata.total > 0 ? (
+              <>
+                {pendingRequest &&
+                  pendingRequest.data.map((p_request) => (
+                    <Box key={p_request.id}>
+                      <Paper
+                        key={p_request.id}
+                        style={{
+                          overflow: 'hidden',
+                        }}
+                        variant="outlined"
+                      >
+                        <ListItem
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            padding: 8,
+                          }}
+                          key={p_request.id}
+                          button
+                          // onClick={() => {
+                          //   setCreditToOtherDsp(true)
+                          //   setLoanData(cashTransfer)
+                          // }}
+                        >
+                          <Box display="flex" width="100%" justifyContent="space-between">
+                            <Typography
+                              style={{
+                                display: 'block',
+                                alignSelf: 'flex-end',
+                              }}
+                              variant="caption"
+                            >
+                              <RoleBadge variant="caption">{p_request.status}</RoleBadge>
+                            </Typography>
+                            <Typography
+                              style={{
+                                display: 'block',
+                                alignSelf: 'flex-end',
+                              }}
+                              variant="caption"
+                            >
+                              {new Date(p_request?.created_at as Date).toLocaleString()}
+                            </Typography>
+                          </Box>
+
+                          <Typography>{p_request.caesar_bank?.description}</Typography>
+                          <Box
+                            display="flex"
+                            width="100%"
+                            alignItems="flex-end"
+                            justifyContent="space-between"
+                          >
+                            <Typography variant="body2" color="primary">
+                              {p_request.as}
+                            </Typography>
+                            <Typography
+                              style={{
+                                alignSelf: 'flex-end',
+                              }}
+                            >
+                              {formatIntoCurrency(Number(p_request?.amount))}
+                            </Typography>
+                          </Box>
+                          <Box
+                            display="flex"
+                            width="100%"
+                            alignItems="flex-end"
+                            justifyContent="space-between"
+                          ></Box>
+                        </ListItem>
+                      </Paper>
+                    </Box>
+                  ))}
+              </>
+            ) : loadingPendingRequest ? (
+              <LoadingScreen2
+                containerProps={{
+                  style: {
+                    minHeight: 120,
+                  },
+                }}
+              />
+            ) : (
+              <Paper
+                style={{
+                  minHeight: 120,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                  flexDirection: 'column',
+                }}
+              >
+                <Typography variant="body2">No Data Available</Typography>
+                <Typography variant="caption" color="primary">
+                  No Pending Request Found
+                </Typography>
+              </Paper>
+            )}
+          </Box>
+        </Box>
+
         {creditToOtherDsp && (
           <DirectPaidModal
             open={creditToOtherDsp}
