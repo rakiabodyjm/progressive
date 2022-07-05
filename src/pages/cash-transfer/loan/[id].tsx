@@ -28,6 +28,7 @@ import RoleBadge from '@src/components/RoleBadge'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { formatIntoCurrency, formatIntoReadableDate } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
+import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
@@ -43,6 +44,7 @@ export default function ViewLoanPage() {
   const user = useSelector(userDataSelector)
 
   const [editMode, setEditMode] = useState<boolean>(false)
+  const isEligible = useIsCtOperatorOrAdmin(['ct-operator'])
 
   const {
     data: cashTransferData,
@@ -158,7 +160,7 @@ export default function ViewLoanPage() {
                             {formatIntoReadableDate(cashTransferData?.created_at || Date.now())}
                           </Typography>
                         </Box>
-                        {!user?.retailer_id && (
+                        {isEligible && (
                           <Tooltip
                             arrow
                             placement="left"
