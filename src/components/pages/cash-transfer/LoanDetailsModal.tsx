@@ -1,7 +1,10 @@
-import { Box, Button, Divider, Grid, IconButton, Paper, Typography } from '@material-ui/core'
+import { Box, Button, Divider, Grid, IconButton, Paper, Theme, Typography } from '@material-ui/core'
+import { grey } from '@material-ui/core/colors'
 import { CloseOutlined, MoreVert } from '@material-ui/icons'
+import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import ModalWrapper from '@src/components/ModalWrapper'
+import RoleBadge from '@src/components/RoleBadge'
 import { formatIntoReadableDate } from '@src/utils/api/common'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { useRouter } from 'next/router'
@@ -18,6 +21,7 @@ export default function LoanDetailsModal({
   loanData?: CashTransferResponse
 }) {
   const router = useRouter()
+  const theme: Theme = useTheme()
 
   return (
     <ModalWrapper open={open} onClose={onClose} containerSize="xs">
@@ -31,8 +35,11 @@ export default function LoanDetailsModal({
           <>
             <Box display="flex" justifyContent="space-between">
               <Box>
-                <FormLabel>Transaction Type:</FormLabel>
-                <Typography variant="h5">{loanData?.as}</Typography>
+                {/* <FormLabel>Transaction Type:</FormLabel> */}
+                <Typography variant="body2" style={{ color: theme.palette.grey[400] }}>
+                  {loanData.ref_num}
+                </Typography>
+                <Typography variant="h6">{loanData?.as}</Typography>
               </Box>
               <Box>
                 <IconButton onClick={onClose}>
@@ -48,6 +55,7 @@ export default function LoanDetailsModal({
                 </Grid>
 
                 <Grid container spacing={1}>
+                  <Box>{/* <FormLabel>Reference Number:</FormLabel> */}</Box>
                   <Grid item xs={12}>
                     <FormLabel>Date loaned:</FormLabel>
                     <Typography>
