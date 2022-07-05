@@ -281,7 +281,7 @@ export const CashTransferBalancesTable = ({
                         title={<Typography variant="subtitle2">Add Retailer</Typography>}
                       >
                         <IconButton
-                          disabled={!account?.dsp}
+                          // disabled={!account?.dsp}
                           onClick={() => {
                             setAddRetailerModal(true)
                           }}
@@ -405,12 +405,23 @@ export const CashTransferBalancesTable = ({
                       }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
                     )
                       .filter((ea) => {
-                        if (!account?.admin && account?.dsp && !isEligible) {
-                          return ea[0] !== 'admin' && ea[0] !== 'subdistributor'
+                        if (!user?.admin_id && user?.subdistributor_id && !isEligible) {
+                          return (
+                            ea[0] !== 'admin' &&
+                            ea[0] !== 'subdistributor' &&
+                            ea[0] !== 'retailer' &&
+                            ea[0] !== 'user'
+                          )
                         }
-                        if (!account?.admin && account?.subdistributor && !isEligible) {
-                          return ea[0] !== 'admin' && ea[0] !== 'subdistributor'
+                        if (!user?.admin_id && user?.dsp_id && !isEligible) {
+                          return (
+                            ea[0] !== 'admin' &&
+                            ea[0] !== 'subdistributor' &&
+                            ea[0] !== 'dsp' &&
+                            ea[0] !== 'user'
+                          )
                         }
+
                         return ea
                       })
                       .sort(([key1], [key2]) => key1.localeCompare(key2))
