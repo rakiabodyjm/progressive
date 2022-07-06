@@ -39,13 +39,14 @@ import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import {
   CaesarBank,
   CashTransferAs,
+  CashTransferFilterTypes,
   CashTransferResponse,
   EditOrRevertTypes,
 } from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import useSWR from 'swr'
 import { CSVLink } from 'react-csv'
 import { fromUnixTime } from 'date-fns/esm'
@@ -75,6 +76,13 @@ export default function CashTransferSummaryTable() {
     from: undefined,
     to: undefined,
   })
+
+  const [formQuery, setFormQuery] = useState<CashTransferFilterTypes>({
+    as: undefined,
+    date_from: undefined,
+    date_to: undefined,
+  })
+
   const {
     data: summaryTableData,
     mutate,
@@ -82,6 +90,7 @@ export default function CashTransferSummaryTable() {
   } = useSWR<Paginated<CashTransferResponse>>(
     `/cash-transfer?${objectToURLQuery({
       ...query,
+      ...formQuery,
     })}`,
     (url) =>
       axios
@@ -126,6 +135,13 @@ export default function CashTransferSummaryTable() {
   const csvLinkFormat = {
     filename: query.as ? `${query.as}-Reports_${newDate}.csv` : `Summary-Reports_${newDate}.csv`,
     headers,
+  }
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormQuery((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }))
   }
 
   return (
@@ -332,6 +348,26 @@ export default function CashTransferSummaryTable() {
                             : `Use Caesar Account instead`}
                         </Link>
                       </Tooltip>
+                    </Grid>
+                    <Grid item xs={12} sm={4} lg={2}>
+                      <FormLabel>Date From</FormLabel>
+                      <FormTextField
+                        type="date"
+                        name="date_from"
+                        size="small"
+                        value={formQuery.date_from}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={4} lg={2}>
+                      <FormLabel>Date To</FormLabel>
+                      <FormTextField
+                        type="date"
+                        name="date_to"
+                        size="small"
+                        value={formQuery.date_to}
+                        onChange={handleChange}
+                      />
                     </Grid>
                     {/* {summaryTableData && summaryTableData.data && (
                       <Grid item xs={12}>
