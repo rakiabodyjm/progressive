@@ -58,7 +58,8 @@ export default function RouteGuard({
         user?.data.dsp_id ||
         user?.data.subdistributor_id ||
         user?.data.admin_id ||
-        user?.data.retailer_id
+        user?.data.retailer_id ||
+        user?.data.roles.some((ea) => ['ct-operator', 'ct-admin'].includes(ea))
       ) {
         return true
       }

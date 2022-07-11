@@ -1,42 +1,21 @@
-import {
-  Box,
-  Divider,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  Modal,
-  Paper,
-  Theme,
-  Typography,
-} from '@material-ui/core'
+/* eslint-disable react/no-unescaped-entities */
+import { Box, Divider, Grid, List, ListItem, Paper, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { Close } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
-import ModalWrapper from '@src/components/ModalWrapper'
+import CollectiblesSmallCards from '@src/components/pages/cash-transfer/CollectiblesSmallCards'
 import TransactionOnlyModal from '@src/components/pages/cash-transfer/TransactionOnlyModal'
 import RoleBadge from '@src/components/RoleBadge'
-import { userDataSelector } from '@src/redux/data/userSlice'
-import {
-  extractMultipleErrorFromResponse,
-  formatIntoCurrency,
-  objectToURLQuery,
-} from '@src/utils/api/common'
-import { getUser } from '@src/utils/api/userApi'
+import { UserTypes } from '@src/redux/data/userSlice'
+import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById, searchWalletV2 } from '@src/utils/api/walletApi'
-import {
-  CaesarBank,
-  CashTransferAs,
-  CashTransferResponse,
-} from '@src/utils/types/CashTransferTypes'
+import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 const caesarFetcher = (id: string) => () => getWalletById(id)
 
@@ -70,43 +49,40 @@ export default function CashSummaryView() {
 
   const caesarBanks = useMemo(() => (data ? data.data : undefined), [data])
 
-  const currentUser = useSelector(userDataSelector)
-  const user = useSWR(
-    currentUser?.user_id ? `/user/${currentUser?.user_id}` : null,
-    () => getUser(currentUser!.user_id),
-    {}
-  )
-
-  const router = useRouter()
-  const [queryParameters, setQueryParameters] = useState<{
-    page: number
-    limit: number
-  }>({
-    page: 0,
-    limit: 100,
-  })
-
   const [showTransactions, setShowTransactions] = useState<boolean>(false)
   const [caesarBankId, setCaesarBankId] = useState<string>('')
-
-  const { data: caesarBankData } = useSWR(
-    `/cash-transfer?${objectToURLQuery({
-      caesar_bank: caesarBankId,
-      ...paginateOptions,
-    })}`,
-    (url) =>
-      axios
-        .get(url)
-        .then((res) => res.data as Paginated<CashTransferResponse>)
-        .catch((err) => {
-          throw extractMultipleErrorFromResponse(err)
-        })
+  const formatter = useCallback(
+    (param: CaesarWalletResponse[]) =>
+      param.map(({ id, description, account_type, cash_transfer_balance, bank_accounts }) => {
+        const returnValue = {
+          id,
+          name: description,
+          account_type,
+          //   bank_accounts: bank_accounts.map((ea) => ea.bank.name).join(' '),
+          bank_accounts,
+          balance: formatIntoCurrency(cash_transfer_balance),
+          bank_balances: formatIntoCurrency(bank_accounts.reduce((acc, ea) => acc + ea.balance, 0)),
+        }
+        return returnValue
+      }),
+    []
   )
+
+  const fetcher = useCallback(
+    () =>
+      searchWalletV2(query).then(async (res) => ({
+        metadata: res.metadata,
+        data: formatter(res.data),
+      })),
+    [formatter, query?.searchQuery]
+  )
+
+  const { data: paginatedCaesar, isValidating } = useSWR(['/caesar', query], fetcher)
+  const caesars = useMemo(() => paginatedCaesar?.data || undefined, [paginatedCaesar])
 
   if (error) {
     return <ErrorLoading />
   }
-  //   const user = getUser()
   return (
     <Box>
       <Paper>
@@ -124,7 +100,7 @@ export default function CashSummaryView() {
           </Box>
           <Box>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <Paper>
                   <Box p={1.5}>
                     <Box>
@@ -176,6 +152,8 @@ export default function CashSummaryView() {
                       style={{
                         display: 'grid',
                         gap: 4,
+                        maxHeight: 640,
+                        overflowY: 'auto',
                       }}
                     >
                       {caesarBanks && caesarBanks?.length > 0 ? (
@@ -259,11 +237,143 @@ export default function CashSummaryView() {
                             No Banks linked Found
                           </Typography>
                         </Paper>
-                        // <LoadingScreen2 />
                       )}
                     </List>
                   </Box>
                 </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box key={Math.floor(100000 + Math.random() * 900000)} mt={1}>
+                  {caesars?.length === 0 && !isValidating && (
+                    <Paper
+                      style={{
+                        minHeight: 120,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        style={{
+                          textAlign: 'center',
+                        }}
+                      >
+                        No Account Matched the Search
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="primary"
+                        style={{
+                          textAlign: 'center',
+                        }}
+                      >
+                        Try Searching for a different keyword
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="textSecondary"
+                        style={{
+                          textAlign: 'center',
+                        }}
+                      >
+                        Caesar Account's First Name, Last Name, Phone Number
+                      </Typography>
+                    </Paper>
+                  )}
+                  {isValidating ? (
+                    <LoadingScreen2
+                      containerProps={{
+                        style: {
+                          borderRadius: 4,
+                        },
+                      }}
+                    />
+                  ) : (
+                    caesars &&
+                    caesars.length > 0 && (
+                      <>
+                        <Box
+                          style={{
+                            maxHeight: 750,
+                            overflowY: 'auto',
+                          }}
+                        >
+                          {Object.entries(
+                            caesars.reduce((acc, ea) => {
+                              let accum = { ...acc }
+                              if (!accum[ea.account_type as keyof typeof accum]) {
+                                accum = {
+                                  ...accum,
+                                  [ea.account_type as keyof typeof accum]: [],
+                                }
+                              }
+                              accum[ea.account_type as keyof typeof accum] = [
+                                ...accum[ea.account_type as keyof typeof accum],
+                                ea,
+                              ]
+                              return accum
+                            }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
+                          )
+                            .filter((ea) => ea[0] === 'dsp')
+                            .sort(([key1], [key2]) => key1.localeCompare(key2))
+                            .map(([accountType, caesarValues]) => (
+                              <Box
+                                style={{
+                                  position: 'sticky',
+                                  top: 0,
+                                }}
+                                key={accountType}
+                              >
+                                <Box
+                                  style={{
+                                    background:
+                                      theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                                    borderTopLeftRadius: 4,
+                                    borderTopRightRadius: 4,
+                                  }}
+                                  p={2}
+                                  // mt={2}
+                                >
+                                  <RoleBadge disablePopUp uppercase>
+                                    {accountType}
+                                  </RoleBadge>
+                                </Box>
+                                {caesarValues.map((ea) => (
+                                  <Box key={ea.id}>
+                                    <ListItem
+                                      style={{
+                                        border: theme.palette.divider,
+                                        borderWidth: 1,
+                                        borderStyle: 'solid',
+                                        borderRadius: 4,
+                                        padding: 8,
+                                        marginTop: 8,
+                                      }}
+                                    >
+                                      <Grid
+                                        container
+                                        spacing={1}
+                                        style={{
+                                          padding: 8,
+                                        }}
+                                      >
+                                        <Grid item xs={12}>
+                                          <CollectiblesSmallCards id={ea.id} dsp_name={ea.name} />
+                                        </Grid>
+                                      </Grid>
+                                    </ListItem>
+                                  </Box>
+                                ))}
+                              </Box>
+                            ))}
+                        </Box>
+                      </>
+                    )
+                  )}
+                </Box>
               </Grid>
             </Grid>
           </Box>
