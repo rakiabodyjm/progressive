@@ -76,29 +76,40 @@ export default function RetailerRequestModal({
 
   const handleRequest = () => {
     setLoading(true)
-    axios
-      .post('/request', { ...requestForm })
-      .then((res) => {
-        dispatch(
-          setNotification({
-            type: NotificationTypes.SUCCESS,
-            message: 'Request Created',
-          })
-        )
-      })
-      .catch((err) => {
-        dispatch(
-          setNotification({
-            type: NotificationTypes.ERROR,
-            message: 'Request Failed',
-          })
-        )
-        throw extractMultipleErrorFromResponse(err)
-      })
-      .finally(() => {
-        setLoading(false)
-        handleClose()
-      })
+    if (requestForm.amount && requestForm?.amount > 0) {
+      axios
+        .post('/request', { ...requestForm })
+        .then((res) => {
+          dispatch(
+            setNotification({
+              type: NotificationTypes.SUCCESS,
+              message: 'Request Created',
+            })
+          )
+        })
+        .catch((err) => {
+          dispatch(
+            setNotification({
+              type: NotificationTypes.ERROR,
+              message: 'Request Failed',
+            })
+          )
+          throw extractMultipleErrorFromResponse(err)
+        })
+        .finally(() => {
+          setLoading(false)
+          handleClose()
+        })
+    } else {
+      dispatch(
+        setNotification({
+          type: NotificationTypes.ERROR,
+          message: 'Request Failed',
+        })
+      )
+      setLoading(false)
+      handleClose()
+    }
   }
 
   return (

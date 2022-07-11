@@ -182,6 +182,7 @@ export const CashTransferBalancesTable = ({
         })
     }
   }, [dispatch, user])
+  const eligibleAsAdminOnly = useIsCtOperatorOrAdmin(['admin'])
   const isEligible = useIsCtOperatorOrAdmin(['ct-operator', 'ct-admin'])
   const eligibleAsCTAdmin = useIsCtOperatorOrAdmin(['ct-admin'])
   const eligibleAsSubToDsp = useIsCtOperatorOrAdmin(['dsp', 'subdistributor'])
@@ -456,7 +457,31 @@ export const CashTransferBalancesTable = ({
                             hiddenFields={['id', 'account_type', ...(disabledKeys || [])]}
                             onRowClick={(e, data) => {
                               const id = (data as { id: string })?.id
-                              if (isEligible) {
+                              if (
+                                accountType === 'admin' &&
+                                user?.roles &&
+                                (user?.roles as UserTypesWithCashTransfer[])?.includes(
+                                  'admin' as UserTypesWithCashTransfer
+                                ) &&
+                                eligibleAsAdminOnly
+                              ) {
+                                router.push({
+                                  pathname: '/cash-transfer/cash-summary/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+                              if (accountType === 'admin' && !eligibleAsAdminOnly) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+
+                              if (accountType !== 'admin' && isEligible) {
                                 router.push({
                                   pathname: '/cash-transfer/[id]',
                                   query: {

@@ -58,6 +58,8 @@ const CreateOrUpdateCaesarBank = ({
   })
   // const updateValuesRef = useRef<typeof updateValues | undefined>()
 
+  const banksCanEdit: string[] = ['CIMB', 'BDO']
+
   const isUpdateMode = useMemo(() => !!updateValues, [updateValues])
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const dispatchSuccess = useSuccessNotification()
@@ -127,6 +129,7 @@ const CreateOrUpdateCaesarBank = ({
   )
 
   const isEligible = useIsCtOperatorOrAdmin(['ct-admin'])
+  const isEligibleAsDsp = useIsCtOperatorOrAdmin(['dsp'])
 
   return (
     <>
@@ -212,23 +215,26 @@ const CreateOrUpdateCaesarBank = ({
         value={formValues.description}
       />
 
-      {isEligible && (
-        <>
-          <Box my={2} />
-          <FormLabel>Balance</FormLabel>
-          <FormTextField
-            type="number"
-            name="balance"
-            onChange={(e) => {
-              setFormValues((prev) => ({
-                ...prev,
-                [e.target.name]: e.target.value,
-              }))
-            }}
-            value={formValues.balance}
-          />
-        </>
-      )}
+      {isEligible ||
+        (isEligibleAsDsp &&
+          bankFetchValue &&
+          banksCanEdit.includes(bankFetchValue.name as string) && (
+            <>
+              <Box my={2} />
+              <FormLabel>Balance</FormLabel>
+              <FormTextField
+                type="number"
+                name="balance"
+                onChange={(e) => {
+                  setFormValues((prev) => ({
+                    ...prev,
+                    [e.target.name]: e.target.value,
+                  }))
+                }}
+                value={formValues.balance}
+              />
+            </>
+          ))}
 
       <Box my={2}>
         <Divider />
