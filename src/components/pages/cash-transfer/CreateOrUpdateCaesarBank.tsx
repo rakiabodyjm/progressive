@@ -58,7 +58,7 @@ const CreateOrUpdateCaesarBank = ({
   })
   // const updateValuesRef = useRef<typeof updateValues | undefined>()
 
-  const banksCanEdit: string[] = ['CIMB', 'BDO']
+  const banksCanEdit: string[] = ['GSAVE', 'BDO']
 
   const isUpdateMode = useMemo(() => !!updateValues, [updateValues])
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
