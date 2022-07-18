@@ -70,7 +70,7 @@ export default function CashTransferSummaryTable() {
     from?: string
     to?: string
   }>({
-    as: undefined,
+    as: '',
     caesar_bank_from: undefined,
     caesar_bank_to: undefined,
     from: undefined,
@@ -81,6 +81,10 @@ export default function CashTransferSummaryTable() {
     as: undefined,
     date_from: undefined,
     date_to: undefined,
+  })
+  const [paginated, setPaginated] = useState({
+    limit: 100,
+    page: 0,
   })
 
   const {
@@ -105,11 +109,6 @@ export default function CashTransferSummaryTable() {
 
   const classes = useStyles()
 
-  const [paginated, setPaginated] = useState({
-    limit: 100,
-    page: 0,
-  })
-
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [fromCaesarEnabled, setFromCaesarEnabled] = useState<boolean>(false)
 
@@ -120,15 +119,6 @@ export default function CashTransferSummaryTable() {
     transactionModalOpen: false,
     transactionSelected: undefined,
   })
-
-  // console.log(
-  //   summaryTableData?.data.map((ea) => {
-  //     console.log('Account:', ea.to?.account_type)
-  //     console.log('DSP CODE:', ea.to?.dsp?.dsp_code)
-  //     console.log('DSP CP NUMBER', ea.to?.dsp?.e_bind_number)
-  //     return ea
-  //   })
-  // )
 
   const newDate = new Date(Date.now()).toLocaleDateString()
 
@@ -204,12 +194,12 @@ export default function CashTransferSummaryTable() {
                       <AsDropDown
                         onChange={(e) => {
                           if (e.target.value === '') {
-                            setQuery((prev) => ({
+                            setFormQuery((prev) => ({
                               ...prev,
                               as: undefined,
                             }))
                           } else {
-                            setQuery((prev) => ({
+                            setFormQuery((prev) => ({
                               ...prev,
                               as: e.target.value,
                             }))
@@ -369,15 +359,6 @@ export default function CashTransferSummaryTable() {
                         onChange={handleChange}
                       />
                     </Grid>
-                    {/* {summaryTableData && summaryTableData.data && (
-                      <Grid item xs={12}>
-                        <CSVLink data={formatToCsv(summaryTableData?.data)} {...csvLinkFormat}>
-                          <Button variant="contained" color="primary">
-                            <Typography>Export to CSV</Typography>
-                          </Button>
-                        </CSVLink>
-                      </Grid>
-                    )} */}
                   </Grid>
                 </Grid>
               </Grid>
