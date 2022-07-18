@@ -1,5 +1,15 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Box, Divider, Grid, List, ListItem, Paper, Theme, Typography } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  List,
+  ListItem,
+  Paper,
+  Theme,
+  Typography,
+} from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
@@ -94,156 +104,26 @@ export default function CashSummaryView() {
               {caesar?.description}
             </Typography>
           </Box>
-
           <Box my={2}>
             <Divider />
           </Box>
+          {/* <Box pr={4} display="flex" justifyContent="flex-end">
+            <Box pr={2}>
+              <Button variant="contained" color="primary">
+                WEEKLY
+              </Button>
+            </Box>
+            <Box>
+              <Button variant="contained" color="primary">
+                MONTHLY
+              </Button>
+            </Box>
+          </Box> */}
+
           <Box>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Paper>
-                  <Box p={1.5}>
-                    <Box>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} lg={6}>
-                          <Paper
-                            style={{
-                              textAlign: 'center',
-                              height: '100%',
-                              padding: 16,
-                              background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
-                            }}
-                          >
-                            <FormLabel>Main Bank/s</FormLabel>
-                            <Typography variant="h4" style={{ fontWeight: '800' }}>
-                              {caesarBanks &&
-                                caesarBanks.filter((ea) => !mainBanks.includes(ea.account_number))
-                                  .length}
-                            </Typography>
-                          </Paper>
-                        </Grid>
-
-                        <Grid item xs={12} lg={6}>
-                          <Paper
-                            style={{
-                              textAlign: 'center',
-                              height: '100%',
-                              padding: 16,
-                              background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
-                            }}
-                          >
-                            <FormLabel>Total Balance</FormLabel>
-                            <Typography variant="h4" style={{ fontWeight: '800' }}>
-                              {formatIntoCurrency(
-                                Number(
-                                  caesarBanks &&
-                                    caesarBanks
-                                      .filter((ea) => !mainBanks.includes(ea.account_number))
-                                      .reduce((acc, ea) => acc + ea.balance, 0)
-                                )
-                              )}
-                            </Typography>
-                          </Paper>
-                        </Grid>
-                      </Grid>
-                    </Box>
-
-                    <List
-                      style={{
-                        display: 'grid',
-                        gap: 4,
-                        maxHeight: 640,
-                        overflowY: 'auto',
-                      }}
-                    >
-                      {caesarBanks && caesarBanks?.length > 0 ? (
-                        caesarBanks
-                          .filter((ea) => !mainBanks.includes(ea.account_number))
-                          .map(({ id, bank, description, balance, account_number }) => (
-                            <ListItem
-                              key={id}
-                              style={{
-                                border: theme.palette.divider,
-                                borderWidth: 1,
-                                borderStyle: 'solid',
-                                borderRadius: 4,
-                                padding: 8,
-                              }}
-                              button
-                              onClick={() => {
-                                if (showTransactions) {
-                                  setShowTransactions(false)
-                                  setCaesarBankId('')
-                                } else {
-                                  setShowTransactions(true)
-                                  setCaesarBankId(id)
-                                }
-                              }}
-                            >
-                              <Grid
-                                container
-                                spacing={1}
-                                style={{
-                                  padding: 8,
-                                }}
-                              >
-                                <Grid item xs={8} md={9} lg={10}>
-                                  <Typography
-                                    variant="body1"
-                                    style={{
-                                      fontWeight: 700,
-                                    }}
-                                    color="primary"
-                                  >
-                                    {bank.name}
-                                  </Typography>
-                                  {account_number && (
-                                    <>
-                                      <Typography
-                                        variant="caption"
-                                        color="textSecondary"
-                                        component="span"
-                                      >
-                                        {account_number}
-                                      </Typography>
-                                    </>
-                                  )}
-
-                                  <Typography variant="body2">{description || ''}</Typography>
-                                </Grid>
-                                <Grid item xs={4} md={3} lg={2}>
-                                  <FormLabel>Balance: </FormLabel>
-
-                                  <Typography noWrap variant="body1">
-                                    ₱{' '}
-                                    {new Intl.NumberFormat('en-PH', {
-                                      currency: 'PHP',
-                                    }).format(balance || 0)}
-                                  </Typography>
-                                </Grid>
-                              </Grid>
-                            </ListItem>
-                          ))
-                      ) : (
-                        <Paper
-                          style={{
-                            padding: 32,
-                            textAlign: 'center',
-                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
-                          }}
-                          variant="outlined"
-                        >
-                          <Typography variant="body1" color="textSecondary">
-                            No Banks linked Found
-                          </Typography>
-                        </Paper>
-                      )}
-                    </List>
-                  </Box>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box key={Math.floor(100000 + Math.random() * 900000)} mt={1}>
+              <Grid item xs={12} sm={12}>
+                <Box mt={1}>
                   {caesars?.length === 0 && !isValidating && (
                     <Paper
                       style={{
@@ -327,46 +207,39 @@ export default function CashSummaryView() {
                                 }}
                                 key={accountType}
                               >
-                                <Box
-                                  style={{
-                                    background:
-                                      theme.palette.type === 'dark' ? grey['900'] : grey['200'],
-                                    borderTopLeftRadius: 4,
-                                    borderTopRightRadius: 4,
-                                  }}
-                                  p={2}
-                                  // mt={2}
-                                >
-                                  <RoleBadge disablePopUp uppercase>
-                                    {accountType}
-                                  </RoleBadge>
-                                </Box>
-                                {caesarValues.map((ea) => (
-                                  <Box key={ea.id}>
-                                    <ListItem
-                                      style={{
-                                        border: theme.palette.divider,
-                                        borderWidth: 1,
-                                        borderStyle: 'solid',
-                                        borderRadius: 4,
-                                        padding: 8,
-                                        marginTop: 8,
-                                      }}
-                                    >
-                                      <Grid
-                                        container
-                                        spacing={1}
-                                        style={{
-                                          padding: 8,
-                                        }}
-                                      >
-                                        <Grid item xs={12}>
-                                          <CollectiblesSmallCards id={ea.id} dsp_name={ea.name} />
-                                        </Grid>
-                                      </Grid>
-                                    </ListItem>
-                                  </Box>
-                                ))}
+                                <Grid container spacing={2}>
+                                  {caesarValues.map((ea) => (
+                                    <Grid key={ea.id} item xs={12} md={6} lg={4}>
+                                      <Box>
+                                        <ListItem
+                                          style={{
+                                            border: theme.palette.divider,
+                                            borderWidth: 1,
+                                            borderStyle: 'solid',
+                                            borderRadius: 4,
+                                            padding: 8,
+                                            marginTop: 8,
+                                          }}
+                                        >
+                                          <Grid
+                                            container
+                                            spacing={1}
+                                            style={{
+                                              padding: 8,
+                                            }}
+                                          >
+                                            <Grid item xs={12}>
+                                              <CollectiblesSmallCards
+                                                id={ea.id}
+                                                dsp_name={ea.name}
+                                              />
+                                            </Grid>
+                                          </Grid>
+                                        </ListItem>
+                                      </Box>
+                                    </Grid>
+                                  ))}
+                                </Grid>
                               </Box>
                             ))}
                         </Box>
