@@ -259,7 +259,7 @@ const TransferTypeTransaction = ({
               defaultValue={transferForm.from}
               value={transferForm.from}
               key={transferForm.amount}
-              disabled={!!caesar_bank_from?.caesar}
+              // disabled={!!caesar_bank_from?.caesar}
             />
           </>
         ) : (
@@ -272,8 +272,8 @@ const TransferTypeTransaction = ({
                   caesar_bank_from: caesarBank,
                 }))
               }}
-              defaultValue={transferForm.caesar_bank_from}
-              disabled={!!caesar_bank_from}
+              // defaultValue={transferForm.caesar_bank_from}
+              // disabled={!!caesar_bank_from}
             />
           </>
         )}
@@ -393,7 +393,6 @@ const TransferTypeTransaction = ({
         {transferForm?.caesar_bank_from && (
           <Box my={2}>
             <FeesTransaction
-              disabledTextField
               triggerReset={resetValue}
               newValue={transferForm.bank_fee}
               onChange={(bank_fee: number | undefined) => {

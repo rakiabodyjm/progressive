@@ -123,7 +123,12 @@ export const CashTransferBalancesTable = ({
     [formatter, query?.searchQuery]
   )
 
-  const { data: paginatedCaesar, isValidating, error, mutate } = useSWR(['/caesar', query], fetcher)
+  const {
+    data: paginatedCaesar,
+    isValidating,
+    error,
+    mutate,
+  } = useSWR(['/caesar', { ...query }], fetcher)
   const caesars = useMemo(() => paginatedCaesar?.data || undefined, [paginatedCaesar])
 
   const ceasarMetaData = useMemo(() => paginatedCaesar?.metadata || undefined, [paginatedCaesar])
