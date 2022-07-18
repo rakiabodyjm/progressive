@@ -5,6 +5,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  MenuItem,
   Paper,
   TextField,
   Theme,
@@ -31,9 +32,37 @@ import router from 'next/router'
 import { ChangeEvent, useEffect, useState } from 'react'
 import useSWR from 'swr'
 
+const asType = [
+  {
+    value: 'TRANSFER',
+  },
+  {
+    value: 'LOAN',
+  },
+  {
+    value: 'LOAD',
+  },
+  {
+    value: 'WITHDRAW',
+  },
+  {
+    value: 'DEPOSIT',
+  },
+  {
+    value: 'DEPOSIT',
+  },
+  {
+    value: 'LOAN PAYMENT',
+  },
+  {
+    value: 'LOAD PAYMENT',
+  },
+]
+
 type UpdateFormTypes = {
   created_at?: string
   message?: string
+  as?: string
   description?: string
 }
 type NewDateType = {
@@ -82,6 +111,7 @@ export default function EditTransactionModal({
     created_at: convertedDate,
     description: ct_data?.description,
     message: ct_data?.message,
+    as: ct_data?.as,
   })
   const [newDate, setNewDate] = useState<NewDateType>({
     year: '',
@@ -93,6 +123,7 @@ export default function EditTransactionModal({
   const [editField, setEditField] = useState({
     editMessage: false,
     editDescription: false,
+    editAs: false,
   })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -139,6 +170,27 @@ export default function EditTransactionModal({
           dispatchNotif({
             type: NotificationTypes.SUCCESS,
             message: 'Update Saved',
+          })
+        })
+        .catch((err) => {
+          throw extractMultipleErrorFromResponse(err)
+        })
+        .finally(() => {
+          mutate()
+          mutateCT()
+          onClose()
+        })
+    }
+  }
+
+  const handleDelete = () => {
+    if (ct_data) {
+      axios
+        .delete(`/cash-transfer/${ct_data.id}`)
+        .then((res) => {
+          dispatchNotif({
+            type: NotificationTypes.SUCCESS,
+            message: 'Transaction Deleted',
           })
         })
         .catch((err) => {
@@ -288,6 +340,52 @@ export default function EditTransactionModal({
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6}>
+                    <FormLabel>Type:</FormLabel>
+                    <Box display="flex">
+                      <Box maxHeight={160} style={{ overflowY: 'auto' }} flexGrow={1}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          variant="outlined"
+                          defaultValue={ct_data.as}
+                          select
+                          disabled={!editField.editAs}
+                          onChange={(e) => {
+                            setUpdateForms((prev) => ({
+                              ...prev,
+                              as: e.target.value,
+                            }))
+                          }}
+                        >
+                          {asType.map((ea, i) => (
+                            <MenuItem key={i} value={ea.value}>
+                              <Typography variant="body1">{ea.value}</Typography>
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      </Box>
+                      <Box>
+                        <IconButton
+                          onClick={() => {
+                            if (editField.editAs) {
+                              setEditField((prev) => ({
+                                ...prev,
+                                editAs: false,
+                              }))
+                            } else {
+                              setEditField((prev) => ({
+                                ...prev,
+                                editAs: true,
+                              }))
+                            }
+                          }}
+                        >
+                          <Edit />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
                     <FormLabel>Amount:</FormLabel>
                     <Typography>{formatIntoCurrency(ct_data.amount)}</Typography>
                   </Grid>
@@ -296,6 +394,11 @@ export default function EditTransactionModal({
             </Box>
 
             <Box display="flex" justifyContent="flex-end">
+              <Box mt={2} pr={2}>
+                <Button variant="contained" onClick={handleDelete}>
+                  <Typography color="error">DELETE</Typography>
+                </Button>
+              </Box>
               <Box mt={2}>
                 <Button color="primary" variant="contained" onClick={handleSubmit}>
                   UPDATE
