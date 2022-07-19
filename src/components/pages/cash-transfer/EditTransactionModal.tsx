@@ -49,9 +49,6 @@ const asType = [
     value: 'DEPOSIT',
   },
   {
-    value: 'DEPOSIT',
-  },
-  {
     value: 'LOAN PAYMENT',
   },
   {
@@ -357,8 +354,8 @@ export default function EditTransactionModal({
                             }))
                           }}
                         >
-                          {asType.map((ea, i) => (
-                            <MenuItem key={i} value={ea.value}>
+                          {asType.map((ea) => (
+                            <MenuItem key={ea.value} value={ea.value}>
                               <Typography variant="body1">{ea.value}</Typography>
                             </MenuItem>
                           ))}
