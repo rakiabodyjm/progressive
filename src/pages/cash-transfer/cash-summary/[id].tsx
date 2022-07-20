@@ -18,7 +18,7 @@ import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import CollectiblesSmallCards from '@src/components/pages/cash-transfer/CollectiblesSmallCards'
 import TransactionOnlyModal from '@src/components/pages/cash-transfer/TransactionOnlyModal'
 import RoleBadge from '@src/components/RoleBadge'
-import { UserTypes } from '@src/redux/data/userSlice'
+import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById, searchWalletV2 } from '@src/utils/api/walletApi'
 import { CaesarBank } from '@src/utils/types/CashTransferTypes'
@@ -26,6 +26,7 @@ import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEn
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 const caesarFetcher = (id: string) => () => getWalletById(id)
 
@@ -35,30 +36,31 @@ export default function CashSummaryView() {
   const { id } = query
 
   const mainBanks: string[] = ['09695638071', '09153754183']
-
-  const [paginateOptions, setPaginateOptions] = useState<PaginateFetchParameters>({
-    limit: 100,
-    page: 0,
-  })
-
-  const { data: caesar } = useSWR<CaesarWalletResponse>(`caesar/${id}`, caesarFetcher(id as string))
-
-  const { data, error } = useSWR<Paginated<CaesarBank>>(
-    id
-      ? `/cash-transfer/caesar-bank/?caesar=${id}&page=${paginateOptions.page}&limit=${paginateOptions.limit}`
-      : null,
-    (url) =>
-      axios
-        .get(url)
-        .then((res) => res.data)
-        .catch((err) => {
-          throw extractMultipleErrorFromResponse(err)
-        }),
-    {}
+  const user = useSelector(userDataSelector)
+  const isAuthorizedForViewingBalances = useMemo(
+    () => user && user.roles.some((ea) => ['ct-operator', 'ct-admin', 'admin'].includes(ea)),
+    [user]
   )
 
-  const caesarBanks = useMemo(() => (data ? data.data : undefined), [data])
+  const [fetchQuery, setFetchQuery] = useState<PaginateFetchParameters & { searchQuery?: string }>({
+    limit: 1000,
+    page: 0,
+    searchQuery: undefined,
+    ...(!isAuthorizedForViewingBalances && {
+      account_type: 'retailer',
+    }),
+  })
+  const setQueryState = useCallback(
+    (param: keyof typeof fetchQuery) => (value: typeof fetchQuery[keyof typeof fetchQuery]) => {
+      setFetchQuery((prev) => ({
+        ...prev,
+        [param]: value,
+      }))
+    },
+    []
+  )
 
+  const { data: caesar } = useSWR<CaesarWalletResponse>(`caesar/${id}`, caesarFetcher(id as string))
   const [showTransactions, setShowTransactions] = useState<boolean>(false)
   const [caesarBankId, setCaesarBankId] = useState<string>('')
   const formatter = useCallback(
@@ -80,19 +82,18 @@ export default function CashSummaryView() {
 
   const fetcher = useCallback(
     () =>
-      searchWalletV2(query).then(async (res) => ({
+      searchWalletV2(fetchQuery).then(async (res) => ({
         metadata: res.metadata,
         data: formatter(res.data),
       })),
-    [formatter, query?.searchQuery]
+    [formatter, fetchQuery?.searchQuery]
   )
 
-  const { data: paginatedCaesar, isValidating } = useSWR(['/caesar', query], fetcher)
+  const { data: paginatedCaesar, isValidating } = useSWR(['/caesar', { ...fetchQuery }], fetcher)
   const caesars = useMemo(() => paginatedCaesar?.data || undefined, [paginatedCaesar])
 
-  if (error) {
-    return <ErrorLoading />
-  }
+  console.log('CAESARS', caesars)
+
   return (
     <Box>
       <Paper>
@@ -107,19 +108,6 @@ export default function CashSummaryView() {
           <Box my={2}>
             <Divider />
           </Box>
-          {/* <Box pr={4} display="flex" justifyContent="flex-end">
-            <Box pr={2}>
-              <Button variant="contained" color="primary">
-                WEEKLY
-              </Button>
-            </Box>
-            <Box>
-              <Button variant="contained" color="primary">
-                MONTHLY
-              </Button>
-            </Box>
-          </Box> */}
-
           <Box>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12}>
@@ -207,6 +195,7 @@ export default function CashSummaryView() {
                                 }}
                                 key={accountType}
                               >
+                                {console.log(caesarValues)}
                                 <Grid container spacing={2}>
                                   {caesarValues.map((ea) => (
                                     <Grid key={ea.id} item xs={12} md={6} lg={4}>
