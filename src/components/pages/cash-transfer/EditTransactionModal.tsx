@@ -228,7 +228,6 @@ export default function EditTransactionModal({
                 <Grid item xs={12}>
                   <Divider style={{ marginTop: 8, marginBottom: 8 }} />
                 </Grid>
-
                 <Grid container spacing={2} className={classes.gridContainer}>
                   <Grid item xs={12} sm={6}>
                     <FormLabel>Reference Number:</FormLabel>
@@ -236,13 +235,18 @@ export default function EditTransactionModal({
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormLabel>Date of Transaction:</FormLabel>
-                    <FormTextField
-                      type="datetime-local"
-                      name="created_at"
-                      size="small"
-                      value={convertedDate}
-                      onChange={handleChange}
-                    />
+                    {ct_data && ct_data.is_loan_paid ? (
+                      <Typography>{formatIntoReadableDate(ct_data.created_at)}</Typography>
+                    ) : (
+                      <FormTextField
+                        disabled={ct_data && !!ct_data.is_loan_paid}
+                        type="datetime-local"
+                        name="created_at"
+                        size="small"
+                        value={convertedDate}
+                        onChange={handleChange}
+                      />
+                    )}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormLabel>From:</FormLabel>
@@ -260,127 +264,151 @@ export default function EditTransactionModal({
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormLabel>Description:</FormLabel>
-                    <Box display="flex">
-                      <Box maxHeight={160} style={{ overflowY: 'auto' }} flexGrow={1}>
-                        <TextField
-                          fullWidth
-                          size="small"
-                          variant="outlined"
-                          defaultValue={ct_data.description}
-                          disabled={!editField.editDescription}
-                          onChange={(e) => {
-                            setUpdateForms((prev) => ({
-                              ...prev,
-                              description: e.target.value,
-                            }))
-                          }}
-                        ></TextField>
+                    {ct_data && ct_data.is_loan_paid ? (
+                      <Box display="flex">
+                        <Typography>{ct_data.description}</Typography>
                       </Box>
-                      <Box>
-                        <IconButton
-                          onClick={() => {
-                            if (editField.editDescription) {
-                              setEditField((prev) => ({
+                    ) : (
+                      <Box display="flex">
+                        <Box maxHeight={160} style={{ overflowY: 'auto' }} flexGrow={1}>
+                          <TextField
+                            fullWidth
+                            size="small"
+                            variant="outlined"
+                            defaultValue={ct_data.description}
+                            disabled={!editField.editDescription}
+                            onChange={(e) => {
+                              setUpdateForms((prev) => ({
                                 ...prev,
-                                editDescription: false,
+                                description: e.target.value,
                               }))
-                            } else {
-                              setEditField((prev) => ({
-                                ...prev,
-                                editDescription: true,
-                              }))
-                            }
-                          }}
-                        >
-                          <Edit />
-                        </IconButton>
+                            }}
+                          ></TextField>
+                        </Box>
+                        {ct_data && !ct_data.is_loan_paid && (
+                          <Box>
+                            <IconButton
+                              onClick={() => {
+                                if (editField.editDescription) {
+                                  setEditField((prev) => ({
+                                    ...prev,
+                                    editDescription: false,
+                                  }))
+                                } else {
+                                  setEditField((prev) => ({
+                                    ...prev,
+                                    editDescription: true,
+                                  }))
+                                }
+                              }}
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Box>
+                        )}
                       </Box>
-                    </Box>
+                    )}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormLabel>Message:</FormLabel>
-                    <Box display="flex">
-                      <Box maxHeight={160} style={{ overflowY: 'auto' }} flexGrow={1}>
-                        <TextField
-                          fullWidth
-                          size="small"
-                          variant="outlined"
-                          defaultValue={ct_data.message}
-                          disabled={!editField.editMessage}
-                          onChange={(e) => {
-                            setUpdateForms((prev) => ({
-                              ...prev,
-                              message: e.target.value,
-                            }))
-                          }}
-                        ></TextField>
+                    {ct_data && ct_data.is_loan_paid ? (
+                      <Box display="flex">
+                        <Typography>{ct_data.message}</Typography>
                       </Box>
-                      <Box>
-                        <IconButton
-                          onClick={() => {
-                            if (editField.editMessage) {
-                              setEditField((prev) => ({
+                    ) : (
+                      <Box display="flex">
+                        <Box maxHeight={160} style={{ overflowY: 'auto' }} flexGrow={1}>
+                          <TextField
+                            fullWidth
+                            size="small"
+                            variant="outlined"
+                            defaultValue={ct_data.message}
+                            disabled={!editField.editMessage}
+                            onChange={(e) => {
+                              setUpdateForms((prev) => ({
                                 ...prev,
-                                editMessage: false,
+                                message: e.target.value,
                               }))
-                            } else {
-                              setEditField((prev) => ({
-                                ...prev,
-                                editMessage: true,
-                              }))
-                            }
-                          }}
-                        >
-                          <Edit />
-                        </IconButton>
+                            }}
+                          ></TextField>
+                        </Box>
+                        {ct_data && !ct_data.is_loan_paid && (
+                          <Box>
+                            <IconButton
+                              onClick={() => {
+                                if (editField.editMessage) {
+                                  setEditField((prev) => ({
+                                    ...prev,
+                                    editMessage: false,
+                                  }))
+                                } else {
+                                  setEditField((prev) => ({
+                                    ...prev,
+                                    editMessage: true,
+                                  }))
+                                }
+                              }}
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Box>
+                        )}
                       </Box>
-                    </Box>
+                    )}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormLabel>Type:</FormLabel>
-                    <Box display="flex">
-                      <Box maxHeight={160} style={{ overflowY: 'auto' }} flexGrow={1}>
-                        <TextField
-                          fullWidth
-                          size="small"
-                          variant="outlined"
-                          defaultValue={ct_data.as}
-                          select
-                          disabled={!editField.editAs}
-                          onChange={(e) => {
-                            setUpdateForms((prev) => ({
-                              ...prev,
-                              as: e.target.value,
-                            }))
-                          }}
-                        >
-                          {asType.map((ea) => (
-                            <MenuItem key={ea.value} value={ea.value}>
-                              <Typography variant="body1">{ea.value}</Typography>
-                            </MenuItem>
-                          ))}
-                        </TextField>
+                    {ct_data && ct_data.is_loan_paid ? (
+                      <Box display="flex">
+                        <Typography>{ct_data.as}</Typography>
                       </Box>
-                      <Box>
-                        <IconButton
-                          onClick={() => {
-                            if (editField.editAs) {
-                              setEditField((prev) => ({
+                    ) : (
+                      <Box display="flex">
+                        <Box maxHeight={160} style={{ overflowY: 'auto' }} flexGrow={1}>
+                          <TextField
+                            fullWidth
+                            size="small"
+                            variant="outlined"
+                            defaultValue={ct_data.as}
+                            select
+                            disabled={!editField.editAs}
+                            onChange={(e) => {
+                              setUpdateForms((prev) => ({
                                 ...prev,
-                                editAs: false,
+                                as: e.target.value,
                               }))
-                            } else {
-                              setEditField((prev) => ({
-                                ...prev,
-                                editAs: true,
-                              }))
-                            }
-                          }}
-                        >
-                          <Edit />
-                        </IconButton>
+                            }}
+                          >
+                            {asType.map((ea, i) => (
+                              <MenuItem key={ea.value} value={ea.value}>
+                                <Typography variant="body1">{ea.value}</Typography>
+                              </MenuItem>
+                            ))}
+                          </TextField>
+                        </Box>
+                        {ct_data && !ct_data.is_loan_paid && (
+                          <Box>
+                            <IconButton
+                              onClick={() => {
+                                if (editField.editAs) {
+                                  setEditField((prev) => ({
+                                    ...prev,
+                                    editAs: false,
+                                  }))
+                                } else {
+                                  setEditField((prev) => ({
+                                    ...prev,
+                                    editAs: true,
+                                  }))
+                                }
+                              }}
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Box>
+                        )}
                       </Box>
-                    </Box>
+                    )}
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormLabel>Amount:</FormLabel>
@@ -397,8 +425,13 @@ export default function EditTransactionModal({
                 </Button>
               </Box>
               <Box mt={2}>
-                <Button color="primary" variant="contained" onClick={handleSubmit}>
-                  UPDATE
+                <Button
+                  disabled={ct_data && !!ct_data.is_loan_paid}
+                  color="primary"
+                  variant="contained"
+                  onClick={handleSubmit}
+                >
+                  {ct_data && ct_data.is_loan_paid ? 'PAID' : 'UPDATE'}
                 </Button>
               </Box>
             </Box>

@@ -243,7 +243,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
       </Box>
       <Box>
         <Grid container spacing={2}>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={4}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -259,7 +259,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
             </Paper>
           </Grid>
 
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={8}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -279,7 +279,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={4}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -295,7 +295,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
             </Paper>
           </Grid>
 
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={8}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -315,7 +315,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={4}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -330,7 +330,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={8}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -350,7 +350,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={4}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -365,7 +365,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={8}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -405,7 +405,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={4}>
             <Paper
               style={{
                 textAlign: 'center',
@@ -420,7 +420,7 @@ export default function CollectiblesSmallCards({ id, dsp_name }: { id: string; d
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={8}>
             <Paper
               style={{
                 textAlign: 'center',
