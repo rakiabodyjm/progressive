@@ -85,7 +85,7 @@ export default function CollectiblesTable({
     error: errorCashTransfers,
     mutate: mutateRetailerLoanList,
   } = useSWR<CashTransferResponse[]>(
-    caesarId ? `/cash-transfer/get-retailer-loan?caesar=${caesarId}` : null,
+    caesarId ? `/cash-transfer/get-retailer-loan/${caesarId}/search` : null,
     (url) => axios.get(url).then((res) => res.data as CashTransferResponse[])
   )
 
@@ -95,7 +95,7 @@ export default function CollectiblesTable({
     error: errorCashTransfersLoad,
     mutate: mutateRetailerLoanListLoad,
   } = useSWR<CashTransferResponse[]>(
-    caesarId ? `/cash-transfer/get-retailer-load?caesar=${caesarId}` : null,
+    caesarId ? `/cash-transfer/get-retailer-load/${caesarId}/search` : null,
     (url) => axios.get(url).then((res) => res.data as CashTransferResponse[])
   )
 
