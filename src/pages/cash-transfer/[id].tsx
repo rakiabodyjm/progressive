@@ -18,6 +18,7 @@ import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
 import CreateOrUpdateCaesarBank from '@src/components/pages/cash-transfer/CreateOrUpdateCaesarBank'
+import RetailerLoanList from '@src/components/RetailerLoanList'
 import RoleBadge from '@src/components/RoleBadge'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { userDataSelector } from '@src/redux/data/userSlice'
@@ -70,6 +71,17 @@ export default function ViewCaesarPage() {
       : null,
     (url) => axios.get(url).then((res) => res.data),
     {}
+  )
+  const [caesarId, setCaesarId] = useState({
+    admin: '',
+    dsp: '',
+    subdistributor: '',
+    retailer: '',
+  })
+
+  const { data: caesar1, mutate: mutateCaesar } = useSWR(
+    caesarId.retailer ? `/caesar/${caesarId.retailer}` : undefined,
+    () => getWalletById(caesarId.retailer as string)
   )
 
   const metadata = useMemo(() => (data ? data.metadata : undefined), [data])
@@ -264,6 +276,11 @@ export default function ViewCaesarPage() {
                     </List>
                   </Box>
                 </Paper>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <Box mt={2}>
+                  <RetailerLoanList caesarId={caesar?.id} triggerRender={mutateCaesar} />
+                </Box>
               </Grid>
             </Grid>
           </Box>

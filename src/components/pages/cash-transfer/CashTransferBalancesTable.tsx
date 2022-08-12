@@ -415,7 +415,6 @@ export const CashTransferBalancesTable = ({
                           return (
                             ea[0] !== 'admin' &&
                             ea[0] !== 'subdistributor' &&
-                            ea[0] !== 'retailer' &&
                             ea[0] !== 'user'
                           )
                         }
