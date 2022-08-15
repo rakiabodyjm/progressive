@@ -19,11 +19,13 @@ import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
 import FormTextField from '@src/components/FormTextField'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
+import OTPModal from '@src/components/pages/cash-transfer/OTPModal'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import CashTransfer from '@src/pages/admin/topup'
-import { NotificationTypes } from '@src/redux/data/notificationSlice'
+import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import {
   extractMultipleErrorFromResponse,
@@ -37,11 +39,12 @@ import {
   CashTransferAs,
   CashTransferResponse,
 } from '@src/utils/types/CashTransferTypes'
+import { OTPData, OtpRequestTypes, OTPTypes } from '@src/utils/types/OTPTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios, { AxiosError } from 'axios'
 import { useRouter } from 'next/router'
 import React, { useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import useSWR, { useSWRConfig } from 'swr'
 
 export default function DirectPaidModal({
@@ -62,9 +65,26 @@ export default function DirectPaidModal({
   const router = useRouter()
   const [visibleChip, setVisibleChip] = useState<boolean>(false)
   const [specificAmount, setSpecificAmount] = useState<boolean>(false)
+  const [isRequestOtp, setIsRequestOtp] = useState<boolean>(false)
+  const [paid, setPaid] = useState<boolean>(false)
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const [openOtp, setOpenOtp] = useState<boolean>(false)
+  const [otp, setOtp] = useState<OTPTypes>()
+  const dispatch = useDispatch()
+
+  const formattedPhoneNumber: OtpRequestTypes = {
+    // to: `+63${loanData?.caesar_bank_to.account_number.substring(1)}`,
+    to: '+639129646654',
+    // to: '+639452407967',
+    // to: '+639062586536',
+  }
+  console.log(`MOBILE NUMBER: +63${loanData?.caesar_bank_to.account_number.substring(1)}`)
+
+  const otpPassed = (isPaid: boolean) => {
+    setPaid(isPaid)
+  }
 
   const {
     data: loanPayments,
@@ -130,6 +150,24 @@ export default function DirectPaidModal({
       }))
     }
   }, [toCaesarEnabled, loanData])
+
+  const requestOTP = () => {
+    axios
+      .post('/otp', formattedPhoneNumber)
+      .then((res) => setOtp(res.data as OTPTypes))
+      .catch((err) => extractMultipleErrorFromResponse(err))
+  }
+
+  useEffect(() => {
+    if (isRequestOtp && otp?.otp) {
+      dispatch(
+        setNotification({
+          type: NotificationTypes.SUCCESS,
+          message: 'OTP Request Sent',
+        })
+      )
+    }
+  }, [otp?.otp, isRequestOtp])
 
   const handleSubmit = () => {
     setLoading(true)
@@ -402,6 +440,7 @@ export default function DirectPaidModal({
                 </Grid>
               </Box>
             </Box>
+
             <Box display="flex" mt={2} justifyContent="space-between">
               {!user?.retailer_id ? (
                 <Button
@@ -420,17 +459,49 @@ export default function DirectPaidModal({
               ) : (
                 <Box></Box>
               )}
-
-              <AsyncButton
-                loading={loading}
-                disabled={loading}
-                color="primary"
-                variant="contained"
-                onClick={handleSubmit}
-              >
-                Mark as Paid
-              </AsyncButton>
+              {paid ? (
+                <>
+                  <AsyncButton
+                    loading={loading}
+                    disabled={loading}
+                    color="primary"
+                    variant="contained"
+                    onClick={() => {
+                      handleSubmit()
+                    }}
+                  >
+                    Mark as Paid
+                  </AsyncButton>
+                </>
+              ) : (
+                <>
+                  <AsyncButton
+                    loading={loading}
+                    disabled={loading}
+                    color="primary"
+                    variant="contained"
+                    onClick={() => {
+                      setOpenOtp(true)
+                      setIsRequestOtp(true)
+                      requestOTP()
+                    }}
+                  >
+                    Confirm
+                  </AsyncButton>
+                </>
+              )}
             </Box>
+
+            {openOtp && otp?.otp ? (
+              <OTPModal
+                open={openOtp}
+                handleClose={() => setOpenOtp(false)}
+                otpData={otp?.otp as OTPData}
+                otpPass={otpPassed}
+              />
+            ) : (
+              <></>
+            )}
           </>
         )}
       </Paper>
