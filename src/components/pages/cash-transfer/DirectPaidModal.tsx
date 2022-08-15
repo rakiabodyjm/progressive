@@ -75,12 +75,8 @@ export default function DirectPaidModal({
   const dispatch = useDispatch()
 
   const formattedPhoneNumber: OtpRequestTypes = {
-    // to: `+63${loanData?.caesar_bank_to.account_number.substring(1)}`,
-    to: '+639129646654',
-    // to: '+639452407967',
-    // to: '+639062586536',
+    to: `+63${loanData?.caesar_bank_to.account_number.substring(1)}`,
   }
-  console.log(`MOBILE NUMBER: +63${loanData?.caesar_bank_to.account_number.substring(1)}`)
 
   const otpPassed = (isPaid: boolean) => {
     setPaid(isPaid)
