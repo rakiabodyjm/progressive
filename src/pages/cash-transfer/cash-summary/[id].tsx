@@ -5,6 +5,7 @@ import {
   Container,
   Divider,
   Grid,
+  IconButton,
   List,
   ListItem,
   Paper,
@@ -12,6 +13,7 @@ import {
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
+import { UnfoldLess, UnfoldMore } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
@@ -41,6 +43,16 @@ export default function CashSummaryView() {
   const [grandTotalInterest, setGrandTotalInterest] = useState<number[]>([])
   const [grandTotalSummaryWithDate, setGrandTotalSummaryWithDate] = useState<number[]>([])
   const [grandTotalInterestWithDate, setGrandTotalInterestWithDate] = useState<number[]>([])
+  const [grandTotalCollectedSameDay, setGrandTotalCollectedSameDay] = useState<number[]>([])
+  const [grandTotalCollectedSameDayCount, setGrandTotalCollectedSameDayCount] = useState<number[]>(
+    []
+  )
+  const [grandTotalCollectedFromPrevCount, setGrandTotalCollectedFromPrevCount] = useState<
+    number[]
+  >([])
+  const [grandTotalCollectedFromPrev, setGrandTotalCollectedFromPrev] = useState<number[]>([])
+  const [grandTotalRemainingLoan, setGrandTotalRemainingLoan] = useState<number[]>([])
+  const [grandTotalRemainingLoanCount, setGrandTotalRemainingLoanCount] = useState<number[]>([])
 
   const mainBanks: string[] = ['09695638071', '09153754183']
   const user = useSelector(userDataSelector)
@@ -50,6 +62,7 @@ export default function CashSummaryView() {
   )
   const [switchDate, setSwitchDate] = useState<boolean>(false)
   const [stillValidating, setStillValidating] = useState<boolean>(false)
+  const [showPerDsp, setShowPerDsp] = useState<boolean>(false)
 
   const [fetchQuery, setFetchQuery] = useState<PaginateFetchParameters & { searchQuery?: string }>({
     limit: 1000,
@@ -137,27 +150,78 @@ export default function CashSummaryView() {
   const reduceTotalInterestWithDate = grandTotalInterestWithDate.filter(
     (ea, index) => grandTotalInterestWithDate.indexOf(ea) === index
   )
+
+  const reduceTotalCollectedSameDay = grandTotalCollectedSameDay.filter(
+    (ea, index) => grandTotalCollectedSameDay.indexOf(ea) === index
+  )
+  const reduceTotalCollectedSameDayCount = grandTotalCollectedSameDayCount.filter(
+    (ea, index) => grandTotalCollectedSameDayCount.indexOf(ea) === index
+  )
+  const reduceTotalCollectedFromPrev = grandTotalCollectedFromPrev.filter(
+    (ea, index) => grandTotalCollectedFromPrev.indexOf(ea) === index
+  )
+  const reduceTotalCollectedFromPrevCount = grandTotalCollectedFromPrevCount.filter(
+    (ea, index) => grandTotalCollectedFromPrevCount.indexOf(ea) === index
+  )
+
+  const reduceTotalRemainingLoan = grandTotalRemainingLoan.filter(
+    (ea, index) => grandTotalRemainingLoan.indexOf(ea) === index
+  )
+
+  const reduceTotalRemainingLoanCount = grandTotalRemainingLoanCount.filter(
+    (ea, index) => grandTotalRemainingLoanCount.indexOf(ea) === index
+  )
+
   useEffect(() => {
     setGrandTotalSummary([])
     setGrandTotalSummaryWithDate([])
     setGrandTotalInterest([])
     setGrandTotalInterestWithDate([])
+    setGrandTotalCollectedSameDay([])
+    setGrandTotalCollectedSameDayCount([])
+    setGrandTotalCollectedFromPrevCount([])
+    setGrandTotalCollectedFromPrev([])
+    setGrandTotalRemainingLoan([])
+    setGrandTotalRemainingLoanCount([])
   }, [dateQuery.date_from, dateQuery.date_to, switchDate])
 
-  const sendDataToParent = (totalAmount: number, totalInterest: number, stillLoading: boolean) => {
+  const sendDataToParent = (
+    totalAmount: number,
+    totalInterest: number,
+    totalCollectedSameDay: number,
+    totalCollectedSameDayCount: number,
+    totalCollectedFromPrev: number,
+    totalCollectedFromPrevCount: number,
+    totalRemainingLoan: number,
+    totalRemainingLoanCount: number
+  ) => {
     if (switchDate) {
       setGrandTotalSummaryWithDate((prev) => [...prev, totalAmount])
       setGrandTotalInterestWithDate((prev) => [...prev, totalInterest])
-      setStillValidating(stillLoading)
+      setGrandTotalCollectedSameDay((prev) => [...prev, totalCollectedSameDay])
+      setGrandTotalCollectedSameDayCount((prev) => [...prev, totalCollectedSameDayCount])
+      setGrandTotalCollectedFromPrev((prev) => [...prev, totalCollectedFromPrev])
+      setGrandTotalCollectedFromPrevCount((prev) => [...prev, totalCollectedFromPrevCount])
+      setGrandTotalRemainingLoan((prev) => [...prev, totalRemainingLoan])
+      setGrandTotalRemainingLoanCount((prev) => [...prev, totalRemainingLoanCount])
     } else {
       setGrandTotalSummary((prev) => [...prev, totalAmount])
       setGrandTotalInterest((prev) => [...prev, totalInterest])
-      setStillValidating(stillLoading)
+      setGrandTotalCollectedSameDay((prev) => [...prev, totalCollectedSameDay])
+      setGrandTotalCollectedSameDayCount((prev) => [...prev, totalCollectedSameDayCount])
+      setGrandTotalCollectedFromPrev((prev) => [...prev, totalCollectedFromPrev])
+      setGrandTotalCollectedFromPrevCount((prev) => [...prev, totalCollectedFromPrevCount])
+      setGrandTotalRemainingLoan((prev) => [...prev, totalRemainingLoan])
+      setGrandTotalRemainingLoanCount((prev) => [...prev, totalRemainingLoanCount])
 
-      if (totalAmount === 0 || grandTotalSummary.length > dspLength) {
-        grandTotalSummary.pop()
-      }
+      // if (totalAmount === 0 || grandTotalSummary.length > dspLength) {
+      //   grandTotalSummary.pop()
+      // }
     }
+  }
+
+  const sendIsLoadingToParent = (loadingCashTransfer: boolean) => {
+    setStillValidating(loadingCashTransfer)
   }
 
   return (
@@ -178,7 +242,7 @@ export default function CashSummaryView() {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Grid container spacing={1}>
-                  <Grid item xs={12} sm={6} lg={4}>
+                  <Grid item xs={12} md={4} lg={4}>
                     <Paper
                       style={{
                         textAlign: 'center',
@@ -223,13 +287,13 @@ export default function CashSummaryView() {
                               }
                             }}
                           >
-                            SET DATE
+                            {switchDate ? 'SWITCH TO DAILY REPORT' : 'SWITCH TO CUSTOM DATE'}
                           </Button>
                         </Grid>
                       </Grid>
                     </Paper>
                   </Grid>
-                  <Grid item xs={12} sm={6} lg={4}>
+                  <Grid item xs={12} md={4} lg={4}>
                     <Paper
                       style={{
                         textAlign: 'center',
@@ -257,7 +321,7 @@ export default function CashSummaryView() {
                     </Paper>
                   </Grid>
 
-                  <Grid item xs={12} sm={6} lg={4}>
+                  <Grid item xs={12} md={4} lg={4}>
                     <Paper
                       style={{
                         textAlign: 'center',
@@ -289,137 +353,414 @@ export default function CashSummaryView() {
                   </Grid>
                 </Grid>
               </Grid>
-
-              <Grid item xs={12} sm={12}>
-                <Box mt={1}>
-                  {caesars?.length === 0 && !isValidating && (
-                    <Paper
-                      style={{
-                        minHeight: 120,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
-                        flexDirection: 'column',
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        style={{
-                          textAlign: 'center',
-                        }}
-                      >
-                        No Account Matched the Search
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        color="primary"
-                        style={{
-                          textAlign: 'center',
-                        }}
-                      >
-                        Try Searching for a different keyword
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        color="textSecondary"
-                        style={{
-                          textAlign: 'center',
-                        }}
-                      >
-                        Caesar Account's First Name, Last Name, Phone Number
-                      </Typography>
-                    </Paper>
-                  )}
-                  {isValidating ? (
-                    <LoadingScreen2
-                      containerProps={{
-                        style: {
-                          borderRadius: 4,
-                        },
-                      }}
-                    />
-                  ) : (
-                    caesars &&
-                    caesars.length > 0 && (
-                      <>
-                        <Box
+              <Grid item xs={12}>
+                <Box p={1.5}>
+                  <Box pb={2}>{/* <RoleBadge disablePopUp>{dsp_name}</RoleBadge> */}</Box>
+                  <Box>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} lg={4}>
+                        <Paper
                           style={{
-                            maxHeight: 750,
-                            overflowY: 'auto',
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
                           }}
                         >
-                          {Object.entries(
-                            caesars.reduce((acc, ea) => {
-                              let accum = { ...acc }
-                              if (!accum[ea.account_type as keyof typeof accum]) {
-                                accum = {
-                                  ...accum,
-                                  [ea.account_type as keyof typeof accum]: [],
-                                }
-                              }
-                              accum[ea.account_type as keyof typeof accum] = [
-                                ...accum[ea.account_type as keyof typeof accum],
-                                ea,
-                              ]
-                              return accum
-                            }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
-                          )
-                            .filter((ea) => ea[0] === 'dsp')
-                            .sort(([key1], [key2]) => key1.localeCompare(key2))
-                            .map(([accountType, caesarValues]) => (
-                              <Box
-                                style={{
-                                  position: 'sticky',
-                                  top: 0,
-                                }}
-                                key={accountType}
-                              >
-                                <Grid container spacing={2}>
-                                  {caesarValues.map((ea) => (
-                                    <Grid key={ea.id} item xs={12} md={6} lg={4}>
-                                      <Box>
-                                        <ListItem
-                                          style={{
-                                            border: theme.palette.divider,
-                                            borderWidth: 1,
-                                            borderStyle: 'solid',
-                                            borderRadius: 4,
-                                            padding: 8,
-                                            marginTop: 8,
-                                          }}
-                                        >
-                                          <Grid
-                                            container
-                                            spacing={1}
-                                            style={{
-                                              padding: 8,
-                                            }}
-                                          >
-                                            <Grid item xs={12}>
-                                              <CollectiblesSmallCards
-                                                id={ea.id}
-                                                dsp_name={ea.name}
-                                                setValue={sendDataToParent}
-                                                date_from={dateQuery.date_from}
-                                                date_to={dateQuery.date_to}
-                                                dateEnabled={switchDate}
-                                              />
-                                            </Grid>
-                                          </Grid>
-                                        </ListItem>
-                                      </Box>
-                                    </Grid>
-                                  ))}
-                                </Grid>
-                              </Box>
-                            ))}
-                        </Box>
-                      </>
-                    )
-                  )}
+                          <FormLabel>Remaining Collection From Previous</FormLabel>
+                          <Typography variant="h4" style={{ fontWeight: '800' }}>
+                            {reduceTotalRemainingLoanCount.reduce(
+                              (acc, current) => acc + current,
+                              0
+                            )}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+
+                      <Grid item xs={12} lg={8}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Remaining Collection Amount</FormLabel>
+                          <Typography
+                            variant="h4"
+                            style={{ fontWeight: '800', overflow: 'hidden' }}
+                          >
+                            {formatIntoCurrency(
+                              reduceTotalRemainingLoan.reduce((acc, current) => acc + current, 0)
+                            )}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={12} lg={4}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Collected From Previous</FormLabel>
+                          <Typography variant="h4" style={{ fontWeight: '800' }}>
+                            {reduceTotalCollectedFromPrevCount.reduce(
+                              (acc, current) => acc + current,
+                              0
+                            )}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+
+                      <Grid item xs={12} lg={8}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Collected Amount From Previous</FormLabel>
+                          <Typography
+                            variant="h4"
+                            style={{ fontWeight: '800', overflow: 'hidden' }}
+                          >
+                            {formatIntoCurrency(
+                              reduceTotalCollectedFromPrev.reduce(
+                                (acc, current) => acc + current,
+                                0
+                              )
+                            )}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={12} lg={4}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Loaned Today (same day)</FormLabel>
+                          <Typography variant="h4" style={{ fontWeight: '800' }}>
+                            {/* {dateEnabled ? 0 : loanedToday.loanedSameDay || 0} */} 0
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={12} lg={8}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Loaned Today Amount</FormLabel>
+                          <Typography
+                            variant="h4"
+                            style={{ fontWeight: '800', overflow: 'hidden' }}
+                          >
+                            {/* {dateEnabled
+                                  ? 0
+                                  : formatIntoCurrency(
+                                      loanedToday.loanedSameDayAmount.reduce(
+                                        (prev, { total_amount }) => prev + total_amount,
+                                        0
+                                      )
+                                    )} */}
+                            0
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={12} lg={4}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Collected Today (same day)</FormLabel>
+                          <Typography variant="h4" style={{ fontWeight: '800' }}>
+                            {reduceTotalCollectedSameDayCount.reduce(
+                              (acc, current) => acc + current,
+                              0
+                            )}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={12} lg={8}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Collected Today Amount</FormLabel>
+                          <Typography
+                            variant="h4"
+                            style={{ fontWeight: '800', overflow: 'hidden' }}
+                          >
+                            {formatIntoCurrency(
+                              reduceTotalCollectedSameDay.reduce((acc, current) => acc + current, 0)
+                            )}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={12} lg={12}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Total Collection {switchDate ? '' : 'Today'}</FormLabel>
+                          <Typography
+                            variant="h4"
+                            style={{ fontWeight: '800', overflow: 'hidden' }}
+                          >
+                            {switchDate
+                              ? formatIntoCurrency(
+                                  reduceTotalWithDate.reduce((acc, current) => acc + current, 0)
+                                )
+                              : formatIntoCurrency(
+                                  reduceTotal.reduce((acc, current) => acc + current, 0)
+                                )}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={12} lg={4}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>Loan For Tomorrow</FormLabel>
+                          <Typography variant="h4" style={{ fontWeight: '800' }}>
+                            {/* {dateEnabled ? 0 : loanToCollect.toBeCollect || 0} */}0
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={12} lg={8}>
+                        <Paper
+                          style={{
+                            textAlign: 'center',
+                            height: '100%',
+                            padding: 16,
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                          }}
+                        >
+                          <FormLabel>To be collect for tomorrow </FormLabel>
+                          <Typography
+                            variant="h4"
+                            style={{ fontWeight: '800', overflow: 'hidden' }}
+                          >
+                            {/* {dateEnabled
+                                  ? 0
+                                  : formatIntoCurrency(
+                                      loanAndLoad.unpaid.reduce(
+                                        (prev, { total_amount }) => prev + total_amount,
+                                        0
+                                      )
+                                    )} */}
+                            0
+                          </Typography>
+                        </Paper>
+                      </Grid>
+                    </Grid>
+                  </Box>
+
+                  <List
+                    style={{
+                      display: 'grid',
+                      gap: 4,
+                      maxHeight: 640,
+                      overflowY: 'auto',
+                    }}
+                  ></List>
                 </Box>
               </Grid>
+
+              {showPerDsp ? (
+                <>
+                  <Grid item xs={12}>
+                    <Box display="flex" justifyContent="center">
+                      <Box>
+                        <IconButton
+                          onClick={() => {
+                            setShowPerDsp(false)
+                          }}
+                        >
+                          <UnfoldLess />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Box mt={1}>
+                      {caesars?.length === 0 && !isValidating && (
+                        <Paper
+                          style={{
+                            minHeight: 120,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                            flexDirection: 'column',
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            style={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            No Account Matched the Search
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            color="primary"
+                            style={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            Try Searching for a different keyword
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            color="textSecondary"
+                            style={{
+                              textAlign: 'center',
+                            }}
+                          >
+                            Caesar Account's First Name, Last Name, Phone Number
+                          </Typography>
+                        </Paper>
+                      )}
+                      {isValidating ? (
+                        <LoadingScreen2
+                          containerProps={{
+                            style: {
+                              borderRadius: 4,
+                            },
+                          }}
+                        />
+                      ) : (
+                        caesars &&
+                        caesars.length > 0 && (
+                          <>
+                            <Box
+                              style={{
+                                maxHeight: 750,
+                                overflowY: 'auto',
+                              }}
+                            >
+                              {Object.entries(
+                                caesars.reduce((acc, ea) => {
+                                  let accum = { ...acc }
+                                  if (!accum[ea.account_type as keyof typeof accum]) {
+                                    accum = {
+                                      ...accum,
+                                      [ea.account_type as keyof typeof accum]: [],
+                                    }
+                                  }
+                                  accum[ea.account_type as keyof typeof accum] = [
+                                    ...accum[ea.account_type as keyof typeof accum],
+                                    ea,
+                                  ]
+                                  return accum
+                                }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
+                              )
+                                .filter((ea) => ea[0] === 'dsp')
+                                .sort(([key1], [key2]) => key1.localeCompare(key2))
+                                .map(([accountType, caesarValues]) => (
+                                  <Box
+                                    style={{
+                                      position: 'sticky',
+                                      top: 0,
+                                    }}
+                                    key={accountType}
+                                  >
+                                    <Grid container spacing={2}>
+                                      {caesarValues.map((ea) => (
+                                        <Grid key={ea.id} item xs={12} md={6} lg={4}>
+                                          <Box>
+                                            <ListItem
+                                              style={{
+                                                border: theme.palette.divider,
+                                                borderWidth: 1,
+                                                borderStyle: 'solid',
+                                                borderRadius: 4,
+                                                padding: 8,
+                                                marginTop: 8,
+                                              }}
+                                            >
+                                              <Grid
+                                                container
+                                                spacing={1}
+                                                style={{
+                                                  padding: 8,
+                                                }}
+                                              >
+                                                <Grid item xs={12}>
+                                                  <CollectiblesSmallCards
+                                                    id={ea.id}
+                                                    dsp_name={ea.name}
+                                                    setValue={sendDataToParent}
+                                                    date_from={dateQuery.date_from}
+                                                    date_to={dateQuery.date_to}
+                                                    dateEnabled={switchDate}
+                                                    setLoading={sendIsLoadingToParent}
+                                                  />
+                                                </Grid>
+                                              </Grid>
+                                            </ListItem>
+                                          </Box>
+                                        </Grid>
+                                      ))}
+                                    </Grid>
+                                  </Box>
+                                ))}
+                            </Box>
+                          </>
+                        )
+                      )}
+                    </Box>
+                  </Grid>
+                </>
+              ) : (
+                <>
+                  <Grid item xs={12}>
+                    <Box display="flex" justifyContent="center">
+                      <Box>
+                        <IconButton
+                          onClick={() => {
+                            setShowPerDsp(true)
+                          }}
+                        >
+                          <UnfoldMore />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </Grid>
+                </>
+              )}
             </Grid>
           </Box>
         </Box>

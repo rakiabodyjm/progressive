@@ -15,7 +15,11 @@ export default function ModalWrapper({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={(_, reason) => {
+        if (reason !== 'backdropClick') {
+          onClose()
+        }
+      }}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{

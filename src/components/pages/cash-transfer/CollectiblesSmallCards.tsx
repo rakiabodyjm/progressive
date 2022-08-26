@@ -8,6 +8,7 @@ import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
 import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
+import { previousDay } from 'date-fns/esm'
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 type NewDateType = {
@@ -23,13 +24,24 @@ export default function CollectiblesSmallCards({
   date_from,
   date_to,
   dateEnabled,
+  setLoading,
 }: {
   id: string
   dsp_name: string
-  setValue: (totalAmount: number, totalInterest: number, stillLoading: boolean) => void
+  setValue: (
+    totalAmount: number,
+    totalInterest: number,
+    totalCollectedSameDay: number,
+    totalCollectedSameDayCount: number,
+    totalCollectionFromPrev: number,
+    totalCollectionFromPrevCount: number,
+    totalRemainingLoan: number,
+    totalRemainingLoanCount: number
+  ) => void
   date_from?: string
   date_to?: string
   dateEnabled: boolean
+  setLoading: (stillLoading: boolean) => void
 }) {
   const theme: Theme = useTheme()
   const [newDate, setNewDate] = useState<NewDateType>({
@@ -247,6 +259,56 @@ export default function CollectiblesSmallCards({
       totalCollectionWithDate: aggreGatedCashTransfersWithLoad.filter(
         (ea) => (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) && ea.is_loan_paid
       ),
+
+      totalCollectedLoanSameDayCount:
+        aggreGatedCashTransfersWithLoad.filter(
+          (ea) =>
+            (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&
+            ea.is_loan_paid &&
+            transactionDate(ea.created_at.toLocaleString()) ===
+              transactionDate(ea.updated_at.toLocaleString())
+        ).length || 0,
+
+      totalCollectedLoanSameDay: aggreGatedCashTransfersWithLoad.filter(
+        (ea) =>
+          (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&
+          ea.is_loan_paid &&
+          transactionDate(ea.created_at.toLocaleString()) ===
+            transactionDate(ea.updated_at.toLocaleString())
+      ),
+
+      totalCollectedFromPrevCount:
+        aggreGatedCashTransfersWithLoad.filter(
+          (ea) =>
+            (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&
+            ea.is_loan_paid &&
+            transactionDate(ea.created_at.toLocaleString()) !==
+              transactionDate(ea.updated_at.toLocaleString())
+        ).length || 0,
+
+      totalCollectedFromPrev: aggreGatedCashTransfersWithLoad.filter(
+        (ea) =>
+          (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&
+          ea.is_loan_paid &&
+          transactionDate(ea.created_at.toLocaleString()) !==
+            transactionDate(ea.updated_at.toLocaleString())
+      ),
+
+      totalRemainingLoan: aggreGatedCashTransfersWithLoad.filter(
+        (ea) =>
+          (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&
+          ea.is_loan_paid &&
+          transactionDate(ea.created_at.toLocaleString()) !==
+            transactionDate(ea.updated_at.toLocaleString())
+      ),
+      totalRemainingLoanCount:
+        aggreGatedCashTransfersWithLoad.filter(
+          (ea) =>
+            (ea.as === CashTransferAs.LOAN || ea.as === CashTransferAs.LOAD) &&
+            ea.is_loan_paid &&
+            transactionDate(ea.created_at.toLocaleString()) !==
+              transactionDate(ea.updated_at.toLocaleString())
+        ).length || 0,
     }),
     [aggreGatedCashTransfersWithLoad]
   )
@@ -267,6 +329,41 @@ export default function CollectiblesSmallCards({
     loanAndLoad.totalCollectionWithDate.reduce((prev, { total_amount }) => prev + total_amount, 0) -
     loanAndLoad.totalCollectionWithDate.reduce((prev, { amount }) => prev + amount, 0)
 
+  const totalLoanCollectedinSameDay = dateEnabled
+    ? loanAndLoad.totalCollectedLoanSameDay.reduce(
+        (prev, { total_amount }) => prev + total_amount,
+        0
+      )
+    : collectedToday.collectedSameDayAmount.reduce(
+        (prev, { total_amount }) => prev + total_amount,
+        0
+      )
+
+  const totalLoanCollectedSameDayCount = dateEnabled
+    ? loanAndLoad.totalCollectedLoanSameDayCount
+    : collectedToday.collectedSameDay
+
+  const totalCollectionFromPrevCount = dateEnabled
+    ? loanAndLoad.totalCollectedFromPrevCount
+    : collectionFromPrevious.collectedPreviousDay
+
+  const totalCollectionFromPrev = dateEnabled
+    ? loanAndLoad.totalCollectedFromPrev.reduce((prev, { total_amount }) => prev + total_amount, 0)
+    : collectionFromPrevious.collectedPrevDayAmount.reduce(
+        (prev, { total_amount }) => prev + total_amount,
+        0
+      )
+
+  const totalRemainingLoan = dateEnabled
+    ? loanAndLoad.totalRemainingLoan.reduce((prev, { total_amount }) => prev + total_amount, 0)
+    : collectionFromPrevious.toCollectFromPrevAmount.reduce(
+        (prev, { total_amount }) => prev + total_amount,
+        0
+      )
+  const totalRemainingLoanCount = dateEnabled
+    ? loanAndLoad.totalRemainingLoanCount
+    : collectionFromPrevious.toCollectFromPrev
+
   useEffect(() => {
     if (dateEnabled) {
       setQueryParameters((prev) => ({
@@ -284,6 +381,7 @@ export default function CollectiblesSmallCards({
   }, [dateEnabled, date_from, date_to])
 
   useEffect(() => {
+    setLoading(loadingCashTransfers)
     if (
       !loadingCashTransfers &&
       !loadingCashTransfersLoad &&
@@ -293,10 +391,24 @@ export default function CollectiblesSmallCards({
         setValue(
           totalCollectionAmountWithDate,
           totalCollectionInterestWithDate,
-          loadingCashTransfers
+          totalLoanCollectedinSameDay,
+          totalLoanCollectedSameDayCount,
+          totalCollectionFromPrev,
+          totalCollectionFromPrevCount,
+          totalRemainingLoan,
+          totalRemainingLoanCount
         )
       } else {
-        setValue(totalCollectionAmount, totalCollectionInterest, loadingCashTransfers)
+        setValue(
+          totalCollectionAmount,
+          totalCollectionInterest,
+          totalLoanCollectedinSameDay,
+          totalLoanCollectedSameDayCount,
+          totalCollectionFromPrev,
+          totalCollectionFromPrevCount,
+          totalRemainingLoan,
+          totalRemainingLoanCount
+        )
       }
     }
   }, [
@@ -305,6 +417,10 @@ export default function CollectiblesSmallCards({
     loadingCashTransfers,
     loadingCashTransfersLoad,
     dateEnabled,
+    totalCollectionInterestWithDate,
+    totalLoanCollectedinSameDay,
+    totalLoanCollectedSameDayCount,
+    totalCollectionInterest,
   ])
 
   return (
@@ -329,7 +445,9 @@ export default function CollectiblesSmallCards({
                 <>
                   <FormLabel>Remaining Collection From Previous</FormLabel>
                   <Typography variant="h4" style={{ fontWeight: '800' }}>
-                    {dateEnabled ? 0 : collectionFromPrevious.toCollectFromPrev || 0}
+                    {dateEnabled
+                      ? loanAndLoad.totalCollectedFromPrevCount || 0
+                      : collectionFromPrevious.toCollectFromPrev || 0}
                   </Typography>
                 </>
               )}
@@ -352,7 +470,7 @@ export default function CollectiblesSmallCards({
                   <FormLabel>Remaining Collection Amount</FormLabel>
                   <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
                     {dateEnabled
-                      ? 0
+                      ? formatIntoCurrency(totalRemainingLoan)
                       : formatIntoCurrency(
                           collectionFromPrevious.toCollectFromPrevAmount.reduce(
                             (prev, { total_amount }) => prev + total_amount,
@@ -379,7 +497,9 @@ export default function CollectiblesSmallCards({
                 <>
                   <FormLabel>Collected From Previous</FormLabel>
                   <Typography variant="h4" style={{ fontWeight: '800' }}>
-                    {dateEnabled ? 0 : collectionFromPrevious.collectedPreviousDay || 0}
+                    {dateEnabled
+                      ? totalCollectionFromPrevCount
+                      : collectionFromPrevious.collectedPreviousDay || 0}
                   </Typography>
                 </>
               )}
@@ -402,7 +522,7 @@ export default function CollectiblesSmallCards({
                   <FormLabel>Collected Amount From Previous</FormLabel>
                   <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
                     {dateEnabled
-                      ? 0
+                      ? formatIntoCurrency(totalCollectionFromPrev)
                       : formatIntoCurrency(
                           collectionFromPrevious.collectedPrevDayAmount.reduce(
                             (prev, { total_amount }) => prev + total_amount,
@@ -478,7 +598,9 @@ export default function CollectiblesSmallCards({
                 <>
                   <FormLabel>Collected Today (same day)</FormLabel>
                   <Typography variant="h4" style={{ fontWeight: '800' }}>
-                    {dateEnabled ? 0 : collectedToday.collectedSameDay || 0}
+                    {dateEnabled
+                      ? totalLoanCollectedSameDayCount
+                      : collectedToday.collectedSameDay || 0}
                   </Typography>
                 </>
               )}
@@ -500,7 +622,7 @@ export default function CollectiblesSmallCards({
                   <FormLabel>Collected Today Amount</FormLabel>
                   <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
                     {dateEnabled
-                      ? 0
+                      ? formatIntoCurrency(totalLoanCollectedinSameDay)
                       : formatIntoCurrency(
                           collectedToday.collectedSameDayAmount.reduce(
                             (prev, { total_amount }) => prev + total_amount,
