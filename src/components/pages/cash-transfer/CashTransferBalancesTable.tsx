@@ -35,7 +35,8 @@ import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { userDataSelector, UserTypes, UserTypesWithCashTransfer } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
-import { getDsp } from '@src/utils/api/dspApi'
+import { getDsp, getRetailers } from '@src/utils/api/dspApi'
+import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { getSubdistributor } from '@src/utils/api/subdistributorApi'
 import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
 import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
@@ -71,7 +72,6 @@ export const CashTransferBalancesTable = ({
     () => user && user.roles.some((ea) => ['ct-operator', 'ct-admin', 'admin'].includes(ea)),
     [user]
   )
-
   const router = useRouter()
 
   const [addRetailerModal, setAddRetailerModal] = useState<boolean>(false)
@@ -100,20 +100,28 @@ export const CashTransferBalancesTable = ({
 
   const formatter = useCallback(
     (param: CaesarWalletResponse[]) =>
-      param.map(({ id, description, account_type, cash_transfer_balance, bank_accounts }) => {
-        const returnValue = {
-          id,
-          name: description,
-          account_type,
-          //   bank_accounts: bank_accounts.map((ea) => ea.bank.name).join(' '),
-          bank_accounts,
-          balance: formatIntoCurrency(cash_transfer_balance),
-          bank_balances: formatIntoCurrency(bank_accounts.reduce((acc, ea) => acc + ea.balance, 0)),
+      param.map(
+        ({ id, description, account_type, cash_transfer_balance, bank_accounts, retailer }) => {
+          const returnValue = {
+            id,
+            name: description,
+            account_type,
+            //   bank_accounts: bank_accounts.map((ea) => ea.bank.name).join(' '),
+            bank_accounts,
+            balance: formatIntoCurrency(cash_transfer_balance),
+            bank_balances: formatIntoCurrency(
+              bank_accounts.reduce((acc, ea) => acc + ea.balance, 0)
+            ),
+            retailer,
+          }
+          return returnValue
         }
-        return returnValue
-      }),
+      ),
     [disabledKeys]
   )
+  const { data: retailersData } = useSWR([user?.dsp_id], getRetailers)
+  const retailersDataMemoized = useMemo(() => retailersData?.data || undefined, [retailersData])
+
   const fetcher = useCallback(
     () =>
       searchWalletV2(query).then(async (res) => ({
@@ -129,7 +137,12 @@ export const CashTransferBalancesTable = ({
     error,
     mutate,
   } = useSWR(['/caesar', { ...query }], fetcher)
+
   const caesars = useMemo(() => paginatedCaesar?.data || undefined, [paginatedCaesar])
+
+  const retailerCaesarsFiltered = caesars
+    ?.filter((caesar) => caesar !== null)
+    .filter((caesar) => retailersDataMemoized?.some((ea) => ea.id === caesar.retailer?.id))
 
   const ceasarMetaData = useMemo(() => paginatedCaesar?.metadata || undefined, [paginatedCaesar])
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>()
@@ -384,7 +397,7 @@ export const CashTransferBalancesTable = ({
                   },
                 }}
               />
-            ) : (
+            ) : isAuthorizedForViewingBalances ? (
               caesars &&
               caesars.length > 0 && (
                 <>
@@ -412,11 +425,7 @@ export const CashTransferBalancesTable = ({
                     )
                       .filter((ea) => {
                         if (!user?.admin_id && user?.subdistributor_id && !isEligible) {
-                          return (
-                            ea[0] !== 'admin' &&
-                            ea[0] !== 'subdistributor' &&
-                            ea[0] !== 'user'
-                          )
+                          return ea[0] !== 'admin' && ea[0] !== 'subdistributor' && ea[0] !== 'user'
                         }
                         if (!user?.admin_id && user?.dsp_id && !isEligible) {
                           return (
@@ -458,7 +467,225 @@ export const CashTransferBalancesTable = ({
                             setLimit={setQueryState('limit')}
                             setPage={setQueryState('page')}
                             total={ceasarMetaData?.total || 0}
-                            hiddenFields={['id', 'account_type', ...(disabledKeys || [])]}
+                            hiddenFields={[
+                              'id',
+                              'retailer',
+                              'account_type',
+                              ...(disabledKeys || []),
+                            ]}
+                            onRowClick={(e, data) => {
+                              const id = (data as { id: string })?.id
+                              if (
+                                accountType === 'admin' &&
+                                user?.roles &&
+                                (user?.roles as UserTypesWithCashTransfer[])?.includes(
+                                  'admin' as UserTypesWithCashTransfer
+                                ) &&
+                                eligibleAsAdminOnly
+                              ) {
+                                router.push({
+                                  pathname: '/cash-transfer/cash-summary/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+                              if (accountType === 'admin' && !eligibleAsAdminOnly) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+
+                              if (accountType !== 'admin' && isEligible) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+                              if (
+                                user?.roles &&
+                                (user?.roles as UserTypesWithCashTransfer[])?.includes(
+                                  'subdistributor' as UserTypesWithCashTransfer
+                                ) &&
+                                ['user', 'retailer', 'dsp'].includes(data.account_type)
+                              ) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+
+                              if (
+                                user?.roles &&
+                                (user?.roles as UserTypesWithCashTransfer[])?.includes(
+                                  'dsp' as UserTypesWithCashTransfer
+                                ) &&
+                                ['user', 'retailer'].includes(data.account_type)
+                              ) {
+                                router.push({
+                                  pathname: '/cash-transfer/[id]',
+                                  query: {
+                                    id,
+                                  },
+                                })
+                              }
+                            }}
+                            hidePagination
+                            tableCellProps={{
+                              name: {
+                                style: {
+                                  minWidth: '30%',
+                                },
+                              },
+                              bank_accounts: {
+                                style: {
+                                  width: '30%',
+                                },
+                              },
+                              bank_balances: {
+                                style: {
+                                  width: '20%',
+                                },
+                              },
+                              balance: {
+                                style: {
+                                  width: '20%',
+                                },
+                              },
+                            }}
+                            renderCell={{
+                              bank_accounts: (value) => (
+                                <Box display="flex" flexWrap="wrap">
+                                  {value && Array.isArray(value)
+                                    ? (value as CaesarBank[])
+                                        ?.sort((ea1, ea2) =>
+                                          ea1.bank.name?.localeCompare(ea2.bank.name)
+                                        )
+                                        .map((ea, index) => (
+                                          <RoleBadge
+                                            key={ea?.id || index}
+                                            style={{
+                                              marginTop: 4,
+                                              marginRight: 4,
+                                              borderRadius: '4em',
+                                              paddingLeft: 16,
+                                              paddingRight: 16,
+                                            }}
+                                            disablePopUp
+                                          >
+                                            {ea.bank.name}
+                                          </RoleBadge>
+                                        ))
+                                    : null}
+                                </Box>
+                              ),
+                            }}
+                          />
+                        </Box>
+                      ))}
+                  </Box>
+
+                  <TablePagination
+                    rowsPerPageOptions={[50, 100, 250, 500]}
+                    count={ceasarMetaData?.total || 0}
+                    rowsPerPage={query?.limit || 0}
+                    page={query?.page || 0}
+                    onPageChange={(_, page) => {
+                      // setPage(page)
+                      setQueryState('page')(page)
+                    }}
+                    onRowsPerPageChange={(
+                      e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                    ) => {
+                      setQueryState('limit')(Number(e.target.value))
+                    }}
+                    component="div"
+                  />
+                </>
+              )
+            ) : (
+              retailerCaesarsFiltered &&
+              retailerCaesarsFiltered.length > 0 && (
+                <>
+                  <Box
+                    style={{
+                      maxHeight: 640,
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {Object.entries(
+                      retailerCaesarsFiltered.reduce((acc, ea) => {
+                        let accum = { ...acc }
+                        if (!accum[ea.account_type as keyof typeof accum]) {
+                          accum = {
+                            ...accum,
+                            [ea.account_type as keyof typeof accum]: [],
+                          }
+                        }
+                        accum[ea.account_type as keyof typeof accum] = [
+                          ...accum[ea.account_type as keyof typeof accum],
+                          ea,
+                        ]
+                        return accum
+                      }, {} as Record<UserTypes, ReturnType<typeof formatter>>)
+                    )
+                      .filter((ea) => {
+                        if (!user?.admin_id && user?.subdistributor_id && !isEligible) {
+                          return ea[0] !== 'admin' && ea[0] !== 'subdistributor' && ea[0] !== 'user'
+                        }
+                        if (!user?.admin_id && user?.dsp_id && !isEligible) {
+                          return (
+                            ea[0] !== 'admin' &&
+                            ea[0] !== 'subdistributor' &&
+                            ea[0] !== 'dsp' &&
+                            ea[0] !== 'user'
+                          )
+                        }
+
+                        return ea
+                      })
+                      .sort(([key1], [key2]) => key1.localeCompare(key2))
+                      .map(([accountType, caesarValues]) => (
+                        <Box
+                          style={{
+                            position: 'sticky',
+                            top: 0,
+                          }}
+                          key={accountType}
+                        >
+                          <Box
+                            style={{
+                              background: theme.palette.type === 'dark' ? grey['900'] : grey['200'],
+                              borderTopLeftRadius: 4,
+                              borderTopRightRadius: 4,
+                            }}
+                            p={2}
+                            // mt={2}
+                          >
+                            <RoleBadge disablePopUp uppercase>
+                              {accountType}
+                            </RoleBadge>
+                          </Box>
+                          <UsersTable
+                            data={caesarValues}
+                            limit={query.limit!}
+                            page={query.page!}
+                            setLimit={setQueryState('limit')}
+                            setPage={setQueryState('page')}
+                            total={ceasarMetaData?.total || 0}
+                            hiddenFields={[
+                              'id',
+                              'retailer',
+                              'account_type',
+                              ...(disabledKeys || []),
+                            ]}
                             onRowClick={(e, data) => {
                               const id = (data as { id: string })?.id
                               if (

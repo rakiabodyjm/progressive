@@ -12,14 +12,17 @@ import ToCaesarBankAutoComplete, {
 } from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
+import { userDataSelector } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
+import { getRetailers } from '@src/utils/api/dspApi'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
 import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
-import { useCallback, useEffect, useState } from 'react'
-import { useSWRConfig } from 'swr'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
+import useSWR, { useSWRConfig } from 'swr'
 
 const TransferTypeTransaction = ({
   caesar_bank_from,
@@ -231,6 +234,13 @@ const TransferTypeTransaction = ({
     }
   }, [toCaesarEnabled])
 
+  const user = useSelector(userDataSelector)
+
+  const { data: retailersData } = useSWR([user?.dsp_id], getRetailers)
+  const retailersDataMemoized = useMemo(() => retailersData?.data, [retailersData])
+  console.log('FORM: ', transferForm.caesar_bank_from)
+  console.log('RETAILERS DATA: ', retailersDataMemoized)
+
   return (
     <>
       <Box>
@@ -340,12 +350,13 @@ const TransferTypeTransaction = ({
                 }))
               }}
               filter={(args) => {
-                const retunrObject = args.filter((ea) =>
-                  transferForm.caesar_bank_from?.id
-                    ? transferForm.caesar_bank_from.id !== ea.id
-                    : ea
-                )
-
+                const retunrObject = args
+                  .filter((ea) => ea.caesar !== null)
+                  .filter((caesarBank) =>
+                    retailersDataMemoized?.some(
+                      (ea) => ea.caesar_wallet.id === caesarBank.caesar.id
+                    )
+                  )
                 return retunrObject
               }}
               defaultValue={transferForm?.caesar_bank_to || undefined}
