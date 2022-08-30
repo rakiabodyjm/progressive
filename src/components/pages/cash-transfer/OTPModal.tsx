@@ -55,6 +55,8 @@ export default function OTPModal({
   const [otpFiltered, setOtpFiltered] = useState<OTPData>()
   const dispatch = useDispatch()
 
+  const [verifyBtn, setVerifyBtn] = useState<boolean>(false)
+
   // const checkIfVerified = useCallback(() => {
   //   if (fetchOtpDataMemoized && otpFiltered) {
   //     console.log('TRUEEEEEEEEEEEEEEEEEEEE')
@@ -101,35 +103,40 @@ export default function OTPModal({
   //   }
   // }, [fetchOtpData, otpData])
 
-  const verifyOTP = () => {
-    setLoading(true)
+  const verifyOTP = async () => {
     axios
       .patch(`/otp/verify/${otpData?.id}`, { ...otpCode })
-      .then(async (res) => {
-        await axios.get(`/otp/${otpData?.id}`).then((res) => {
-          const otpFetched: OTPData = res.data
-          console.log('OTP FETCH DATA: ', otpFetched)
-          if (otpFetched.verified) {
-            dispatch(
-              setNotification({
-                type: NotificationTypes.SUCCESS,
-                message: 'OTP Verified',
-              })
-            )
-            otpPass(otpFetched.verified)
-            handleClose()
-          } else {
-            dispatch(
-              setNotification({
-                type: NotificationTypes.ERROR,
-                message: 'OTP is not Valid new',
-              })
-            )
-            setLoading(false)
-          }
-        })
-      })
+      .then((res) => res)
       .catch((err) => extractMultipleErrorFromResponse(err))
+
+    if (verifyBtn) {
+      setLoading(true)
+      axios.get(`/otp/${otpData?.id}`).then((res) => {
+        const otpFetched: OTPData = res.data
+        console.log('OTP FETCH DATA: ', otpFetched)
+        if (otpFetched.verified) {
+          dispatch(
+            setNotification({
+              type: NotificationTypes.SUCCESS,
+              message: 'OTP Verified',
+            })
+          )
+          otpPass(otpFetched.verified)
+          setVerifyBtn(false)
+          handleClose()
+        } else {
+          dispatch(
+            setNotification({
+              type: NotificationTypes.ERROR,
+              message: 'Invalid OTP',
+            })
+          )
+          setLoading(false)
+          setVerifyBtn(false)
+        }
+      })
+    }
+
     // if (otpData?.id === undefined) {
     //   dispatch(
     //     setNotification({
@@ -181,14 +188,23 @@ export default function OTPModal({
               </AsyncButton>
             </Grid> */}
                 <Grid item xs={12}>
-                  <AsyncButton
-                    fullWidth
-                    loading={loading}
-                    disabled={!enableSubmit}
-                    onClick={verifyOTP}
-                  >
-                    Verify Code
-                  </AsyncButton>
+                  {verifyBtn ? (
+                    <AsyncButton fullWidth loading={loading} onClick={verifyOTP}>
+                      Verify Code
+                    </AsyncButton>
+                  ) : (
+                    <AsyncButton
+                      fullWidth
+                      loading={loading}
+                      disabled={!enableSubmit}
+                      onClick={() => {
+                        verifyOTP()
+                        setVerifyBtn(true)
+                      }}
+                    >
+                      Submit Code
+                    </AsyncButton>
+                  )}
                 </Grid>
               </Grid>
             </Box>

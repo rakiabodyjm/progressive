@@ -76,6 +76,7 @@ export default function DirectPaidModal({
 
   const formattedPhoneNumber: OtpRequestTypes = {
     to: `+63${loanData?.caesar_bank_to.account_number.substring(1)}`,
+    cash_transfer: loanData?.id,
   }
 
   const otpPassed = (isPaid: boolean) => {
