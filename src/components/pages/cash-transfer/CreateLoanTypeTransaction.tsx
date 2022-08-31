@@ -28,8 +28,8 @@ import useNotification, { useErrorNotification } from '@src/utils/hooks/useNotif
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
 import { Caesar, CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
-import { useCallback, useEffect, useState, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useCallback, useEffect, useState, useRef, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import useSWR, { useSWRConfig } from 'swr'
 import ModalWrapper from '@components/ModalWrapper'
 import { CloseOutlined } from '@material-ui/icons'
@@ -39,6 +39,8 @@ import removeKeyFromObject from '@src/utils/removeKeyFromObject'
 import ToCaesarAndCaesarBank from '@src/components/pages/cash-transfer/ToCaesarAndCaesarBank'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
+import { userDataSelector } from '@src/redux/data/userSlice'
+import { getRetailers } from '@src/utils/api/dspApi'
 
 const LoanTypeTransaction = ({
   caesar_bank_from,
@@ -68,10 +70,18 @@ const LoanTypeTransaction = ({
     from: undefined,
   })
 
+  const user = useSelector(userDataSelector)
+
+  const { data: retailersData } = useSWR([user?.dsp_id], getRetailers)
+  const retailersDataMemoized = useMemo(() => retailersData?.data, [retailersData])
+  console.log('FORM (LOAN TRANSACTIONS): ', transferForm.caesar_bank_from)
+  console.log('RETAILERS DATA (LOAN TRANSACTION): ', retailersDataMemoized)
+
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [fromCaesarEnabled, setFromCaesarEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [resetValue, setResetValue] = useState<number>()
+  const [fromCaesaeEnabled, setFromCaesaeEnabled] = useState<boolean>(false)
   const [confirmationModal, setConfirmationModal] = useState<boolean>(false)
   const dispatchNotif = useNotification()
 
@@ -179,7 +189,40 @@ const LoanTypeTransaction = ({
         <Divider />
       </Margin2>
       <Box>
-        <FormLabel>From {fromCaesarEnabled ? 'Caesar' : 'Bank'} Account</FormLabel>
+        {fromCaesaeEnabled ? (
+          <>
+            <FormLabel>From Caesar Account</FormLabel>
+            <ToCaesarAutoComplete
+              onChange={(caesarSelected) => {
+                setTransferForm((prev) => ({
+                  ...prev,
+                  from: caesarSelected,
+                }))
+              }}
+              filter={(res) => res.filter((ea) => ea.id !== caesar_bank_from?.caesar.id)}
+              defaultValue={transferForm.from}
+              value={transferForm.from}
+              key={transferForm.amount}
+              disabled={!!caesar_bank_from?.caesar}
+            />
+          </>
+        ) : (
+          <>
+            <FormLabel>From Bank Account</FormLabel>
+            <ToCaesarBankAutoComplete
+              onChange={(caesarBank) => {
+                setTransferForm((prev) => ({
+                  ...prev,
+                  caesar_bank_from: caesarBank,
+                }))
+              }}
+              defaultValue={transferForm.caesar_bank_from}
+              disabled={!!caesar_bank_from}
+            />
+          </>
+        )}
+
+        {/* <FormLabel>From {fromCaesarEnabled ? 'Caesar' : 'Bank'} Account</FormLabel>
         <ToCaesarAndCaesarBank
           caesarBank={initialFrom.current.caesar_bank_from}
           caesarMode={fromCaesarEnabled}
@@ -212,22 +255,51 @@ const LoanTypeTransaction = ({
           >
             {fromCaesarEnabled ? `Use Bank Account instead` : `Use Caesar Account instead`}
           </Link>
-        </Tooltip>
+        </Tooltip> */}
 
-        <Margin2></Margin2>
-        <FormLabel>To {toCaesarEnabled ? 'Caesar' : 'Bank'} Account</FormLabel>
-        <ToCaesarAndCaesarBank
-          caesarBank={initialTo.current.caesar_bank_to}
-          caesarMode={toCaesarEnabled}
-          onChange={(param) => {
-            setTransferForm((prev) => ({
-              ...prev,
-              ...(toCaesarEnabled
-                ? { to: param as CaesarWalletResponse, caesar_bank_to: undefined }
-                : { caesar_bank_to: param as CaesarBank, to: undefined }),
-            }))
-          }}
-        />
+        {toCaesarEnabled ? (
+          <>
+            <FormLabel>To Caesar Account</FormLabel>
+            <ToCaesarAutoComplete
+              onChange={(caesarSelected) => {
+                setTransferForm((prev) => ({
+                  ...prev,
+                  to: caesarSelected,
+                }))
+              }}
+              filter={(res) => res.filter((ea) => ea.id !== caesar_bank_from?.caesar.id)}
+              // value={transferForm.to}
+              key={transferForm.amount}
+            />
+          </>
+        ) : (
+          <>
+            <FormLabel>To Bank Account</FormLabel>
+            <ToCaesarBankAutoComplete
+              onChange={(caesarBank) => {
+                setTransferForm((prev) => ({
+                  ...prev,
+                  caesar_bank_to: caesarBank,
+                  to: undefined,
+                }))
+              }}
+              filter={(args) => {
+                const retunrObject = args
+                  .filter((ea) => ea.caesar !== null)
+                  .filter((caesarBank) =>
+                    retailersDataMemoized?.some(
+                      (ea) => ea.caesar_wallet.id === caesarBank.caesar.id
+                    )
+                  )
+                return retunrObject
+              }}
+              defaultValue={transferForm?.caesar_bank_to || undefined}
+              disabled={!!caesar_bank_to}
+              // value={transferForm.caesar_bank_to}
+              key={transferForm.amount}
+            />
+          </>
+        )}
 
         <Tooltip
           arrow
