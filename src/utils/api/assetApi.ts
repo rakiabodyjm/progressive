@@ -68,7 +68,6 @@ export function createAsset(params: CreateAssetDto) {
     .post('/asset', params)
     .then((res) => res.data)
     .catch((err: AxiosError) => {
-      console.log('error creating asset', err)
       throw extractMultipleErrorFromResponse(err)
     })
 }

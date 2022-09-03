@@ -1,7 +1,7 @@
 import { extractErrorFromResponse, extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import { TransactionResponse } from '@src/utils/api/transactionApi'
-import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
+import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 

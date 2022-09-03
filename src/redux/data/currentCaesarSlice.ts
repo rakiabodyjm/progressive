@@ -24,7 +24,6 @@ export const getDefaultCaesar = createAsyncThunk('caesar/getDefaultCaesar', asyn
       const result = await new Promise((resolve, reject) => {
         userdata.roles.map(async (key) => {
           const accountId = userdata[`${key as TelcoUsers}_id`]!
-          console.log('querying ', key)
           getWallet({
             [key]: accountId,
           })
@@ -36,7 +35,6 @@ export const getDefaultCaesar = createAsyncThunk('caesar/getDefaultCaesar', asyn
             })
         })
       })
-      console.log('result from getdefault', result)
     }
   } else {
     thunkApi.dispatch(setActiveCaesarAccount(undefined))
@@ -71,7 +69,6 @@ const buyerSlice = createSlice({
       return payload
     },
   },
-  extraReducers: (builder) => {},
   //   extraReducers: (builder) => {
   //     builder.addCase('caesar/getDefaultCaesar', (_, thunkApi) =>{
 

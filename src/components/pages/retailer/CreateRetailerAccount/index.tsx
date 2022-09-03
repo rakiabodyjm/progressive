@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Divider,
   Grid,
   IconButton,
@@ -88,7 +87,6 @@ export default function CreateRetailerAccount({
     if (autoLoadDsp) {
       handleChange('dsp', autoLoadDsp?.id)
     }
-    // console.log(autoLoadSubdistributor, autoLoadDsp)
   }, [autoLoadSubdistributor, autoLoadDsp])
 
   const handleChange = (e: unknown | ChangeEvent<HTMLInputElement>, value?: string | null) => {
@@ -168,7 +166,7 @@ export default function CreateRetailerAccount({
       .then(() => {
         dispatchNotif({
           type: NotificationTypes.SUCCESS,
-          message: `Retailer Account Created`,
+          message: 'Retailer Account Created',
         })
         if (modalClose) {
           modalClose()
@@ -284,7 +282,7 @@ export default function CreateRetailerAccount({
             <TypographyLabel>ID Type: </TypographyLabel>
             <CustomTextField
               onChange={handleChange}
-              placeholder={`LTO Driver's License, Passport...`}
+              placeholder={'LTO Driver\'s License, Passport...'}
               name="id_type"
             />
             <Typography
@@ -369,8 +367,8 @@ export default function CreateRetailerAccount({
                   dispatchNotif({
                     message:
                       newRetailerAccount?.subdistributor && dspOptions.length === 0
-                        ? `Subdistributor doesn't have DSP's`
-                        : `Select Subdistributor First`,
+                        ? 'Subdistributor doesn\'t have DSP\'s'
+                        : 'Select Subdistributor First',
                     type: NotificationTypes.WARNING,
                   })
                 }}

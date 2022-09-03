@@ -15,7 +15,6 @@ import {
   Typography,
   TypographyProps,
 } from '@material-ui/core'
-import { AutocompleteProps } from '@material-ui/lab'
 import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
@@ -23,20 +22,19 @@ import FormTextField from '@src/components/FormTextField'
 import FeesTransaction from '@src/components/pages/cash-transfer/FeesTransactionForm'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
-import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
-import useNotification, { useErrorNotification } from '@src/utils/hooks/useNotification'
+import { CaesarWalletResponse } from '@src/utils/api/walletApi'
+import useNotification from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
-import { Caesar, CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
+import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useCallback, useEffect, useState, useRef, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import useSWR, { useSWRConfig } from 'swr'
 import ModalWrapper from '@components/ModalWrapper'
 import { CloseOutlined } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import { grey } from '@material-ui/core/colors'
 import removeKeyFromObject from '@src/utils/removeKeyFromObject'
-import ToCaesarAndCaesarBank from '@src/components/pages/cash-transfer/ToCaesarAndCaesarBank'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { userDataSelector } from '@src/redux/data/userSlice'
@@ -74,9 +72,6 @@ const LoanTypeTransaction = ({
 
   const { data: retailersData } = useSWR([user?.dsp_id], getRetailers)
   const retailersDataMemoized = useMemo(() => retailersData?.data, [retailersData])
-  console.log('FORM (LOAN TRANSACTIONS): ', transferForm.caesar_bank_from)
-  console.log('RETAILERS DATA (LOAN TRANSACTION): ', retailersDataMemoized)
-
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [fromCaesarEnabled, setFromCaesarEnabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -104,7 +99,7 @@ const LoanTypeTransaction = ({
         .then(({ data }) => {
           dispatchNotif({
             type: NotificationTypes.SUCCESS,
-            message: `Loan Created`,
+            message: 'Loan Created',
           })
           return data
         })
@@ -318,7 +313,7 @@ const LoanTypeTransaction = ({
               }
             }}
           >
-            {toCaesarEnabled ? `Use Bank Account instead` : `Use Caesar Account instead`}
+            {toCaesarEnabled ? 'Use Bank Account instead' : 'Use Caesar Account instead'}
           </Link>
         </Tooltip>
 

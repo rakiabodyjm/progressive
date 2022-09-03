@@ -9,15 +9,15 @@ import {
   TextField,
   Grid,
 } from '@material-ui/core'
-import router, { useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { Form, Formik, Field, ErrorMessage } from 'formik'
 import companyLogo from '@public/assets/realm1000-logo.png'
 import { loginUserThunk, getUser } from '@src/redux/data/userSlice'
 import { createUser, CreateUser, LoginUserParams } from '@src/utils/api/userApi'
 import Image from 'next/image'
-import { ChangeEvent, useState, FormEvent, ChangeEventHandler, ReactHTMLElement } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch, RootState } from '@src/redux/store'
+import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { makeStyles } from '@material-ui/styles'
 import { object, string, ref } from 'yup'
@@ -217,7 +217,6 @@ export default function Registration() {
                                 })
                               )
                             })
-                            .finally(() => {})
 
                           router.push({
                             pathname: '/',

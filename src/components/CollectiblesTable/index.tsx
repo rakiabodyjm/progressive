@@ -1,17 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-unescaped-entities */
-import {
-  Box,
-  Divider,
-  Paper,
-  Theme,
-  Typography,
-  Grid,
-  ListItem,
-  TablePagination,
-} from '@material-ui/core'
+import { Box, Divider, Paper, Theme, Typography, Grid, ListItem } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AirlineSeatLegroomNormalTwoTone } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
@@ -30,7 +20,7 @@ import {
 } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
-import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 export default function CollectiblesTable({
@@ -70,7 +60,7 @@ export default function CollectiblesTable({
     data: pendingRequest,
     isValidating: loadingPendingRequest,
     mutate: mutatePendingRequest,
-  } = useSWR<Paginated<CashTransferRequestTypes>>(`/request?is_declined=false`, (url) =>
+  } = useSWR<Paginated<CashTransferRequestTypes>>('/request?is_declined=false', (url) =>
     axios
       .get(url)
       .then((res) => res.data)

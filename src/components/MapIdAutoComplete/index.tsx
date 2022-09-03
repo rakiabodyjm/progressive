@@ -15,7 +15,7 @@ export default function MapIdAutoComplete({
         ...prevState,
         search: inputValue,
       })}
-      fetcher={(q) => searchMap(q as SearchMap)}
+      fetcher={(q) => searchMap(q as SearchMap).catch((err) => [] as MapIdResponseType[])}
       onChange={onChange}
       getOptionLabel={(option: MapIdResponseType) => `${option.area_name}, ${option.parent_name}`}
       getOptionSelected={(current, selected) => current.area_id === selected.area_id}

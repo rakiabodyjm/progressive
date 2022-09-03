@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Divider,
   Grid,
   IconButton,
@@ -29,7 +28,7 @@ import {
   SubdistributorResponseType,
 } from '@src/utils/api/subdistributorApi'
 import useNotification from '@src/utils/hooks/useNotification'
-import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import validator from 'validator'
 import { useDispatch } from 'react-redux'
 import AsyncButton from '@src/components/AsyncButton'
@@ -153,7 +152,6 @@ export default function EditRetailerAccount({
       }
       return acc
     }, {})
-    console.log(changes)
     const schemaChecker = {
       store_name: (value: string) =>
         validator.isLength(checkStore_name, { min: 4 }) || '*Store Name Required (4+ Letters)',
@@ -279,7 +277,7 @@ export default function EditRetailerAccount({
             <TypographyLabel>ID Type: </TypographyLabel>
             <CustomTextField
               onChange={handleChange}
-              placeholder={`LTO Driver's License, Passport...`}
+              placeholder={'LTO Driver\'s License, Passport...'}
               name="id_type"
               defaultValue={retailerPropsDefault.current?.id_type || ''}
             />
@@ -364,8 +362,8 @@ export default function EditRetailerAccount({
                   dispatchNotif({
                     message:
                       retailer?.subdistributor && dspOptions?.length === 0
-                        ? `Subdistributor doesn't have DSP's`
-                        : `Select Subdistributor First`,
+                        ? 'Subdistributor doesn\'t have DSP\'s'
+                        : 'Select Subdistributor First',
                     type: NotificationTypes.WARNING,
                   })
                 }}

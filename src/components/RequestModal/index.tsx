@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Chip,
   Divider,
   Grid,
   IconButton,
@@ -11,7 +10,6 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core'
-import { red } from '@material-ui/core/colors'
 import { Check, CloseOutlined } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import AsyncButton from '@src/components/AsyncButton'
@@ -20,11 +18,7 @@ import FormTextField from '@src/components/FormTextField'
 import ModalWrapper from '@src/components/ModalWrapper'
 import RoleBadge from '@src/components/RoleBadge'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import {
-  extractErrorFromResponse,
-  formatIntoReadableDate,
-  objectToURLQuery,
-} from '@src/utils/api/common'
+import { extractErrorFromResponse, formatIntoReadableDate } from '@src/utils/api/common'
 import {
   CashTransferRequestTypes,
   CashTransferResponse,
@@ -32,8 +26,7 @@ import {
 } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
-import { request } from 'http'
-import { ChangeEvent, ChangeEventHandler, ReactEventHandler, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 type ControButtonTypes = {
@@ -60,7 +53,7 @@ export default function RequestModal({
     error,
     isValidating,
     mutate: mutateCashTransferList,
-  } = useSWR<Paginated<CashTransferResponse>>(`/cash-transfer`, (url) =>
+  } = useSWR<Paginated<CashTransferResponse>>('/cash-transfer', (url) =>
     axios.get(url).then((res) => res.data)
   )
 
@@ -124,7 +117,7 @@ export default function RequestModal({
         dispatch(
           setNotification({
             type: NotificationTypes.SUCCESS,
-            message: `Update Successful`,
+            message: 'Update Successful',
           })
         )
       })
@@ -155,7 +148,7 @@ export default function RequestModal({
         dispatch(
           setNotification({
             type: NotificationTypes.SUCCESS,
-            message: `Reference Number confirmed`,
+            message: 'Reference Number confirmed',
           })
         )
       })

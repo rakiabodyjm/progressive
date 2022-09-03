@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import ViewRetailerAccount from '@src/components/pages/retailer/ViewRetailerAccount'
 import dynamic from 'next/dynamic'
-import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
+import { getRetailer } from '@src/utils/api/retailerApi'
 import ModalWrapper from '@src/components/ModalWrapper'
 import useSWR, { useSWRConfig } from 'swr'
 const EditRetailerAccount = dynamic(

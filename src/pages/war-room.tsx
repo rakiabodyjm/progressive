@@ -9,7 +9,7 @@ import { useMemo } from 'react'
 import useSWR from 'swr'
 
 export default function WarRoom() {
-  const { data } = useSWR<Paginated<CashTransferResponse>>(`/cash-transfer`, (url) =>
+  const { data } = useSWR<Paginated<CashTransferResponse>>('/cash-transfer', (url) =>
     axios
       .get<Paginated<CashTransferResponse>>(url)
       .then((res) => res.data)
@@ -56,7 +56,7 @@ export default function WarRoom() {
         {/* {JSON.stringify(cashTransfers, null, 2)} */}
         <Box display="grid" gridRowGap={16}>
           {cashTransfers?.map((ea) => (
-            <Paper variant="outlined">
+            <Paper key={ea.id} variant="outlined">
               <Grid spacing={2} container>
                 <Grid item xs={3}>
                   <Box p={2}>

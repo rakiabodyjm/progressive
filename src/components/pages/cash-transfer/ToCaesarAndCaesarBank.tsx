@@ -79,20 +79,6 @@ export default function ToCaesarAndCaesarBank({
     onChange(caesarMode ? caesar : caesarBank)
   }, [caesar, caesarBank, caesarMode])
 
-  // useEffect(() => {
-  //   console.log(
-  //     'caesar',
-  //     caesar,
-  //     'caearbank',
-  //     caesarBank,
-  //     'initialFetch',
-  //     initialFetch,
-  //     'caesarMode',
-  //     caesarMode,
-  //     'caesarBankProps',
-  //     caesarBankProps
-  //   )
-  // }, [caesar, caesarBank, initialFetch, caesarMode])
   return (
     <>
       {!initialFetch ? (

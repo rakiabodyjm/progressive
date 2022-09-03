@@ -182,14 +182,14 @@ const CreateOrUpdateBank = ({
           .then((res) => {
             dispatchNotif({
               type: NotificationTypes.SUCCESS,
-              message: `Bank Details updated`,
+              message: 'Bank Details updated',
             })
           })
       }
       return axios.post('/cash-transfer/bank', formValues).then((res) => {
         dispatchNotif({
           type: NotificationTypes.SUCCESS,
-          message: `Bank Created`,
+          message: 'Bank Created',
         })
         handleClose()
       })
@@ -220,7 +220,7 @@ const CreateOrUpdateBank = ({
         .then((res) => {
           dispatchNotif({
             type: NotificationTypes.SUCCESS,
-            message: `Bank Deleted`,
+            message: 'Bank Deleted',
           })
         })
         .catch((err) => {
@@ -298,7 +298,7 @@ const CreateOrUpdateBank = ({
                       .then(
                         (res) =>
                           res.data.data.filter(
-                            (ea: Bank) => bankUpdateValues?.id! !== ea.id
+                            (ea: Bank) => bankUpdateValues?.id !== ea.id
                           ) as Bank[]
                       )
                   }

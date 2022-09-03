@@ -4,13 +4,9 @@ import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
 import FormTextField from '@src/components/FormTextField'
-import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import FeesTransaction from '@src/components/pages/cash-transfer/FeesTransactionForm'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
-import ToCaesarBankAutoComplete, {
-  searchCaesarBank,
-} from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
-import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
+import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
@@ -154,10 +150,9 @@ const TransferTypeTransaction = ({
           ...formValues,
         })
         .then((res) => {
-          console.log('type: transfer | res.data', res.data)
           dispatchNotif({
             type: NotificationTypes.SUCCESS,
-            message: `Cash Transfer Success`,
+            message: 'Cash Transfer Success',
           })
           setTransferForm({
             amount: 0,
@@ -193,7 +188,7 @@ const TransferTypeTransaction = ({
     } else {
       dispatchNotif({
         type: NotificationTypes.ERROR,
-        message: `Amount cannot be empty`,
+        message: 'Amount cannot be empty',
       })
       setLoading(false)
     }
@@ -215,7 +210,7 @@ const TransferTypeTransaction = ({
     if (response) {
       dispatchNotif({
         type: NotificationTypes.SUCCESS,
-        message: `Loan Created`,
+        message: 'Loan Created',
       })
     }
   }, [error, response, dispatchNotif])
@@ -238,8 +233,6 @@ const TransferTypeTransaction = ({
 
   const { data: retailersData } = useSWR([user?.dsp_id], getRetailers)
   const retailersDataMemoized = useMemo(() => retailersData?.data, [retailersData])
-  console.log('FORM: ', transferForm.caesar_bank_from)
-  console.log('RETAILERS DATA: ', retailersDataMemoized)
 
   return (
     <>
@@ -318,7 +311,7 @@ const TransferTypeTransaction = ({
               }
             }}
           >
-            {fromCaesaeEnabled ? `Use Bank Account instead` : `Use Caesar Account instead`}
+            {fromCaesaeEnabled ? 'Use Bank Account instead' : 'Use Caesar Account instead'}
           </Link>
         </Tooltip>
 
@@ -386,7 +379,7 @@ const TransferTypeTransaction = ({
               }
             }}
           >
-            {toCaesarEnabled ? `Use Bank Account instead` : `Use Caesar Account instead`}
+            {toCaesarEnabled ? 'Use Bank Account instead' : 'Use Caesar Account instead'}
           </Link>
         </Tooltip>
 

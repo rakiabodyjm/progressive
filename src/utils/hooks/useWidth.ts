@@ -1,6 +1,5 @@
 import { useTheme, useMediaQuery } from '@material-ui/core'
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints'
-import { useCallback } from 'react'
 
 export const useWidth = (): Breakpoint => {
   const theme = useTheme()

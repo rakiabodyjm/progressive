@@ -1,8 +1,7 @@
-import { Box, Typography } from '@material-ui/core'
 import UsersTable from '@src/components/UsersTable'
 import { DspResponseType } from '@src/utils/api/dspApi'
 import { getDsps } from '@src/utils/api/subdistributorApi'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import useSWR from 'swr'
 
 export default function DspTable({ subdistributorId }: { subdistributorId: string }) {

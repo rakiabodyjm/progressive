@@ -1,9 +1,7 @@
 import { Box, ButtonBase, Grid, Paper, Theme, Typography } from '@material-ui/core'
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
-import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import { useEffect, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -115,7 +113,7 @@ const retailerFieldsFull = ({
     value: e_bind_number,
   },
   {
-    key: `Store Name`,
+    key: 'Store Name',
     value: store_name,
   },
 
@@ -148,7 +146,7 @@ const retailerFieldsSimple = ({
     value: e_bind_number,
   },
   {
-    key: `Store Name`,
+    key: 'Store Name',
     value: store_name,
   },
   {

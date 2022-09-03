@@ -54,7 +54,7 @@ export default function ViewRetailerAccount({
       </Typography>
       <Divider
         style={{
-          margin: `16px 0`,
+          margin: '16px 0',
           marginBottom: 24,
         }}
       />

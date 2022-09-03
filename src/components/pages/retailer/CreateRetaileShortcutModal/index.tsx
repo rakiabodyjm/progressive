@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Chip,
   Divider,
   Grid,
@@ -16,10 +15,9 @@ import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import ModalWrapper from '@src/components/ModalWrapper'
 import { Bank } from '@src/utils/types/CashTransferTypes'
-import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { CreateDspAccount, DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import {
   getDsps,
@@ -33,7 +31,7 @@ import useNotification from '@src/utils/hooks/useNotification'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { Autocomplete } from '@material-ui/lab'
 import { useRouter } from 'next/router'
-import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
+import { searchWalletV2 } from '@src/utils/api/walletApi'
 
 type FormValuesType = {
   first_name: string
@@ -338,8 +336,8 @@ export default function CreateRetailerShortcutModal({
                     dispatchNotif({
                       message:
                         formValues.subdistributor && dspOptions.length === 0
-                          ? `Subdistributor doesn't have DSP's`
-                          : `Select Subdistributor First`,
+                          ? 'Subdistributor doesn\'t have DSP\'s'
+                          : 'Select Subdistributor First',
                       type: NotificationTypes.WARNING,
                     })
                   }}

@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Divider,
   IconButton,
   Paper,
@@ -9,11 +8,10 @@ import {
   Theme,
   TextField,
 } from '@material-ui/core'
-import { Close, Create } from '@material-ui/icons'
+import { Close } from '@material-ui/icons'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import { extractErrorFromResponse } from '@src/utils/api/common'
-import { createUser, CreateUser, UserResponse, CheckUsername } from '@src/utils/api/userApi'
-import React, { useState, useEffect, StrictMode } from 'react'
+import { createUser, CreateUser, CheckUsername } from '@src/utils/api/userApi'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/styles'
 import validator from 'validator'
@@ -120,7 +118,7 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
       dispatch(
         setNotification({
           type: NotificationTypes.ERROR,
-          message: `Passwords do not match`,
+          message: 'Passwords do not match',
         })
       )
       setButtonLoading(false)
@@ -186,7 +184,6 @@ export default function CreateUserAccount({ modal }: { modal?: () => void }) {
       [e.target.name]: e.target.value,
     }))
   }
-  useEffect(() => {}, [errors])
 
   return (
     <Paper variant="outlined" className={classes.paperPadding}>

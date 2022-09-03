@@ -8,29 +8,23 @@ import {
   ListItem,
   Paper,
   Theme,
-  Tooltip,
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AddCircleOutlined, CloseOutlined, ListAlt } from '@material-ui/icons'
+import { AddCircleOutlined, CloseOutlined } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import AsyncButton from '@src/components/AsyncButton'
-import CollectiblesTable from '@src/components/CollectiblesTable'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
-import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
 import CreateOrUpdateCaesarBank from '@src/components/pages/cash-transfer/CreateOrUpdateCaesarBank'
 import RetailerLoanList from '@src/components/RetailerLoanList'
 import RoleBadge from '@src/components/RoleBadge'
-import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { getUser } from '@src/utils/api/userApi'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import useGetCaesarOfUser from '@src/utils/hooks/useGetCaesarOfUser'
-import { Bank, CaesarBank } from '@src/utils/types/CashTransferTypes'
+import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 // import { GetServerSideProps, GetStaticProps } from 'next'

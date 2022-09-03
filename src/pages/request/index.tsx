@@ -1,36 +1,13 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Grid,
-  IconButton,
-  Paper,
-  Theme,
-  Typography,
-} from '@material-ui/core'
-import { grey, red } from '@material-ui/core/colors'
-import { CloseOutlined } from '@material-ui/icons'
+import { Box, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
+import { grey } from '@material-ui/core/colors'
 import { makeStyles, useTheme } from '@material-ui/styles'
-import FormLabel from '@src/components/FormLabel'
-import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
-import ModalWrapper from '@src/components/ModalWrapper'
 import RequestModal from '@src/components/RequestModal'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
-import CashTransfer from '@src/pages/admin/topup'
 import { userDataSelector } from '@src/redux/data/userSlice'
-import {
-  extractMultipleErrorFromResponse,
-  formatIntoReadableDate,
-  objectToURLQuery,
-} from '@src/utils/api/common'
-import {
-  CashTransferRequestTypes,
-  CashTransferResponse,
-  RequestStatus,
-} from '@src/utils/types/CashTransferTypes'
+import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
+import { CashTransferRequestTypes, RequestStatus } from '@src/utils/types/CashTransferTypes'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useCallback, useMemo, useRef, useState } from 'react'
@@ -79,7 +56,7 @@ export default function RequestPage() {
     data: pendingRequest,
     mutate: requestMutate,
     isValidating,
-  } = useSWR<Paginated<CashTransferRequestTypes>>(`/request?is_declined=false`, (url) =>
+  } = useSWR<Paginated<CashTransferRequestTypes>>('/request?is_declined=false', (url) =>
     axios
       .get(url)
       .then((res) => res.data)

@@ -1,5 +1,3 @@
-import { DspResponseType } from '@src/utils/api/dspApi'
-import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import axios from 'axios'
 
 // Update MapId 09-28 11:03

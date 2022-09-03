@@ -8,32 +8,29 @@ import {
   Grid,
   Grow,
   IconButton,
-  Link,
   Paper,
   Theme,
   Tooltip,
   Typography,
 } from '@material-ui/core'
-import { Cancel, CloseOutlined, Edit, MonetizationOn, MoreVert } from '@material-ui/icons'
+import { CloseOutlined, Edit, MonetizationOn } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
-import AsyncButton from '@src/components/AsyncButton'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import CashTransferList from '@src/components/pages/cash-transfer/CashTransferList'
 import LoanPaymentTypeTransaction from '@src/components/pages/cash-transfer/CreateLoanPaymentTypeTransaction'
 import EditLoanDetailsModal from '@src/components/pages/cash-transfer/EditLoanDetailsModal'
-import { PopUpMenu } from '@src/components/PopUpMenu'
 import RoleBadge from '@src/components/RoleBadge'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { formatIntoCurrency, formatIntoReadableDate } from '@src/utils/api/common'
-import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
+import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
 import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
@@ -78,15 +75,6 @@ export default function ViewLoanPage() {
     cashTransferData?.id && id ? `/cash-transfer?loan=${cashTransferData?.id}` : undefined,
     (url) => axios.get(url).then((res) => res.data as Paginated<CashTransferResponse>)
   )
-
-  useEffect(() => {
-    if (cashTransferError) {
-      console.log(cashTransferError)
-    }
-    if (loanPaymentsError) {
-      console.log(loanPaymentsError)
-    }
-  }, [cashTransferError, loanPaymentsError])
 
   const paidAmount = useMemo(
     () =>
@@ -342,7 +330,7 @@ export default function ViewLoanPage() {
                   {!openRecordPayment && (
                     <Button
                       style={{
-                        padding: `8px 24px`,
+                        padding: '8px 24px',
                         // display: transactionModal.transactionSelected ? 'none' : undefined,
                       }}
                       variant="contained"
@@ -456,6 +444,5 @@ const fetchCashTransferWithCompleteCaesar = async (cashTransferProps: CashTransf
     to,
   } as CashTransferResponse
 
-  // console.log('fetfcrEturn', fetchReturn)
   return fetchReturn
 }

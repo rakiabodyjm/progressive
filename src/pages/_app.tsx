@@ -21,9 +21,9 @@ import RouteGuard from '@src/components/RouteGuard'
 import TutorialPage from '@src/pages/tutorial'
 import Registration from './register'
 
-const Login = dynamic(() => import(`@src/components/pages/login`))
-const LoginExtensionModal = dynamic(() => import(`@src/components/LoginExtensionModal`))
-const ModalWrapper = dynamic(() => import(`@src/components/ModalWrapper`))
+const Login = dynamic(() => import('@src/components/pages/login'))
+const LoginExtensionModal = dynamic(() => import('@src/components/LoginExtensionModal'))
+const ModalWrapper = dynamic(() => import('@src/components/ModalWrapper'))
 
 /**
  * sets axios defaults
@@ -177,4 +177,5 @@ function WrappedAppWithRedux({ Component, pageProps }: AppProps) {
     </Provider>
   )
 }
+
 export default WrappedAppWithRedux

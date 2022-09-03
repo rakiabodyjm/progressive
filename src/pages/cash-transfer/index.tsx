@@ -1,45 +1,17 @@
 /* eslint-disable react/no-unescaped-entities */
-import {
-  Box,
-  Container,
-  Divider,
-  Grid,
-  Paper,
-  TablePagination,
-  TextField,
-  Typography,
-  useTheme,
-} from '@material-ui/core'
-import { grey } from '@material-ui/core/colors'
-import ErrorLoading from '@src/components/ErrorLoadingScreen'
-import FormLabel from '@src/components/FormLabel'
-import FormTextField from '@src/components/FormTextField'
-import { LoadingScreen2 } from '@src/components/LoadingScreen'
+import { Box, Divider, Grid, Paper, Typography, useTheme } from '@material-ui/core'
 import CaesarBankLinking from '@src/components/pages/bank/CaesarBankLinking'
 import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
 import CashTransferDSP from '@src/components/pages/cash-transfer/CashTransferDSP'
 import RetailerCashTransferView from '@src/components/RetailerCashTransferView'
-import RoleBadge from '@src/components/RoleBadge'
-import UsersTable from '@src/components/UsersTable'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
-import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
-import { formatIntoCurrency } from '@src/utils/api/common'
-import {
-  CaesarWalletResponse,
-  getAllWallet,
-  getWallet,
-  searchWalletV2,
-} from '@src/utils/api/walletApi'
+import { userDataSelector } from '@src/redux/data/userSlice'
+
 import useGetCaesarOfUser from '@src/utils/hooks/useGetCaesarOfUser'
 import useNotification from '@src/utils/hooks/useNotification'
-import { CaesarBank } from '@src/utils/types/CashTransferTypes'
-import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import axios from 'axios'
 import { useRouter } from 'next/router'
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import useSWR from 'swr'
-import Inventory from '../inventory'
 
 // const CTOperatorPage = dynamic(())
 export default function CaesarIndexPage() {
@@ -78,7 +50,7 @@ export default function CaesarIndexPage() {
           router.push('/')
           dispatchNotif({
             type: NotificationTypes.WARNING,
-            message: `Unauthorized to access`,
+            message: 'Unauthorized to access',
           })
         } else {
           setIsDSP(true)
@@ -91,7 +63,7 @@ export default function CaesarIndexPage() {
           router.push('/')
           dispatchNotif({
             type: NotificationTypes.WARNING,
-            message: `Unauthorized to access`,
+            message: 'Unauthorized to access',
           })
         } else {
           setIsRetailer(true)
@@ -100,11 +72,9 @@ export default function CaesarIndexPage() {
         router.push('/')
         dispatchNotif({
           type: NotificationTypes.WARNING,
-          message: `Unauthorized to access`,
+          message: 'Unauthorized to access',
         })
       }
-
-      // console.log('user.roles', user.roles)
     }
   }, [user])
   const theme = useTheme()

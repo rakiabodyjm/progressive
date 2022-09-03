@@ -8,7 +8,6 @@ import {
   PaperProps,
   Typography,
   useTheme,
-  Theme,
   FormGroup,
   FormControlLabel,
   Checkbox,
@@ -17,12 +16,10 @@ import {
 import { UserTypes } from '@src/redux/data/userSlice'
 import { toCapsFirst } from '@src/utils/api/common'
 import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import useSWR, { useSWRConfig } from 'swr'
-import { makeStyles } from '@material-ui/styles'
 import dynamic from 'next/dynamic'
-import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
 import { getWallet, CaesarWalletResponse, createWallet } from '../../utils/api/walletApi'
 import RoleBadge from '../RoleBadge'
 
@@ -31,7 +28,7 @@ import RoleBadge from '../RoleBadge'
 //     color: theme.palette.error.main,
 //   },
 // }))
-const ModalWrapper = dynamic(() => import(`@components/ModalWrapper`))
+const ModalWrapper = dynamic(() => import('@components/ModalWrapper'))
 export default function WalletSmallCard({
   accountType,
   accountId,
@@ -78,7 +75,7 @@ export default function WalletSmallCard({
   const validatePassword = (password: string) =>
     new Promise((res, rej) => {
       if (password.length < 8) {
-        rej(new Error(`Password must be at least 8 characters`))
+        rej(new Error('Password must be at least 8 characters'))
       }
       res(undefined)
     })
@@ -93,8 +90,7 @@ export default function WalletSmallCard({
           string
         > & { password: string })
           .then((res) => {
-            console.log('wallet created', res)
-            dispatchSuccess(`Caesar Wallet Created`)
+            dispatchSuccess('Caesar Wallet Created')
             setModalOpen(false)
           })
           .catch((err: string[]) => {
@@ -121,7 +117,6 @@ export default function WalletSmallCard({
         .catch((err) => {
           setPasswordErrors(err.message)
         })
-        .finally(() => {})
     }
   }, [createCaesarPassword])
 

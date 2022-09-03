@@ -17,7 +17,7 @@ import { NotificationTypes, setNotification } from '@src/redux/data/notification
 import AdminAccountSummaryCard from '@src/components/AdminAccountSummaryCard'
 import AccountSummaryCard from '@src/components/AccountSummaryCard'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { GetServerSideProps, GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 
 const useStyles = makeStyles((theme: Theme) => ({

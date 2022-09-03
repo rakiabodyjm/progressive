@@ -4,7 +4,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Theme,
   Tooltip,
   Typography,

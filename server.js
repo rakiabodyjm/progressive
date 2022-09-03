@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 require('dotenv').config()
 const { createServer } = require('http')
 const { parse } = require('url')
@@ -33,13 +34,12 @@ app.prepare().then(() => {
     const topBorder = `${topLeft}${line}${topRight}`
     const bottomBorder = `${chalk.blueBright(cliBoxes.double.bottomLeft)}${line}${chalk.blueBright(
       cliBoxes.double.bottomRight
-    )}`
+    )}`(
+      /**
+       * Output
+       */
 
-    /**
-     * Output
-     */
-
-    console.log(`
+      `
 ${topBorder}
 
 ${chalk.bgRedBright('REALM1000 TELCO PROJECT')}
@@ -53,6 +53,7 @@ ${chalk.greenBright('NODE_ENV: ') + chalk.yellow(process.env.NODE_ENV)}
 
 
 ${bottomBorder}
-`)
+`
+    )
   })
 })

@@ -1,15 +1,11 @@
 import { Box, Button, Divider, Grid, IconButton, Paper, Theme, Typography } from '@material-ui/core'
-import { grey } from '@material-ui/core/colors'
-import { CloseOutlined, MoreVert } from '@material-ui/icons'
+import { CloseOutlined } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import ModalWrapper from '@src/components/ModalWrapper'
-import RoleBadge from '@src/components/RoleBadge'
 import { formatIntoReadableDate } from '@src/utils/api/common'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { useRouter } from 'next/router'
-import { useRef } from 'react'
-import useSWR from 'swr'
 
 export default function LoanDetailsModal({
   open,

@@ -1,9 +1,8 @@
-import { CircularProgress, TextField, TextFieldProps, Typography } from '@material-ui/core'
-import { Autocomplete } from '@material-ui/lab'
+import { TextFieldProps } from '@material-ui/core'
 // import SingleAutocomplete from '@src/components/AutoComplete'
 
 import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 type FormType = 'input' | 'autocomplete' | 'dropdown' | 'multiple-autocomplete'
 

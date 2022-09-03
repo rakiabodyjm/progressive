@@ -19,7 +19,7 @@ import { createAsset, CreateAssetDto } from '@src/utils/api/assetApi'
 import validator from 'validator'
 import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/useNotification'
 
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { Autocomplete } from '@material-ui/lab'
 import { toCapsFirst } from '@src/utils/api/common'
 
@@ -72,9 +72,6 @@ export default function CreateAsset({
     }))
   }
 
-  useEffect(() => {
-    console.log('asset', asset)
-  }, [asset])
   const dispatchSuccess = useSuccessNotification()
   const dispatchError = useErrorNotification()
 
@@ -107,9 +104,8 @@ export default function CreateAsset({
   const postAsset = () => {
     createAsset(asset)
       .then(() => {
-        dispatchSuccess(`Asset created`)
+        dispatchSuccess('Asset created')
       })
-      .then(() => {})
       .catch((err: string[]) => {
         err.forEach((ea) => {
           dispatchError(ea)
@@ -332,8 +328,6 @@ export default function CreateAsset({
               <FormLabel>Whole Number Only</FormLabel>
               <Select
                 onChange={(e) => {
-                  console.log(e)
-
                   setAsset((prev) => ({
                     ...prev,
                     whole_number_only: e.target.value === 'true',

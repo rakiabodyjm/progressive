@@ -1,8 +1,7 @@
 import SimpleAutoComplete, { SimpleAutoCompleteProps } from '@src/components/SimpleAutoComplete'
-import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComplete'
 import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
 import deepEqual from '@src/utils/deepEqual'
-import { memo, useEffect } from 'react'
+import { memo } from 'react'
 
 const ToCaesarAutoComplete = memo(
   function ToCaesarAutoCompleteOriginal({

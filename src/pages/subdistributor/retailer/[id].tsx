@@ -22,10 +22,10 @@ import dynamic from 'next/dynamic'
 import LoadingScreen from '@src/components/LoadingScreen'
 
 const EditRetailerAccount = dynamic(
-  () => import(`@src/components/pages/retailer/EditRetailerAccount`)
+  () => import('@src/components/pages/retailer/EditRetailerAccount')
 )
 
-const ModalWrapper = dynamic(() => import(`@components/ModalWrapper`))
+const ModalWrapper = dynamic(() => import('@components/ModalWrapper'))
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {},

@@ -43,8 +43,8 @@ export interface DspUpdateType {
   area_id: MapIdResponseType['area_id'][]
   subdistributor: string
 }
-export interface DspRegisterParams extends Omit<CreateDspAccount, 'subdistributor' | 'user'> {}
-export interface DspRegisterParams2 extends Omit<DspResponseType, 'user'> {}
+export type DspRegisterParams = Omit<CreateDspAccount, 'subdistributor' | 'user'>
+export type DspRegisterParams2 = Omit<DspResponseType, 'user'>
 export const getDsp = (id: string): Promise<DspResponseType> =>
   axios
     .get(`/dsp/${id}`)
@@ -58,7 +58,7 @@ export const getRetailers = (
   paginationParams: { page: number; limit: number }
 ): Promise<Paginated<RetailerResponseType>> =>
   axios
-    .get(`/retailer`, {
+    .get('/retailer', {
       params: {
         dsp: id,
         ...paginationParams,
@@ -71,7 +71,7 @@ export const getRetailers = (
 
 export const getRetailerCount = (id: string): Promise<number> =>
   axios
-    .get(`/retailer`, {
+    .get('/retailer', {
       params: {
         countOnly: true,
         dsp: id,

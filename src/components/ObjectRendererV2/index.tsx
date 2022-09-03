@@ -1,5 +1,4 @@
-import { Box, Divider, Paper, Theme, Typography } from '@material-ui/core'
-import { ThemeOfStyles, useTheme } from '@material-ui/styles'
+import { Box, Typography } from '@material-ui/core'
 import { formatKeyIntoReadables } from '@src/utils/api/common'
 import { useMemo } from 'react'
 import validator from 'validator'

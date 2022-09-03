@@ -7,12 +7,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core'
-import SubdistributorsPage from '@src/pages/subdistributor'
-import { DspResponseType, getDsp } from '@src/utils/api/dspApi'
 import { getRetailer, RetailerResponseType } from '@src/utils/api/retailerApi'
-import { UserResponse } from '@src/utils/api/userApi'
-import useFetch from '@src/utils/hooks/useFetch'
-import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 export default function RetailerSmallCard({

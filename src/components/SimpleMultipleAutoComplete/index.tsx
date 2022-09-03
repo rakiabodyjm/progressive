@@ -1,5 +1,6 @@
 import { Chip, CircularProgress, TextField } from '@material-ui/core'
 import { Autocomplete, AutocompleteProps } from '@material-ui/lab'
+import { nanoid } from '@reduxjs/toolkit'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { useEffect, useRef, useState } from 'react'
@@ -85,6 +86,7 @@ export default function SimpleMultipleAutoComplete<T, U>({
       renderTags={(tagValue, getTagProps) =>
         tagValue.map((option, index) => (
           <Chip
+            key={`${index}${nanoid()}`}
             label={tagLabel(option)}
             {...getTagProps({ index })}
             // disabled={fixedOptions.indexOf(option) !== -1}

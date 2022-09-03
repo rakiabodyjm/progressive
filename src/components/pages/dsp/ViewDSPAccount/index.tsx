@@ -10,13 +10,10 @@ import {
 } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import RetailerTable from '@src/components/RetailerTable'
-import { getDsp, DspResponseType } from '@api/dspApi'
-import { useEffect, useState } from 'react'
+import { getDsp } from '@api/dspApi'
 import { useDispatch, useSelector } from 'react-redux'
 import useSWR from 'swr'
 import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
-import DSPSearchTable from '@src/components/DSPSearchTable'
-import RetailerSearchTable from '@src/components/RetailerSearchTable'
 import { userDataSelector } from '@src/redux/data/userSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -49,7 +46,7 @@ export default function ViewDspAccount({
 
       <Divider
         style={{
-          margin: `16px 0`,
+          margin: '16px 0',
           marginBottom: 24,
         }}
       />

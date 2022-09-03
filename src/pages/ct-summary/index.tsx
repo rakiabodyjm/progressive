@@ -1,34 +1,15 @@
-import {
-  Box,
-  Container,
-  Divider,
-  Grid,
-  InputAdornment,
-  Paper,
-  Select,
-  Theme,
-  Typography,
-} from '@material-ui/core'
+import { Box, Container, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AccountCircle, Search } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
-import FormTextField from '@src/components/FormTextField'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
-import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
-import CaesarIndexPage from '@src/pages/cash-transfer'
 import { objectToURLQuery } from '@src/utils/api/common'
-import { CaesarWalletResponse } from '@src/utils/api/walletApi'
-import {
-  CaesarBank,
-  CashTransferAs,
-  CashTransferResponse,
-} from '@src/utils/types/CashTransferTypes'
-import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
+import { CaesarBank, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
+import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import React, { useState } from 'react'
 import useSWR from 'swr'
@@ -273,7 +254,6 @@ export default function CashTransferSummaryTable() {
                           </Box>
                         ),
                       }}
-                      onRowClick={() => {}}
                     />
                   )}
                 </Grid>

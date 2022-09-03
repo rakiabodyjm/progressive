@@ -7,36 +7,29 @@ import {
   Grid,
   GridProps,
   IconButton,
-  Link,
   Paper,
   PaperProps,
   Theme,
-  Tooltip,
   Typography,
   TypographyProps,
 } from '@material-ui/core'
-import { AutocompleteProps } from '@material-ui/lab'
 import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
 import FormTextField from '@src/components/FormTextField'
-import FeesTransaction from '@src/components/pages/cash-transfer/FeesTransactionForm'
-import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
-import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
-import useNotification, { useErrorNotification } from '@src/utils/hooks/useNotification'
+import { CaesarWalletResponse } from '@src/utils/api/walletApi'
+import useNotification from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
-import { Bank, Caesar, CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
+import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useCallback, useEffect, useState, useRef } from 'react'
-import { useDispatch } from 'react-redux'
 import useSWR, { useSWRConfig } from 'swr'
 import ModalWrapper from '@components/ModalWrapper'
 import { CloseOutlined } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import { grey } from '@material-ui/core/colors'
 import removeKeyFromObject from '@src/utils/removeKeyFromObject'
-import ToCaesarAndCaesarBank from '@src/components/pages/cash-transfer/ToCaesarAndCaesarBank'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
@@ -85,7 +78,7 @@ const LoadTypeTransaction = ({
     data,
     isValidating,
     mutate: mutateCaesarBanks,
-  } = useSWR<Paginated<CaesarBank>>(`/cash-transfer/caesar-bank/`, (url) =>
+  } = useSWR<Paginated<CaesarBank>>('/cash-transfer/caesar-bank/', (url) =>
     axios
       .get(url)
       .then((res) => res.data)
@@ -105,7 +98,7 @@ const LoadTypeTransaction = ({
   //       }))
   //     )
   // }, [data?.data])
-  // console.log('BANKS FILTERED', filterBanks)
+  // ('BANKS FILTERED', filterBanks)
 
   const [toCaesarEnabled, setToCaesarEnabled] = useState<boolean>(false)
   const [fromCaesarEnabled, setFromCaesarEnabled] = useState<boolean>(false)
@@ -133,7 +126,7 @@ const LoadTypeTransaction = ({
         .then(({ data }) => {
           dispatchNotif({
             type: NotificationTypes.SUCCESS,
-            message: `Load Successful`,
+            message: 'Load Successful',
           })
           return data
         })

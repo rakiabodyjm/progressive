@@ -1,18 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-unescaped-entities */
-import {
-  Box,
-  Divider,
-  Paper,
-  Theme,
-  Typography,
-  Grid,
-  ListItem,
-  TablePagination,
-  Button,
-} from '@material-ui/core'
+import { Box, Divider, Paper, Theme, Typography, Grid, ListItem } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AirlineSeatLegroomNormalTwoTone } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
@@ -25,7 +14,6 @@ import {
   formatIntoCurrency,
   objectToURLQuery,
 } from '@src/utils/api/common'
-import { PendingTransactionResponse } from '@src/utils/api/transactionApi'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import {
   CashTransferAs,
@@ -34,7 +22,7 @@ import {
 } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
-import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 type LoanCollectTypes = {

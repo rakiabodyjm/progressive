@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Grid, IconButton, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, Divider, Grid, IconButton, Paper, Theme, Typography } from '@material-ui/core'
 import { CloseOutlined, DoubleArrow } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import AsyncButton from '@src/components/AsyncButton'
@@ -15,7 +15,6 @@ import useNotification from '@src/utils/hooks/useNotification'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 
 import axios, { AxiosError } from 'axios'
-import router from 'next/router'
 import { useState } from 'react'
 import useSWR from 'swr'
 
@@ -204,7 +203,7 @@ export default function RevertCashTransferModal({
                       .then((res) => {
                         dispatchNotif({
                           type: NotificationTypes.SUCCESS,
-                          message: `Transaction Reverted`,
+                          message: 'Transaction Reverted',
                         })
                       })
                       .catch((err) => {

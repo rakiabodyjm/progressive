@@ -12,8 +12,8 @@ import {
 import { CloseOutlined } from '@material-ui/icons'
 
 import ModalWrapper from '@src/components/ModalWrapper'
-import { CashTransferAs, EditOrRevertTypes } from '@src/utils/types/CashTransferTypes'
-import { useMemo, useRef } from 'react'
+import { EditOrRevertTypes } from '@src/utils/types/CashTransferTypes'
+import { useRef } from 'react'
 
 export default function EditOrRevertModal({
   open,

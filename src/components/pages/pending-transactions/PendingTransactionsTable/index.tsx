@@ -67,7 +67,6 @@ export default function PendingTransactionsTable({
           }
         })
         .catch((err) => {
-          console.log('Failed fetching pending transactions', err)
           return undefined
         }),
     {
@@ -92,7 +91,7 @@ export default function PendingTransactionsTable({
             style={{
               margin: 'auto',
               // width: 'max-content',
-              padding: `8px 24px`,
+              padding: '8px 24px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',

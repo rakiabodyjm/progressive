@@ -1,8 +1,7 @@
 import { Box, TextField, TextFieldProps, Typography, TypographyTypeMap } from '@material-ui/core'
 import { formatKeyIntoReadables } from '@src/utils/api/common'
-import React, { ChangeEvent, memo, useEffect, useMemo, useRef, useState } from 'react'
+import React, { ChangeEvent, memo, useRef } from 'react'
 import deepEqual from '@src/utils/deepEqual'
-import { PhysicsPropsPlugin } from 'gsap/all'
 
 const RenderKeyValue = memo(
   function RenderKeyValue({

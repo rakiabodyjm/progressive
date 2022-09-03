@@ -26,7 +26,6 @@ export default function axiosDefaults() {
       // headers =
     },
     (err) => {
-      console.log('Error in axios defaults')
       console.error(err)
       return Promise.reject(err)
     }
@@ -35,7 +34,7 @@ export default function axiosDefaults() {
     if (response.status === 401) {
       store.dispatch(
         setNotification({
-          message: `Unauthorized, Please Relogin`,
+          message: 'Unauthorized, Please Relogin',
           type: NotificationTypes.ERROR,
         })
       )

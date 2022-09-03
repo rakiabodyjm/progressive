@@ -151,7 +151,7 @@ export default function EditLoanDetailsModal({
     if (response) {
       notify({
         type: NotificationTypes.SUCCESS,
-        message: `Loan Updated Successfully`,
+        message: 'Loan Updated Successfully',
       })
     }
   }, [response, notify])
@@ -171,7 +171,7 @@ export default function EditLoanDetailsModal({
       .then(() => {
         notify({
           type: NotificationTypes.SUCCESS,
-          message: `Loan Interest Updated`,
+          message: 'Loan Interest Updated',
         })
       })
       .catch((err) => {

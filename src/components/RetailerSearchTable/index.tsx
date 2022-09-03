@@ -1,4 +1,4 @@
-import { Box, Divider, Paper } from '@material-ui/core'
+import { Box, Paper } from '@material-ui/core'
 import router from 'next/router'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'

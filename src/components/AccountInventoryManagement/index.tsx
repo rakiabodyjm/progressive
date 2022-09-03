@@ -1,7 +1,5 @@
 import {
   Box,
-  CircularProgress,
-  Container,
   Divider,
   Grid,
   IconButton,
@@ -21,7 +19,7 @@ import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 import { getAllInventory, GetAllInventoryDto, Inventory } from '@src/utils/api/inventoryApi'
-import { CaesarWalletResponse, getWallet, getWalletById } from '@src/utils/api/walletApi'
+import { getWallet, getWalletById } from '@src/utils/api/walletApi'
 import { PaginateFetchParameters, Paginated } from '@src/utils/types/PaginatedEntity'
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'

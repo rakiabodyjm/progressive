@@ -6,7 +6,6 @@ import {
   Grid,
   IconButton,
   Paper,
-  SvgIconTypeMap,
   Theme,
   Typography,
   useTheme,
@@ -87,7 +86,7 @@ export default function PendingTransactionsApprovalModal({
         return () => transactionActionHandler(cancelPendingTransaction(pendingTransaction!.id))
       }
       default: {
-        throw new Error(`transactionAction is not in appropriate keys: approve, deny, cancel`)
+        throw new Error('transactionAction is not in appropriate keys: approve, deny, cancel')
       }
     }
   }
@@ -113,8 +112,6 @@ export default function PendingTransactionsApprovalModal({
       }
     }
   }, [action])
-
-  const handleApprove = () => {}
 
   return (
     <>

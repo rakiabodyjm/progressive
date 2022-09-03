@@ -97,9 +97,8 @@ const userApi = {
         window?.localStorage?.removeItem('token')
       })
       .catch((err) => {
-        console.log('err', err)
+        console.log(err)
       })
-      .finally(() => {})
   },
   /**
    *
@@ -162,17 +161,15 @@ const userApi = {
       .patch(`/user/${id}`, args)
       .then(({ data }: { data: UserResponse }) => data)
       .catch((err: AxiosError) => {
-        throw err
+        console.log(err)
       })
   },
   extractError(err: AxiosError): string {
-    console.log('serializing error', err)
     const errResponse: string | string[] = err?.response?.data?.message
     const errRequest = err?.request
 
     if (errResponse) {
       if (Array.isArray(errResponse)) {
-        console.log('errResponse is array')
         return errResponse.join(', ')
         // return errResponse as string[]
       }
@@ -185,7 +182,7 @@ const userApi = {
   },
   getUsers(params: PaginateFetchParameters): Promise<Paginated<UserResponse>> {
     return axios
-      .get(`/user`, {
+      .get('/user', {
         params,
       })
       .then((res) => res.data)

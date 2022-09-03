@@ -7,9 +7,6 @@ import {
   Theme,
   Typography,
   IconButton,
-  Button,
-  TypographyProps,
-  CircularProgress,
   PaperProps,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
@@ -27,7 +24,6 @@ import validator from 'validator'
 import deepEqual from '@src/utils/deepEqual'
 import { useDispatch } from 'react-redux'
 import SimpleMultipleAutoComplete from '@src/components/SimpleMultipleAutoComplete'
-import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
 import { SubdistributorResponseType, searchSubdistributor } from '@src/utils/api/subdistributorApi'
 import AsyncButton from '@src/components/AsyncButton'

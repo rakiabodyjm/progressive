@@ -6,36 +6,47 @@ import {
   CashTransferAs,
   CashTransferResponse,
 } from '@src/utils/types/CashTransferTypes'
-import dynamic, { DynamicOptions, Loader } from 'next/dynamic'
-import { ReactComponentElement } from 'react'
+import dynamic from 'next/dynamic'
 
-function dynamicImportWithLoading<T>(param: T) {
-  return dynamic(param, {
+const TransferTypeTransaction = dynamic(
+  () => import('@src/components/pages/cash-transfer/CreateTransferTypeTransaction'),
+  {
     loading: () => <LoadingScreen2 />,
-  })
-}
-
-const TransferTypeTransaction = dynamicImportWithLoading(
-  () => import('@src/components/pages/cash-transfer/CreateTransferTypeTransaction')
+  }
 )
-const WithDrawTypeTransaction = dynamicImportWithLoading(
-  () => import('@src/components/pages/cash-transfer/CreateWithdrawTypeTransaction')
-)
-
-const DepositTypeTransaction = dynamicImportWithLoading(
-  () => import('@src/components/pages/cash-transfer/CreateDepositTypeTransaction')
+const WithDrawTypeTransaction = dynamic(
+  () => import('@src/components/pages/cash-transfer/CreateWithdrawTypeTransaction'),
+  {
+    loading: () => <LoadingScreen2 />,
+  }
 )
 
-const LoanTypeTransaction = dynamicImportWithLoading(
-  () => import('@src/components/pages/cash-transfer/CreateLoanTypeTransaction')
+const DepositTypeTransaction = dynamic(
+  () => import('@src/components/pages/cash-transfer/CreateDepositTypeTransaction'),
+  {
+    loading: () => <LoadingScreen2 />,
+  }
 )
 
-const LoanPaymentTransaction = dynamicImportWithLoading(
-  () => import('@src/components/pages/cash-transfer/CreateLoanPaymentTypeTransaction')
+const LoanTypeTransaction = dynamic(
+  () => import('@src/components/pages/cash-transfer/CreateLoanTypeTransaction'),
+  {
+    loading: () => <LoadingScreen2 />,
+  }
 )
 
-const LoadTypeTransaction = dynamicImportWithLoading(
-  () => import('@src/components/pages/cash-transfer/CreateLoadTypeTransaction')
+const LoanPaymentTransaction = dynamic(
+  () => import('@src/components/pages/cash-transfer/CreateLoanPaymentTypeTransaction'),
+  {
+    loading: () => <LoadingScreen2 />,
+  }
+)
+
+const LoadTypeTransaction = dynamic(
+  () => import('@src/components/pages/cash-transfer/CreateLoadTypeTransaction'),
+  {
+    loading: () => <LoadingScreen2 />,
+  }
 )
 
 type TransferTypeProps = {
@@ -79,8 +90,8 @@ export default function CashTransferForm({
   | WithdrawTypeProps
   | DepositTypeProps
   | LoanTypeProps
-  | LoanPaymentTypeProps
-  | LoadTypeProps,
+  | LoadTypeProps
+  | LoanPaymentTypeProps,
   'children'
 >) {
   return (
@@ -128,7 +139,12 @@ export default function CashTransferForm({
       {transactionType === CashTransferAs.LOAN_PAYMENT && (
         <Paper>
           <Box p={2}>
-            <LoanPaymentTransaction {...restProps} />
+            <LoanPaymentTransaction
+              {...(restProps as {
+                cash_transfer: CashTransferResponse
+                triggerMutate: () => void
+              })}
+            />
           </Box>
         </Paper>
       )}

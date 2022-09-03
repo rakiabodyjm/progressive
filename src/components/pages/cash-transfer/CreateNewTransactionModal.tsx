@@ -13,7 +13,7 @@ import { CloseOutlined } from '@material-ui/icons'
 import ModalWrapper from '@src/components/ModalWrapper'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
-import { CaesarBank, CashTransferAs, TransferTypes } from '@src/utils/types/CashTransferTypes'
+import { CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 

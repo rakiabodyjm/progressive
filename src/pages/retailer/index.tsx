@@ -18,9 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import DSPAccountSummaryCard from '@src/components/DSPAccountSummaryCard'
-import { getRetailer } from '@src/utils/api/retailerApi'
 import RoleBadge from '@src/components/RoleBadge'
-import RetailerTable from '@src/components/RetailerTable'
 import { getDsp } from '@src/utils/api/dspApi'
 import { AddCircleOutlined } from '@material-ui/icons'
 import CreateRetailerAccount from '@src/components/pages/retailer/CreateRetailerAccount'
@@ -99,7 +97,6 @@ export default function RetailersPage() {
                 placement="left"
               >
                 <IconButton onClick={setModalOpen('retailer', true)}>
-                  {/* {console.log(addRetailerAccountModal.retailer)} */}
                   <AddCircleOutlined />
                 </IconButton>
               </Tooltip>
@@ -138,10 +135,6 @@ export default function RetailersPage() {
                       dspId={account.dsp.id}
                       subdistributorId={account?.dsp.subdistributor.id}
                     />
-                    {console.log(account.dsp)}
-                    {/* <RetailerTable dspId={account.dsp.id} />
-                    {console.log(account?.dsp.subdistributor.id)}
-                    {console.log(account.dsp.id)} */}
                   </Paper>
                 </Grid>
 
@@ -155,7 +148,6 @@ export default function RetailersPage() {
           )}
         </Grid>
       </Paper>
-      {/* {console.log(account)} */}
       {account?.subdistributor && account.dsp && addRetailerAccountModal.retailer && (
         <ModalContainer
           handleClose={setModalOpen('retailer', false)}

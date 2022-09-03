@@ -14,7 +14,7 @@ export const searchCaesarBank = (
   }
 ) =>
   axios
-    .get(`/cash-transfer/caesar-bank`, {
+    .get('/cash-transfer/caesar-bank', {
       ...(searchString && {
         params: {
           search: searchString,

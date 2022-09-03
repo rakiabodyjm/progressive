@@ -24,7 +24,6 @@ import {
   objectToURLQuery,
 } from '@src/utils/api/common'
 import {
-  CaesarBank,
   CashTransferAs,
   CashTransferFilterTypes,
   CashTransferResponse,

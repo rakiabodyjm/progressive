@@ -1,9 +1,8 @@
 /* eslint-disable no-nested-ternary */
-import { useMemo, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useMemo } from 'react'
+import { useSelector } from 'react-redux'
 import { RootState } from '@src/redux/store'
 import axiosDefaults from '@src/utils/lib/axiosDefaults'
-import { getUser } from '@src/redux/data/userSlice'
 import { useRouter } from 'next/router'
 import { AppProps } from 'next/dist/shared/lib/router/router'
 import Error from 'next/error'

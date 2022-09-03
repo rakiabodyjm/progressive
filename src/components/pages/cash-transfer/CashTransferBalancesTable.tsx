@@ -14,19 +14,10 @@ import {
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import {
-  AccountBoxRounded,
-  AddCircleOutlined,
-  CloseOutlined,
-  TableChart,
-  Assessment,
-  MoreVert,
-  Notifications,
-} from '@material-ui/icons'
+import { AddCircleOutlined, TableChart, Notifications } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import AsyncButton from '@src/components/AsyncButton'
 import ErrorLoading from '@src/components/ErrorLoadingScreen'
-import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import CreateRetailerShortcutModal from '@src/components/pages/retailer/CreateRetaileShortcutModal'
@@ -36,15 +27,12 @@ import { NotificationTypes, setNotification } from '@src/redux/data/notification
 import { userDataSelector, UserTypes, UserTypesWithCashTransfer } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
 import { getDsp, getRetailers } from '@src/utils/api/dspApi'
-import { RetailerResponseType } from '@src/utils/api/retailerApi'
 import { getSubdistributor } from '@src/utils/api/subdistributorApi'
 import userApi, { getUser, UserResponse } from '@src/utils/api/userApi'
 import { CaesarWalletResponse, searchWalletV2 } from '@src/utils/api/walletApi'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
-import useNotification from '@src/utils/hooks/useNotification'
 import { useIsMobile } from '@src/utils/hooks/useWidth'
 import {
-  Bank,
   CaesarBank,
   CashTransferRequestTypes,
   RequestStatus,
@@ -54,7 +42,7 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import useSWR, { useSWRConfig } from 'swr'
+import useSWR from 'swr'
 
 export const CashTransferBalancesTable = ({
   disabledKeys,
@@ -155,7 +143,6 @@ export const CashTransferBalancesTable = ({
     }
     // timeoutRef.current = setTimeout(() => {
     //   mutate(['/caesar', query])
-    //   console.log('MUTATED')
     // }, 1000)
   }, [addRetailerModal])
 

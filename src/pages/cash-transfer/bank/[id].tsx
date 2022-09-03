@@ -7,7 +7,6 @@ import {
   Divider,
   Grid,
   IconButton,
-  List,
   Paper,
   Theme,
   Tooltip,
@@ -21,14 +20,7 @@ import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useMemo, useRef, useState } from 'react'
-import {
-  Close,
-  CloseOutlined,
-  Edit,
-  ErrorOutline,
-  MonetizationOn,
-  MoreVert,
-} from '@material-ui/icons'
+import { Close, CloseOutlined, Edit, MonetizationOn, MoreVert } from '@material-ui/icons'
 import useSWR from 'swr'
 import CashTransferForm from '@src/components/pages/cash-transfer/CashTransferForm'
 import { useSelector } from 'react-redux'
@@ -218,7 +210,7 @@ export default function ViewCaesarBankPage() {
               <Grid item xs={12} md={6}>
                 <Button
                   style={{
-                    padding: `8px 24px`,
+                    padding: '8px 24px',
                     display: transactionModal.transactionSelected ? 'none' : undefined,
                   }}
                   variant="contained"

@@ -15,8 +15,8 @@ import companyLogo from '@public/assets/realm1000-logo.png'
 import { loginUserThunk, getUser } from '@src/redux/data/userSlice'
 import type { LoginUserParams } from '@src/utils/api/userApi'
 import Image from 'next/image'
-import { ChangeEvent, useState, FormEvent, useEffect, ChangeEventHandler } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { ChangeEvent, useState, FormEvent } from 'react'
+import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/router'
 import { AppDispatch } from '@src/redux/store'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: 720,
     height: '100vh',
     '&:after': {
-      content: "''",
+      content: '\'\'',
       position: 'absolute',
       width: '100%',
       top: 0,
@@ -107,11 +107,13 @@ export default function AdminLogin({ reloginFunction }: { reloginFunction?: () =
       })
   }
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e?.target
-    setFormValues((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
+    if (e.target?.name) {
+      const { name, value } = e.target
+      setFormValues((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }))
+    }
   }
 
   // const user: User = useSelector((state: RootState) => state?.user?.data || null)
@@ -247,7 +249,7 @@ export default function AdminLogin({ reloginFunction }: { reloginFunction?: () =
               type="submit"
               style={{
                 justifySelf: 'flex-end',
-                padding: `2px 24px`,
+                padding: '2px 24px',
                 borderRadius: 4,
                 color: theme.palette.primary.contrastText,
                 overflow: 'hidden',

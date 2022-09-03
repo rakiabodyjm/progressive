@@ -7,7 +7,7 @@ import { useErrorNotification, useSuccessNotification } from '@src/utils/hooks/u
 import { Bank, CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import useSWR, { KeyedMutator } from 'swr'
 import AsyncButton from '@src/components/AsyncButton'
 import useIsCtOperatorOrAdmin from '@src/utils/hooks/useIsCtOperatorOrAdmin'
@@ -83,7 +83,7 @@ const CreateOrUpdateCaesarBank = ({
           }, {})
         )
         .then((res) => {
-          dispatchSuccess(`Caesar's Bank Account Updated`)
+          dispatchSuccess('Caesar\'s Bank Account Updated')
           onClose()
         })
         .catch((err) => {
@@ -103,7 +103,7 @@ const CreateOrUpdateCaesarBank = ({
         ...formValues,
       })
       .then((res) => {
-        dispatchSuccess(`Caesar Bank Created`)
+        dispatchSuccess('Caesar Bank Created')
         setFormValues({
           bank: undefined,
           caesar,

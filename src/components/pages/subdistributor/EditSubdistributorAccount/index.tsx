@@ -5,7 +5,6 @@ import {
   TextField,
   Typography,
   CircularProgress,
-  Button,
   IconButton,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
@@ -19,11 +18,9 @@ import type {
   SubdistributorUpdateType,
 } from '@src/utils/api/subdistributorApi'
 import { updateSubdistributor } from '@src/utils/api/subdistributorApi'
-import { UserResponse } from '@src/utils/api/userApi'
 import deepEqual from '@src/utils/deepEqual'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import useSWR from 'swr'
 
 interface EditSubdistributorAccountFormValues {
   e_bind_number: string
@@ -211,7 +208,6 @@ export default function EditSubdistributorAccount({
                   ...prevState,
                   area_id: value as MapIdResponseType,
                 }))
-                // console.log(value)
               }}
               defaultValue={subdistributor?.area_id || null}
               /**
@@ -259,7 +255,6 @@ export default function EditSubdistributorAccount({
           <AsyncButton
             onClick={() => {
               setButtonLoading()
-              // console.log('Changes', changes)
               if (subdistributor.id) {
                 updateSubdistributor(subdistributor.id, formatUpdateValues(changes))
                   .then((res) => {
@@ -285,7 +280,6 @@ export default function EditSubdistributorAccount({
                     setButtonLoading(false)
                   })
               }
-              // console.log(formValues)
             }}
             loading={buttonProps.loading}
             // disabled={buttonProps.disabled}

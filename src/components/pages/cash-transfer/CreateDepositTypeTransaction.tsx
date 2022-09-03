@@ -10,7 +10,7 @@ import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
-import { Caesar, CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
+import { CaesarBank, CashTransferAs } from '@src/utils/types/CashTransferTypes'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useSWRConfig } from 'swr'
@@ -77,7 +77,7 @@ const DepositTypeTransaction = ({
     }
     if (response) {
       dispatchNotif({
-        message: `Deposit Successful`,
+        message: 'Deposit Successful',
         type: NotificationTypes.SUCCESS,
       })
     }

@@ -1,6 +1,5 @@
-import { Box, Divider, makeStyles, Typography, useTheme } from '@material-ui/core'
+import { Box, makeStyles, Typography, useTheme } from '@material-ui/core'
 import Head from 'next/head'
-import ErrorIcon from '@material-ui/icons/Error'
 import { ErrorOutline } from '@material-ui/icons'
 const useStyles = makeStyles(() => ({
   root: {

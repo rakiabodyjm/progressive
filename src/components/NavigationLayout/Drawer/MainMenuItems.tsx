@@ -1,16 +1,10 @@
-import { Collapse, List } from '@material-ui/core'
-import {
-  AccountTree,
-  ContactPhone,
-  Dashboard,
-  PersonPinCircle,
-  Assignment,
-} from '@material-ui/icons'
+import { List } from '@material-ui/core'
+import { AccountTree, ContactPhone, Dashboard, PersonPinCircle } from '@material-ui/icons'
 import { nanoid } from '@reduxjs/toolkit'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 import RenderSubListItem from '@src/components/NavigationLayout/Drawer/RenderSubListItem'
 import { userDataSelector } from '@src/redux/data/userSlice'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 const subdMenuItems = [

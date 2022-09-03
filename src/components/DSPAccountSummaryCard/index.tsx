@@ -2,7 +2,6 @@ import { Box, ButtonBase, Grid, Paper, Theme, Typography } from '@material-ui/co
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { DspResponseType } from '@src/utils/api/dspApi'
-import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import { useEffect, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) => ({

@@ -5,7 +5,6 @@ import {
   Divider,
   Grid,
   IconButton,
-  List,
   ListItem,
   Paper,
   Theme,
@@ -22,24 +21,20 @@ import {
   createInventory,
   CreateInventory as CreateInventoryPost,
 } from '@src/utils/api/inventoryApi'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Asset, searchAsset } from '@src/utils/api/assetApi'
 import { useSelector } from 'react-redux'
-import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
+import { userDataSelector } from '@src/redux/data/userSlice'
 import {
   getWalletById,
   CaesarWalletResponse,
-  getWallet,
   searchWallet,
   SearchWalletParams,
 } from '@src/utils/api/walletApi'
 import SimpleAutoComplete from '@src/components/SimpleAutoComplete'
-import { useRouter } from 'next/router'
 import { grey } from '@material-ui/core/colors'
 import useSWR from 'swr'
 import AsyncButton from '@src/components/AsyncButton'
-import CustomTextField from '@src/components/AutoFormRenderer/CustomTextField'
-import { searchUser, UserResponse } from '@src/utils/api/userApi'
 
 const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
@@ -88,7 +83,6 @@ export default function CreateInventory({
     if (error) {
       dispatchError(error.message)
     }
-    console.log('inventory', inventory)
   }, [error, inventory])
 
   const user = useSelector(userDataSelector)
@@ -280,7 +274,6 @@ export default function CreateInventory({
                           searchWallet(query)
                             .then((res) => res.data)
                             .catch((err) => {
-                              console.log('Caesar Account Search Error: ', err)
                               return []
                             })
                         }

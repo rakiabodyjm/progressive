@@ -1,9 +1,9 @@
-import { Box, Button, Container, Menu, Paper, Theme, Tooltip, Typography } from '@material-ui/core'
+import { Box, Container, Paper, Typography } from '@material-ui/core'
 import RoleBadge from '@src/components/RoleBadge'
 
 import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
 
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useFetchOrSearchAccounts, { Entities } from '@hooks/useFetchOrSearchAccounts'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
@@ -22,13 +22,6 @@ import { useSWRConfig } from 'swr'
 import UserAccountTypeSelector from '@src/components/UserAccountTypeSelector'
 
 type Entity = Entities[keyof Entities]
-
-type EntityTypesUnion =
-  | UserResponse
-  | DspResponseType
-  | RetailerResponseType
-  | SubdistributorResponseType
-  | AdminResponseType
 
 export default function AdminAccountsPage() {
   const paperHeight = 400
@@ -81,13 +74,17 @@ export default function AdminAccountsPage() {
   const timeoutRef = useRef<undefined | ReturnType<typeof setTimeout>>()
 
   const formatSelector = useCallback(
-    // eslint-disable-next-line func-names
     function (arg: Entities[typeof accountType][]) {
       return arg.map((ea) => {
-        const functionToUse = formatter[accountType]
-        // @ts-ignore
-        return functionToUse(ea)
-        // formatter[accountType](ea as Entities[typeof accountType])
+        return accountType === 'admin'
+          ? formatAdmin(ea as AdminResponseType)
+          : accountType === 'subdistributor'
+          ? formatAdmin(ea as SubdistributorResponseType)
+          : accountType === 'dsp'
+          ? formatDsp(ea as DspResponseType)
+          : accountType === 'retailer'
+          ? formatRetailer(ea as RetailerResponseType)
+          : formatUsers(ea as UserResponse)
       })
     },
     [accountType]
@@ -248,11 +245,3 @@ const formatSubdistributor = ({ name, area_id, user }: SubdistributorResponseTyp
   user: user ? `${user.last_name}, ${user.first_name}` : '',
   area_id: area_id?.area_name || '',
 })
-
-const formatter = {
-  admin: formatAdmin,
-  dsp: formatDsp,
-  retailer: formatRetailer,
-  subdistributor: formatSubdistributor,
-  user: formatUsers,
-}

@@ -1,7 +1,6 @@
 import { Box, Divider, IconButton, Paper, Typography } from '@material-ui/core'
-import { CloseOutlined, Info, MonetizationOn } from '@material-ui/icons'
+import { CloseOutlined, Info } from '@material-ui/icons'
 import AsyncButton from '@src/components/AsyncButton'
-import FormLabel from '@src/components/FormLabel'
 import ModalWrapper from '@src/components/ModalWrapper'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import React, { useCallback } from 'react'

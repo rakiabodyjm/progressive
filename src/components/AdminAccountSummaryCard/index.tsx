@@ -1,8 +1,8 @@
+/* eslint-disable react/no-unknown-property */
 import { Box, ButtonBase, Grid, Paper, Theme, Typography } from '@material-ui/core'
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import { AdminResponseType } from '@src/utils/api/adminApi'
-import { SubdistributorResponseType } from '@src/utils/api/subdistributorApi'
 import { useEffect, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) => ({

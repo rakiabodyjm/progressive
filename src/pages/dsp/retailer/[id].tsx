@@ -151,7 +151,7 @@ const retailerFieldsFull = ({
     value: e_bind_number,
   },
   {
-    key: `Store Name`,
+    key: 'Store Name',
     value: store_name,
   },
 

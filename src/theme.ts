@@ -40,7 +40,7 @@ const theme = (additionalProps: CustomThemeProperties): Theme => {
     typography: {
       htmlFontSize: 16,
       fontSize: 14,
-      fontFamily: [`'Exo 2'`, '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Oxygen'].join(','),
+      fontFamily: ['\'Exo 2\'', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Oxygen'].join(','),
     },
     overrides: {
       MuiCssBaseline: {
@@ -52,10 +52,10 @@ const theme = (additionalProps: CustomThemeProperties): Theme => {
       },
       MuiButton: {
         root: {
-          padding: `4px 24px`,
+          padding: '4px 24px',
         },
         outlined: {
-          padding: `4px 24px`,
+          padding: '4px 24px',
         },
       },
       MuiIconButton: {

@@ -158,9 +158,7 @@ export default function UsersTable<T extends Record<any | 'id', any>>({
                 >
                   {fields?.map((ea, index) => {
                     const renderComponent = renderCell?.[ea] || undefined
-                    // if (renderComponent) {
-                    //   console.log('caught one ', renderComponent)
-                    // }
+
                     const value = row[ea]
                     return (
                       // eslint-disable-next-line react/no-array-index-key

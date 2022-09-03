@@ -7,7 +7,6 @@ import {
   Theme,
   Typography,
   IconButton,
-  Button,
   TypographyProps,
   TextFieldProps,
 } from '@material-ui/core'
@@ -23,10 +22,9 @@ import {
   SubdistributorResponseType,
 } from '@src/utils/api/subdistributorApi'
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
+import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import validator from 'validator'
 import { useDispatch } from 'react-redux'
-import { extractErrorFromResponse } from '@src/utils/api/common'
 import useNotification from '@src/utils/hooks/useNotification'
 import UserAutoComplete from '@src/components/UserAutoComplete'
 import AsyncButton from '@src/components/AsyncButton'
@@ -142,7 +140,7 @@ export default function CreateDSPAccount({
       .then(() => {
         dispatchNotif({
           type: NotificationTypes.SUCCESS,
-          message: `DSP Account Created`,
+          message: 'DSP Account Created',
         })
         if (modalClose) {
           modalClose()
@@ -175,8 +173,6 @@ export default function CreateDSPAccount({
     if (autoLoadSubdistributor) {
       handleChange('subdistributor', autoLoadSubdistributor?.id)
     }
-
-    // console.log(autoLoadSubdistributor, autoLoadDsp)
   }, [autoLoadSubdistributor])
 
   return (

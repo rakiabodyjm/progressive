@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import DSPSearchTable from '@src/components/DSPSearchTable'
-import DspTable from '@src/components/DspTable'
 import RetailerTable from '@src/components/RetailerTable'
 import SubdistributorAccountSummaryCard from '@src/components/SubdistributorAccountSummaryCard'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
@@ -57,7 +56,7 @@ export default function ViewSubdistributorAccount({
 
         <Divider
           style={{
-            margin: `16px 0`,
+            margin: '16px 0',
             marginBottom: 24,
           }}
         />

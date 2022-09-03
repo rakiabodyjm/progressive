@@ -3,8 +3,6 @@ import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
 import FormTextField from '@src/components/FormTextField'
-import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
-import FeesTransaction from '@src/components/pages/cash-transfer/FeesTransactionForm'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
@@ -85,7 +83,7 @@ const WithDrawTypeTransaction = ({
     if (response) {
       dispatch(
         setNotification({
-          message: `Withdraw Successful`,
+          message: 'Withdraw Successful',
           type: NotificationTypes.SUCCESS,
         })
       )

@@ -5,8 +5,6 @@ import {
   IconButton,
   Divider,
   useTheme,
-  Button,
-  CircularProgress,
   Theme,
   Grid,
   TextField,
@@ -15,10 +13,8 @@ import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import AsyncButton from '@src/components/AsyncButton'
 import MapIdAutoComplete from '@src/components/MapIdAutoComplete'
-import AestheticObjectFormRenderer from '@src/components/ObjectFormRendererV2'
 import UserAutoComplete from '@src/components/UserAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
-import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
 import { MapIdResponseType } from '@src/utils/api/mapIdApi'
 import {
   createSubdistributor,
@@ -146,12 +142,12 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
     } else {
       if (!areaId) {
         dispatchNotification({
-          message: `Map Id is required`,
+          message: 'Map Id is required',
           type: NotificationTypes.ERROR,
         })
       } else {
         dispatchNotification({
-          message: `You must link a User Account first`,
+          message: 'You must link a User Account first',
           type: NotificationTypes.ERROR,
         })
       }
@@ -197,7 +193,7 @@ export default function CreateSubdistributorAccount({ modal }: { modal?: () => v
         </Box>
         <Divider
           style={{
-            margin: `16px 0px`,
+            margin: '16px 0px',
           }}
         />
         <Grid spacing={2} container>

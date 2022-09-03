@@ -12,32 +12,26 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core'
-import { grey } from '@material-ui/core/colors'
 import { MoreVert, Edit, Close } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import AsyncButton from '@src/components/AsyncButton'
 import CollectiblesTable from '@src/components/CollectiblesTable'
-import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
-import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
 import CashTransferList from '@src/components/pages/cash-transfer/CashTransferList'
-import CreateOrUpdateCaesarBank from '@src/components/pages/cash-transfer/CreateOrUpdateCaesarBank'
 import { PopUpMenu } from '@src/components/PopUpMenu'
 import RoleBadge from '@src/components/RoleBadge'
-import UsersTable from '@src/components/UsersTable'
-import { userDataSelector, userSelector } from '@src/redux/data/userSlice'
+import { userDataSelector } from '@src/redux/data/userSlice'
 import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
-import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
+import { getWalletById } from '@src/utils/api/walletApi'
 import { useSuccessNotification, useErrorNotification } from '@src/utils/hooks/useNotification'
-import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
-import { Caesar, CaesarBank, CashTransferResponse } from '../../../utils/types/CashTransferTypes'
+import { Caesar } from '../../../utils/types/CashTransferTypes'
 
 type CreateCaesar = {
   cash_transfer_balance: number
@@ -253,7 +247,7 @@ const EditCaesarModal = ({
     axios
       .patch(`/caesar/${caesarId}`, formValues)
       .then((res) => {
-        dispatchSuccess(`Caesar's Bank Account Updated`)
+        dispatchSuccess('Caesar\'s Bank Account Updated')
         onClose()
       })
       .catch((err) => {

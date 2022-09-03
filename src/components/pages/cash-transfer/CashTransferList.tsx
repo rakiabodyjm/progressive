@@ -1,15 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-nested-ternary */
-import {
-  Box,
-  Grid,
-  ListItem,
-  Paper,
-  TablePagination,
-  TextField,
-  Theme,
-  Typography,
-} from '@material-ui/core'
+import { Box, Grid, ListItem, Paper, TablePagination, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
@@ -18,7 +9,6 @@ import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
 import CashTransferDetailsModal from '@src/components/pages/cash-transfer/CashTransferDetailsModal'
 import LoanDetailsModal from '@src/components/pages/cash-transfer/LoanDetailsModal'
-import RoleBadge from '@src/components/RoleBadge'
 import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
 import { CaesarWalletResponse } from '@src/utils/api/walletApi'
 import {
@@ -112,7 +102,7 @@ export default function CashTransferList({
         })
         .then((res) => res.data as Paginated<CashTransferResponse>)
         .catch((err) => {
-          console.log('failed loading cash-transfers', err)
+          console.log(err)
         })
   )
 

@@ -2,13 +2,12 @@ import { Box, Grid, List, Paper, Theme, Typography } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
 import { useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
-import LoadingScreen, { LoadingScreen2 } from '@src/components/LoadingScreen'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import RoleBadge from '@src/components/RoleBadge'
 import { formatIntoCurrency, objectToURLQuery } from '@src/utils/api/common'
 import { CashTransferAs, CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
-import { previousDay } from 'date-fns/esm'
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 type NewDateType = {
@@ -96,7 +95,7 @@ export default function CollectiblesSmallCards({
           ...queryParameters,
         })}`,
     (url) => axios.get(url).then((res) => res.data),
-    { revalidateIfStale: true }
+    { revalidateIfStale: true, revalidateOnFocus: false }
   )
 
   // RETAILER LOAN
@@ -110,7 +109,7 @@ export default function CollectiblesSmallCards({
       ? `/cash-transfer/get-retailer-loan/${id}/search?date_from=${date_from}&date_to=${date_to}`
       : null,
     (url) => axios.get(url).then((res) => res.data as CashTransferResponse[]),
-    { revalidateIfStale: true }
+    { revalidateIfStale: true, revalidateOnFocus: false }
   )
 
   // RETAILER LOAD
@@ -124,7 +123,7 @@ export default function CollectiblesSmallCards({
       ? `/cash-transfer/get-retailer-load/${id}/search?date_from=${date_from}&date_to=${date_to}`
       : null,
     (url) => axios.get(url).then((res) => res.data as CashTransferResponse[]),
-    { revalidateIfStale: true }
+    { revalidateIfStale: true, revalidateOnFocus: false }
   )
 
   // AGGREGATED FUNCTIONS
@@ -444,7 +443,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Remaining Collection From Previous</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400' }}>
                     {dateEnabled
                       ? loanAndLoad.totalCollectedFromPrevCount || 0
                       : collectionFromPrevious.toCollectFromPrev || 0}
@@ -468,7 +467,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Remaining Collection Amount</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400', overflow: 'hidden' }}>
                     {dateEnabled
                       ? formatIntoCurrency(totalRemainingLoan)
                       : formatIntoCurrency(
@@ -496,7 +495,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Collected From Previous</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400' }}>
                     {dateEnabled
                       ? totalCollectionFromPrevCount
                       : collectionFromPrevious.collectedPreviousDay || 0}
@@ -520,7 +519,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Collected Amount From Previous</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400', overflow: 'hidden' }}>
                     {dateEnabled
                       ? formatIntoCurrency(totalCollectionFromPrev)
                       : formatIntoCurrency(
@@ -548,7 +547,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Loaned Today (same day)</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400' }}>
                     {dateEnabled ? 0 : loanedToday.loanedSameDay || 0}
                   </Typography>
                 </>
@@ -569,7 +568,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Loaned Today Amount</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400', overflow: 'hidden' }}>
                     {dateEnabled
                       ? 0
                       : formatIntoCurrency(
@@ -597,7 +596,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Collected Today (same day)</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400' }}>
                     {dateEnabled
                       ? totalLoanCollectedSameDayCount
                       : collectedToday.collectedSameDay || 0}
@@ -620,7 +619,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Collected Today Amount</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400', overflow: 'hidden' }}>
                     {dateEnabled
                       ? formatIntoCurrency(totalLoanCollectedinSameDay)
                       : formatIntoCurrency(
@@ -648,7 +647,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Total Collection Today</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400', overflow: 'hidden' }}>
                     {dateEnabled
                       ? formatIntoCurrency(
                           loanAndLoad.totalCollectionWithDate.reduce(
@@ -681,7 +680,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>Loan For Tomorrow</FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400' }}>
                     {dateEnabled ? 0 : loanToCollect.toBeCollect || 0}
                   </Typography>
                 </>
@@ -702,7 +701,7 @@ export default function CollectiblesSmallCards({
               ) : (
                 <>
                   <FormLabel>To be collect for tomorrow </FormLabel>
-                  <Typography variant="h4" style={{ fontWeight: '800', overflow: 'hidden' }}>
+                  <Typography variant="h4" style={{ fontWeight: '400', overflow: 'hidden' }}>
                     {dateEnabled
                       ? 0
                       : formatIntoCurrency(

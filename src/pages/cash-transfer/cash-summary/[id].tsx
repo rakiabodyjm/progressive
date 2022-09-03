@@ -2,7 +2,6 @@
 import {
   Box,
   Button,
-  Container,
   Divider,
   Grid,
   IconButton,
@@ -15,7 +14,6 @@ import {
 import { grey } from '@material-ui/core/colors'
 import { UnfoldLess, UnfoldMore } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
-import ErrorLoading from '@src/components/ErrorLoadingScreen'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
@@ -23,16 +21,13 @@ import CollectiblesSmallCards from '@src/components/pages/cash-transfer/Collecti
 import TransactionOnlyModal from '@src/components/pages/cash-transfer/TransactionOnlyModal'
 import RoleBadge from '@src/components/RoleBadge'
 import { userDataSelector, UserTypes } from '@src/redux/data/userSlice'
-import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
+import { formatIntoCurrency } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById, searchWalletV2 } from '@src/utils/api/walletApi'
-import { CaesarBank } from '@src/utils/types/CashTransferTypes'
-import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
-import axios from 'axios'
+import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { useRouter } from 'next/router'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
-const caesarFetcher = (id: string) => () => getWalletById(id)
 
 export default function CashSummaryView() {
   const theme: Theme = useTheme()
@@ -102,7 +97,9 @@ export default function CashSummaryView() {
     []
   )
 
-  const { data: caesar } = useSWR<CaesarWalletResponse>(`caesar/${id}`, caesarFetcher(id as string))
+  const { data: caesar, error } = useSWR<CaesarWalletResponse>(`caesar/${id}`, () =>
+    getWalletById(id as string)
+  )
   const [showTransactions, setShowTransactions] = useState<boolean>(false)
   const [caesarBankId, setCaesarBankId] = useState<string>('')
   const formatter = useCallback(
@@ -699,7 +696,7 @@ export default function CashSummaryView() {
                                   >
                                     <Grid container spacing={2}>
                                       {caesarValues.map((ea) => (
-                                        <Grid key={ea.id} item xs={12} md={6} lg={4}>
+                                        <Grid key={ea.id} item xs={12} md={6}>
                                           <Box>
                                             <ListItem
                                               style={{
@@ -711,25 +708,15 @@ export default function CashSummaryView() {
                                                 marginTop: 8,
                                               }}
                                             >
-                                              <Grid
-                                                container
-                                                spacing={1}
-                                                style={{
-                                                  padding: 8,
-                                                }}
-                                              >
-                                                <Grid item xs={12}>
-                                                  <CollectiblesSmallCards
-                                                    id={ea.id}
-                                                    dsp_name={ea.name}
-                                                    setValue={sendDataToParent}
-                                                    date_from={dateQuery.date_from}
-                                                    date_to={dateQuery.date_to}
-                                                    dateEnabled={switchDate}
-                                                    setLoading={sendIsLoadingToParent}
-                                                  />
-                                                </Grid>
-                                              </Grid>
+                                              <CollectiblesSmallCards
+                                                id={ea.id}
+                                                dsp_name={ea.name}
+                                                setValue={sendDataToParent}
+                                                date_from={dateQuery.date_from}
+                                                date_to={dateQuery.date_to}
+                                                dateEnabled={switchDate}
+                                                setLoading={sendIsLoadingToParent}
+                                              />
                                             </ListItem>
                                           </Box>
                                         </Grid>

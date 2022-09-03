@@ -1,7 +1,7 @@
 import { CaesarBank } from '@src/utils/types/CashTransferTypes'
 import { useEffect, useState } from 'react'
 import { Box, Chip, IconButton, Paper } from '@material-ui/core'
-import { AddOutlined, CloseOutlined, PhonePausedRounded } from '@material-ui/icons'
+import { AddOutlined, CloseOutlined } from '@material-ui/icons'
 import FormNumberField from '@src/components/FormNumberField'
 import FormLabel from '@src/components/FormLabel'
 

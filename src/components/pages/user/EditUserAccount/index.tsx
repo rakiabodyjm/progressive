@@ -14,8 +14,8 @@ import { Cancel, Edit, MoreVert } from '@material-ui/icons'
 import { useTheme } from '@material-ui/styles'
 import { PopUpMenu } from '@src/components/PopUpMenu'
 import { userDataSelector, getUser as getUserThunk } from '@src/redux/data/userSlice'
-import userApi, { getUser, UserResponse, UpdateUser } from '@src/utils/api/userApi'
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
+import userApi, { getUser, UpdateUser } from '@src/utils/api/userApi'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import LoadingScreen from '@src/components/LoadingScreen'
@@ -143,7 +143,7 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
             dispatch(
               setNotification({
                 type: NotificationTypes.SUCCESS,
-                message: `User Updated`,
+                message: 'User Updated',
               })
             )
             setEditMode(false)
@@ -165,7 +165,7 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
         dispatch(
           setNotification({
             type: NotificationTypes.ERROR,
-            message: `Passwords do not match`,
+            message: 'Passwords do not match',
           })
         )
       }
@@ -177,7 +177,7 @@ export default function EditUserAccount({ adminId }: { adminId?: string }) {
           dispatch(
             setNotification({
               type: NotificationTypes.SUCCESS,
-              message: `User Updated`,
+              message: 'User Updated',
             })
           )
           setEditMode(false)

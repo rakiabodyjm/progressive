@@ -22,7 +22,6 @@ export default function SubdistributorAutoComplete({
     timeoutRef.current = setTimeout(() => {
       searchSubdistributor(query)
         .then((res) => {
-          console.log(res)
           setUsersOptions(mutateOptions ? mutateOptions(res) : res)
         })
         .catch((err) => {

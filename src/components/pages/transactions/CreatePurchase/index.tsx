@@ -8,14 +8,12 @@ import {
   IconButton,
   Paper,
   Typography,
-  useTheme,
 } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import { nanoid } from '@reduxjs/toolkit'
 import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
-import ModalWrapper from '@src/components/ModalWrapper'
 import { toCapsFirst } from '@src/utils/api/common'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import { createPurchase } from '@src/utils/api/transactionApi'
@@ -97,8 +95,6 @@ export default function CreatePurchase({
     // let quantitySubmit: number = by === 'quantity' ? quantity
     // quantitySubmit = Number(quantitySubmit.toFixed(2))
     const quantitySubmit = quantity
-
-    console.log('by', by, quantitySubmit)
     setLoading(true)
     return createPurchase({
       inventoryId: inventory.id,
@@ -107,9 +103,9 @@ export default function CreatePurchase({
     })
       .then((res) => {
         if (res?.pending_transactions) {
-          successNotif(`Transaction succeeded as Pending`)
+          successNotif('Transaction succeeded as Pending')
         } else {
-          successNotif(`Transaction Completed`)
+          successNotif('Transaction Completed')
         }
       })
       .catch((err) => {

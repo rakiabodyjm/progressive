@@ -9,7 +9,6 @@ import {
   useTheme,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { LocalOffer } from '@material-ui/icons'
 import FormLabel from '@src/components/FormLabel'
 import { Inventory } from '@src/utils/api/inventoryApi'
 import Image from 'next/image'
@@ -90,9 +89,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   image: {
-    paddingRight: `8px !important`,
+    paddingRight: '8px !important',
     filter: 'grayscale(40%) !important',
-    maxWidth: `180px !important`,
+    maxWidth: '180px !important',
   },
   rowGap: {
     alignItems: 'center',

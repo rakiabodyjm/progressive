@@ -1,35 +1,23 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {
-  Box,
-  CircularProgress,
-  Divider,
-  Grid,
-  Link,
-  Paper,
-  Tooltip,
-  Typography,
-} from '@material-ui/core'
-import { ArrowRight, MonetizationOnOutlined } from '@material-ui/icons'
+import { Box, Divider, Grid, Link, Paper, Tooltip, Typography } from '@material-ui/core'
 import AsyncButton from '@src/components/AsyncButton'
 import ConfirmationModal from '@src/components/ConfirmationModal'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
-import ToCaesarAndCaesarBank from '@src/components/pages/cash-transfer/ToCaesarAndCaesarBank'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
 import { NotificationTypes } from '@src/redux/data/notificationSlice'
 import { extractMultipleErrorFromResponse, formatIntoCurrency } from '@src/utils/api/common'
 import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
-import useNotification, { useErrorNotification } from '@src/utils/hooks/useNotification'
-import useSubmitFormData from '@src/utils/hooks/useSubmitFormData'
+import useNotification from '@src/utils/hooks/useNotification'
 import {
   CaesarBank,
   CashTransferAs,
   CashTransferResponse,
 } from '@src/utils/types/CashTransferTypes'
 import axios, { AxiosError } from 'axios'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 const LoanPaymentTypeTransaction = ({
   cash_transfer,
@@ -97,10 +85,6 @@ const LoanPaymentTypeTransaction = ({
   }, [toCaesarEnabled])
 
   const handleSubmit = () => {
-    console.log('form', formValues)
-    console.log('Cash Transfers:', cash_transfer)
-    console.log('Data:', data)
-
     /**
      * handle post here
      */
@@ -313,12 +297,12 @@ const SwitchToCaesarBankOrCaesarToggle = ({
     placement="bottom"
     title={
       <Typography variant="subtitle2">
-        Record as Transaction to {!toggled ? 'Caesar' : `Caesar's Bank Account`}{' '}
+        Record as Transaction to {!toggled ? 'Caesar' : "Caesar's Bank Account"}
       </Typography>
     }
   >
     <Link component="button" color="textSecondary" variant="caption" onClick={onClick}>
-      {toggled ? `Use Bank Account instead` : `Use Caesar Account instead`}
+      {toggled ? 'Use Bank Account instead' : 'Use Caesar Account instead'}
     </Link>
   </Tooltip>
 )

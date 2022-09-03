@@ -1,6 +1,5 @@
 import { TextField } from '@material-ui/core'
-import { formatIntoCurrency } from '@src/utils/api/common'
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export default function FormNumberField({
   value,

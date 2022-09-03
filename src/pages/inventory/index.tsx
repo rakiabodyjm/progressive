@@ -1,12 +1,9 @@
 import { Paper, Box, Typography, Divider, Grid, Theme, useTheme } from '@material-ui/core'
 import AccountInventoryManagement from '@src/components/AccountInventoryManagement'
 import CaesarTabs from '@src/components/CaesarTabs'
-import { userDataSelector } from '@src/redux/data/userSlice'
 
-import { getWallet } from '@src/utils/api/walletApi'
 import { grey } from '@material-ui/core/colors'
-import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useState } from 'react'
 
 export interface AccountIdTypes {
   role: string | undefined

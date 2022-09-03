@@ -6,14 +6,11 @@ import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
-import themeCreator from '@src/theme'
 import { extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { OTPTypes, OTPData, OtpRequestTypes } from '@src/utils/types/OTPTypes'
-import { Paginated } from '@src/utils/types/PaginatedEntity'
+import { OTPData } from '@src/utils/types/OTPTypes'
 import axios from 'axios'
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import useSWR from 'swr'
 
 type OtpTypes = {
   code?: string
@@ -59,7 +56,7 @@ export default function OTPModal({
 
   // const checkIfVerified = useCallback(() => {
   //   if (fetchOtpDataMemoized && otpFiltered) {
-  //     console.log('TRUEEEEEEEEEEEEEEEEEEEE')
+  //     ('TRUEEEEEEEEEEEEEEEEEEEE')
 
   //     if (otpFiltered?.verified) {
   //       dispatch(
@@ -113,7 +110,6 @@ export default function OTPModal({
       setLoading(true)
       axios.get(`/otp/${otpData?.id}`).then((res) => {
         const otpFetched: OTPData = res.data
-        console.log('OTP FETCH DATA: ', otpFetched)
         if (otpFetched.verified) {
           dispatch(
             setNotification({

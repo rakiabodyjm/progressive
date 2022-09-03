@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
 }))
-const ModalWrapper = dynamic(() => import(`@components/ModalWrapper`))
+const ModalWrapper = dynamic(() => import('@components/ModalWrapper'))
 export default function SubdistributorDSPAccountView() {
   const router = useRouter()
   const { query } = router
@@ -76,7 +76,6 @@ export default function SubdistributorDSPAccountView() {
               >
                 <Button
                   onClick={() => {
-                    console.log(dsp?.user.id)
                     router.push({
                       pathname: '/subdistributor/dsp/user/[id]',
                       query: {

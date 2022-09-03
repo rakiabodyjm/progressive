@@ -73,7 +73,7 @@ export const logoutUser = createAsyncThunk('user/logoutUser', (_, thunkApi) => {
   thunkApi.dispatch(removeUser())
   thunkApi.dispatch(
     setNotification({
-      message: `You've been logged out`,
+      message: "You've been logged out",
       type: NotificationTypes.INFO,
     })
   )
@@ -106,7 +106,7 @@ export const getUser = createAsyncThunk(
     thunkApi.dispatch(
       setNotification({
         type: NotificationTypes.ERROR,
-        message: `User not Logged in`,
+        message: 'User not Logged in',
       })
     )
     throw new Error('User not logged in')
@@ -151,7 +151,6 @@ const userSlice = createSlice({
     builder.addCase(
       loginUserThunk.fulfilled,
       (state, { payload }: { payload: User & UserMetaData }) => {
-        console.log('payload', payload)
         const {
           user_id,
           email,

@@ -3,53 +3,41 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {
   Box,
-  Button,
-  Container,
   Divider,
   Grid,
   IconButton,
-  InputAdornment,
   Link,
-  ListItem,
   Paper,
-  Select,
   Theme,
   Tooltip,
   Typography,
 } from '@material-ui/core'
 import { grey } from '@material-ui/core/colors'
-import { AccountCircle, ArrowBack, CloseOutlined, GetApp, Search } from '@material-ui/icons'
+import { ArrowBack, GetApp } from '@material-ui/icons'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
-import ModalWrapper from '@src/components/ModalWrapper'
 import AsDropDown from '@src/components/pages/cash-transfer/AsDropDownForm'
-import { CashTransferBalancesTable } from '@src/components/pages/cash-transfer/CashTransferBalancesTable'
 import EditOrRevertModal from '@src/components/pages/cash-transfer/EditOrRevertModal'
 import EditTransactionModal from '@src/components/pages/cash-transfer/EditTransactionModal'
 import RevertCashTransferModal from '@src/components/pages/cash-transfer/RevertCashTransferModal'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
-import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
-import CaesarIndexPage from '@src/pages/cash-transfer'
 import { objectToURLQuery, extractMultipleErrorFromResponse } from '@src/utils/api/common'
-import { CaesarWalletResponse, getWalletById } from '@src/utils/api/walletApi'
 import {
-  CaesarBank,
   CashTransferAs,
   CashTransferFilterTypes,
   CashTransferResponse,
   EditOrRevertTypes,
 } from '@src/utils/types/CashTransferTypes'
-import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
+import { Paginated } from '@src/utils/types/PaginatedEntity'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import React, { ChangeEvent, useState } from 'react'
 import useSWR from 'swr'
 import { CSVLink } from 'react-csv'
-import { fromUnixTime } from 'date-fns/esm'
 
 const useStyles = makeStyles((theme: Theme) => ({
   gridContainer: {
@@ -267,8 +255,8 @@ export default function CashTransferSummaryTable() {
                           }}
                         >
                           {fromCaesarEnabled
-                            ? `Use Bank Account instead`
-                            : `Use Caesar Account instead`}
+                            ? 'Use Bank Account instead'
+                            : 'Use Caesar Account instead'}
                         </Link>
                       </Tooltip>
                     </Grid>
@@ -334,8 +322,8 @@ export default function CashTransferSummaryTable() {
                           }}
                         >
                           {toCaesarEnabled
-                            ? `Use Bank Account instead`
-                            : `Use Caesar Account instead`}
+                            ? 'Use Bank Account instead'
+                            : 'Use Caesar Account instead'}
                         </Link>
                       </Tooltip>
                     </Grid>

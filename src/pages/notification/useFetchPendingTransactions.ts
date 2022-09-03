@@ -1,9 +1,7 @@
 import { UserTypes } from '@src/redux/data/userSlice'
 import { PendingTransactionResponse } from '@src/utils/api/transactionApi'
-import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { getAllPendingTransactions } from '../../utils/api/pendingTransactionApi'
-import { CaesarWalletResponse } from '../../utils/api/walletApi'
 import { PaginateFetchParameters } from '../../utils/types/PaginatedEntity'
 
 export default function useFetchPendingTransaction({
@@ -51,7 +49,6 @@ export default function useFetchPendingTransaction({
           }
         })
         .catch((err) => {
-          console.log('Failed fetching pending transactions', err)
           return undefined
         }),
     {

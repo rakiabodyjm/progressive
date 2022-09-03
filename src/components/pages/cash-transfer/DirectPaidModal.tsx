@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Chip,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
@@ -18,13 +17,10 @@ import { AddOutlined, CloseOutlined } from '@material-ui/icons'
 import AsyncButton from '@src/components/AsyncButton'
 import FormLabel from '@src/components/FormLabel'
 import FormNumberField from '@src/components/FormNumberField'
-import FormTextField from '@src/components/FormTextField'
-import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
 import OTPModal from '@src/components/pages/cash-transfer/OTPModal'
 import ToCaesarAutoComplete from '@src/components/pages/cash-transfer/ToCaesarAutoComplete'
 import ToCaesarBankAutoComplete from '@src/components/pages/cash-transfer/ToCaesarBankAutoComplete'
-import CashTransfer from '@src/pages/admin/topup'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
 import { userDataSelector } from '@src/redux/data/userSlice'
 import {
@@ -45,7 +41,7 @@ import axios, { AxiosError } from 'axios'
 import { useRouter } from 'next/router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import useSWR, { useSWRConfig } from 'swr'
+import useSWR from 'swr'
 
 export default function DirectPaidModal({
   open,
@@ -517,12 +513,12 @@ const SwitchToCaesarBankOrCaesarToggle = ({
     placement="right"
     title={
       <Typography variant="subtitle2">
-        Record as Transaction to {!toggled ? 'Caesar' : `Caesar's Bank Account`}{' '}
+        Record as Transaction to {!toggled ? 'Caesar' : 'Caesar\'s Bank Account'}{' '}
       </Typography>
     }
   >
     <Link component="button" color="textSecondary" variant="caption" onClick={onClick}>
-      {toggled ? `Use Bank Account instead` : `Use Caesar Account instead`}
+      {toggled ? 'Use Bank Account instead' : 'Use Caesar Account instead'}
     </Link>
   </Tooltip>
 )

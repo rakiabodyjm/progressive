@@ -1,6 +1,6 @@
-import { Box, Button, Divider, Paper, Theme, Typography, useTheme } from '@material-ui/core'
+import { Box, Button, Divider, Paper, Typography } from '@material-ui/core'
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export default function LoginExtensionModal({
   logout,
@@ -9,7 +9,7 @@ export default function LoginExtensionModal({
   logout: () => void
   close: () => void
 }) {
-  const Login = dynamic(() => import(`@src/components/pages/login`))
+  const Login = dynamic(() => import('@src/components/pages/login'))
   const [loginShow, setLoginShow] = useState<boolean>(false)
 
   if (loginShow) {

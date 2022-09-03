@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-import { Box, Container, makeStyles, Paper } from '@material-ui/core'
+import { Box, makeStyles } from '@material-ui/core'
 import Drawer from '@src/components/NavigationLayout/Drawer'
 import Nav from '@src/components/NavigationLayout/Nav'
 import { RootState } from '@src/redux/store'

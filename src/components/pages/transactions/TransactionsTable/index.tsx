@@ -1,4 +1,4 @@
-import { Box, Paper, Theme, Typography, useTheme } from '@material-ui/core'
+import { Box, Theme, Typography, useTheme } from '@material-ui/core'
 import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import UsersTable from '@src/components/UsersTable'
 import { Inventory } from '@src/utils/api/inventoryApi'

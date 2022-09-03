@@ -1,8 +1,6 @@
-/* eslint-disable @next/next/no-document-import-in-page */
 import React from 'react'
 import Document, { Main, NextScript, Html, Head, DocumentContext } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/styles'
-import { NextPageContext } from 'next'
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const sheets = new ServerStyleSheets()

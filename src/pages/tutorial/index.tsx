@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/media-has-caption */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Box,
   Container,
@@ -76,7 +76,9 @@ export default function TutorialPage() {
       }
     }
     return () => {
-      player?.removeEventListener('loadedmetadata', () => {})
+      player?.removeEventListener('loadedmetadata', () => {
+        console.log('Clean up')
+      })
     }
   }, [src, player])
 
@@ -142,7 +144,7 @@ export default function TutorialPage() {
               </Typography>
               <Divider
                 style={{
-                  margin: `16px 0`,
+                  margin: '16px 0',
                 }}
               />
               <Paper>
@@ -164,7 +166,7 @@ export default function TutorialPage() {
                     <IconButton
                       style={{
                         ...(open && {
-                          transform: `rotate(180deg)`,
+                          transform: 'rotate(180deg)',
                         }),
                       }}
                       onClick={() => {

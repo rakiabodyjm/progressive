@@ -16,20 +16,14 @@ import { Close } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import FormTextFieldComponent, { FormTextFieldProps } from '@src/components/FormTextField'
-import {
-  Asset,
-  createAsset,
-  CreateAssetDto,
-  deleteAsset,
-  updateAsset,
-} from '@src/utils/api/assetApi'
+import { Asset, CreateAssetDto, deleteAsset, updateAsset } from '@src/utils/api/assetApi'
 import validator from 'validator'
 import useNotification, {
   useErrorNotification,
   useSuccessNotification,
 } from '@src/utils/hooks/useNotification'
 
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Autocomplete } from '@material-ui/lab'
 import { toCapsFirst } from '@src/utils/api/common'
 import { UserTypes } from '@src/redux/data/userSlice'
@@ -71,7 +65,6 @@ export default function EditAsset({
   const assetRef = useRef(assetProps)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value, Number(e.target.value))
     setAsset((prevState) => ({
       ...prevState,
       [e.target.name]: numberKeys.includes(e.target.name as typeof numberKeys[number])
@@ -125,7 +118,7 @@ export default function EditAsset({
 
     updateAsset(assetProps.id, assetDiff)
       .then(() => {
-        dispatchSuccess(`Asset Updated`)
+        dispatchSuccess('Asset Updated')
       })
       .catch((err: string[]) => {
         err.forEach((ea) => {
@@ -344,7 +337,6 @@ export default function EditAsset({
                 renderOption={(option) => toCapsFirst(option)}
                 onChange={(_, value) => {
                   const newValue = value.length > 0 ? value : []
-                  console.log(newValue)
                   setAsset((prevState) => ({
                     ...prevState,
                     approval: newValue as UserTypes[],
@@ -356,7 +348,6 @@ export default function EditAsset({
               <FormLabel>Whole Number Only</FormLabel>
               <Select
                 onChange={(e) => {
-                  console.log(e)
                   setAsset((prev) => ({
                     ...prev,
                     whole_number_only: e.target.value === 'true',
@@ -539,7 +530,7 @@ function DeleteButton({
       .then((res) => {
         dispatchNotif({
           type: NotificationTypes.SUCCESS,
-          message: `Asset succesfully Deleted`,
+          message: 'Asset succesfully Deleted',
         })
       })
       .catch((err: string[]) => {

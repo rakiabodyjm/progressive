@@ -12,10 +12,10 @@ import {
 } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/styles'
 import clsx from 'clsx'
-import React, { Dispatch, MouseEventHandler, SetStateAction, useRef, useState } from 'react'
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react'
 import Image from 'next/image'
 import companyLogo from '@public/assets/realm1000-logo.png'
-import { Settings, Menu as MenuIcon, AccountBox, SvgIconComponent } from '@material-ui/icons'
+import { Settings, Menu as MenuIcon, AccountBox } from '@material-ui/icons'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import IOSSwitch from '@src/components/Switch/iOSSwitch'
@@ -200,7 +200,7 @@ const NavSettingsMenu = ({
       <MenuItem
         onClick={(e) => {
           e.preventDefault()
-          router.push(`/profile`)
+          router.push('/profile')
         }}
         href="/profile"
         button

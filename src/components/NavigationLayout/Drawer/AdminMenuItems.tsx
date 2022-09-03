@@ -1,11 +1,5 @@
 import { List } from '@material-ui/core'
-import {
-  AllInbox,
-  CardGiftcard,
-  ListAlt,
-  PeopleAlt,
-  AccountBalanceWallet,
-} from '@material-ui/icons'
+import { CardGiftcard, PeopleAlt, AccountBalanceWallet } from '@material-ui/icons'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 
 export default function AdminMenuItems({ open }: { open: boolean }) {

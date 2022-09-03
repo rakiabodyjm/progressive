@@ -386,7 +386,7 @@ const retailerFieldsFull = (retailer: RetailerResponseType) => [
     value: retailer.e_bind_number,
   },
   {
-    key: `Store Name`,
+    key: 'Store Name',
     value: retailer.store_name,
   },
 
@@ -413,7 +413,7 @@ const retailerFieldsSimple = (retailer: RetailerResponseType) => [
     value: retailer.e_bind_number,
   },
   {
-    key: `Store Name`,
+    key: 'Store Name',
     value: retailer.store_name,
   },
   {

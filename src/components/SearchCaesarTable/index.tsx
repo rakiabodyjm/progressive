@@ -1,12 +1,6 @@
 import { Box, Paper } from '@material-ui/core'
-import {
-  CaesarWalletResponse,
-  getAllWallet,
-  getWallet,
-  getWalletById,
-  searchWallet,
-} from '@src/utils/api/walletApi'
-import LoadingScreen, { LoadingScreen2 } from '@src/components/LoadingScreen'
+import { CaesarWalletResponse, getAllWallet, searchWallet } from '@src/utils/api/walletApi'
+import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react'
@@ -60,7 +54,6 @@ export default function SearchCaesarTable({
   useEffect(() => {
     setIsLoading(true)
     if (searchCaesarQuery.searchQuery === '') {
-      console.log(getAllCaesarParams)
       getAllWallet(getAllCaesarParams)
         .then((res) => {
           setCaesarData(res.data)
@@ -79,7 +72,6 @@ export default function SearchCaesarTable({
         .then((res) => {
           setCaesarData(res.data)
           setMetaData(res.metadata)
-          console.log(res)
         })
         .catch((err: string[]) => {
           err.forEach((ea) => {

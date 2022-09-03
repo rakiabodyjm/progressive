@@ -1,4 +1,4 @@
-import { Paper, Box, Typography, ButtonBase, IconButton } from '@material-ui/core'
+import { Paper, Box, Typography, ButtonBase } from '@material-ui/core'
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons'
 import { UserResponse } from '@src/utils/api/userApi'
 import { useEffect, useState } from 'react'

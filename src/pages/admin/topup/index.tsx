@@ -20,7 +20,7 @@ import {
 import SearchCaesarTable from '@src/components/SearchCaesarTable'
 import MoneyIcon from '@material-ui/icons/Payment'
 import { makeStyles } from '@material-ui/styles'
-import React, { useState, MouseEvent, useEffect } from 'react'
+import React, { useState, MouseEvent } from 'react'
 import { useDispatch } from 'react-redux'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { NotificationTypes, setNotification } from '@src/redux/data/notificationSlice'
@@ -106,7 +106,7 @@ export default function CashTransfer() {
         .then((res) => {
           dispatch(
             setNotification({
-              message: `Top Up Successful`,
+              message: 'Top Up Successful',
               type: NotificationTypes.SUCCESS,
             })
           )
@@ -171,7 +171,6 @@ export default function CashTransfer() {
                           searchWallet(query)
                             .then((res) => res.data)
                             .catch((err) => {
-                              console.log('Caesar Account Search Error: ', err)
                               return []
                             })
                         }

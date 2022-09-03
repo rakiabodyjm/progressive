@@ -1,9 +1,7 @@
-import { Box, Divider, Grid, Paper, PaperProps, Theme, Typography } from '@material-ui/core'
+import { Box, Divider, Grid, Paper, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import AestheticObjectRenderer from '@src/components/ObjectRendererV2'
-import UserAccountSummaryCard from '@src/components/UserAccountSummaryCard'
 import { UserResponse } from '@src/utils/api/userApi'
-import { useEffect } from 'react'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -29,7 +27,7 @@ export default function ViewUserAccount({ user, ...restProps }: { user: UserResp
       </Typography>
       <Divider
         style={{
-          margin: `16px 0`,
+          margin: '16px 0',
           marginBottom: 24,
         }}
       />

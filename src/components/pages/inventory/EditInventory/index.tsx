@@ -21,19 +21,8 @@ import {
   UpdateInventory,
   updateInventory,
 } from '@src/utils/api/inventoryApi'
-import {
-  useEffect,
-  useRef,
-  useState,
-  ChangeEvent,
-  useContext,
-  Dispatch,
-  SetStateAction,
-  createContext,
-  Suspense,
-} from 'react'
+import { useEffect, useState, ChangeEvent } from 'react'
 import { Asset } from '@src/utils/api/assetApi'
-import { useRouter } from 'next/router'
 import { isNumberString } from 'class-validator'
 import AsyncButton from '@src/components/AsyncButton'
 import AssetDisplay from '@src/components/pages/inventory/EditInventory/AssetDisplay'

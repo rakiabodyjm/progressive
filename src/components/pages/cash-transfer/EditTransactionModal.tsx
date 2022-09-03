@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  colors,
   Divider,
   Grid,
   IconButton,
@@ -11,7 +10,7 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core'
-import { CloseOutlined, DoubleArrow, Edit } from '@material-ui/icons'
+import { CloseOutlined, Edit } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import FormLabel from '@src/components/FormLabel'
 import FormTextField from '@src/components/FormTextField'
@@ -27,8 +26,7 @@ import { getWalletById } from '@src/utils/api/walletApi'
 import useNotification from '@src/utils/hooks/useNotification'
 import { CashTransferResponse } from '@src/utils/types/CashTransferTypes'
 
-import axios, { AxiosError } from 'axios'
-import router from 'next/router'
+import axios from 'axios'
 import { ChangeEvent, useEffect, useState } from 'react'
 import useSWR from 'swr'
 

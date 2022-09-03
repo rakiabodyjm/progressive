@@ -42,7 +42,7 @@ export interface CreateSubdistributor {
   zip_code: string
   name: string
 }
-export interface ValidateFields extends Omit<CreateSubdistributor, 'user' | 'area_id'> {}
+export type ValidateFields = Omit<CreateSubdistributor, 'user' | 'area_id'>
 export interface SubdistributorUpdateType extends Omit<SubdistributorResponseType, 'area_id'> {
   area_id: string
 }

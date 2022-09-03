@@ -1,12 +1,11 @@
-import { Box, Typography } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import UsersTable from '@src/components/UsersTable'
-import { setNotification } from '@src/redux/data/notificationSlice'
-import { DspResponseType, getDsp, getRetailers as getDspRetailers } from '@src/utils/api/dspApi'
+import { getRetailers as getDspRetailers } from '@src/utils/api/dspApi'
 import { RetailerResponseType } from '@src/utils/api/retailerApi'
 
 import { getRetailers } from '@src/utils/api/subdistributorApi'
 import { Paginated } from '@src/utils/types/PaginatedEntity'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 // function dynamicFetcher(key: 'subdistributor-retailers' | 'dsp-retailers') {
@@ -50,7 +49,7 @@ export default function RetailerTable({ subdistributorId, dspId }: RetailerTable
   const [retailers, setRetailers] = useState<Paginated<Record<any, any>>>()
 
   const { data: dspRetailer, error: dspRetailerError } = useSWR(
-    dspId ? [dspId, metadata, `dsp-retailers`] : null,
+    dspId ? [dspId, metadata, 'dsp-retailers'] : null,
     (id, metadata) =>
       getDspRetailers(id, metadata).then(({ data, metadata }) => ({
         metadata,
@@ -59,7 +58,7 @@ export default function RetailerTable({ subdistributorId, dspId }: RetailerTable
   )
 
   const { data: subdRetailer, error: subdRetailerError } = useSWR(
-    subdistributorId ? [subdistributorId, metadata, `subdistributor-retailers`] : null,
+    subdistributorId ? [subdistributorId, metadata, 'subdistributor-retailers'] : null,
     (
       subdId: string,
       meta: {

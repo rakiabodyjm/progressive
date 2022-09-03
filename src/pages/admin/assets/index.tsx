@@ -7,8 +7,6 @@ import {
   IconButton,
   Menu,
   Paper,
-  TableCell,
-  TableRow,
   Tooltip,
   Typography,
 } from '@material-ui/core'
@@ -17,7 +15,6 @@ import { LoadingScreen2 } from '@src/components/LoadingScreen'
 import ModalWrapper from '@src/components/ModalWrapper'
 import CreateAsset from '@src/components/pages/assets/CreateAsset'
 import EditAsset from '@src/components/pages/assets/EditAsset'
-import { PopUpMenu } from '@src/components/PopUpMenu'
 import RoleBadge from '@src/components/RoleBadge'
 import UsersTable from '@src/components/UsersTable'
 import { userDataSelector } from '@src/redux/data/userSlice'
@@ -25,7 +22,7 @@ import { Asset, getAssets, GetAllAssetDto } from '@src/utils/api/assetApi'
 import { useErrorNotification } from '@src/utils/hooks/useNotification'
 import { Paginated, PaginateFetchParameters } from '@src/utils/types/PaginatedEntity'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 export default function AdminAssetManagement() {
   const [addAssetModalOpen, setAddAssetModalOpen] = useState<boolean>(false)
@@ -53,7 +50,6 @@ export default function AdminAssetManagement() {
     setLoading(true)
     getAssets({ ...paginatedParams, ...getAllAssetOptions })
       .then((res) => {
-        console.log('fetching')
         setAssets(res.data)
         setAssetMetadata(res.metadata)
       })
@@ -267,7 +263,7 @@ export default function AdminAssetManagement() {
   )
 }
 
-function objectSpread<T extends {}>(key: keyof T, value: unknown) {
+function objectSpread<T extends Record<any, unknown>>(key: keyof T, value: unknown) {
   return (prevState: T) => ({
     ...prevState,
     [key]: value,

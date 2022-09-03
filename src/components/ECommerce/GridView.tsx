@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   image: {
     filter: 'grayscale(40%) !important',
-    maxWidth: `200px !important`,
+    maxWidth: '200px !important',
   },
   rowGap: {
     alignItems: 'center',

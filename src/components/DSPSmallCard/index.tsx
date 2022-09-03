@@ -1,9 +1,5 @@
 import { Box, CircularProgress, Paper, PaperProps, Typography, useTheme } from '@material-ui/core'
-import SubdistributorsPage from '@src/pages/subdistributor'
 import { DspResponseType, getDsp, getRetailerCount } from '@src/utils/api/dspApi'
-import { UserResponse } from '@src/utils/api/userApi'
-import useFetch from '@src/utils/hooks/useFetch'
-import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 export default function DSPSmallCard({ dspId, ...restProps }: { dspId: string } & PaperProps) {

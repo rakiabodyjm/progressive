@@ -1,5 +1,5 @@
 import { List } from '@material-ui/core'
-import { AccountBalance, AllInbox, ListAlt, LocalGroceryStore, Store } from '@material-ui/icons'
+import { AccountBalance, AllInbox, ListAlt, LocalGroceryStore } from '@material-ui/icons'
 import RenderListItem from '@src/components/NavigationLayout/Drawer/RenderListItem'
 
 export default function SubMenuItems({ open }: { open: boolean }) {
