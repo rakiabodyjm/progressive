@@ -6,7 +6,6 @@ import {
   Grid,
   IconButton,
   List,
-  ListItem,
   Paper,
   Theme,
   Typography,
@@ -665,7 +664,7 @@ export default function CashSummaryView() {
                             <Box
                               style={{
                                 maxHeight: 750,
-                                overflowY: 'auto',
+                                overflowY: 'scroll',
                               }}
                             >
                               {Object.entries(
@@ -694,31 +693,40 @@ export default function CashSummaryView() {
                                     }}
                                     key={accountType}
                                   >
-                                    <Grid container spacing={2}>
+                                    <Grid container>
                                       {caesarValues.map((ea) => (
-                                        <Grid key={ea.id} item xs={12} md={6}>
-                                          <Box>
-                                            <ListItem
-                                              style={{
-                                                border: theme.palette.divider,
-                                                borderWidth: 1,
-                                                borderStyle: 'solid',
-                                                borderRadius: 4,
-                                                padding: 8,
-                                                marginTop: 8,
-                                              }}
-                                            >
-                                              <CollectiblesSmallCards
-                                                id={ea.id}
-                                                dsp_name={ea.name}
-                                                setValue={sendDataToParent}
-                                                date_from={dateQuery.date_from}
-                                                date_to={dateQuery.date_to}
-                                                dateEnabled={switchDate}
-                                                setLoading={sendIsLoadingToParent}
-                                              />
-                                            </ListItem>
-                                          </Box>
+                                        <Grid
+                                          style={{
+                                            padding: 4,
+                                          }}
+                                          key={ea.id}
+                                          item
+                                          xs={12}
+                                          md={6}
+                                        >
+                                          {/* <ListItem
+                                            style={{
+                                              border: theme.palette.divider,
+                                              borderWidth: 1,
+                                              borderStyle: 'solid',
+                                              borderRadius: 4,
+                                              padding: 8,
+                                              marginTop: 8,
+                                            }}
+                                          > */}
+                                          <Paper variant="outlined">
+                                            <CollectiblesSmallCards
+                                              id={ea.id}
+                                              dsp_name={ea.name}
+                                              setValue={sendDataToParent}
+                                              date_from={dateQuery.date_from}
+                                              date_to={dateQuery.date_to}
+                                              dateEnabled={switchDate}
+                                              setLoading={sendIsLoadingToParent}
+                                            />
+                                          </Paper>
+
+                                          {/* </ListItem> */}
                                         </Grid>
                                       ))}
                                     </Grid>
