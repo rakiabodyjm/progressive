@@ -14,6 +14,9 @@ ENV PORT 2006
 
 EXPOSE 2006
 
-CMD ["npm", "run", "build"]
+
+RUN yarn build 
+
+CMD ["yarn", "start"]
 
 
