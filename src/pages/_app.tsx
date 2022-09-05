@@ -178,4 +178,16 @@ function WrappedAppWithRedux({ Component, pageProps }: AppProps) {
   )
 }
 
+/**
+ *
+ * Disables static page generation to prevent errors from build ( For DEMO )
+ *
+ *
+ */
+function getInitialProps() {
+  return {}
+}
+
+WrappedAppWithRedux.getInitialProps = getInitialProps
+
 export default WrappedAppWithRedux
