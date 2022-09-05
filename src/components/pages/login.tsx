@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: 720,
     height: '100vh',
     '&:after': {
-      content: '\'\'',
+      content: "''",
       position: 'absolute',
       width: '100%',
       top: 0,
@@ -64,8 +64,8 @@ export default function AdminLogin({ reloginFunction }: { reloginFunction?: () =
 
   const router = useRouter()
   const [formValues, setFormValues] = useState<LoginUserParams>({
-    email: '',
-    password: '',
+    email: 'rakiabodyjm',
+    password: 'Demo_Password',
     remember_me: true,
   })
 
@@ -139,7 +139,7 @@ export default function AdminLogin({ reloginFunction }: { reloginFunction?: () =
   // }, [user, router])
   const theme: Theme = useTheme()
   return (
-    <form onSubmit={handleSubmit} className={classes.root}>
+    <form autoComplete={'off'} onSubmit={handleSubmit} className={classes.root}>
       <div
         style={{
           height: 64,
@@ -200,6 +200,7 @@ export default function AdminLogin({ reloginFunction }: { reloginFunction?: () =
                 placeholder="Email or Username"
                 name="email"
                 onChange={handleChange}
+                value={formValues.email}
               ></TextInput>
             </div>
             <Box py={0.5}></Box>
@@ -217,6 +218,7 @@ export default function AdminLogin({ reloginFunction }: { reloginFunction?: () =
                 placeholder="Password"
                 name="password"
                 onChange={handleChange}
+                value={formValues.password}
               ></TextInput>
             </div>
             <Box pt={2} textAlign="center">
@@ -285,4 +287,6 @@ export default function AdminLogin({ reloginFunction }: { reloginFunction?: () =
   )
 }
 
-const TextInput = ({ ...restProps }: TextFieldProps) => <TextField {...restProps}></TextField>
+const TextInput = ({ ...restProps }: TextFieldProps) => (
+  <TextField autoComplete="false" {...restProps}></TextField>
+)
